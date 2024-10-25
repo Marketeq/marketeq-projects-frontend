@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply !top-0;
+  }
+}
+
+/* ------------------------------------------------------------------------------------------------ */
+
+:root {
+  --react-international-phone-country-selector-border-color: theme(
+    colors.gray.300
+  );
+  --react-international-phone-border-color: theme(colors.gray.300);
+  --react-international-phone-text-color: theme(colors.gray.900);
+  --react-international-phone-font-size: theme(size[3.5]);
+  --react-international-phone-height: theme(size.10);
+  --react-international-phone-border-radius: theme(borderRadius.none);
+  --react-international-phone-selected-dropdown-item-background-color: theme(
+    colors.gray.50
+  );
+  --react-international-phone-dropdown-item-text-color: theme(colors.gray.900);
+  --react-international-phone-selected-dropdown-item-text-color: theme(
+    colors.gray.900
+  );
+  --react-international-phone-dropdown-item-dial-code-color: theme(
+    colors.gray.500
+  );
+  --react-international-phone-selected-dropdown-item-dial-code-color: theme(
+    colors.gray.500
+  );
+  ----react-international-phone-focused-dropdown-item-background-color: theme(
+    colors.gray.50
+  );
+  --react-international-phone-dropdown-shadow: 0px 8px 12px -4px rgba(16, 24, 40, 0.12);
+  --react-international-phone-dropdown-top: theme(size.11);
+  --react-international-phone-dropdown-item-height: theme(size.10);
+}
+
+.react-international-phone-input-container
+  .react-international-phone-country-selector-button {
+  @apply mr-0;
+}
+
+.react-international-phone-input-container
+  .react-international-phone-country-selector-button {
+  @apply border-r-0;
+}
+
+.react-international-phone-country-selector-button__dropdown-arrow {
+  @apply bg-[url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTciIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNyAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQuNSA2TDguNSAxMEwxMi41IDYiIHN0cm9rZT0iIzY2NzA4NSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K)];
+}
+
+.react-international-phone-input-container .react-international-phone-input {
+  @apply px-3.5 py-2.5;
+}
+
+.react-international-phone-country-selector-dropdown {
+  @apply scrollbar-thumb-rounded-lg scrollbar-thumb-gray-200 scrollbar-w-2 scrollbar;
+}
+
+.react-international-phone-country-selector-dropdown {
+  @apply focus-visible:outline-none;
+}
+
+.react-international-phone-country-selector-dropdown__list-item {
+  @apply px-3 py-2.5;
+}
+
+.react-international-phone-country-selector-dropdown__list-item-country-name {
+  @apply text-gray-900 leading-5;
+}
+
+.react-international-phone-country-selector-dropdown__list-item-dial-code {
+  @apply leading-5;
+}
+
+/* ------------------------------------------------------------------------------------------------- */
+
+.vertical-carousel > .swiper-pagination-bullets {
+  @apply left-auto lg:right-[50px] md:right-10 right-[15.21px] flex flex-col items-end gap-y-[15.97px] lg:gap-y-[21px] md:top-1/2 md:-translate-y-1/2 xs:max-md:top-auto xs:max-md:-translate-y-0 bottom-[36.51px] md:bottom-auto;
+}
+
+.vertical-carousel > .swiper-pagination-bullets > .swiper-pagination-bullet {
+  @apply bg-white transition-[height,width] duration-300 m-0 opacity-60 rounded-none w-[34px] h-[3.04px] lg:h-1;
+}
+
+.vertical-carousel
+  > .swiper-pagination-bullets
+  > .swiper-pagination-bullet.swiper-pagination-bullet-active {
+  @apply opacity-100 w-[57px] h-[6.08px] lg:h-2;
+}
+
+/* -------------------------------------------------------------------------------------------------- */
+
+.landing-slider > .swiper-wrapper {
+  @apply items-stretch;
+}
+
+.landing-slider > .swiper-wrapper > .swiper-slide {
+  @apply !h-auto;
+}
+
+.thumbnail-slider > .swiper-wrapper {
+  @apply items-stretch;
+}
+
+.thumbnail-slider > .swiper-wrapper > .swiper-slide {
+  @apply !h-auto;
+}
+
+/* ---------------------------------------------------------------------------------------------------- */
+
+.skiptranslate {
+  @apply !hidden !fixed !bottom-2.5 !right-2.5 !z-0;
+}
+
+.VIpgJd-yAWNEb-VIpgJd-fmcmS-sn54Q {
+  @apply !bg-transparent !shadow-none !static;
+}
+
+body > .skiptranslate {
+  @apply !hidden;
+}
+
+.swiper-slide-active:hover .navigation-prev {
+  @apply opacity-100;
+}
+
+.swiper-slide-next + .swiper-slide:hover .navigation-next {
+  @apply opacity-100;
+}
+
+.goog-te-banner-frame.skiptranslate {
+  @apply !hidden;
+}
