@@ -175,7 +175,7 @@ export const InviteWindow = () => {
         <div className="max-w-[690px] bg-white p-6 rounded-xl shadow-lg">
           <div className="flex justify-between items-center">
             <h2 className="text-lg leading-7 font-semibold text-gray-800">
-              Share “File/Folder name”
+              Invite Your Team
             </h2>
 
             <div className="inline-flex items-center gap-x-4">
@@ -200,7 +200,7 @@ export const InviteWindow = () => {
 
           <div className="space-y-2 mt-8">
             <Label className="text-gray-700" size="md" htmlFor={id}>
-              Share “File/Folder name”
+              Invite by email
             </Label>
             <div className="flex items center gap-x-3">
               <Combobox

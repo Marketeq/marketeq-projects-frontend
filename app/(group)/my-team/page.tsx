@@ -15,6 +15,7 @@ import {
 } from "@blend-metrics/icons"
 import { ToggleGroupItem, ToggleGroupRoot } from "@/components/ui/toggle-group"
 import { Grid, List, SortAs } from "@/components/icons"
+import { InviteWindowTrigger } from "@/components/invite-window"
 import NextImage from "@/components/next-image"
 import NextLink from "@/components/next-link"
 import { TalentCardLandscape } from "@/components/talent-card-landscape"
@@ -201,26 +202,18 @@ const InternalTeamCardLandscape = () => {
   )
 }
 
-const Modal = () => {
+const InviteWindowButton = () => {
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button
-          className="border-primary-500 xs:max-lg:text-[10px] xs:max-lg:leading-[18.63px] xs:max-lg:h-8 xs:max-lg:px-[11px] xs:max-lg:py-1.5 xs:max-lg:gap-x-1.5 text-primary-500 hover:text-white hover:bg-primary-500"
-          variant="outlined"
-          visual="gray"
-          size="md"
-        >
-          <Plus className="size-[11.64px] lg:size-[15px]" /> Add Team Member
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <form className="flex items-center gap-x-3">
-          <Input placeholder="Enter Team Member Name" className="flex-auto" />
-          <Button size="lg">Save</Button>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <InviteWindowTrigger asChild>
+      <Button
+        className="border-primary-500 xs:max-lg:text-[10px] xs:max-lg:leading-[18.63px] xs:max-lg:h-8 xs:max-lg:px-[11px] xs:max-lg:py-1.5 xs:max-lg:gap-x-1.5 text-primary-500 hover:text-white hover:bg-primary-500"
+        variant="outlined"
+        visual="gray"
+        size="md"
+      >
+        <Plus className="size-[11.64px] lg:size-[15px]" /> Add Team Member
+      </Button>
+    </InviteWindowTrigger>
   )
 }
 
@@ -273,7 +266,7 @@ export default function MyTeam() {
           </ToggleGroupRoot>
         </div>
 
-        <Modal />
+        <InviteWindowButton />
       </div>
 
       <h1 className="text-lg leading-[21.78px] lg:text-[28px] lg:leading-[33.89px] font-bold text-dark-blue-400 xs:max-md:mt-6">
@@ -330,7 +323,7 @@ export default function MyTeam() {
               </ToggleGroupRoot>
             </div>
 
-            <Modal />
+            <InviteWindowButton />
           </div>
         </div>
 

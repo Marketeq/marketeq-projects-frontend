@@ -34,7 +34,6 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <NProgressBar />
         </Suspense>
-
         <Toaster />
         <InviteWindow />
       </body>

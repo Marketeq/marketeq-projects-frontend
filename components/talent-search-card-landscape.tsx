@@ -1,4 +1,5 @@
 import React from "react"
+import { cn } from "@/utils/functions"
 import {
   Check,
   ChevronDown,
@@ -29,8 +30,10 @@ import {
 export const TalentSearchCardLandscape = () => {
   const [isOpen, toggleIsOpen] = useToggle(false)
   const [value, setValue] = React.useState("")
+  const [isExpanded, toggleIsExpanded] = useToggle(false)
+
   return (
-    <article className="relative border-gray-200 border rounded-lg shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
+    <article className="relative overflow-hidden border-gray-200 border rounded-lg shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
       <div className="px-3 pt-3 lg:p-10 flex gap-x-[13px] lg:gap-x-[17px] justify-between">
         <div className="relative inline-block">
           <Avatar className="lg:size-[140px] size-[62px]" size="2xl">
@@ -73,7 +76,12 @@ export const TalentSearchCardLandscape = () => {
             </div>
           </div>
 
-          <div className="flex flex-col items-end gap-y-[55px] self-start">
+          <Favorite
+            starClassName="size-5"
+            className="size-5 md:hidden self-start"
+          />
+
+          <div className="hidden flex-col items-end gap-y-[55px] self-start md:flex">
             <div className="flex items-center gap-x-[15.3px] lg:gap-x-6">
               <div className="flex items-center">
                 <Button
@@ -223,11 +231,23 @@ export const TalentSearchCardLandscape = () => {
         </div>
 
         <div className="flex items-center gap-x-3">
-          <h1 className="text-[10px] leading-5 lg:text-sm lg:leading-5 font-bold whitespace-nowrap text-gray-700">
-            Top Skills
-          </h1>
+          {!isExpanded && (
+            <h1 className="text-[10px] leading-5 lg:text-sm lg:leading-5 font-bold whitespace-nowrap text-gray-700">
+              Top Skills
+            </h1>
+          )}
 
-          <div className="flex flex-wrap gap-3">
+          <div
+            className={cn(
+              "flex flex-wrap gap-3 overflow-x-hidden",
+              isExpanded ? "flex-wrap" : "flex-nowrap"
+            )}
+          >
+            {isExpanded && (
+              <h1 className="text-[10px] leading-5 lg:text-sm lg:leading-5 font-bold whitespace-nowrap text-gray-700">
+                Top Skills
+              </h1>
+            )}
             <Button
               className="text-[10px] lg:text-xs leading-5 opacity-50 hover:opacity-100"
               visual="gray"
@@ -291,7 +311,29 @@ export const TalentSearchCardLandscape = () => {
             >
               Axure RP
             </Button>
+
+            {isExpanded && (
+              <Button
+                className="xs:max-lg:text-[10px] xs:max-lg:leading-5 font-bold text-xs leading-5"
+                visual="gray"
+                variant="link"
+                onClick={toggleIsExpanded}
+              >
+                View Less
+              </Button>
+            )}
           </div>
+
+          {!isExpanded && (
+            <Button
+              className="xs:max-lg:text-[10px] xs:max-lg:leading-5 font-bold text-xs leading-5"
+              visual="gray"
+              variant="link"
+              onClick={toggleIsExpanded}
+            >
+              More...
+            </Button>
+          )}
         </div>
       </div>
     </article>

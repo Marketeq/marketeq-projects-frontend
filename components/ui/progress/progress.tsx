@@ -71,6 +71,7 @@ const Progress = React.forwardRef<
             alignOffset={alignOffset}
             visual="white"
             align="start"
+            side="top"
           >
             {value}%
           </TooltipContent>
@@ -115,7 +116,7 @@ const CircularProgress = React.forwardRef<
     return (
       <div
         className={cn(
-          "relative inline-flex text-center text-sm font-medium text-gray-900",
+          "relative inline-flex shrink-0 text-center text-sm font-medium text-gray-900",
           className
         )}
         {...props}

@@ -1150,10 +1150,10 @@ export default function Search() {
                   onValueChange={(details) => setValue(details.value)}
                 >
                   <ToggleGroupItem value={GRID_LAYOUT}>
-                    <Grid className="size-6" />
+                    <Grid className="size-4 lg:size-6" />
                   </ToggleGroupItem>
                   <ToggleGroupItem value={LIST_LAYOUT}>
-                    <List className="size-6" />
+                    <List className="size-4 lg:size-6" />
                   </ToggleGroupItem>
                 </ToggleGroupRoot>
               </div>

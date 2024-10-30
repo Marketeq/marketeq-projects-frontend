@@ -1009,7 +1009,7 @@ export default function MarketPlaceLayout({
   return (
     <div className="bg-[#F9FAFB]">
       <div className="px-3.5 md:px-6 lg:px-[50px] bg-white shadow-[0px_1px_3px_0px_rgba(16,24,40,.1)]">
-        <div className="flex flex-col pt-1 pb-3.5">
+        <div className="flex flex-col xs:max-md:pt-1 xs:max-md:pb-3.5">
           <div className="flex items-center justify-between md:gap-x-3 lg:gap-x-[50px] md:pt-2 md:pb-0.5 lg:py-3">
             <NextLink
               className="focus-visible:outline-none"

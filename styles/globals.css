@@ -2,12 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  body {
-    @apply !top-0;
-  }
-}
-
 /* ------------------------------------------------------------------------------------------------ */
 
 :root {
@@ -38,6 +32,8 @@
   --react-international-phone-dropdown-shadow: 0px 8px 12px -4px rgba(16, 24, 40, 0.12);
   --react-international-phone-dropdown-top: theme(size.11);
   --react-international-phone-dropdown-item-height: theme(size.10);
+  --swiper-theme-color: theme(colors.primary.500);
+  --swiper-pagination-bullet-size: 10px;
 }
 
 .react-international-phone-input-container
@@ -76,64 +72,4 @@
 
 .react-international-phone-country-selector-dropdown__list-item-dial-code {
   @apply leading-5;
-}
-
-/* ------------------------------------------------------------------------------------------------- */
-
-.vertical-carousel > .swiper-pagination-bullets {
-  @apply left-auto lg:right-[50px] md:right-10 right-[15.21px] flex flex-col items-end gap-y-[15.97px] lg:gap-y-[21px] md:top-1/2 md:-translate-y-1/2 xs:max-md:top-auto xs:max-md:-translate-y-0 bottom-[36.51px] md:bottom-auto;
-}
-
-.vertical-carousel > .swiper-pagination-bullets > .swiper-pagination-bullet {
-  @apply bg-white transition-[height,width] duration-300 m-0 opacity-60 rounded-none w-[34px] h-[3.04px] lg:h-1;
-}
-
-.vertical-carousel
-  > .swiper-pagination-bullets
-  > .swiper-pagination-bullet.swiper-pagination-bullet-active {
-  @apply opacity-100 w-[57px] h-[6.08px] lg:h-2;
-}
-
-/* -------------------------------------------------------------------------------------------------- */
-
-.landing-slider > .swiper-wrapper {
-  @apply items-stretch;
-}
-
-.landing-slider > .swiper-wrapper > .swiper-slide {
-  @apply !h-auto;
-}
-
-.thumbnail-slider > .swiper-wrapper {
-  @apply items-stretch;
-}
-
-.thumbnail-slider > .swiper-wrapper > .swiper-slide {
-  @apply !h-auto;
-}
-
-/* ---------------------------------------------------------------------------------------------------- */
-
-.skiptranslate {
-  @apply !hidden !fixed !bottom-2.5 !right-2.5 !z-0;
-}
-
-.VIpgJd-yAWNEb-VIpgJd-fmcmS-sn54Q {
-  @apply !bg-transparent !shadow-none !static;
-}
-
-body > .skiptranslate {
-  @apply !hidden;
-}
-
-.swiper-slide-active:hover .navigation-prev {
-  @apply opacity-100;
-}
-
-.swiper-slide-next + .swiper-slide:hover .navigation-next {
-  @apply opacity-100;
-}
-
-.goog-te-banner-frame.skiptranslate {
-  @apply !hidden;
 }
