@@ -8,7 +8,7 @@ import {
 } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/CheckboxGroup",
+  title: "CheckboxGroup",
   component: CheckboxGroup,
   parameters: {
     design: {

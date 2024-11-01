@@ -2,7 +2,7 @@ import { Meta } from "@storybook/react"
 import { PercentageInput } from "./percentage-input"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/PercentageInput",
+  title: "PercentageInput",
 }
 
 export default meta

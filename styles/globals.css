@@ -33,7 +33,8 @@
   --react-international-phone-dropdown-top: theme(size.11);
   --react-international-phone-dropdown-item-height: theme(size.10);
   --swiper-theme-color: theme(colors.primary.500);
-  --swiper-pagination-bullet-size: 10px;
+  --swiper-pagination-bullet-size: theme(size[2.5]);
+  --swiper-pagination-bottom: theme(size.4);
 }
 
 .react-international-phone-input-container

@@ -2,7 +2,7 @@ import { Meta, StoryObj } from "@storybook/react"
 import { ScrollArea, ScrollBar } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/ScrollAria",
+  title: "ScrollAria",
 }
 
 export default meta

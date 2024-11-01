@@ -2,7 +2,7 @@ import { Meta, StoryObj } from "@storybook/react"
 import { CircularProgress, Progress } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/Progress",
+  title: "Progress",
   argTypes: {
     value: {
       control: { type: "number", min: 0, max: 100 },

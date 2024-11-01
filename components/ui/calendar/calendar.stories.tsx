@@ -9,7 +9,7 @@ import {
 } from "./calendar"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/Calendar",
+  title: "Calendar",
 }
 
 export default meta

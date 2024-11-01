@@ -2,7 +2,7 @@ import { Meta, StoryObj } from "@storybook/react"
 import { TextInput } from "./text-input"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/TextInput",
+  title: "TextInput",
   argTypes: {
     maxLength: {
       control: {

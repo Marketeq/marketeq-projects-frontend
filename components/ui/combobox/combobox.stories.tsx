@@ -13,7 +13,7 @@ import {
 } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/Combobox",
+  title: "Combobox",
 }
 
 export default meta

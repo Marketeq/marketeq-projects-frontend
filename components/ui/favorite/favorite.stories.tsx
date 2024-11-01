@@ -2,7 +2,7 @@ import { Meta } from "@storybook/react"
 import { Favorite } from "./favorite"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/Favorite",
+  title: "Favorite",
 }
 
 export default meta

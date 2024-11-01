@@ -19,7 +19,7 @@ import { Meta, StoryObj } from "@storybook/react"
 import { Button } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/Buttons/Button",
+  title: "Buttons/Button",
   component: Button,
   argTypes: {
     children: {

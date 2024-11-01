@@ -3,7 +3,7 @@ import { Meta, StoryObj } from "@storybook/react"
 import { Avatar, AvatarFallback, AvatarImage, Badge } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/Badge",
+  title: "Badge",
   component: Badge,
   argTypes: {
     visual: {

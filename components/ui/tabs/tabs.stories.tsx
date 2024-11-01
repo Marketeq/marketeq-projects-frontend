@@ -3,7 +3,7 @@ import { Meta, StoryObj } from "@storybook/react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/Tabs",
+  title: "Tabs",
   component: Tabs,
   parameters: {
     design: [

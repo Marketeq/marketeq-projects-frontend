@@ -38,7 +38,7 @@ import {
 } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/CommandPalette",
+  title: "CommandPalette",
 }
 
 export default meta

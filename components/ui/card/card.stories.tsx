@@ -112,7 +112,7 @@ import {
 } from "./version-card"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/Card",
+  title: "Card",
 }
 
 export default meta

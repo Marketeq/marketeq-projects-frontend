@@ -2,7 +2,7 @@ import { Meta, StoryObj } from "@storybook/react"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/Breadcrumb",
+  title: "Breadcrumb",
   component: Breadcrumb,
   argTypes: {
     listClassName: {

@@ -3,7 +3,7 @@ import { Meta } from "@storybook/react"
 import { RoundedButton } from "./rounded-button"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/RoundedButton",
+  title: "RoundedButton",
   parameters: {
     layout: "centered",
   },

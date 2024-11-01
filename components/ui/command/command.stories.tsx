@@ -22,7 +22,7 @@ import {
 } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/Command",
+  title: "Command",
   parameters: {
     layout: "centered",
     design: {

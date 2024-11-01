@@ -7,7 +7,7 @@ import {
 } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/PinInput",
+  title: "PinInput",
   argTypes: {
     size: {
       control: "select",

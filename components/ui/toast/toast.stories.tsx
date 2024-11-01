@@ -4,7 +4,7 @@ import { Toaster } from "./toaster"
 import { useToast } from "./use-toast"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/Toast",
+  title: "Toast",
 }
 
 export default meta

@@ -16,7 +16,7 @@ import {
 } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/AvatarGroup",
+  title: "AvatarGroup",
   component: AvatarGroup,
   argTypes: {
     size: {

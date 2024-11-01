@@ -8,7 +8,7 @@ import {
 } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/RadioGroup",
+  title: "RadioGroup",
   component: RadioGroup,
   argTypes: {
     disabled: {

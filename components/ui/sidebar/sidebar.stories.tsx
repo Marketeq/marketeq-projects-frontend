@@ -120,7 +120,7 @@ import {
 } from "./sidebar"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/Sidebar",
+  title: "Sidebar",
   parameters: {
     design: {
       type: "figma",

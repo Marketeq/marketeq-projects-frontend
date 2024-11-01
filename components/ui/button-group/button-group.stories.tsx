@@ -12,7 +12,7 @@ import { Meta, StoryObj } from "@storybook/react"
 import { Button, ButtonGroup } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/ButtonGroup",
+  title: "ButtonGroup",
   component: ButtonGroup,
   parameters: {
     design: {

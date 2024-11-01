@@ -2,7 +2,7 @@ import { Meta, StoryObj } from "@storybook/react"
 import { ErrorMessage, HelperText, Label, Textarea } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/Textarea",
+  title: "Textarea",
   component: Textarea,
   argTypes: {
     isInvalid: {

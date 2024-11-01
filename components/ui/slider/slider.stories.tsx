@@ -7,7 +7,7 @@ import {
 } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/Slider",
+  title: "Slider",
 }
 
 export default meta

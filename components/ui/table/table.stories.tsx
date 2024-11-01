@@ -51,7 +51,7 @@ import {
 } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/Table",
+  title: "Table",
   parameters: {
     design: {
       type: "figma",

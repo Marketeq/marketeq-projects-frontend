@@ -2,7 +2,7 @@ import { Meta } from "@storybook/react"
 import { DatePicker } from "./date-picker"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/DatePicker",
+  title: "DatePicker",
 }
 
 export default meta

@@ -68,7 +68,7 @@ import {
 } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/Dialog",
+  title: "Dialog",
   parameters: {
     design: {
       type: "figma",

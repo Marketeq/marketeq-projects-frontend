@@ -2,7 +2,9 @@
 
 import * as React from "react"
 import { SVGProps } from "react"
-import { cn } from "@/utils/functions"
+import { cn, getId, getIsEmpty, getIsNotEmpty } from "@/utils/functions"
+import { useControllableState, useUncontrolledState } from "@/utils/hooks"
+import { useEditable } from "@ark-ui/react"
 import {
   AlertCircle,
   ArrowRight,
@@ -28,6 +30,7 @@ import {
   X,
 } from "@blend-metrics/icons"
 import { InstagramDefault } from "@blend-metrics/icons/social"
+import { useMount, useToggle } from "react-use"
 import { Pagination } from "swiper/modules"
 import { Swiper as SwiperRoot, SwiperSlide } from "swiper/react"
 import { Swiper } from "swiper/types"
@@ -41,13 +44,26 @@ import {
   AvatarImage,
   Badge,
   Button,
+  Checkbox,
   CircularProgress,
+  Dialog,
+  DialogContent,
+  EditableRootProvider,
   IconButton,
   Progress,
+  ScrollArea,
+  ScrollBar,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
+} from "@/components/ui"
+import {
+  EditableArea,
+  EditableInput,
+  EditableLabel,
+  EditablePreview,
+  EditableRoot,
 } from "@/components/ui"
 
 const MoneyDollarCircleFill = ({
@@ -120,7 +136,7 @@ const WalletBold = ({ className, ...props }: SVGProps<SVGSVGElement>) => {
 
 const LeftSidebar = () => {
   return (
-    <div className="w-[224px] flex-none border-r space-y-6 border-gray-200 p-[15px]">
+    <div className="w-[224px] shrink-0 min-[1024px]:block hidden border-r space-y-6 border-gray-200 p-[15px]">
       <div className="flex flex-col gap-y-2">
         <span className="inline-block text-xs leading-5 font-medium text-dark-blue-400">
           Work
@@ -211,147 +227,330 @@ const LeftSidebar = () => {
   )
 }
 
-const RightSidebar = () => {
+const RightSidebar = ({ className }: { className?: string }) => {
   return (
-    <div className="w-[322px] flex-none border-l bg-white border-gray-200 divide-y divide-[#122A4B]/[.15]">
-      <div className="p-5">
-        <h1 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
-          @chrisdesign221
-        </h1>
-        <Button
-          className="underline text-dark-blue-400 hover:text-primary-500"
-          visual="gray"
-          size="md"
-          variant="link"
-        >
-          Add your job title
-        </Button>
+    <div
+      className={cn(
+        "w-[322px] shrink-0 border-l min-[1440px]:block hidden bg-white border-gray-200",
+        className
+      )}
+    >
+      <ScrollArea scrollBar={<ScrollBar className="w-4 p-1" />}>
+        <div className="divide-y divide-[#122A4B]/[.15]">
+          <div className="p-5">
+            <h1 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
+              @chrisdesign221
+            </h1>
+            <Button
+              className="underline text-dark-blue-400 hover:text-primary-500"
+              visual="gray"
+              size="md"
+              variant="link"
+            >
+              Add your job title
+            </Button>
 
-        <div className="mt-3 flex items-center gap-x-3">
-          <div className="px-2 py-1 inline-flex items-center gap-x-1 rounded-[4px] text-xs leading-[14.52px] font-medium text-gray-500 bg-gray-200 shadow-[0px_0.75px_1.51px_0px_rgba(16,24,40,.05)]">
-            <Star className="size-3" /> 0.0
+            <div className="mt-3 flex items-center gap-x-3">
+              <div className="px-2 py-1 inline-flex items-center gap-x-1 rounded-[4px] text-xs leading-[14.52px] font-medium text-gray-500 bg-gray-200 shadow-[0px_0.75px_1.51px_0px_rgba(16,24,40,.05)]">
+                <Star className="size-3" /> 0.0
+              </div>
+
+              <span className="size-xs leading-[14.52px] text-dark-blue-400">
+                no reviews yet
+              </span>
+            </div>
           </div>
 
-          <span className="size-xs leading-[14.52px]">no reviews yet</span>
-        </div>
-      </div>
+          <div className="p-5 flex flex-col items-start gap-y-3">
+            <CircularProgress
+              className="text-gray-700"
+              strokeWidth={6}
+              size={50}
+              value={10}
+            />
 
-      <div className="p-5 flex flex-col items-start gap-y-3">
-        <CircularProgress
-          className="text-gray-700"
-          strokeWidth={6}
-          size={50}
-          value={10}
-        />
+            <div className="gap-y-2 flex items-start flex-col">
+              <Button
+                className="underline text-dark-blue-400 hover:text-primary-500"
+                visual="gray"
+                size="md"
+                variant="link"
+              >
+                Complete Your Profile
+              </Button>
 
-        <div className="gap-y-2 flex items-start flex-col">
-          <Button
-            className="underline text-dark-blue-400 hover:text-primary-500"
-            visual="gray"
-            size="md"
-            variant="link"
-          >
-            Complete Your Profile
-          </Button>
+              <span className="text-[13px] leading-[15.73px] font-light">
+                Talents with complete profiles are 4 times more likely to get
+                hired for client projects.
+              </span>
+            </div>
+          </div>
 
-          <span className="text-[13px] leading-[15.73px] font-light">
-            Talents with complete profiles are 4 times more likely to get hired
-            for client projects.
-          </span>
-        </div>
-      </div>
+          <div className="p-5">
+            <div className="flex gap-x-[5px] items-center">
+              <ThumbsUp className="size-[15px]" />
+              <span className="text-[11px] leading-6 font-semibold text-dark-blue-400">
+                0% Client Success
+              </span>
+            </div>
+          </div>
 
-      <div className="p-5">
-        <div className="flex gap-x-[5px] items-center">
-          <ThumbsUp className="size-[15px]" />
-          <span className="text-[11px] leading-6 font-semibold text-dark-blue-400">
-            0% Client Success
-          </span>
-        </div>
-      </div>
+          <div className="p-5 space-y-3">
+            <div className="flex gap-x-[5px] items-center">
+              <MapPin className="size-[15px]" />
+              <NextLink
+                href="#"
+                className="text-[11px] leading-6 font-semibold text-dark-blue-400 underline hover:text-primary-500"
+              >
+                Add your location
+              </NextLink>
+            </div>
+            <div className="flex gap-x-[5px] items-center">
+              <Clock className="size-[15px]" />
+              <NextLink
+                href="#"
+                className="text-[11px] leading-6 font-semibold text-dark-blue-400 underline hover:text-primary-500"
+              >
+                Add your local time
+              </NextLink>
+            </div>
+          </div>
 
-      <div className="p-5 space-y-3">
-        <div className="flex gap-x-[5px] items-center">
-          <MapPin className="size-[15px]" />
-          <NextLink
-            href="#"
-            className="text-[11px] leading-6 font-semibold text-dark-blue-400 underline hover:text-primary-500"
-          >
-            Add your location
-          </NextLink>
-        </div>
-        <div className="flex gap-x-[5px] items-center">
-          <Clock className="size-[15px]" />
-          <NextLink
-            href="#"
-            className="text-[11px] leading-6 font-semibold text-dark-blue-400 underline hover:text-primary-500"
-          >
-            Add your local time
-          </NextLink>
-        </div>
-      </div>
+          <div className="p-5 grid grid-cols-2 gap-x-[15px] gap-y-3">
+            <div className="flex flex-col items-start gap-y-[5px]">
+              <span className="inline-block text-sm leading-[16.94px] text-dark-blue-400">
+                Hourly Rate
+              </span>
+              <Button
+                className="text-[11px] leading-6 text-dark-blue-400 underline hover:text-primary-500"
+                visual="gray"
+                variant="link"
+              >
+                Edit
+              </Button>
+            </div>
+            <div className="flex flex-col items-start gap-y-[5px]">
+              <span className="inline-block text-sm leading-[16.94px] text-dark-blue-400">
+                Availability
+              </span>
+              <Button
+                className="text-[11px] leading-6 text-dark-blue-400 underline hover:text-primary-500"
+                visual="gray"
+                variant="link"
+              >
+                Edit
+              </Button>
+            </div>
+            <div className="flex flex-col items-start gap-y-[5px]">
+              <span className="inline-block text-sm leading-[16.94px] text-dark-blue-400">
+                Member since
+              </span>
+              <span className="text-[11px] leading-6 text-dark-blue-400 font-semibold">
+                Sep 2024
+              </span>
+            </div>
+            <div className="flex flex-col items-start gap-y-[5px]">
+              <span className="inline-block text-sm leading-[16.94px] text-dark-blue-400">
+                Hourly Rate
+              </span>
+              <Button
+                className="text-[11px] leading-6 text-dark-blue-400 underline hover:text-primary-500"
+                visual="gray"
+                variant="link"
+              >
+                Edit
+              </Button>
+            </div>
+          </div>
 
-      <div className="p-5 grid grid-cols-2 gap-x-[15px] gap-y-3">
-        <div className="flex flex-col items-start gap-y-[5px]">
-          <span className="inline-block text-sm leading-[16.94px] text-dark-blue-400">
-            Hourly Rate
-          </span>
-          <Button
-            className="text-[11px] leading-6 text-dark-blue-400 underline hover:text-primary-500"
-            visual="gray"
-            variant="link"
-          >
-            Edit
-          </Button>
+          <Tasks />
         </div>
-        <div className="flex flex-col items-start gap-y-[5px]">
-          <span className="inline-block text-sm leading-[16.94px] text-dark-blue-400">
-            Availability
-          </span>
-          <Button
-            className="text-[11px] leading-6 text-dark-blue-400 underline hover:text-primary-500"
-            visual="gray"
-            variant="link"
-          >
-            Edit
-          </Button>
-        </div>
-        <div className="flex flex-col items-start gap-y-[5px]">
-          <span className="inline-block text-sm leading-[16.94px] text-dark-blue-400">
-            Member since
-          </span>
-          <span className="text-[11px] leading-6 text-dark-blue-400 font-semibold">
-            Sep 2024
-          </span>
-        </div>
-        <div className="flex flex-col items-start gap-y-[5px]">
-          <span className="inline-block text-sm leading-[16.94px] text-dark-blue-400">
-            Hourly Rate
-          </span>
-          <Button
-            className="text-[11px] leading-6 text-dark-blue-400 underline hover:text-primary-500"
-            visual="gray"
-            variant="link"
-          >
-            Edit
-          </Button>
-        </div>
-      </div>
-      <div className="p-5 flex flex-col items-start gap-y-5">
-        <FileCheck02 className="size-[49.9px] *:stroke-1 text-primary-100" />
-        <div className="space-y-3">
-          <h1 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
-            Start building your to-do list
-          </h1>
-          <p className="text-sm leading-[16.94px] font-light text-dark-blue-400">
-            Here’s where your tasks will show up once you create them.
-          </p>
-        </div>
-        <Button className="text-sm leading-6" visual="gray" variant="outlined">
-          <Plus className="size-[15px]" /> Add a Task
-        </Button>
-      </div>
+      </ScrollArea>
     </div>
+  )
+}
+
+const Editable = ({
+  onChange,
+  defaultValue = "",
+}: {
+  onChange?: (value: string) => void
+  defaultValue?: string
+}) => {
+  const editable = useEditable({ placeholder: "Task" })
+  useMount(() => editable.edit())
+
+  const onValueCommit = ({ value }: { value: string }) => {
+    onChange?.(value)
+  }
+
+  return (
+    <EditableRootProvider value={editable}>
+      <EditableRoot
+        defaultValue={defaultValue}
+        placeholder="Task"
+        onValueCommit={onValueCommit}
+      >
+        <EditableLabel>Task</EditableLabel>
+        <EditableArea>
+          <EditableInput />
+          <EditablePreview />
+        </EditableArea>
+      </EditableRoot>
+    </EditableRootProvider>
+  )
+}
+
+interface Task {
+  id: string | number
+  done: boolean
+  task: string
+}
+
+const Tasks = () => {
+  const [tasks, setTasks] = React.useState<Task[]>([])
+
+  const addTask = () => {
+    setTasks((prev) => [...prev, { id: getId(), task: "", done: false }])
+  }
+
+  const onDoneChange = ({ id, done }: { id: Task["id"]; done: boolean }) => {
+    setTasks((prev) =>
+      prev.reduce(
+        (previousValue, currentValue) =>
+          currentValue.id === id
+            ? [...previousValue, { ...currentValue, done }]
+            : [...previousValue, currentValue],
+        [] as Task[]
+      )
+    )
+  }
+
+  const onEditableChange = ({
+    value,
+    id,
+  }: {
+    value: string
+    id: Task["id"]
+  }) => {
+    setTasks((prev) =>
+      prev.reduce(
+        (previousValue, currentValue) =>
+          currentValue.id === id
+            ? [...previousValue, { ...currentValue, task: value }]
+            : [...previousValue, currentValue],
+        [] as Task[]
+      )
+    )
+  }
+
+  const undoneTasks = tasks.filter((task) => !task.done)
+
+  const completedTasks = tasks.filter((task) => task.done)
+
+  return (
+    <>
+      {getIsEmpty(tasks) ? (
+        <div className="p-5 flex flex-col items-start gap-y-5">
+          <FileCheck02 className="size-[49.9px] *:stroke-1 text-primary-100" />
+          <div className="space-y-3">
+            <h1 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
+              Start building your to-do list
+            </h1>
+            <p className="text-sm leading-[16.94px] font-light text-dark-blue-400">
+              Here’s where your tasks will show up once you create them.
+            </p>
+          </div>
+          <Button
+            className="text-sm leading-6"
+            visual="gray"
+            variant="outlined"
+            onClick={addTask}
+          >
+            <Plus className="size-[15px]" /> Add a Task
+          </Button>
+        </div>
+      ) : (
+        <div className="p-5 space-y-6">
+          <div className="flex items-center gap-x-2">
+            <span className="text-sm leading-[16.94px] inline-block font-bold text-dark-blue-400">
+              To Do
+            </span>
+
+            <Badge
+              visual="primary"
+              className="rounded-full text-[10px] leading-[18px] font-bold size-[22px] p-0"
+            >
+              {undoneTasks.length}
+            </Badge>
+          </div>
+
+          {getIsNotEmpty(undoneTasks) && (
+            <ul className="space-y-2">
+              {undoneTasks.map((task) => (
+                <li className="flex items-center gap-x-5" key={task.id}>
+                  <Checkbox
+                    variant="circular"
+                    checked={task.done}
+                    onCheckedChange={() =>
+                      onDoneChange({ id: task.id, done: true })
+                    }
+                  />
+                  <Editable
+                    defaultValue={task.task}
+                    onChange={(value) =>
+                      onEditableChange({ value, id: task.id })
+                    }
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <Button
+            variant="outlined"
+            className="text-dark-blue-400"
+            onClick={addTask}
+          >
+            <Plus className="size-[15px]" /> Add Task
+          </Button>
+        </div>
+      )}
+
+      {getIsNotEmpty(completedTasks) && (
+        <div className="p-5 pt-8 space-y-6">
+          <div className="flex items-center gap-x-2">
+            <span className="text-sm leading-[16.94px] inline-block font-bold text-dark-blue-400">
+              Completed
+            </span>
+
+            <Badge
+              visual="primary"
+              className="rounded-full text-[10px] leading-[18px] font-bold size-[22px] p-0"
+            >
+              {completedTasks.length}
+            </Badge>
+          </div>
+
+          <ul className="space-y-2">
+            {completedTasks.map((task) => (
+              <li className="flex items-center gap-x-5" key={task.id}>
+                <Checkbox
+                  variant="circular"
+                  checked={task.done}
+                  onCheckedChange={() =>
+                    onDoneChange({ id: task.id, done: false })
+                  }
+                />
+                <span className="text-sm font-medium leading-5  text-dark-blue-400">
+                  {task.task}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </>
   )
 }
 
@@ -464,19 +663,40 @@ const StarsBFill = ({ className, ...props }: SVGProps<SVGSVGElement>) => {
 
 export default function TalentDashboard() {
   const [carousel, setCarousel] = React.useState<Swiper>()
-
+  const [isOpen, toggleIsOpen] = useToggle(false)
   return (
-    <div className="flex gap-x-8">
+    <div className="flex bg-gray-50">
       <LeftSidebar />
-      <div className="flex-auto pt-5 px-[150px]">
-        <div className="max-w-[1010px] w-full mx-auto">
-          <div className="flex items-end justify-between">
-            <h1 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
-              Welcome, Christopher!
-            </h1>
+      <div className="flex-auto pt-6 md:pt-5 px-6 md:px-8 xl:px-[82px] 2xl:px-[180px] overflow-hidden">
+        <div className="max-w-[1010px] mx-auto">
+          <div className="md:contents flex flex-col gap-y-5">
+            <div className="flex items-end justify-between">
+              <h1 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
+                Welcome, Christopher!
+              </h1>
+
+              <div className="contents md:flex min-[768px]:flex-row-reverse min-[1024px]:flex-row items-center gap-x-3">
+                <Button
+                  className="min-[1440px]:hidden inline-flex"
+                  variant="light"
+                  onClick={toggleIsOpen}
+                >
+                  My Profile
+                </Button>
+
+                <Button
+                  className="bg-white text-dark-blue-400 xs:max-md:hidden"
+                  variant="outlined"
+                  visual="gray"
+                >
+                  <Plus className="size-[15px]" />
+                  Create a Project
+                </Button>
+              </div>
+            </div>
 
             <Button
-              className="bg-white text-dark-blue-400"
+              className="bg-white text-dark-blue-400 md:hidden"
               variant="outlined"
               visual="gray"
             >
@@ -485,15 +705,15 @@ export default function TalentDashboard() {
             </Button>
           </div>
 
-          <div className="mt-5">
+          <div className="mt-3 md:mt-5">
             <div className="rounded-lg p-5 bg-white border border-gray-200 shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
               <h1 className="text-lg leading-[21.78px] font-bold text-dark-blue-400">
                 My Earnings
               </h1>
 
-              <div className="divide-x-[0.76px] flex mt-5 divide-gray-200">
-                <div className="flex-auto flex">
-                  <div className="space-y-3">
+              <div className="divide-y-[.76px] md:divide-y-0 md:divide-x-[0.76px] flex md:flex-row flex-col mt-5 divide-gray-200">
+                <div className="flex-auto md:flex xs:max-md:py-5">
+                  <div className="space-y-[17.41px]">
                     <div className="flex gap-x-[6.75px]">
                       <MoneyDollarCircleFill className="flex-none text-dark-blue-400" />
                       <span className="text-sm leading-[16.94px] text-dark-blue-400">
@@ -506,7 +726,7 @@ export default function TalentDashboard() {
                         <span className="text-xl leading-6 text-dark-blue-400/50">
                           $
                         </span>
-                        <h1 className="text-4xl leading-[29.05px] font-semibold text-dark-blue-400">
+                        <h1 className="text-2xl leading-[29.05px] font-semibold text-dark-blue-400">
                           66,777
                           <span className="text-sm leading-[16.94px] text-dark-blue-400">
                             .00
@@ -525,8 +745,8 @@ export default function TalentDashboard() {
                   </div>
                 </div>
 
-                <div className="flex-auto flex justify-center">
-                  <div className="space-y-3">
+                <div className="flex-auto md:flex md:justify-center xs:max-md:py-5">
+                  <div className="space-y-[17.41px]">
                     <div className="flex gap-x-[6.75px] ">
                       <CalendarBold className="flex-none text-dark-blue-400" />
                       <span className="text-sm leading-[16.94px] text-dark-blue-400">
@@ -539,7 +759,7 @@ export default function TalentDashboard() {
                         <span className="text-xl leading-6 text-dark-blue-400/50">
                           $
                         </span>
-                        <h1 className="text-4xl leading-[29.05px] font-semibold text-dark-blue-400">
+                        <h1 className="text-2xl leading-[29.05px] font-semibold text-dark-blue-400">
                           4,566
                           <span className="text-sm leading-[16.94px] text-dark-blue-400">
                             .00
@@ -552,18 +772,18 @@ export default function TalentDashboard() {
                       </p>
                     </div>
 
-                    <h3 className="text-[13px] leading-[15.73px] text-dark-blue-400">
-                      <span className="text-success-500 inline-flex items-center gap-x-1">
-                        <ArrowUp className="size-[14.39px]" />
-                        12.8%
-                      </span>{" "}
-                      from last month
+                    <h3 className="text-[13px] leading-[15.73px] flex items-center gap-x-1 text-dark-blue-400">
+                      <ArrowUp className="size-[14.39px] shrink-0 text-success-500" />
+                      <span>
+                        <span className="text-success-500">12.8%</span> from
+                        last month
+                      </span>
                     </h3>
                   </div>
                 </div>
 
-                <div className="flex-auto flex justify-end">
-                  <div className="space-y-3">
+                <div className="flex-auto md:flex md:justify-end xs:max-md:pt-5">
+                  <div className="space-y-[14.68px]">
                     <div className="flex items-center justify-between">
                       <div className="flex gap-x-[6.75px] ">
                         <WalletBold className="flex-none text-dark-blue-400" />
@@ -572,19 +792,22 @@ export default function TalentDashboard() {
                         </span>
                       </div>
 
-                      <Button className="text-dark-blue-400" variant="link">
-                        Manage bank info
+                      <Button
+                        className="text-dark-blue-400 text-[10px] leading-5 underline hover:text-primary-500"
+                        variant="link"
+                      >
+                        See all payouts
                       </Button>
                     </div>
 
-                    <div className="flex items-center gap-x-[75px] justify-between">
+                    <div className="flex items-center md:gap-x-[25px] min-[1024px]:gap-x-[30px] min-[1440px]:gap-x-[37px] xl:gap-x-[57px] 2xl:gap-x-[75px] justify-between">
                       <div className="space-y-2.5">
                         <div className="flex gap-x-1 items-center">
                           <div className="flex items-center gap-x-0.5">
                             <span className="text-xl leading-6 text-dark-blue-400/50">
                               $
                             </span>
-                            <h1 className="text-4xl leading-[29.05px] font-semibold text-dark-blue-400">
+                            <h1 className="text-2xl leading-[29.05px] font-semibold text-dark-blue-400">
                               800
                               <span className="text-sm leading-[16.94px] text-dark-blue-400">
                                 .00
@@ -592,7 +815,7 @@ export default function TalentDashboard() {
                             </h1>
                           </div>
 
-                          <Badge visual="success">Processing</Badge>
+                          <Badge visual="primary">Processing</Badge>
                         </div>
 
                         <p className="text-[11px] leading-[13.31px] text-dark-blue-400">
@@ -601,7 +824,7 @@ export default function TalentDashboard() {
                       </div>
 
                       <Button
-                        className="bg-white text-dark-blue-400"
+                        className="bg-white h-7 px-2.5 text-[10px] leading-5 text-dark-blue-400"
                         variant="outlined"
                         visual="gray"
                       >
@@ -609,10 +832,10 @@ export default function TalentDashboard() {
                       </Button>
                     </div>
 
-                    <div className="flex items-center gap-x-[75px] justify-between">
-                      <div className="flex items-center gap-x-[5.52px]">
+                    <div className="flex items-center md:gap-x-[25px] min-[1024px]:gap-x-[30px] min-[1440px]:gap-x-[37px] xl:gap-x-[57px] 2xl:gap-x-[75px] justify-between">
+                      <div className="flex items-center gap-x-1.5">
                         <BankLine className="text-dark-blue-400" />
-                        <h3 className="text-[13px] leading-[15.73px] text-dark-blue-400">
+                        <h3 className="text-[13px] inline-flex items-center gap-x-2 leading-[15.73px] text-dark-blue-400">
                           Chase Bank
                           <span className="text-[13px] leading-[15.73px] font-semibold">
                             ...4553
@@ -620,7 +843,10 @@ export default function TalentDashboard() {
                         </h3>
                       </div>
 
-                      <Button className="text-dark-blue-400" variant="link">
+                      <Button
+                        className="text-dark-blue-400 text-[10px] leading-5 underline hover:text-primary-500"
+                        variant="link"
+                      >
                         Manage bank info
                       </Button>
                     </div>
@@ -630,7 +856,7 @@ export default function TalentDashboard() {
             </div>
           </div>
 
-          <div className="mt-5">
+          <div className="mt-3 md:mt-5">
             <div className="border bg-white border-gray-200 rounded-lg shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
               <div className="flex justify-between items-start pt-5 px-6">
                 <h1 className="text-lg leading-[21.78px] font-bold text-dark-blue-400">
@@ -638,7 +864,7 @@ export default function TalentDashboard() {
                 </h1>
 
                 <Button
-                  className="text-dark-blue-400"
+                  className="text-dark-blue-400 xs:max-md:hidden"
                   variant="link"
                   visual="gray"
                 >
@@ -647,7 +873,7 @@ export default function TalentDashboard() {
               </div>
 
               <Tabs className="mt-1" defaultValue="All Projects">
-                <TabsList className="px-6">
+                <TabsList className="px-6 w-full justify-start">
                   <TabsTrigger className="pb-[11px]" value="All Projects">
                     All Projects
                   </TabsTrigger>
@@ -655,294 +881,290 @@ export default function TalentDashboard() {
                     Created by Me
                   </TabsTrigger>
                 </TabsList>
-                <TabsContent value="All Projects">
-                  <div className="flex items-center">
-                    <div className="h-11 px-6 flex items-center flex-1 border-b border-gray-200">
-                      <span className="text-xs leading-[18px] font-medium text-dark-blue-400">
-                        Project Name
-                      </span>
-                    </div>
-                    <div className="h-11 px-6 flex items-center flex-1 border-b border-gray-200">
-                      <span className="text-xs leading-[18px] font-medium text-dark-blue-400">
-                        Team
-                      </span>
-                    </div>
-                    <div className="h-11 px-6 flex items-center flex-1 border-b border-gray-200">
-                      <span className="text-xs leading-[18px] font-medium text-dark-blue-400">
-                        Status
-                      </span>
-                    </div>
-                    <div className="h-11 px-6 flex items-center flex-1 border-b border-gray-200">
-                      <span className="text-xs leading-[18px] font-medium text-dark-blue-400">
-                        Next Milestone
-                      </span>
-                    </div>
-                  </div>
+                <TabsContent className="overflow-x-hidden" value="All Projects">
+                  <div className="overflow-x-auto scrollbar-none">
+                    <table className="table-auto border-collapse w-full">
+                      <thead>
+                        <tr>
+                          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
+                            Project Name
+                          </th>
+                          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
+                            Team
+                          </th>
+                          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
+                            Status
+                          </th>
+                          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
+                            Next Milestone
+                          </th>
+                        </tr>
+                      </thead>
 
-                  <div className="py-3">
-                    <div className="flex items-center">
-                      <div className="px-6 flex-1 h-12 items-center flex">
-                        <span className="text-sm leading-5 font-semibold text-dark-blue-400 inline-block whitespace-nowrap">
-                          Website Redesign for EcoCo
-                        </span>
-                      </div>
-                      <div className="px-6 flex-1 h-12 items-center flex">
-                        <AvatarGroup excess size="sm">
-                          <Avatar
-                            className="border-2 border-white hover:ring-0 active:ring-0"
-                            size="sm"
-                          >
-                            <AvatarImage src="/woman.jpg" alt="Woman" />
-                            <AvatarFallback>W</AvatarFallback>
-                          </Avatar>
-                          <Avatar
-                            className="border-2 border-white hover:ring-0 active:ring-0"
-                            size="sm"
-                          >
-                            <AvatarImage src="/woman.jpg" alt="Woman" />
-                            <AvatarFallback>W</AvatarFallback>
-                          </Avatar>
-                        </AvatarGroup>
-                      </div>
-                      <div className="px-6 flex-1 h-12 items-center flex">
-                        <Badge visual="success">In Progress</Badge>
-                      </div>
-                      <div className="pl-6 pr-8 flex gap-x-14 items-center justify-between flex-1 h-12">
-                        <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
-                          Jan 6, 2024
-                        </span>
-                        <Button
-                          className="h-auto px-1.5 py-1 text-dark-blue-400"
-                          visual="gray"
-                          variant="ghost"
-                        >
-                          <MoreHorizontal className="size-[15px]" />
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="px-6 flex-1 h-12 items-center flex">
-                        <span className="text-sm leading-5 font-semibold text-dark-blue-400 inline-block whitespace-nowrap">
-                          Mobile Design for ADO
-                        </span>
-                      </div>
-                      <div className="px-6 flex-1 h-12 items-center flex">
-                        <AvatarGroup excess size="sm" max={3}>
-                          <Avatar
-                            className="border-2 border-white hover:ring-0 active:ring-0"
-                            size="sm"
-                          >
-                            <AvatarImage src="/woman.jpg" alt="Woman" />
-                            <AvatarFallback>W</AvatarFallback>
-                          </Avatar>
-                          <Avatar
-                            className="border-2 border-white hover:ring-0 active:ring-0"
-                            size="sm"
-                          >
-                            <AvatarImage src="/woman.jpg" alt="Woman" />
-                            <AvatarFallback>W</AvatarFallback>
-                          </Avatar>
-                          <Avatar
-                            className="border-2 border-white hover:ring-0 active:ring-0"
-                            size="sm"
-                          >
-                            <AvatarImage src="/woman.jpg" alt="Woman" />
-                            <AvatarFallback>W</AvatarFallback>
-                          </Avatar>
-                          <Avatar
-                            className="border-2 border-white hover:ring-0 active:ring-0"
-                            size="sm"
-                          >
-                            <AvatarImage src="/woman.jpg" alt="Woman" />
-                            <AvatarFallback>W</AvatarFallback>
-                          </Avatar>
-                        </AvatarGroup>
-                      </div>
-                      <div className="px-6 flex-1 h-12 items-center flex">
-                        <Badge visual="success">In Progress</Badge>
-                      </div>
-                      <div className="pl-6 pr-8 flex gap-x-14 items-center justify-between flex-1 h-12">
-                        <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
-                          Jan 6, 2024
-                        </span>
-                        <Button
-                          className="h-auto px-1.5 py-1 text-dark-blue-400"
-                          visual="gray"
-                          variant="ghost"
-                        >
-                          <MoreHorizontal className="size-[15px]" />
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="px-6 flex-1 h-12 items-center flex">
-                        <span className="text-sm leading-5 font-semibold text-dark-blue-400 inline-block whitespace-nowrap">
-                          FitLife Sales Funnel
-                        </span>
-                      </div>
-                      <div className="px-6 flex-1 h-12 items-center flex">
-                        <AvatarGroup excess size="sm" max={3}>
-                          <Avatar
-                            className="border-2 border-white hover:ring-0 active:ring-0"
-                            size="sm"
-                          >
-                            <AvatarImage src="/woman.jpg" alt="Woman" />
-                            <AvatarFallback>W</AvatarFallback>
-                          </Avatar>
-                          <Avatar
-                            className="border-2 border-white hover:ring-0 active:ring-0"
-                            size="sm"
-                          >
-                            <AvatarImage src="/woman.jpg" alt="Woman" />
-                            <AvatarFallback>W</AvatarFallback>
-                          </Avatar>
-                          <Avatar
-                            className="border-2 border-white hover:ring-0 active:ring-0"
-                            size="sm"
-                          >
-                            <AvatarImage src="/woman.jpg" alt="Woman" />
-                            <AvatarFallback>W</AvatarFallback>
-                          </Avatar>
-                        </AvatarGroup>
-                      </div>
-                      <div className="px-6 flex-1 h-12 items-center flex">
-                        <Badge visual="gray">Pending Approval</Badge>
-                      </div>
-                      <div className="pl-6 pr-8 flex gap-x-14 items-center justify-between flex-1 h-12">
-                        <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
-                          Jan 6, 2024
-                        </span>
-                        <Button
-                          className="h-auto px-1.5 py-1 text-dark-blue-400"
-                          visual="gray"
-                          variant="ghost"
-                        >
-                          <MoreHorizontal className="size-[15px]" />
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="px-6 flex-1 h-12 items-center flex">
-                        <span className="text-sm leading-5 font-semibold text-dark-blue-400 inline-block whitespace-nowrap">
-                          FashionHub Store
-                        </span>
-                      </div>
-                      <div className="px-6 flex-1 h-12 items-center flex">
-                        <AvatarGroup excess size="sm" max={3}>
-                          <Avatar
-                            className="border-2 border-white hover:ring-0 active:ring-0"
-                            size="sm"
-                          >
-                            <AvatarImage src="/woman.jpg" alt="Woman" />
-                            <AvatarFallback>W</AvatarFallback>
-                          </Avatar>
-                          <Avatar
-                            className="border-2 border-white hover:ring-0 active:ring-0"
-                            size="sm"
-                          >
-                            <AvatarImage src="/woman.jpg" alt="Woman" />
-                            <AvatarFallback>W</AvatarFallback>
-                          </Avatar>
-                          <Avatar
-                            className="border-2 border-white hover:ring-0 active:ring-0"
-                            size="sm"
-                          >
-                            <AvatarImage src="/woman.jpg" alt="Woman" />
-                            <AvatarFallback>W</AvatarFallback>
-                          </Avatar>
-                          <Avatar
-                            className="border-2 border-white hover:ring-0 active:ring-0"
-                            size="sm"
-                          >
-                            <AvatarImage src="/woman.jpg" alt="Woman" />
-                            <AvatarFallback>W</AvatarFallback>
-                          </Avatar>
-                        </AvatarGroup>
-                      </div>
-                      <div className="px-6 flex-1 h-12 items-center flex">
-                        <Badge visual="success">In Progress</Badge>
-                      </div>
-                      <div className="pl-6 pr-8 flex gap-x-14 items-center justify-between flex-1 h-12">
-                        <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
-                          Jan 6, 2024
-                        </span>
-                        <Button
-                          className="h-auto px-1.5 py-1 text-dark-blue-400"
-                          visual="gray"
-                          variant="ghost"
-                        >
-                          <MoreHorizontal className="size-[15px]" />
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="px-6 flex-1 h-12 items-center flex">
-                        <span className="text-sm leading-5 font-semibold text-dark-blue-400 inline-block whitespace-nowrap">
-                          Referrizer Website
-                        </span>
-                      </div>
-                      <div className="px-6 flex-1 h-12 items-center flex">
-                        <AvatarGroup excess size="sm" max={3}>
-                          <Avatar
-                            className="border-2 border-white hover:ring-0 active:ring-0"
-                            size="sm"
-                          >
-                            <AvatarImage src="/woman.jpg" alt="Woman" />
-                            <AvatarFallback>W</AvatarFallback>
-                          </Avatar>
-                          <Avatar
-                            className="border-2 border-white hover:ring-0 active:ring-0"
-                            size="sm"
-                          >
-                            <AvatarImage src="/woman.jpg" alt="Woman" />
-                            <AvatarFallback>W</AvatarFallback>
-                          </Avatar>
-                          <Avatar
-                            className="border-2 border-white hover:ring-0 active:ring-0"
-                            size="sm"
-                          >
-                            <AvatarImage src="/woman.jpg" alt="Woman" />
-                            <AvatarFallback>W</AvatarFallback>
-                          </Avatar>
-                          <Avatar
-                            className="border-2 border-white hover:ring-0 active:ring-0"
-                            size="sm"
-                          >
-                            <AvatarImage src="/woman.jpg" alt="Woman" />
-                            <AvatarFallback>W</AvatarFallback>
-                          </Avatar>
-                          <Avatar
-                            className="border-2 border-white hover:ring-0 active:ring-0"
-                            size="sm"
-                          >
-                            <AvatarImage src="/woman.jpg" alt="Woman" />
-                            <AvatarFallback>W</AvatarFallback>
-                          </Avatar>
-                        </AvatarGroup>
-                      </div>
-                      <div className="px-6 flex-1 h-12 items-center flex">
-                        <Badge visual="gray">Pending Approval</Badge>
-                      </div>
-                      <div className="pl-6 pr-8 flex gap-x-14 items-center justify-between flex-1 h-12">
-                        <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
-                          Jan 6, 2024
-                        </span>
-                        <Button
-                          className="h-auto px-1.5 py-1 text-dark-blue-400"
-                          visual="gray"
-                          variant="ghost"
-                        >
-                          <MoreHorizontal className="size-[15px]" />
-                        </Button>
-                      </div>
-                    </div>
+                      <tbody>
+                        <tr className="first:pt-3 last:pb-3">
+                          <td className="px-6 py-3.5 text-sm leading-5 font-semibold text-dark-blue-400 inline-block truncate">
+                            Website Redesign for EcoCo
+                          </td>
+                          <td className="px-6 py-2">
+                            <AvatarGroup excess size="sm" max={3}>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                            </AvatarGroup>
+                          </td>
+                          <td className="px-6 py-[13px] items-center">
+                            <Badge visual="success">In Progress</Badge>
+                          </td>
+                          <td className="pl-6 pr-8 py-3.5">
+                            <div className="gap-x-14 flex items-center justify-between">
+                              <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
+                                Jan 6, 2024
+                              </span>
+                              <Button
+                                className="h-auto px-1.5 py-1 text-dark-blue-400"
+                                visual="gray"
+                                variant="ghost"
+                              >
+                                <MoreHorizontal className="size-[15px]" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr className="first:pt-3 last:pb-3">
+                          <td className="px-6 py-3.5 text-sm leading-5 font-semibold text-dark-blue-400 inline-block truncate">
+                            Mobile Design for ADO
+                          </td>
+                          <td className="px-6 py-2">
+                            <AvatarGroup excess size="sm" max={3}>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                            </AvatarGroup>
+                          </td>
+                          <td className="px-6 py-[13px] items-center">
+                            <Badge visual="success">In Progress</Badge>
+                          </td>
+                          <td className="pl-6 pr-8 py-3.5">
+                            <div className="gap-x-14 flex items-center justify-between">
+                              <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
+                                Jan 6, 2024
+                              </span>
+                              <Button
+                                className="h-auto px-1.5 py-1 text-dark-blue-400"
+                                visual="gray"
+                                variant="ghost"
+                              >
+                                <MoreHorizontal className="size-[15px]" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr className="first:pt-3 last:pb-3">
+                          <td className="px-6 py-3.5 text-sm leading-5 font-semibold text-dark-blue-400 inline-block truncate">
+                            FitLife Sales Funnel
+                          </td>
+                          <td className="px-6 py-2">
+                            <AvatarGroup excess size="sm" max={3}>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                            </AvatarGroup>
+                          </td>
+                          <td className="px-6 py-[13px] items-center">
+                            <Badge visual="gray">Pending Approval</Badge>
+                          </td>
+                          <td className="pl-6 pr-8 py-3.5">
+                            <div className="gap-x-14 flex items-center justify-between">
+                              <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
+                                Jan 6, 2024
+                              </span>
+                              <Button
+                                className="h-auto px-1.5 py-1 text-dark-blue-400"
+                                visual="gray"
+                                variant="ghost"
+                              >
+                                <MoreHorizontal className="size-[15px]" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr className="first:pt-3 last:pb-3">
+                          <td className="px-6 py-3.5 text-sm leading-5 font-semibold text-dark-blue-400 inline-block truncate">
+                            FashionHub Store
+                          </td>
+                          <td className="px-6 py-2">
+                            <AvatarGroup excess size="sm" max={3}>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                            </AvatarGroup>
+                          </td>
+                          <td className="px-6 py-[13px] items-center">
+                            <Badge visual="success">In Progress</Badge>
+                          </td>
+                          <td className="pl-6 pr-8 py-3.5">
+                            <div className="gap-x-14 flex items-center justify-between">
+                              <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
+                                Jan 6, 2024
+                              </span>
+                              <Button
+                                className="h-auto px-1.5 py-1 text-dark-blue-400"
+                                visual="gray"
+                                variant="ghost"
+                              >
+                                <MoreHorizontal className="size-[15px]" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr className="first:pt-3 last:pb-3">
+                          <td className="px-6 py-3.5 text-sm leading-5 font-semibold text-dark-blue-400 inline-block truncate">
+                            Referrizer Website
+                          </td>
+                          <td className="px-6 py-2">
+                            <AvatarGroup excess size="sm" max={3}>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                            </AvatarGroup>
+                          </td>
+                          <td className="px-6 py-[13px]">
+                            <Badge visual="gray">Pending Approval</Badge>
+                          </td>
+                          <td className="pl-6 pr-8 py-3.5">
+                            <div className="gap-x-14 flex items-center justify-between">
+                              <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
+                                Jan 6, 2024
+                              </span>
+                              <Button
+                                className="h-auto px-1.5 py-1 text-dark-blue-400"
+                                visual="gray"
+                                variant="ghost"
+                              >
+                                <MoreHorizontal className="size-[15px]" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="h-[49px] flex items-center md:hidden justify-center border-t border-gray-200">
+                    <Button className="text-dark-blue-400" variant="link">
+                      View All Projects <ArrowRight className="size-3.5" />
+                    </Button>
                   </div>
                 </TabsContent>
               </Tabs>
             </div>
           </div>
 
-          <div className="mt-5 bg-white shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)] border rounded-lg border-gray-200 p-5 grid grid-cols-2 gap-x-[100px]">
+          <div className="mt-3 md:mt-5 bg-white shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)] border rounded-lg border-gray-200 p-5 flex flex-col-reverse md:grid md:grid-cols-2 gap-5 min-[1024px]:gap-x-[100px]">
             <div>
               <div className="space-y-6">
                 <h1 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
@@ -952,7 +1174,7 @@ export default function TalentDashboard() {
                 <Progress value={20} />
 
                 <div>
-                  <h3 className="text-base leading-[19.36px] text-dark-blue-400">
+                  <h3 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
                     Create Your Own Projects
                   </h3>
                   <p className="text-sm leading-[16.94px] mt-3 text-dark-blue-400">
@@ -963,7 +1185,7 @@ export default function TalentDashboard() {
                 </div>
               </div>
 
-              <div className="mt-[49px] flex flex-col items-start gap-y-3">
+              <div className="mt-5 min-[1024px]:mt-[49px] flex flex-col items-start gap-y-3">
                 <div className="flex items-center gap-x-3">
                   <Button
                     className="text-dark-blue-400"
@@ -993,10 +1215,10 @@ export default function TalentDashboard() {
               </div>
             </div>
 
-            <div className="bg-[#122A4B]/[.04] rounded-lg"></div>
+            <div className="bg-[#122A4B]/[.04] rounded-lg xs:max-md:h-[140px]"></div>
           </div>
 
-          <div className="mt-5">
+          <div className="mt-3 md:mt-5">
             <div className="p-5 border bg-white border-gray-200 rounded-lg shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
               <div className="flex justify-between items-start">
                 <div className="space-y-2">
@@ -1028,7 +1250,12 @@ export default function TalentDashboard() {
                 <TabsContent value="Projects">
                   <div className="mt-3 relative isolate">
                     <SwiperRoot
-                      slidesPerView={3}
+                      slidesPerView={1}
+                      breakpoints={{
+                        768: {
+                          slidesPerView: 3,
+                        },
+                      }}
                       spaceBetween={12}
                       onInit={setCarousel}
                     >
@@ -1407,7 +1634,7 @@ export default function TalentDashboard() {
             </div>
           </div>
 
-          <div className="mt-5 p-5 bg-white rounded-lg border border-gray-200 shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
+          <div className="mt-3 md:mt-5 p-5 bg-white rounded-lg border border-gray-200 shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
             <h1 className="text-lg leading-[21.78px] font-bold text-dark-blue-400">
               Become a top seller on Marketeq in just a few steps
             </h1>
@@ -1416,7 +1643,7 @@ export default function TalentDashboard() {
               promoting your work, and sharpening your skills.
             </p>
 
-            <div className="mt-5 grid grid-cols-3 gap-x-8">
+            <div className="mt-5 grid md:grid-cols-3 gap-[30px] md:gap-5 min-[1024px]:gap-8">
               <article>
                 <Edit04 className="text-primary-200" />
                 <div className="mt-5">
@@ -1483,7 +1710,7 @@ export default function TalentDashboard() {
             </div>
           </div>
 
-          <div className="mt-5">
+          <div className="mt-3 md:mt-5 border border-gray-200 shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)] bg-white rounded-lg">
             <SwiperRoot
               pagination={{
                 clickable: true,
@@ -1491,7 +1718,7 @@ export default function TalentDashboard() {
               modules={[Pagination]}
             >
               <SwiperSlide>
-                <div className="p-5 grid grid-cols-2 rounded-lg border border-gray-200 shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)] bg-white gap-x-[50px]">
+                <div className="p-5 pb-[50px] grid md:grid-cols-2 gap-5 md:gap-x-[50px]">
                   <div>
                     <h1 className="text-lg leading-[21.78px] font-bold text-dark-blue-400">
                       “Marketeq University provided me with the tools and
@@ -1524,7 +1751,7 @@ export default function TalentDashboard() {
                     </div>
                   </div>
 
-                  <div className="py-[37px]">
+                  <div className="md:py-[37px]">
                     <div className="flex gap-x-5">
                       <Avatar size="2xl">
                         <AvatarImage src="/woman.jpg" alt="Woman" />
@@ -1578,7 +1805,7 @@ export default function TalentDashboard() {
                 </div>
               </SwiperSlide>
               <SwiperSlide>
-                <div className="p-5 grid grid-cols-2 rounded-lg border border-gray-200 shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)] bg-white gap-x-[50px]">
+                <div className="p-5 pb-[50px] grid md:grid-cols-2 rounded-lg gap-5 md:gap-x-[50px]">
                   <div>
                     <h1 className="text-lg leading-[21.78px] font-bold text-dark-blue-400">
                       “Marketeq University provided me with the tools and
@@ -1611,7 +1838,7 @@ export default function TalentDashboard() {
                     </div>
                   </div>
 
-                  <div className="py-[37px]">
+                  <div className="md:py-[37px]">
                     <div className="flex gap-x-5">
                       <Avatar size="2xl">
                         <AvatarImage src="/man.jpg" alt="Man" />
@@ -1667,7 +1894,7 @@ export default function TalentDashboard() {
             </SwiperRoot>
           </div>
 
-          <div className="mt-5 p-[50px] rounded-lg border bg-white border-gray-200 shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
+          <div className="mt-3 md:mt-5 p-5 md:p-[50px] rounded-lg border bg-white border-gray-200 shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
             <div className="max-w-[561px] mx-auto">
               <h1 className="text-[22px] text-center leading-[26.63px] text-dark-blue-400 font-bold">
                 Take your careers to the next level
@@ -1678,7 +1905,7 @@ export default function TalentDashboard() {
               </p>
             </div>
 
-            <div className="mt-[50px] grid grid-cols-2 gap-x-5 items-end">
+            <div className="mt-5 md:mt-[50px] grid md:grid-cols-2 gap-5 items-end">
               <article className="rounded-xl border border-gray-200">
                 <div className="bg-primary-25 border-b rounded-t-xl py-1 border-gray-200 flex justify-center items-center gap-x-2.5">
                   <StarsBFill className="size-6 text-primary-500" />
@@ -1803,9 +2030,11 @@ export default function TalentDashboard() {
             </div>
           </div>
 
-          <div className="mt-5 px-6 pb-5 flex items-start justify-between">
-            <div className="flex items-center gap-x-[57px]">
-              <Logo3 className="shrink-0 w-[120px] h-[17.63px]" />
+          <div className="mt-3 md:mt-5 px-5 xs:max-md:pt-5 md:px-6 pb-5 flex flex-col md:flex-row items-center gap-5 md:justify-between">
+            <div className="flex md:flex-row flex-col items-center gap-5 md:gap-x-[57px]">
+              <NextLink className="focus-visible:outline-none" href="/">
+                <Logo3 className="shrink-0 w-[120px] h-[17.63px]" />
+              </NextLink>
               <span className="text-[13px] leading-[15.73px] font-light text-dark-blue-400">
                 © 2011 - 2025 Marketeq Digital Inc. All Rights Reserved.
               </span>
@@ -1844,6 +2073,21 @@ export default function TalentDashboard() {
           </div>
         </div>
       </div>
+
+      <Dialog open={isOpen} onOpenChange={toggleIsOpen}>
+        <DialogContent
+          variant="unanimated"
+          className="w-[322px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:slide-in-from-right-1/2 data-[state=closed]:slide-out-to-right-1/2 right-0 inset-y-0"
+        >
+          <button
+            className="size-[28px] -left-3.5 absolute top-[104px] text-gray-500 focus-visible:outline-none rounded-full bg-white inline-flex border border-gray-300 items-center justify-center shrink-0"
+            onClick={toggleIsOpen}
+          >
+            <ChevronRight className="size-3" />
+          </button>
+          <RightSidebar className="xs:max-[1440px]:block" />
+        </DialogContent>
+      </Dialog>
 
       <RightSidebar />
     </div>

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/Dropzone",
+  title: "Dropzone",
   parameters: {
     design: [
       {

@@ -33,7 +33,7 @@ import {
 } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/DropdownMenu",
+  title: "DropdownMenu",
   component: DropdownMenu,
 }
 

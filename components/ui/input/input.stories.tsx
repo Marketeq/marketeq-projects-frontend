@@ -19,7 +19,7 @@ import {
 } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/Input",
+  title: "Input",
   component: Input,
   argTypes: {
     disabled: {

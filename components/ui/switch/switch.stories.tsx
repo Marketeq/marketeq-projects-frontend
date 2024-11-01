@@ -2,7 +2,7 @@ import { Meta, StoryObj } from "@storybook/react"
 import { HelperText, Label, Switch } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/Switch",
+  title: "Switch",
   component: Switch,
   argTypes: {
     size: {

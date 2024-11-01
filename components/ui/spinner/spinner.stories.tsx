@@ -2,7 +2,7 @@ import { Meta, StoryObj } from "@storybook/react"
 import { Spinner, SpinnerPositioner } from "./spinner"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/Spinner",
+  title: "Spinner",
   argTypes: {
     value: {
       control: {

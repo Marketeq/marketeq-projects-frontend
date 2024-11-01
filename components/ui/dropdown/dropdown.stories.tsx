@@ -15,7 +15,7 @@ import {
 } from "@/components/ui"
 
 const meta: Meta = {
-  title: "Marketeq-Projects/Dropdown",
+  title: "Dropdown",
 }
 
 export default meta
