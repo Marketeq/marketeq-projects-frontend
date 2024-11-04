@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { cn } from "@/utils/functions"
-import { ChevronRight } from "@blend-metrics/icons"
+import { ChevronLeft, ChevronRight } from "@blend-metrics/icons"
 import { Swiper as SwiperRoot, SwiperSlide } from "swiper/react"
 import { Swiper } from "swiper/types"
 import { Blocks1 } from "@/components/blocks-1"
@@ -99,6 +99,15 @@ const FavoriteProjects = () => {
       </div>
 
       <div className="relative mt-5 lg:mt-[42px]">
+        {controller?.allowSlidePrev && (
+          <button
+            className="xs:max-lg:hidden focus-visible:outline-none absolute inset-y-0 my-auto -left-[71px] text-gray-300 hover:text-gray-500"
+            onClick={() => controller?.slidePrev()}
+          >
+            <ChevronLeft className="size-[55px]" />
+          </button>
+        )}
+
         <SwiperRoot
           slidesPerView={1}
           breakpoints={{
@@ -135,12 +144,14 @@ const FavoriteProjects = () => {
           </SwiperSlide>
         </SwiperRoot>
 
-        <button
-          className="xs:max-lg:hidden focus-visible:outline-none absolute inset-y-0 my-auto -right-[71px]"
-          onClick={() => controller?.slideNext()}
-        >
-          <ChevronRight className="size-[55px] text-gray-300" />
-        </button>
+        {controller?.allowSlideNext && (
+          <button
+            className="xs:max-lg:hidden focus-visible:outline-none absolute inset-y-0 my-auto -right-[71px] text-gray-300 hover:text-gray-500"
+            onClick={() => controller?.slideNext()}
+          >
+            <ChevronRight className="size-[55px]" />
+          </button>
+        )}
       </div>
 
       <div className="flex items-center mt-5 justify-center lg:hidden">
@@ -308,6 +319,14 @@ const OnlineSalesFunnels = () => {
       </div>
 
       <div className="relative mt-5 lg:mt-[42px]">
+        {controller?.allowSlidePrev && (
+          <button
+            className="xs:max-lg:hidden focus-visible:outline-none absolute inset-y-0 my-auto -left-[71px] text-gray-300 hover:text-gray-500"
+            onClick={() => controller?.slidePrev()}
+          >
+            <ChevronLeft className="size-[55px]" />
+          </button>
+        )}
         <SwiperRoot
           slidesPerView={1}
           breakpoints={{
@@ -343,12 +362,15 @@ const OnlineSalesFunnels = () => {
             <FavoriteProjectCard />
           </SwiperSlide>
         </SwiperRoot>
-        <button
-          className="xs:max-lg:hidden focus-visible:outline-none absolute inset-y-0 my-auto -right-[71px]"
-          onClick={() => controller?.slideNext()}
-        >
-          <ChevronRight className="size-[55px] text-gray-300" />
-        </button>
+
+        {controller?.allowSlideNext && (
+          <button
+            className="xs:max-lg:hidden focus-visible:outline-none absolute inset-y-0 my-auto -right-[71px] text-gray-300 hover:text-gray-500"
+            onClick={() => controller?.slideNext()}
+          >
+            <ChevronRight className="size-[55px]" />
+          </button>
+        )}
       </div>
       <div className="flex items-center mt-[29px] justify-center lg:hidden">
         <Button visual="gray" variant="ghost">
@@ -380,6 +402,15 @@ const CustomerServiceSolutions = () => {
       </div>
 
       <div className="relative mt-5 lg:mt-[42px]">
+        {controller?.allowSlidePrev && (
+          <button
+            className="xs:max-lg:hidden focus-visible:outline-none absolute inset-y-0 my-auto -left-[71px] text-gray-300 hover:text-gray-500"
+            onClick={() => controller?.slidePrev()}
+          >
+            <ChevronLeft className="size-[55px]" />
+          </button>
+        )}
+
         <SwiperRoot
           slidesPerView={1}
           breakpoints={{
@@ -416,12 +447,14 @@ const CustomerServiceSolutions = () => {
           </SwiperSlide>
         </SwiperRoot>
 
-        <button
-          className="xs:max-lg:hidden focus-visible:outline-none absolute inset-y-0 my-auto -right-[71px]"
-          onClick={() => controller?.slideNext()}
-        >
-          <ChevronRight className="size-[55px] text-gray-300" />
-        </button>
+        {controller?.allowSlideNext && (
+          <button
+            className="xs:max-lg:hidden focus-visible:outline-none absolute inset-y-0 my-auto -right-[71px] text-gray-300 hover:text-gray-500"
+            onClick={() => controller?.slideNext()}
+          >
+            <ChevronRight className="size-[55px]" />
+          </button>
+        )}
       </div>
       <div className="flex items-center mt-[29px] justify-center lg:hidden">
         <Button visual="gray" variant="ghost">
@@ -453,6 +486,15 @@ const MarketingAutomationCampaigns = () => {
       </div>
 
       <div className="relative mt-5 lg:mt-[42px]">
+        {controller?.allowSlidePrev && (
+          <button
+            className="xs:max-lg:hidden focus-visible:outline-none absolute inset-y-0 my-auto -left-[71px] text-gray-300 hover:text-gray-500"
+            onClick={() => controller?.slidePrev()}
+          >
+            <ChevronLeft className="size-[55px]" />
+          </button>
+        )}
+
         <SwiperRoot
           slidesPerView={1}
           breakpoints={{
@@ -489,12 +531,14 @@ const MarketingAutomationCampaigns = () => {
           </SwiperSlide>
         </SwiperRoot>
 
-        <button
-          className="xs:max-lg:hidden focus-visible:outline-none absolute inset-y-0 my-auto -right-[71px]"
-          onClick={() => controller?.slideNext()}
-        >
-          <ChevronRight className="size-[55px] text-gray-300" />
-        </button>
+        {controller?.allowSlideNext && (
+          <button
+            className="xs:max-lg:hidden focus-visible:outline-none absolute inset-y-0 my-auto -right-[71px] text-gray-300 hover:text-gray-500"
+            onClick={() => controller?.slideNext()}
+          >
+            <ChevronRight className="size-[55px]" />
+          </button>
+        )}
       </div>
       <div className="flex items-center mt-[29px] justify-center lg:hidden">
         <Button visual="gray" variant="ghost">

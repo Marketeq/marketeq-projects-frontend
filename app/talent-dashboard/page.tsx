@@ -2,8 +2,8 @@
 
 import * as React from "react"
 import { SVGProps } from "react"
+import { ONE_SECOND } from "@/utils/constants"
 import { cn, getId, getIsEmpty, getIsNotEmpty } from "@/utils/functions"
-import { useControllableState, useUncontrolledState } from "@/utils/hooks"
 import { useEditable } from "@ark-ui/react"
 import {
   AlertCircle,
@@ -26,15 +26,21 @@ import {
   Settings02,
   Star,
   ThumbsUp,
+  Trash01,
+  Trash02,
   UserCircle,
   X,
 } from "@blend-metrics/icons"
 import { InstagramDefault } from "@blend-metrics/icons/social"
-import { useMount, useToggle } from "react-use"
+import { GridVertical2 } from "@blend-metrics/icons/special"
+import { AnimatePresence, motion } from "framer-motion"
+import { useMount, useTimeoutFn, useToggle } from "react-use"
 import { Pagination } from "swiper/modules"
 import { Swiper as SwiperRoot, SwiperSlide } from "swiper/react"
 import { Swiper } from "swiper/types"
+import { ReorderGroup, ReorderItem } from "@/components/ui/reorder"
 import { Facebook, Linkedin, Logo, Logo3, XIcon } from "@/components/icons"
+import { GridVertical6 } from "@/components/icons/grid-vertical-6"
 import NextImage from "@/components/next-image"
 import NextLink from "@/components/next-link"
 import {
@@ -373,12 +379,19 @@ const RightSidebar = ({ className }: { className?: string }) => {
 const Editable = ({
   onChange,
   defaultValue = "",
+  placeholder,
 }: {
   onChange?: (value: string) => void
   defaultValue?: string
+  placeholder?: string
 }) => {
-  const editable = useEditable({ placeholder: "Task" })
-  useMount(() => editable.edit())
+  const editable = useEditable()
+  useTimeoutFn(
+    () => editable.edit(),
+
+    // After the initial animation is played for the default state of 'To Do'
+    300
+  )
 
   const onValueCommit = ({ value }: { value: string }) => {
     onChange?.(value)
@@ -388,10 +401,10 @@ const Editable = ({
     <EditableRootProvider value={editable}>
       <EditableRoot
         defaultValue={defaultValue}
-        placeholder="Task"
+        placeholder={placeholder}
         onValueCommit={onValueCommit}
       >
-        <EditableLabel>Task</EditableLabel>
+        <EditableLabel>{placeholder}</EditableLabel>
         <EditableArea>
           <EditableInput />
           <EditablePreview />
@@ -404,14 +417,30 @@ const Editable = ({
 interface Task {
   id: string | number
   done: boolean
-  task: string
+  value: string
 }
 
+const defaultTasks: Task[] = []
+
 const Tasks = () => {
-  const [tasks, setTasks] = React.useState<Task[]>([])
+  const [tasks, setTasks] = React.useState<Task[]>(defaultTasks)
+  const [shouldClearAll, toggleShouldClearAll] = useToggle(false)
+
+  React.useEffect(() => {
+    if (shouldClearAll) {
+      const timeoutId = setTimeout(() => {
+        setTasks((prev) => prev.filter((task) => !task.done))
+        toggleShouldClearAll(false)
+      }, ONE_SECOND * 6)
+
+      return () => {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [shouldClearAll, toggleShouldClearAll])
 
   const addTask = () => {
-    setTasks((prev) => [...prev, { id: getId(), task: "", done: false }])
+    setTasks((prev) => [...prev, { id: getId(), value: "", done: false }])
   }
 
   const onDoneChange = ({ id, done }: { id: Task["id"]; done: boolean }) => {
@@ -437,11 +466,14 @@ const Tasks = () => {
       prev.reduce(
         (previousValue, currentValue) =>
           currentValue.id === id
-            ? [...previousValue, { ...currentValue, task: value }]
+            ? [...previousValue, { ...currentValue, value }]
             : [...previousValue, currentValue],
         [] as Task[]
       )
     )
+  }
+  const onRemove = (id: Task["id"]) => {
+    setTasks((prev) => prev.filter((task) => task.id !== id))
   }
 
   const undoneTasks = tasks.filter((task) => !task.done)
@@ -450,106 +482,174 @@ const Tasks = () => {
 
   return (
     <>
-      {getIsEmpty(tasks) ? (
-        <div className="p-5 flex flex-col items-start gap-y-5">
-          <FileCheck02 className="size-[49.9px] *:stroke-1 text-primary-100" />
-          <div className="space-y-3">
-            <h1 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
-              Start building your to-do list
-            </h1>
-            <p className="text-sm leading-[16.94px] font-light text-dark-blue-400">
-              Here’s where your tasks will show up once you create them.
-            </p>
-          </div>
-          <Button
-            className="text-sm leading-6"
-            visual="gray"
-            variant="outlined"
-            onClick={addTask}
+      <AnimatePresence mode="wait">
+        {getIsEmpty(tasks) ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
           >
-            <Plus className="size-[15px]" /> Add a Task
-          </Button>
-        </div>
-      ) : (
-        <div className="p-5 space-y-6">
-          <div className="flex items-center gap-x-2">
-            <span className="text-sm leading-[16.94px] inline-block font-bold text-dark-blue-400">
-              To Do
-            </span>
+            <div className="p-5 flex flex-col items-start gap-y-5">
+              <FileCheck02 className="size-[49.9px] *:stroke-1 text-primary-100" />
+              <div className="space-y-3">
+                <h1 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
+                  Start building your to-do list
+                </h1>
+                <p className="text-sm leading-[16.94px] font-light text-dark-blue-400">
+                  Here’s where your tasks will show up once you create them.
+                </p>
+              </div>
+              <Button
+                className="text-sm leading-6"
+                visual="gray"
+                variant="outlined"
+                onClick={addTask}
+              >
+                <Plus className="size-[15px]" /> Add a Task
+              </Button>
+            </div>
+          </motion.div>
+        ) : (
+          <div className="p-5 space-y-6">
+            <div className="flex items-center gap-x-2">
+              <span className="text-sm leading-[16.94px] inline-block font-bold text-dark-blue-400">
+                To Do
+              </span>
 
-            <Badge
-              visual="primary"
-              className="rounded-full text-[10px] leading-[18px] font-bold size-[22px] p-0"
+              <Badge
+                visual="primary"
+                className="rounded-full text-[10px] leading-[18px] font-bold size-[22px] p-0"
+              >
+                {undoneTasks.length}
+              </Badge>
+            </div>
+
+            {getIsNotEmpty(undoneTasks) && (
+              <ReorderGroup
+                className="space-y-2"
+                values={tasks}
+                onReorder={setTasks}
+                axis="y"
+                as="ul"
+              >
+                {undoneTasks.map((task) => (
+                  <ReorderItem
+                    value={task}
+                    key={task.id}
+                    as="li"
+                    className="group relative flex items-start gap-x-[11px]"
+                  >
+                    {({ dragControls }) => (
+                      <>
+                        <button
+                          className="focus-visible:outline-none text-gray-950/50 hover:text-gray-950 mt-[6px]"
+                          onPointerDown={(event) => dragControls.start(event)}
+                        >
+                          <GridVertical6 className="size-3.5" />
+                        </button>
+
+                        <div className="flex flex-auto items-start gap-x-5">
+                          <Checkbox
+                            className="mt-[5px]"
+                            variant="circular"
+                            checked={task.done}
+                            onCheckedChange={() =>
+                              onDoneChange({ id: task.id, done: true })
+                            }
+                          />
+                          <Editable
+                            defaultValue={task.value}
+                            onChange={(value) =>
+                              onEditableChange({ value, id: task.id })
+                            }
+                            placeholder="Task"
+                          />
+
+                          <button
+                            className="group-hover:opacity-100 opacity-0 absolute right-0 top-[2.5px] focus-visible:outline-none text-error-500/50 hover:text-error-500"
+                            onClick={() => onRemove(task.id)}
+                          >
+                            <Trash01 className="size-[15px]" />
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </ReorderItem>
+                ))}
+              </ReorderGroup>
+            )}
+
+            <Button
+              variant="outlined"
+              className="text-dark-blue-400"
+              onClick={addTask}
             >
-              {undoneTasks.length}
-            </Badge>
+              <Plus className="size-[15px]" /> Add Task
+            </Button>
           </div>
+        )}
 
-          {getIsNotEmpty(undoneTasks) && (
-            <ul className="space-y-2">
-              {undoneTasks.map((task) => (
-                <li className="flex items-center gap-x-5" key={task.id}>
-                  <Checkbox
-                    variant="circular"
-                    checked={task.done}
-                    onCheckedChange={() =>
-                      onDoneChange({ id: task.id, done: true })
-                    }
-                  />
-                  <Editable
-                    defaultValue={task.task}
-                    onChange={(value) =>
-                      onEditableChange({ value, id: task.id })
-                    }
-                  />
-                </li>
-              ))}
-            </ul>
-          )}
-
-          <Button
-            variant="outlined"
-            className="text-dark-blue-400"
-            onClick={addTask}
+        {getIsNotEmpty(completedTasks) && (
+          <motion.div
+            className="p-5 pt-8 space-y-6"
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
           >
-            <Plus className="size-[15px]" /> Add Task
-          </Button>
-        </div>
-      )}
-
-      {getIsNotEmpty(completedTasks) && (
-        <div className="p-5 pt-8 space-y-6">
-          <div className="flex items-center gap-x-2">
-            <span className="text-sm leading-[16.94px] inline-block font-bold text-dark-blue-400">
-              Completed
-            </span>
-
-            <Badge
-              visual="primary"
-              className="rounded-full text-[10px] leading-[18px] font-bold size-[22px] p-0"
-            >
-              {completedTasks.length}
-            </Badge>
-          </div>
-
-          <ul className="space-y-2">
-            {completedTasks.map((task) => (
-              <li className="flex items-center gap-x-5" key={task.id}>
-                <Checkbox
-                  variant="circular"
-                  checked={task.done}
-                  onCheckedChange={() =>
-                    onDoneChange({ id: task.id, done: false })
-                  }
-                />
-                <span className="text-sm font-medium leading-5  text-dark-blue-400">
-                  {task.task}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-x-2">
+                <span className="text-sm leading-[16.94px] inline-block font-bold text-dark-blue-400">
+                  Completed
                 </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+
+                <Badge
+                  visual="primary"
+                  className="rounded-full text-[10px] leading-[18px] font-bold size-[22px] p-0"
+                >
+                  {shouldClearAll ? 0 : completedTasks.length}
+                </Badge>
+              </div>
+
+              <Button
+                variant="link"
+                visual="gray"
+                onClick={toggleShouldClearAll}
+              >
+                {shouldClearAll ? "Undo" : "Clear All"}
+              </Button>
+            </div>
+
+            {!shouldClearAll && (
+              <ul className="space-y-2">
+                {completedTasks.map((task) => (
+                  <li
+                    className="group relative flex items-center gap-x-5"
+                    key={task.id}
+                  >
+                    <Checkbox
+                      variant="circular"
+                      checked={task.done}
+                      onCheckedChange={() =>
+                        onDoneChange({ id: task.id, done: false })
+                      }
+                    />
+                    <span className="text-sm font-medium leading-5  text-dark-blue-400">
+                      {task.value}
+                    </span>
+
+                    <button
+                      className="group-hover:opacity-100 opacity-0 absolute right-0 top-[2.5px] focus-visible:outline-none text-error-500/50 hover:text-error-500"
+                      onClick={() => onRemove(task.id)}
+                    >
+                      <Trash01 className="size-[15px]" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }
@@ -1160,6 +1260,288 @@ export default function TalentDashboard() {
                     </Button>
                   </div>
                 </TabsContent>
+                <TabsContent
+                  className="overflow-x-hidden"
+                  value="Created by Me"
+                >
+                  <div className="overflow-x-auto scrollbar-none">
+                    <table className="table-auto border-collapse w-full">
+                      <thead>
+                        <tr>
+                          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
+                            Project Name
+                          </th>
+                          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
+                            Team
+                          </th>
+                          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
+                            Status
+                          </th>
+                          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
+                            Next Milestone
+                          </th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr className="first:pt-3 last:pb-3">
+                          <td className="px-6 py-3.5 text-sm leading-5 font-semibold text-dark-blue-400 inline-block truncate">
+                            Website Redesign for EcoCo
+                          </td>
+                          <td className="px-6 py-2">
+                            <AvatarGroup excess size="sm" max={3}>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                            </AvatarGroup>
+                          </td>
+                          <td className="px-6 py-[13px] items-center">
+                            <Badge visual="success">In Progress</Badge>
+                          </td>
+                          <td className="pl-6 pr-8 py-3.5">
+                            <div className="gap-x-14 flex items-center justify-between">
+                              <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
+                                Jan 6, 2024
+                              </span>
+                              <Button
+                                className="h-auto px-1.5 py-1 text-dark-blue-400"
+                                visual="gray"
+                                variant="ghost"
+                              >
+                                <MoreHorizontal className="size-[15px]" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr className="first:pt-3 last:pb-3">
+                          <td className="px-6 py-3.5 text-sm leading-5 font-semibold text-dark-blue-400 inline-block truncate">
+                            Mobile Design for ADO
+                          </td>
+                          <td className="px-6 py-2">
+                            <AvatarGroup excess size="sm" max={3}>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                            </AvatarGroup>
+                          </td>
+                          <td className="px-6 py-[13px] items-center">
+                            <Badge visual="success">In Progress</Badge>
+                          </td>
+                          <td className="pl-6 pr-8 py-3.5">
+                            <div className="gap-x-14 flex items-center justify-between">
+                              <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
+                                Jan 6, 2024
+                              </span>
+                              <Button
+                                className="h-auto px-1.5 py-1 text-dark-blue-400"
+                                visual="gray"
+                                variant="ghost"
+                              >
+                                <MoreHorizontal className="size-[15px]" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr className="first:pt-3 last:pb-3">
+                          <td className="px-6 py-3.5 text-sm leading-5 font-semibold text-dark-blue-400 inline-block truncate">
+                            FitLife Sales Funnel
+                          </td>
+                          <td className="px-6 py-2">
+                            <AvatarGroup excess size="sm" max={3}>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                            </AvatarGroup>
+                          </td>
+                          <td className="px-6 py-[13px] items-center">
+                            <Badge visual="gray">Pending Approval</Badge>
+                          </td>
+                          <td className="pl-6 pr-8 py-3.5">
+                            <div className="gap-x-14 flex items-center justify-between">
+                              <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
+                                Jan 6, 2024
+                              </span>
+                              <Button
+                                className="h-auto px-1.5 py-1 text-dark-blue-400"
+                                visual="gray"
+                                variant="ghost"
+                              >
+                                <MoreHorizontal className="size-[15px]" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr className="first:pt-3 last:pb-3">
+                          <td className="px-6 py-3.5 text-sm leading-5 font-semibold text-dark-blue-400 inline-block truncate">
+                            FashionHub Store
+                          </td>
+                          <td className="px-6 py-2">
+                            <AvatarGroup excess size="sm" max={3}>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                            </AvatarGroup>
+                          </td>
+                          <td className="px-6 py-[13px] items-center">
+                            <Badge visual="success">In Progress</Badge>
+                          </td>
+                          <td className="pl-6 pr-8 py-3.5">
+                            <div className="gap-x-14 flex items-center justify-between">
+                              <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
+                                Jan 6, 2024
+                              </span>
+                              <Button
+                                className="h-auto px-1.5 py-1 text-dark-blue-400"
+                                visual="gray"
+                                variant="ghost"
+                              >
+                                <MoreHorizontal className="size-[15px]" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr className="first:pt-3 last:pb-3">
+                          <td className="px-6 py-3.5 text-sm leading-5 font-semibold text-dark-blue-400 inline-block truncate">
+                            Referrizer Website
+                          </td>
+                          <td className="px-6 py-2">
+                            <AvatarGroup excess size="sm" max={3}>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                              <Avatar
+                                className="border-2 border-white hover:ring-0 active:ring-0"
+                                size="sm"
+                              >
+                                <AvatarImage src="/woman.jpg" alt="Woman" />
+                                <AvatarFallback>W</AvatarFallback>
+                              </Avatar>
+                            </AvatarGroup>
+                          </td>
+                          <td className="px-6 py-[13px]">
+                            <Badge visual="gray">Pending Approval</Badge>
+                          </td>
+                          <td className="pl-6 pr-8 py-3.5">
+                            <div className="gap-x-14 flex items-center justify-between">
+                              <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
+                                Jan 6, 2024
+                              </span>
+                              <Button
+                                className="h-auto px-1.5 py-1 text-dark-blue-400"
+                                visual="gray"
+                                variant="ghost"
+                              >
+                                <MoreHorizontal className="size-[15px]" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="h-[49px] flex items-center md:hidden justify-center border-t border-gray-200">
+                    <Button className="text-dark-blue-400" variant="link">
+                      View All Projects <ArrowRight className="size-3.5" />
+                    </Button>
+                  </div>
+                </TabsContent>
               </Tabs>
             </div>
           </div>
@@ -1250,14 +1632,10 @@ export default function TalentDashboard() {
                 <TabsContent value="Projects">
                   <div className="mt-3 relative isolate">
                     <SwiperRoot
-                      slidesPerView={1}
-                      breakpoints={{
-                        768: {
-                          slidesPerView: 3,
-                        },
-                      }}
+                      slidesPerView="auto"
                       spaceBetween={12}
                       onInit={setCarousel}
+                      className="avatar-carousel"
                     >
                       <SwiperSlide>
                         <article className="relative rounded-lg p-5 border border-[#122A4B]/[.15] shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">

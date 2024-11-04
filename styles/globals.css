@@ -74,3 +74,8 @@
 .react-international-phone-country-selector-dropdown__list-item-dial-code {
   @apply leading-5;
 }
+
+/* Avatars Carousel */
+.avatar-carousel .swiper-slide {
+  @apply w-[230px];
+}

@@ -11,6 +11,7 @@ import { NProgressBar } from "@/components/n-progress-bar"
 import { Toaster } from "@/components/ui"
 import "@/styles/globals.css"
 import "@/styles/nprogress.css"
+import { TopMostHeader } from "./top-most-header"
 
 export const metadata: Metadata = {
   title: "Marketeq",
@@ -30,7 +31,10 @@ export default function RootLayout({
   return (
     <html className={`scroll-smooth ${font.variable}`} lang="en">
       <body>
-        <div className="min-h-screen flex flex-col">{children}</div>
+        <div className="min-h-screen flex flex-col bg-[#F9FAFB]">
+          <TopMostHeader />
+          {children}
+        </div>
         <Suspense fallback={null}>
           <NProgressBar />
         </Suspense>
