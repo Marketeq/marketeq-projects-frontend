@@ -142,7 +142,7 @@ const WalletBold = ({ className, ...props }: SVGProps<SVGSVGElement>) => {
 
 const LeftSidebar = () => {
   return (
-    <div className="w-[224px] shrink-0 min-[1024px]:block hidden border-r space-y-6 border-gray-200 p-[15px]">
+    <div className="w-[224px] shrink-0 bg-gray-50 min-[1024px]:block fixed z-40 top-[62px] lg:top-[65px] left-0 bottom-0 hidden border-r space-y-6 border-gray-200 p-[15px]">
       <div className="flex flex-col gap-y-2">
         <span className="inline-block text-xs leading-5 font-medium text-dark-blue-400">
           Work
@@ -764,10 +764,11 @@ const StarsBFill = ({ className, ...props }: SVGProps<SVGSVGElement>) => {
 export default function TalentDashboard() {
   const [carousel, setCarousel] = React.useState<Swiper>()
   const [isOpen, toggleIsOpen] = useToggle(false)
+
   return (
     <div className="flex bg-gray-50">
       <LeftSidebar />
-      <div className="flex-auto pt-6 md:pt-5 px-6 md:px-8 xl:px-[82px] 2xl:px-[180px] overflow-hidden">
+      <div className="flex-auto pt-6 md:pt-5 px-6 md:px-8 min-[1024px]:pl-[256px] xl:px-[82px] xl:pl-[306px] 2xl:pr-[180px] 2xl:pl-[404px] overflow-hidden">
         <div className="max-w-[1010px] mx-auto">
           <div className="md:contents flex flex-col gap-y-5">
             <div className="flex items-end justify-between">

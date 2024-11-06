@@ -1,6 +1,8 @@
 "use client"
 
 import React, { useState } from "react"
+import { usePathname, useRouter } from "next/navigation"
+import { cn } from "@/utils/functions"
 import {
   BarChart2,
   Bell,
@@ -462,11 +464,12 @@ const people: People = [
 ]
 
 const SearchBar = () => {
-  const [state, setState] = useState(defaultValue)
-  const [selected, setSelected] =
-    React.useState<
-      { id: number; value: string; icon?: React.JSXElementConstructor<any> }[]
-    >()
+  const [state, setState] = useState<string>()
+  const [selected, setSelected] = React.useState<{
+    id: number
+    value: string
+    icon?: React.JSXElementConstructor<any>
+  }>()
   const [query, setQuery] = React.useState("")
 
   const filteredSuggestions =
@@ -485,20 +488,24 @@ const SearchBar = () => {
       className="group/root w-auto flex-auto"
       value={selected}
       onChange={setSelected}
-      multiple
     >
-      <ComboboxTrigger className="flex h-[34px] lg:h-10 rounded-[5px] items-center gap-x-3 border border-gray-300 ui-open:rounded-b-none py-[7px] lg:py-2 pl-2.5 pr-3 lg:px-3">
+      <ComboboxTrigger className="relative flex h-[34px] lg:h-10 rounded-[5px] items-center gap-x-3 border border-gray-300 ui-open:rounded-b-none py-[7px] lg:py-2 pl-2.5 pr-3 lg:px-3">
         <div className="flex items-center gap-x-2 flex-auto">
           <SearchMd className="size-4 shrink-0 text-gray-400" />
           <ComboboxInput
             placeholder="Search by skills or project type"
             className="p-0 border-0 text-xs leading-5 h-auto rounded-none hover:ring-0 hover:border-gray-300 focus:ring-0 focus:border-gray-300 ui-open:rounded-b-none"
             size="lg"
+            displayValue={(value: {
+              id: number
+              value: string
+              icon?: React.JSXElementConstructor<any>
+            }) => value.value}
             onChange={(event) => setQuery(event.target.value)}
           />
         </div>
         <span className="w-px h-4 shrink-0 inline-block bg-gray-200" />
-        <Listbox className="w-auto" value={selected} onChange={setSelected}>
+        <Listbox className="w-auto" value={state} onChange={setState}>
           <ListboxButton
             className="p-0 border-0 text-[11px] leading-[16.67px] lg:text-sm lg:leading-5 font-semibold gap-x-[6.67px] lg:gap-x-1.5 w-auto h-auto rounded-none hover:ring-0 focus:ring-0"
             placeholder="Category"
@@ -556,10 +563,18 @@ const SearchBar = () => {
   )
 }
 
+const TALENT_DASH = "/talent-dashboard"
+
 export const TopMostHeader = () => {
+  const pathname = usePathname()
   return (
-    <div className="px-3.5 md:px-6 lg:px-[50px] bg-white shadow-[0px_1px_3px_0px_rgba(16,24,40,.1)] flex flex-col">
-      <div className="flex items-center xs:max-md:pt-1 xs:max-md:pb-3.5 justify-between md:gap-x-3 lg:gap-x-[50px] md:pt-2 md:pb-0.5 lg:py-3">
+    <div
+      className={cn(
+        "px-3.5 md:px-6 lg:px-[50px] bg-white shadow-[0px_1px_3px_0px_rgba(16,24,40,.1)] flex flex-col xs:max-md:pt-1 xs:max-md:pb-3.5",
+        pathname === TALENT_DASH && "md:max-lg:pb-2.5 sticky top-0 z-50"
+      )}
+    >
+      <div className="flex items-center justify-between md:gap-x-3 lg:gap-x-[50px] md:pt-2 md:pb-1 lg:py-3">
         <NextLink className="focus-visible:outline-none" href="/marketplace">
           <Logo3 className="h-[14.25px] w-[97px] lg:w-[128px] lg:h-[18.81px]" />
         </NextLink>
