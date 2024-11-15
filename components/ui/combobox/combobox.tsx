@@ -90,6 +90,8 @@ export const comboboxInputVariants = cva("peer w-full rounded-[5px]", {
     visual: {
       default:
         "border border-gray-300 bg-white text-gray-900 placeholder:text-gray-500 hover:border-primary-200 hover:ring-4 hover:ring-primary-50 focus:border-primary-500 focus:ring-4 focus:ring-primary-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-50 hover:disabled:border-gray-300 hover:disabled:ring-0",
+      error:
+        "border border-error-300 bg-white text-gray-900 placeholder:text-gray-500 hover:border-error-300 hover:ring-4 hover:ring-error-100 focus:border-error-300 focus:ring-4 focus:ring-error-100 disabled:opacity-50 disabled:cursor-not-allowed disabled:border-error-300 disabled:bg-gray-50 hover:disabled:border-error-300 hover:disabled:ring-0",
       gray: "border-0 bg-gray-100 hover:bg-gray-200 text-gray-900 placeholder:text-gray-500 focus:bg-white focus:border focus:ring-4 focus:ring-primary-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-50 hover:disabled:border-gray-300 hover:disabled:ring-0",
     },
     size: {
@@ -118,12 +120,19 @@ interface ComboboxInputProps<T = any>
         open: boolean
         disabled: boolean
       }) => React.ReactElement<any, string | React.JSXElementConstructor<any>>)
+  invalid?: boolean
 }
 
 const ComboboxInput = React.forwardRef<HTMLInputElement, ComboboxInputProps>(
-  ({ className, visual, size, ...props }, ref) => (
+  ({ className, visual, size, invalid, ...props }, ref) => (
     <ComboboxPrimitive.Input
-      className={cn(comboboxInputVariants({ visual, size, className }))}
+      className={cn(
+        comboboxInputVariants({
+          visual: invalid ? "error" : visual,
+          size,
+          className,
+        })
+      )}
       {...props}
       ref={ref}
     />

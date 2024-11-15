@@ -62,4 +62,24 @@ const SliderThumb = React.forwardRef<
 
 SliderThumb.displayName = "SliderThumb"
 
-export { SliderRoot, SliderTrack, SliderThumb, SliderRange }
+const Slider = React.forwardRef<
+  React.ElementRef<typeof SliderPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>
+>(({ className, ...props }, ref) => (
+  <SliderPrimitive.Root
+    ref={ref}
+    className={cn(
+      "relative flex w-full flex-auto touch-none select-none items-center",
+      className
+    )}
+    {...props}
+  >
+    <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-gray-200">
+      <SliderPrimitive.Range className="absolute h-full" />
+    </SliderPrimitive.Track>
+    <SliderPrimitive.Thumb className="block h-6 w-6 rounded-full border border-gray-400 shadow-[0px_2px_4px_-2px_rgba(16,24,40,.06),0px_4px_8px_-2px_rgba(16,24,40,.1)] bg-white focus-visible:outline-none shrink-0" />
+  </SliderPrimitive.Root>
+))
+Slider.displayName = SliderPrimitive.Root.displayName
+
+export { SliderRoot, SliderTrack, SliderThumb, SliderRange, Slider }

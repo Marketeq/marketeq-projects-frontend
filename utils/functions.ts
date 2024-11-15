@@ -113,7 +113,7 @@ export function getIsEmpty<T extends any[] | string>(value?: T) {
   return len <= 0
 }
 
-export function getIsNotEmpty<T extends any[] | string>(value?: T) {
+export function getIsNotEmpty<T extends readonly any[] | string>(value?: T) {
   const len = Number(value?.length)
   return len > 0
 }
