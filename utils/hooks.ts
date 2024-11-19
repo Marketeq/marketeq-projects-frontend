@@ -5,6 +5,7 @@ import { useRef } from "react"
 import { NavigateOptions } from "next/dist/shared/lib/app-router-context.shared-runtime"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useRouter as useRouterNavigation } from "next/navigation"
+import { Steps, useStepper as useHeadlessStepper } from "headless-stepper"
 import nProgress from "nprogress"
 import { useMedia, useMount } from "react-use"
 import { addEvent, getSize, isElement } from "./dom-utils"
@@ -705,4 +706,55 @@ export const useSize = <T extends Element>() => {
   }, [])
 
   return [ref, size] as const
+}
+
+export const useStepper = ({
+  steps,
+  currentStep,
+  orientation,
+}: {
+  steps: Steps[]
+  currentStep?: number
+  orientation?: "horizontal" | "vertical"
+}) => {
+  const [stepsState, setStepsState] = React.useState(steps)
+  const {
+    stepperProps: stepTriggerControlProps,
+    stepsProps: stepTriggersProps,
+    ...rest
+  } = useHeadlessStepper({
+    steps: stepsState,
+    currentStep,
+    orientation,
+  })
+
+  const toggleStepValidation = React.useCallback(
+    (index: number) => (isValid: boolean) => {
+      setStepsState((steps) => {
+        const nextStep = index + 1
+        const isNotValid = !isValid
+
+        return steps.map((step, stepIndex) => {
+          if (stepIndex === index) {
+            return { ...step, isValid }
+          } else if (stepIndex === nextStep && isValid) {
+            return { ...step, disabled: false }
+          } else if (stepIndex > index && isNotValid) {
+            return { ...step, disabled: true }
+          }
+
+          return step
+        })
+      })
+    },
+    [setStepsState]
+  )
+
+  return {
+    ...rest,
+    stepTriggerControlProps,
+    stepTriggersProps,
+    toggleStepValidation,
+    stepsState,
+  }
 }

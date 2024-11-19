@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react"
+"use client"
+
+import React, { useEffect, useMemo, useState } from "react"
 import { HOT_KEYS } from "@/utils/constants"
-import { getIsNotEmpty, hookFormHasError } from "@/utils/functions"
-import { useControllableState, useUncontrolledState } from "@/utils/hooks"
+import { cn, getIsNotEmpty, hookFormHasError } from "@/utils/functions"
+import { useControllableState, useStepper } from "@/utils/hooks"
 import {
   AlertCircle,
   Briefcase02,
@@ -16,12 +18,18 @@ import {
 } from "@blend-metrics/icons"
 import { ErrorMessage as HookFormErrorMessage } from "@hookform/error-message"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Meta } from "@storybook/react"
-import { Controller, SubmitHandler, useForm } from "react-hook-form"
-import { useToggle } from "react-use"
+import { Steps } from "headless-stepper"
+import {
+  Controller,
+  SubmitHandler,
+  UseFormSetValue,
+  useForm,
+} from "react-hook-form"
+import { useIsomorphicLayoutEffect, useToggle } from "react-use"
 import { z } from "zod"
 import { Logo } from "@/components/icons"
 import { Pointer } from "@/components/icons/pointer"
+import NextLink from "@/components/next-link"
 import { Triangles } from "@/components/triangles"
 import {
   Alert,
@@ -45,16 +53,15 @@ import {
   Label,
   ScaleOutIn,
   ScrollArea,
+  Step,
+  StepControl,
+  StepRootProvider,
+  StepperProvider,
+  buttonVariants,
+  useStepContext,
+  useStepRootContext,
+  useStepperContext,
 } from "@/components/ui"
-
-const meta: Meta = {
-  title: "Talent Onboarding",
-  parameters: {
-    layout: "fullscreen",
-  },
-}
-
-export default meta
 
 const introduceYourselfFormSchema = z.object({
   avatar: z
@@ -68,10 +75,10 @@ const introduceYourselfFormSchema = z.object({
 
 type IntroduceYourselfFormValues = z.infer<typeof introduceYourselfFormSchema>
 
-export const IntroduceYourself = () => {
+const IntroduceYourself = ({ sidebar }: { sidebar: React.ReactNode }) => {
   const {
     register,
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
     control,
   } = useForm<IntroduceYourselfFormValues>({
@@ -81,79 +88,28 @@ export const IntroduceYourself = () => {
       lastName: "",
     },
   })
+  const { toggleValidation } = useStepContext()
+  const { nextStep, setStep } = useStepperContext()
 
-  const onSubmit: SubmitHandler<IntroduceYourselfFormValues> = () => {}
+  useIsomorphicLayoutEffect(() => toggleValidation(isValid), [isValid])
+
+  const { totalSteps, currentStep } = useStepRootContext()
+
+  const progress = ((currentStep + 1) / totalSteps) * 100
+
+  const onSubmit: SubmitHandler<IntroduceYourselfFormValues> = () => {
+    nextStep()
+  }
+
+  const skip = () => {
+    toggleValidation(true)
+    const nextStepIndex = currentStep + 1
+    setStep(nextStepIndex)
+  }
 
   return (
-    <div className="min-h-screen flex">
-      <div className="relative p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
-        <Logo className="h-9 w-[245px] shrink-0" />
-
-        <div className="mt-[80px]">
-          <h1 className="text-[30px] leading-[36.31px] font-bold text-white">
-            The Future of Remote Work Is Here...
-          </h1>
-
-          <ul className="mt-[30px] space-y-5">
-            <li className="flex gap-x-3">
-              <Check className="size-7 shrink-0 text-primary-500" />
-
-              <div className="pt-[5px] space-y-1 flex-auto">
-                <h3 className="text-base leading-[19.36px] text-white font-bold">
-                  Find Tailored Projects
-                </h3>
-                <p className="text-sm leading-[16.94px] text-white">
-                  Discover curated matches to elevate your talent.
-                </p>
-              </div>
-            </li>
-            <li className="flex gap-x-3">
-              <Check className="size-7 shrink-0 text-primary-500" />
-
-              <div className="pt-[5px] space-y-1 flex-auto">
-                <h3 className="text-base leading-[19.36px] text-white font-bold">
-                  Connect with Ideal Teams
-                </h3>
-                <p className="text-sm leading-[16.94px] text-white">
-                  Collaborate with teams that align with your expertise.
-                </p>
-              </div>
-            </li>
-            <li className="flex gap-x-3">
-              <Check className="size-7 shrink-0 text-primary-500" />
-
-              <div className="pt-[5px] space-y-1 flex-auto">
-                <h3 className="text-base leading-[19.36px] text-white font-bold">
-                  Get Paid, Stress Free
-                </h3>
-                <p className="text-sm leading-[16.94px] text-white">
-                  Secure contracts. Fast, hassle-free payments every time.
-                </p>
-              </div>
-            </li>
-          </ul>
-        </div>
-
-        <Triangles className="absolute bottom-0 right-0" />
-
-        <div className="relative mt-auto flex flex-col gap-y-5">
-          <span className="text-base leading-[19.36px] text-white focus-visible:outline-none">
-            Already have an account?
-          </span>
-
-          <div className="relative self-start">
-            <Button
-              className="hover:bg-white hover:text-dark-blue-400 border-white/[.2] text-white hover:border-white"
-              size="lg"
-              visual="gray"
-              variant="outlined"
-            >
-              Sign In
-            </Button>
-            <Pointer className="absolute top-[34px] right-0 -rotate-6" />
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen flex pl-[450px]">
+      {sidebar}
 
       <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
         <div className="w-full max-w-[560px] mx-auto">
@@ -162,7 +118,7 @@ export const IntroduceYourself = () => {
               show={false}
               size={15.43}
               strokeWidth={2.5}
-              value={30}
+              value={progress}
             />
             <span className="text-[11px] leading-[15.43px] text-gray-700">
               STEP 1 / 5
@@ -297,12 +253,26 @@ export const IntroduceYourself = () => {
             </div>
 
             <div className="mt-[190px] flex items-center justify-between">
-              <Button size="md" variant="outlined" visual="gray" type="button">
+              <NextLink
+                className={cn(
+                  buttonVariants({
+                    size: "md",
+                    variant: "outlined",
+                    visual: "gray",
+                  })
+                )}
+                href="/onboarding"
+              >
                 Back
-              </Button>
+              </NextLink>
 
               <div className="flex items-center gap-x-10">
-                <Button variant="ghost" visual="gray" type="button">
+                <Button
+                  variant="ghost"
+                  visual="gray"
+                  type="button"
+                  onClick={skip}
+                >
                   Skip
                 </Button>
                 <Button size="md" visual="primary">
@@ -323,87 +293,46 @@ const createYourUsernameFormSchema = z.object({
 
 type CreateYourUsernameFormValues = z.infer<typeof createYourUsernameFormSchema>
 
-export const CreateYourUsername = () => {
+const CreateYourUsername = ({ sidebar }: { sidebar: React.ReactNode }) => {
   const [show, toggleShow] = useToggle(false)
   const {
-    formState: { errors },
+    formState: { errors, isValid },
     setValue,
     register,
     handleSubmit,
+    trigger,
   } = useForm<CreateYourUsernameFormValues>({
     resolver: zodResolver(createYourUsernameFormSchema),
   })
-  const onSubmit: SubmitHandler<CreateYourUsernameFormValues> = () => {}
+  const { toggleValidation } = useStepContext()
+  const { nextStep, prevStep, setStep } = useStepperContext()
+
+  useIsomorphicLayoutEffect(() => toggleValidation(isValid), [isValid])
+
+  const onSubmit: SubmitHandler<CreateYourUsernameFormValues> = () => {
+    nextStep()
+  }
+  const setFormValue: UseFormSetValue<CreateYourUsernameFormValues> = (
+    key,
+    value
+  ) => {
+    setValue(key, value)
+    trigger(key)
+  }
+
+  const { totalSteps, currentStep } = useStepRootContext()
+
+  const progress = ((currentStep + 1) / totalSteps) * 100
+
+  const skip = () => {
+    toggleValidation(true)
+    const nextStepIndex = currentStep + 1
+    setStep(nextStepIndex)
+  }
+
   return (
-    <div className="min-h-screen flex">
-      <div className="relative p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
-        <Logo className="h-9 w-[245px] shrink-0" />
-
-        <div className="mt-[80px]">
-          <h1 className="text-[30px] leading-[36.31px] font-bold text-white">
-            The Future of Remote Work Is Here...
-          </h1>
-
-          <ul className="mt-[30px] space-y-5">
-            <li className="flex gap-x-3">
-              <Check className="size-7 shrink-0 text-primary-500" />
-
-              <div className="pt-[5px] space-y-1 flex-auto">
-                <h3 className="text-base leading-[19.36px] text-white font-bold">
-                  Find Tailored Projects
-                </h3>
-                <p className="text-sm leading-[16.94px] text-white">
-                  Discover curated matches to elevate your talent.
-                </p>
-              </div>
-            </li>
-            <li className="flex gap-x-3">
-              <Check className="size-7 shrink-0 text-primary-500" />
-
-              <div className="pt-[5px] space-y-1 flex-auto">
-                <h3 className="text-base leading-[19.36px] text-white font-bold">
-                  Connect with Ideal Teams
-                </h3>
-                <p className="text-sm leading-[16.94px] text-white">
-                  Collaborate with teams that align with your expertise.
-                </p>
-              </div>
-            </li>
-            <li className="flex gap-x-3">
-              <Check className="size-7 shrink-0 text-primary-500" />
-
-              <div className="pt-[5px] space-y-1 flex-auto">
-                <h3 className="text-base leading-[19.36px] text-white font-bold">
-                  Get Paid, Stress Free
-                </h3>
-                <p className="text-sm leading-[16.94px] text-white">
-                  Secure contracts. Fast, hassle-free payments every time.
-                </p>
-              </div>
-            </li>
-          </ul>
-        </div>
-
-        <Triangles className="absolute bottom-0 right-0" />
-
-        <div className="relative mt-auto flex flex-col gap-y-5">
-          <span className="text-base leading-[19.36px] text-white focus-visible:outline-none">
-            Already have an account?
-          </span>
-
-          <div className="relative self-start">
-            <Button
-              className="hover:bg-white hover:text-dark-blue-400 border-white/[.2] text-white hover:border-white"
-              size="lg"
-              visual="gray"
-              variant="outlined"
-            >
-              Sign In
-            </Button>
-            <Pointer className="absolute top-[34px] right-0 -rotate-6" />
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen flex pl-[450px]">
+      {sidebar}
 
       <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
         <div className="max-w-[560px] w-full mx-auto">
@@ -412,7 +341,7 @@ export const CreateYourUsername = () => {
               show={false}
               size={15.43}
               strokeWidth={2.5}
-              value={30}
+              value={progress}
             />
             <span className="text-[11px] leading-[15.43px] text-gray-700">
               STEP 2 / 5
@@ -455,7 +384,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.design")}
+                  onClick={() => setFormValue("username", "@esha.design")}
                 >
                   @esha.design
                 </Button>
@@ -466,7 +395,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.design")}
+                  onClick={() => setFormValue("username", "@esha.design")}
                 >
                   @esha.design
                 </Button>
@@ -477,7 +406,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.designer")}
+                  onClick={() => setFormValue("username", "@esha.designer")}
                 >
                   @esha.designer
                 </Button>
@@ -488,7 +417,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.designer")}
+                  onClick={() => setFormValue("username", "@esha.designer")}
                 >
                   @esha.designer
                 </Button>
@@ -499,7 +428,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.designer")}
+                  onClick={() => setFormValue("username", "@esha.designer")}
                 >
                   @esha.designer
                 </Button>
@@ -510,7 +439,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.designer")}
+                  onClick={() => setFormValue("username", "@esha.designer")}
                 >
                   @esha.designer
                 </Button>
@@ -521,7 +450,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.designer")}
+                  onClick={() => setFormValue("username", "@esha.designer")}
                 >
                   @esha.designer
                 </Button>
@@ -532,7 +461,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.designer")}
+                  onClick={() => setFormValue("username", "@esha.designer")}
                 >
                   @esha.designer
                 </Button>
@@ -543,7 +472,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.designer")}
+                  onClick={() => setFormValue("username", "@esha.designer")}
                 >
                   @esha.designer
                 </Button>
@@ -554,7 +483,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.designer")}
+                  onClick={() => setFormValue("username", "@esha.designer")}
                 >
                   @esha.designer
                 </Button>
@@ -565,7 +494,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.designer")}
+                  onClick={() => setFormValue("username", "@esha.designer")}
                 >
                   @esha.designer
                 </Button>
@@ -576,7 +505,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.designer")}
+                  onClick={() => setFormValue("username", "@esha.designer")}
                 >
                   @esha.designer
                 </Button>
@@ -590,7 +519,7 @@ export const CreateYourUsername = () => {
                     visual="gray"
                     variant="link"
                     type="button"
-                    onClick={() => setValue("username", "@esha.design")}
+                    onClick={() => setFormValue("username", "@esha.design")}
                   >
                     @esha.design
                   </Button>
@@ -600,7 +529,7 @@ export const CreateYourUsername = () => {
                     size="lg"
                     visual="gray"
                     variant="link"
-                    onClick={() => setValue("username", "@esha.design")}
+                    onClick={() => setFormValue("username", "@esha.design")}
                   >
                     @esha.design
                   </Button>
@@ -610,7 +539,7 @@ export const CreateYourUsername = () => {
                     size="lg"
                     visual="gray"
                     variant="link"
-                    onClick={() => setValue("username", "@esha.designer")}
+                    onClick={() => setFormValue("username", "@esha.designer")}
                   >
                     @esha.designer
                   </Button>{" "}
@@ -646,12 +575,23 @@ export const CreateYourUsername = () => {
             </div>
 
             <div className="mt-[134px] flex items-center justify-between">
-              <Button size="md" variant="outlined" visual="gray" type="button">
+              <Button
+                size="md"
+                variant="outlined"
+                visual="gray"
+                type="button"
+                onClick={prevStep}
+              >
                 Back
               </Button>
 
               <div className="flex items-center gap-x-10">
-                <Button variant="ghost" visual="gray" type="button">
+                <Button
+                  variant="ghost"
+                  visual="gray"
+                  type="button"
+                  onClick={skip}
+                >
                   Skip
                 </Button>
                 <Button size="md" visual="primary">
@@ -673,85 +613,36 @@ const shareYourGoalsFormSchema = z.object({
 
 type ShareYourGoalsFormValues = z.infer<typeof shareYourGoalsFormSchema>
 
-export const ShareYourLocation = () => {
+const ShareYourLocation = ({ sidebar }: { sidebar: React.ReactNode }) => {
   const {
     register,
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
   } = useForm<ShareYourGoalsFormValues>({
     resolver: zodResolver(shareYourGoalsFormSchema),
   })
-  const onSubmit: SubmitHandler<ShareYourGoalsFormValues> = (values) => {}
+  const { toggleValidation } = useStepContext()
+  const { nextStep, prevStep, setStep } = useStepperContext()
+
+  useIsomorphicLayoutEffect(() => toggleValidation(isValid), [isValid])
+
+  const onSubmit: SubmitHandler<ShareYourGoalsFormValues> = (values) => {
+    nextStep()
+  }
+
+  const { totalSteps, currentStep } = useStepRootContext()
+
+  const progress = ((currentStep + 1) / totalSteps) * 100
+
+  const skip = () => {
+    toggleValidation(true)
+    const nextStepIndex = currentStep + 1
+    setStep(nextStepIndex)
+  }
+
   return (
-    <div className="min-h-screen flex">
-      <div className="relative p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
-        <Logo className="h-9 w-[245px] shrink-0" />
-
-        <div className="mt-[80px]">
-          <h1 className="text-[30px] leading-[36.31px] font-bold text-white">
-            The Future of Remote Work Is Here...
-          </h1>
-
-          <ul className="mt-[30px] space-y-5">
-            <li className="flex gap-x-3">
-              <Check className="size-7 shrink-0 text-primary-500" />
-
-              <div className="pt-[5px] space-y-1 flex-auto">
-                <h3 className="text-base leading-[19.36px] text-white font-bold">
-                  Find Tailored Projects
-                </h3>
-                <p className="text-sm leading-[16.94px] text-white">
-                  Discover curated matches to elevate your talent.
-                </p>
-              </div>
-            </li>
-            <li className="flex gap-x-3">
-              <Check className="size-7 shrink-0 text-primary-500" />
-
-              <div className="pt-[5px] space-y-1 flex-auto">
-                <h3 className="text-base leading-[19.36px] text-white font-bold">
-                  Connect with Ideal Teams
-                </h3>
-                <p className="text-sm leading-[16.94px] text-white">
-                  Collaborate with teams that align with your expertise.
-                </p>
-              </div>
-            </li>
-            <li className="flex gap-x-3">
-              <Check className="size-7 shrink-0 text-primary-500" />
-
-              <div className="pt-[5px] space-y-1 flex-auto">
-                <h3 className="text-base leading-[19.36px] text-white font-bold">
-                  Get Paid, Stress Free
-                </h3>
-                <p className="text-sm leading-[16.94px] text-white">
-                  Secure contracts. Fast, hassle-free payments every time.
-                </p>
-              </div>
-            </li>
-          </ul>
-        </div>
-
-        <Triangles className="absolute bottom-0 right-0" />
-
-        <div className="relative mt-auto flex flex-col gap-y-5">
-          <span className="text-base leading-[19.36px] text-white focus-visible:outline-none">
-            Already have an account?
-          </span>
-
-          <div className="relative self-start">
-            <Button
-              className="hover:bg-white hover:text-dark-blue-400 border-white/[.2] text-white hover:border-white"
-              size="lg"
-              visual="gray"
-              variant="outlined"
-            >
-              Sign In
-            </Button>
-            <Pointer className="absolute top-[34px] right-0 -rotate-6" />
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen flex pl-[450px]">
+      {sidebar}
 
       <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
         <div className="max-w-[560px] w-full mx-auto">
@@ -760,7 +651,7 @@ export const ShareYourLocation = () => {
               show={false}
               size={15.43}
               strokeWidth={2.5}
-              value={30}
+              value={progress}
             />
             <span className="text-[11px] leading-[15.43px] text-gray-700">
               STEP 3 / 5
@@ -825,12 +716,23 @@ export const ShareYourLocation = () => {
             </div>
 
             <div className="mt-[134px] flex items-center justify-between">
-              <Button size="md" variant="outlined" visual="gray" type="button">
+              <Button
+                size="md"
+                variant="outlined"
+                visual="gray"
+                type="button"
+                onClick={prevStep}
+              >
                 Back
               </Button>
 
               <div className="flex items-center gap-x-10">
-                <Button variant="ghost" visual="gray" type="button">
+                <Button
+                  variant="ghost"
+                  visual="gray"
+                  type="button"
+                  onClick={skip}
+                >
                   Skip
                 </Button>
                 <Button size="md" visual="primary">
@@ -1006,10 +908,10 @@ const showcaseYourTalentFormSchema = z.object({
 
 type ShowcaseYourTalentFormValues = z.infer<typeof showcaseYourTalentFormSchema>
 
-export const ShowcaseYourTalent = () => {
+const ShowcaseYourTalent = ({ sidebar }: { sidebar: React.ReactNode }) => {
   const {
     register,
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
     control,
   } = useForm<ShowcaseYourTalentFormValues>({
@@ -1020,77 +922,28 @@ export const ShowcaseYourTalent = () => {
       studying: false,
     },
   })
-  const onSubmit: SubmitHandler<ShowcaseYourTalentFormValues> = (values) => {}
+  const { toggleValidation } = useStepContext()
+  const { nextStep, prevStep, setStep } = useStepperContext()
+
+  useIsomorphicLayoutEffect(() => toggleValidation(isValid), [isValid])
+
+  const onSubmit: SubmitHandler<ShowcaseYourTalentFormValues> = (values) => {
+    nextStep()
+  }
+
+  const { totalSteps, currentStep } = useStepRootContext()
+
+  const progress = ((currentStep + 1) / totalSteps) * 100
+
+  const skip = () => {
+    toggleValidation(true)
+    const nextStepIndex = currentStep + 1
+    setStep(nextStepIndex)
+  }
+
   return (
-    <div className="min-h-screen flex">
-      <div className="relative p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
-        <Logo className="h-9 w-[245px] shrink-0" />
-
-        <div className="mt-[80px]">
-          <h1 className="text-[30px] leading-[36.31px] font-bold text-white">
-            The Future of Remote Work Is Here...
-          </h1>
-
-          <ul className="mt-[30px] space-y-5">
-            <li className="flex gap-x-3">
-              <Check className="size-7 shrink-0 text-primary-500" />
-
-              <div className="pt-[5px] space-y-1 flex-auto">
-                <h3 className="text-base leading-[19.36px] text-white font-bold">
-                  Find Tailored Projects
-                </h3>
-                <p className="text-sm leading-[16.94px] text-white">
-                  Discover curated matches to elevate your talent.
-                </p>
-              </div>
-            </li>
-            <li className="flex gap-x-3">
-              <Check className="size-7 shrink-0 text-primary-500" />
-
-              <div className="pt-[5px] space-y-1 flex-auto">
-                <h3 className="text-base leading-[19.36px] text-white font-bold">
-                  Connect with Ideal Teams
-                </h3>
-                <p className="text-sm leading-[16.94px] text-white">
-                  Collaborate with teams that align with your expertise.
-                </p>
-              </div>
-            </li>
-            <li className="flex gap-x-3">
-              <Check className="size-7 shrink-0 text-primary-500" />
-
-              <div className="pt-[5px] space-y-1 flex-auto">
-                <h3 className="text-base leading-[19.36px] text-white font-bold">
-                  Get Paid, Stress Free
-                </h3>
-                <p className="text-sm leading-[16.94px] text-white">
-                  Secure contracts. Fast, hassle-free payments every time.
-                </p>
-              </div>
-            </li>
-          </ul>
-        </div>
-
-        <Triangles className="absolute bottom-0 right-0" />
-
-        <div className="relative mt-auto flex flex-col gap-y-5">
-          <span className="text-base leading-[19.36px] text-white focus-visible:outline-none">
-            Already have an account?
-          </span>
-
-          <div className="relative self-start">
-            <Button
-              className="hover:bg-white hover:text-dark-blue-400 border-white/[.2] text-white hover:border-white"
-              size="lg"
-              visual="gray"
-              variant="outlined"
-            >
-              Sign In
-            </Button>
-            <Pointer className="absolute top-[34px] right-0 -rotate-6" />
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen flex pl-[450px]">
+      {sidebar}
 
       <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
         <div className="max-w-[560px] w-full mx-auto">
@@ -1099,7 +952,7 @@ export const ShowcaseYourTalent = () => {
               show={false}
               size={15.43}
               strokeWidth={2.5}
-              value={30}
+              value={progress}
             />
             <span className="text-[11px] leading-[15.43px] text-gray-700">
               STEP 4 / 5
@@ -1212,12 +1065,23 @@ export const ShowcaseYourTalent = () => {
             </div>
 
             <div className="mt-[50px] flex items-center justify-between">
-              <Button size="md" variant="outlined" visual="gray" type="button">
+              <Button
+                size="md"
+                variant="outlined"
+                visual="gray"
+                type="button"
+                onClick={prevStep}
+              >
                 Back
               </Button>
 
               <div className="flex items-center gap-x-10">
-                <Button variant="ghost" visual="gray" type="button">
+                <Button
+                  variant="ghost"
+                  visual="gray"
+                  type="button"
+                  onClick={skip}
+                >
                   Skip
                 </Button>
                 <Button size="md" visual="primary">
@@ -1426,85 +1290,36 @@ const setYourPreferencesFormSchema = z.object({
 
 type SetYourPreferencesFormValues = z.infer<typeof setYourPreferencesFormSchema>
 
-export const SetYourPreferences = () => {
+const SetYourPreferences = ({ sidebar }: { sidebar: React.ReactNode }) => {
   const {
-    formState: { errors },
+    formState: { errors, isValid },
     control,
     handleSubmit,
   } = useForm<SetYourPreferencesFormValues>({
     resolver: zodResolver(setYourPreferencesFormSchema),
   })
-  const onSubmit: SubmitHandler<SetYourPreferencesFormValues> = (values) => {}
+  const { toggleValidation } = useStepContext()
+  const { nextStep, prevStep, setStep } = useStepperContext()
+
+  useIsomorphicLayoutEffect(() => toggleValidation(isValid), [isValid])
+
+  const onSubmit: SubmitHandler<SetYourPreferencesFormValues> = (values) => {
+    nextStep()
+  }
+
+  const { totalSteps, currentStep } = useStepRootContext()
+
+  const progress = ((currentStep + 1) / totalSteps) * 100
+
+  const skip = () => {
+    toggleValidation(true)
+    const nextStepIndex = currentStep + 1
+    setStep(nextStepIndex)
+  }
+
   return (
-    <div className="min-h-screen flex">
-      <div className="relative p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
-        <Logo className="h-9 w-[245px] shrink-0" />
-
-        <div className="mt-[80px]">
-          <h1 className="text-[30px] leading-[36.31px] font-bold text-white">
-            The Future of Remote Work Is Here...
-          </h1>
-
-          <ul className="mt-[30px] space-y-5">
-            <li className="flex gap-x-3">
-              <Check className="size-7 shrink-0 text-primary-500" />
-
-              <div className="pt-[5px] space-y-1 flex-auto">
-                <h3 className="text-base leading-[19.36px] text-white font-bold">
-                  Find Tailored Projects
-                </h3>
-                <p className="text-sm leading-[16.94px] text-white">
-                  Discover curated matches to elevate your talent.
-                </p>
-              </div>
-            </li>
-            <li className="flex gap-x-3">
-              <Check className="size-7 shrink-0 text-primary-500" />
-
-              <div className="pt-[5px] space-y-1 flex-auto">
-                <h3 className="text-base leading-[19.36px] text-white font-bold">
-                  Connect with Ideal Teams
-                </h3>
-                <p className="text-sm leading-[16.94px] text-white">
-                  Collaborate with teams that align with your expertise.
-                </p>
-              </div>
-            </li>
-            <li className="flex gap-x-3">
-              <Check className="size-7 shrink-0 text-primary-500" />
-
-              <div className="pt-[5px] space-y-1 flex-auto">
-                <h3 className="text-base leading-[19.36px] text-white font-bold">
-                  Get Paid, Stress Free
-                </h3>
-                <p className="text-sm leading-[16.94px] text-white">
-                  Secure contracts. Fast, hassle-free payments every time.
-                </p>
-              </div>
-            </li>
-          </ul>
-        </div>
-
-        <Triangles className="absolute bottom-0 right-0" />
-
-        <div className="relative mt-auto flex flex-col gap-y-5">
-          <span className="text-base leading-[19.36px] text-white focus-visible:outline-none">
-            Already have an account?
-          </span>
-
-          <div className="relative self-start">
-            <Button
-              className="hover:bg-white hover:text-dark-blue-400 border-white/[.2] text-white hover:border-white"
-              size="lg"
-              visual="gray"
-              variant="outlined"
-            >
-              Sign In
-            </Button>
-            <Pointer className="absolute top-[34px] right-0 -rotate-6" />
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen flex pl-[450px]">
+      {sidebar}
 
       <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
         <div className="max-w-[560px] w-full mx-auto">
@@ -1513,7 +1328,7 @@ export const SetYourPreferences = () => {
               show={false}
               size={15.43}
               strokeWidth={2.5}
-              value={30}
+              value={progress}
             />
             <span className="text-[11px] leading-[15.43px] text-gray-700">
               STEP 5 / 5
@@ -1575,12 +1390,23 @@ export const SetYourPreferences = () => {
             </div>
 
             <div className="mt-[174px] flex items-center justify-between">
-              <Button size="md" variant="outlined" visual="gray" type="button">
+              <Button
+                size="md"
+                variant="outlined"
+                visual="gray"
+                type="button"
+                onClick={prevStep}
+              >
                 Back
               </Button>
 
               <div className="flex items-center gap-x-10">
-                <Button variant="ghost" visual="gray" type="button">
+                <Button
+                  variant="ghost"
+                  visual="gray"
+                  type="button"
+                  onClick={skip}
+                >
                   Skip
                 </Button>
                 <Button size="md" visual="primary">
@@ -1595,60 +1421,10 @@ export const SetYourPreferences = () => {
   )
 }
 
-export const LastStep = () => {
+const DoNext = ({ sidebar }: { sidebar: React.ReactNode }) => {
   return (
-    <div className="min-h-screen flex">
-      <div className="relative p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
-        <Logo className="h-9 w-[245px] shrink-0" />
-
-        <div className="mt-[94px]">
-          <h1 className="text-[30px] leading-[36.31px] font-bold text-white">
-            The Future of Remote Work Is Here...
-          </h1>
-
-          <ul className="mt-[30px] space-y-5">
-            <li className="flex gap-x-3">
-              <Check className="size-7 shrink-0 text-primary-500" />
-
-              <div className="pt-[5px] space-y-1 flex-auto">
-                <h3 className="text-base leading-[19.36px] text-white font-bold">
-                  Find Tailored Projects
-                </h3>
-                <p className="text-sm leading-[16.94px] text-white">
-                  Discover curated matches to elevate your talent.
-                </p>
-              </div>
-            </li>
-            <li className="flex gap-x-3">
-              <Check className="size-7 shrink-0 text-primary-500" />
-
-              <div className="pt-[5px] space-y-1 flex-auto">
-                <h3 className="text-base leading-[19.36px] text-white font-bold">
-                  Connect with Ideal Teams
-                </h3>
-                <p className="text-sm leading-[16.94px] text-white">
-                  Collaborate with teams that align with your expertise.
-                </p>
-              </div>
-            </li>
-            <li className="flex gap-x-3">
-              <Check className="size-7 shrink-0 text-primary-500" />
-
-              <div className="pt-[5px] space-y-1 flex-auto">
-                <h3 className="text-base leading-[19.36px] text-white font-bold">
-                  Get Paid, Stress Free
-                </h3>
-                <p className="text-sm leading-[16.94px] text-white">
-                  Secure contracts. Fast, hassle-free payments every time.
-                </p>
-              </div>
-            </li>
-          </ul>
-        </div>
-
-        <Triangles className="absolute bottom-0 right-0" />
-      </div>
-
+    <div className="min-h-screen flex pl-[450px]">
+      {sidebar}
       <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[150px]">
         <div className="max-w-[660px] w-full mx-auto">
           <h1 className="text-2xl leading-[36px] mt-2 text-dark-blue-400 font-semibold">
@@ -1718,5 +1494,218 @@ export const LastStep = () => {
         </div>
       </div>
     </div>
+  )
+}
+
+const Sidebar = () => {
+  return (
+    <div className="fixed inset-y-0 left-0 p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
+      <NextLink href="/" className="focus-visible:outline">
+        <Logo className="h-9 w-[245px] shrink-0" />
+      </NextLink>
+
+      <div className="mt-[80px]">
+        <h1 className="text-[30px] leading-[36.31px] font-bold text-white">
+          The Future of Remote Work Is Here...
+        </h1>
+
+        <ul className="mt-[30px] space-y-5">
+          <li className="flex gap-x-3">
+            <Check className="size-7 shrink-0 text-primary-500" />
+
+            <div className="pt-[5px] space-y-1 flex-auto">
+              <h3 className="text-base leading-[19.36px] text-white font-bold">
+                Find Tailored Projects
+              </h3>
+              <p className="text-sm leading-[16.94px] text-white">
+                Discover curated matches to elevate your talent.
+              </p>
+            </div>
+          </li>
+          <li className="flex gap-x-3">
+            <Check className="size-7 shrink-0 text-primary-500" />
+
+            <div className="pt-[5px] space-y-1 flex-auto">
+              <h3 className="text-base leading-[19.36px] text-white font-bold">
+                Connect with Ideal Teams
+              </h3>
+              <p className="text-sm leading-[16.94px] text-white">
+                Collaborate with teams that align with your expertise.
+              </p>
+            </div>
+          </li>
+          <li className="flex gap-x-3">
+            <Check className="size-7 shrink-0 text-primary-500" />
+
+            <div className="pt-[5px] space-y-1 flex-auto">
+              <h3 className="text-base leading-[19.36px] text-white font-bold">
+                Get Paid, Stress Free
+              </h3>
+              <p className="text-sm leading-[16.94px] text-white">
+                Secure contracts. Fast, hassle-free payments every time.
+              </p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <Triangles className="absolute bottom-0 right-0" />
+
+      <div className="relative mt-auto flex flex-col gap-y-5">
+        <span className="text-base leading-[19.36px] text-white focus-visible:outline-none">
+          Already have an account?
+        </span>
+
+        <div className="relative self-start">
+          <Button
+            className="hover:bg-white hover:text-dark-blue-400 border-white/[.2] text-white hover:border-white"
+            size="lg"
+            visual="gray"
+            variant="outlined"
+          >
+            Sign In
+          </Button>
+          <Pointer className="absolute top-[34px] right-0 -rotate-6" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const DoNextSidebar = () => {
+  return (
+    <div className="fixed inset-y-0 left-0 p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
+      <NextLink href="/" className="focus-visible:outline">
+        <Logo className="h-9 w-[245px] shrink-0" />
+      </NextLink>
+
+      <div className="mt-[94px]">
+        <h1 className="text-[30px] leading-[36.31px] font-bold text-white">
+          The Future of Remote Work Is Here...
+        </h1>
+
+        <ul className="mt-[30px] space-y-5">
+          <li className="flex gap-x-3">
+            <Check className="size-7 shrink-0 text-primary-500" />
+
+            <div className="pt-[5px] space-y-1 flex-auto">
+              <h3 className="text-base leading-[19.36px] text-white font-bold">
+                Find Tailored Projects
+              </h3>
+              <p className="text-sm leading-[16.94px] text-white">
+                Discover curated matches to elevate your talent.
+              </p>
+            </div>
+          </li>
+          <li className="flex gap-x-3">
+            <Check className="size-7 shrink-0 text-primary-500" />
+
+            <div className="pt-[5px] space-y-1 flex-auto">
+              <h3 className="text-base leading-[19.36px] text-white font-bold">
+                Connect with Ideal Teams
+              </h3>
+              <p className="text-sm leading-[16.94px] text-white">
+                Collaborate with teams that align with your expertise.
+              </p>
+            </div>
+          </li>
+          <li className="flex gap-x-3">
+            <Check className="size-7 shrink-0 text-primary-500" />
+
+            <div className="pt-[5px] space-y-1 flex-auto">
+              <h3 className="text-base leading-[19.36px] text-white font-bold">
+                Get Paid, Stress Free
+              </h3>
+              <p className="text-sm leading-[16.94px] text-white">
+                Secure contracts. Fast, hassle-free payments every time.
+              </p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <Triangles className="absolute bottom-0 right-0" />
+    </div>
+  )
+}
+
+const steps: Steps[] = [
+  { label: "introduce-yourself", isValid: false, disabled: false },
+  { label: "create-your-username", isValid: false, disabled: true },
+  { label: "share-your-location", isValid: false, disabled: true },
+  { label: "showcase-your-talent", isValid: false, disabled: true },
+  { label: "set-your-preferences", isValid: false, disabled: true },
+  { label: "do-next", isValid: false, disabled: true },
+]
+
+const TalentOnboarding = ({
+  introduceYourself,
+  createYourUsername,
+  shareYourLocation,
+  showcaseYourTalent,
+  setYourPreferences,
+  doNext,
+}: {
+  introduceYourself: React.ReactNode
+  createYourUsername: React.ReactNode
+  shareYourLocation: React.ReactNode
+  showcaseYourTalent: React.ReactNode
+  setYourPreferences: React.ReactNode
+  doNext: React.ReactNode
+}) => {
+  const {
+    nextStep,
+    prevStep,
+    setStep,
+    toggleStepValidation,
+    state: { currentStep, hasNextStep, hasPreviousStep, totalSteps },
+    stepsState,
+  } = useStepper({
+    steps,
+  })
+
+  console.log({ stepsState, currentStep })
+
+  const stepperValue = useMemo(
+    () => ({ nextStep, prevStep, setStep, toggleStepValidation }),
+    [nextStep, prevStep, setStep, toggleStepValidation]
+  )
+  const stepperRootValue = useMemo(
+    () => ({
+      currentStep,
+      hasNextStep,
+      hasPreviousStep,
+      totalSteps,
+      stepsState,
+    }),
+    [currentStep, hasNextStep, hasPreviousStep, totalSteps, stepsState]
+  )
+
+  return (
+    <StepperProvider value={stepperValue}>
+      <StepRootProvider value={stepperRootValue}>
+        <StepControl>
+          <Step>{introduceYourself}</Step>
+          <Step>{createYourUsername}</Step>
+          <Step>{shareYourLocation}</Step>
+          <Step>{showcaseYourTalent}</Step>
+          <Step>{setYourPreferences}</Step>
+          <Step>{doNext}</Step>
+        </StepControl>
+      </StepRootProvider>
+    </StepperProvider>
+  )
+}
+
+export default function TalentOnboardingRoot() {
+  return (
+    <TalentOnboarding
+      introduceYourself={<IntroduceYourself sidebar={<Sidebar />} />}
+      createYourUsername={<CreateYourUsername sidebar={<Sidebar />} />}
+      shareYourLocation={<ShareYourLocation sidebar={<Sidebar />} />}
+      showcaseYourTalent={<ShowcaseYourTalent sidebar={<Sidebar />} />}
+      setYourPreferences={<SetYourPreferences sidebar={<Sidebar />} />}
+      doNext={<DoNext sidebar={<DoNextSidebar />} />}
+    />
   )
 }

@@ -1,7 +1,10 @@
-import { useEffect, useState } from "react"
+"use client"
+
+import * as React from "react"
+import { useMemo } from "react"
 import { HOT_KEYS } from "@/utils/constants"
-import { getIsNotEmpty, hookFormHasError, keys } from "@/utils/functions"
-import { useControllableState, useUncontrolledState } from "@/utils/hooks"
+import { cn, getIsNotEmpty, hookFormHasError, keys } from "@/utils/functions"
+import { useControllableState, useStepper } from "@/utils/hooks"
 import {
   AlertCircle,
   Briefcase02,
@@ -17,17 +20,19 @@ import {
 } from "@blend-metrics/icons"
 import { ErrorMessage as HookFormErrorMessage } from "@hookform/error-message"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Meta } from "@storybook/react"
+import { Steps } from "headless-stepper"
 import {
   Controller,
   SubmitHandler,
+  UseFormSetValue,
   useFieldArray,
   useForm,
 } from "react-hook-form"
-import { useToggle } from "react-use"
-import { number, z } from "zod"
+import { useIsomorphicLayoutEffect, useToggle } from "react-use"
+import { z } from "zod"
 import { Logo } from "@/components/icons"
 import { Pointer } from "@/components/icons/pointer"
+import NextLink from "@/components/next-link"
 import { Triangles } from "@/components/triangles"
 import {
   Alert,
@@ -49,7 +54,6 @@ import {
   ComboboxLabel,
   ComboboxOption,
   ComboboxOptions,
-  ComboboxPrimitive,
   ComboboxTrigger,
   ErrorMessage,
   Input,
@@ -60,107 +64,15 @@ import {
   RadioGroupItemSelector,
   ScaleOutIn,
   ScrollArea,
+  Step,
+  StepControl,
+  StepRootProvider,
+  StepperProvider,
+  buttonVariants,
+  useStepContext,
+  useStepRootContext,
+  useStepperContext,
 } from "@/components/ui"
-
-const meta: Meta = {
-  title: "Client Onboarding",
-  parameters: {
-    layout: "fullscreen",
-  },
-}
-
-export default meta
-
-export const Default = () => {
-  return (
-    <div className="min-h-screen flex">
-      <div className="relative p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
-        <Logo className="h-9 w-[245px] shrink-0" />
-
-        <div className="mt-[94px]">
-          <h1 className="text-[45px] leading-none font-bold text-white">
-            Connect. Create. Conquer.
-          </h1>
-
-          <div className="mt-[30px]">
-            <span className="text-white text-[22px] leading-[26.63px]">
-              From ideas to execution, find the talent that can make it happen.
-            </span>
-          </div>
-        </div>
-
-        <Triangles className="absolute bottom-0 right-0" />
-
-        <div className="relative mt-auto flex flex-col gap-y-5">
-          <span className="text-base leading-[19.36px] text-white focus-visible:outline-none">
-            Already have an account?
-          </span>
-
-          <div className="relative self-start">
-            <Button
-              className="hover:bg-white hover:text-dark-blue-400 border-white/[.2] text-white hover:border-white"
-              size="lg"
-              visual="gray"
-              variant="outlined"
-            >
-              Sign In
-            </Button>
-            <Pointer className="absolute top-[34px] right-0 -rotate-6" />
-          </div>
-        </div>
-      </div>
-
-      <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
-        <div className="max-w-[560px] w-full mx-auto">
-          <h1 className="text-2xl leading-[36px] text-dark-blue-400 font-semibold">
-            What brings you here today?
-          </h1>
-
-          <p className="text-base leading-[19.36px] text-dark-blue-400 mt-2 font-light">
-            Whether you&apos;re here to hire or get hired, let&apos;s get you
-            set up the right way.
-          </p>
-
-          <div className="mt-[50px] flex flex-col gap-y-6">
-            <article className="rounded-lg p-5 border border-gray-200 flex items-center gap-x-5 bg-white hover:border-gray-300 hover:ring-1 hover:ring-gray-300 cursor-pointer transition duration-300">
-              <div className="w-[100px] shrink-0 bg-gray-200 rounded-lg self-stretch" />
-
-              <div className="flex-auto">
-                <h1 className="text-lg leading-[21.78px] font-semibold text-dark-blue-400">
-                  I’m looking to hire
-                </h1>
-                <p className="text-base mt-2 leading-[19.36px] font-light text-dark-blue-400">
-                  Discover the right experts ready to deliver what you need.
-                </p>
-              </div>
-
-              <button className="focus-visible:outline-none shrink-0 rounded-[5px] size-8 flex items-center justify-center">
-                <ChevronRight className="size-5" />
-              </button>
-            </article>
-
-            <article className="rounded-lg p-5 border border-gray-200 flex items-center gap-x-5 bg-white hover:border-gray-300 hover:ring-1 hover:ring-gray-300 cursor-pointer transition duration-300">
-              <div className="w-[100px] shrink-0 bg-gray-200 rounded-lg self-stretch" />
-
-              <div className="flex-auto">
-                <h1 className="text-lg leading-[21.78px] font-semibold text-dark-blue-400">
-                  I’m looking to hire
-                </h1>
-                <p className="text-base mt-2 leading-[19.36px] font-light text-dark-blue-400">
-                  Discover the right experts ready to deliver what you need.
-                </p>
-              </div>
-
-              <button className="focus-visible:outline-none shrink-0 rounded-[5px] size-8 flex items-center justify-center">
-                <ChevronRight className="size-5" />
-              </button>
-            </article>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 const describeYourTeamFormSchema = z.object({
   teamName: z.string().min(1, "Please enter at least 1 character(s)"),
@@ -170,53 +82,36 @@ const describeYourTeamFormSchema = z.object({
 
 type DescribeYourTeamFormValues = z.infer<typeof describeYourTeamFormSchema>
 
-export const DescribeYourTeam = () => {
+export const DescribeYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
   const {
     register,
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
   } = useForm<DescribeYourTeamFormValues>({
     resolver: zodResolver(describeYourTeamFormSchema),
   })
-  const onSubmit: SubmitHandler<DescribeYourTeamFormValues> = (values) => {}
+  const { toggleValidation } = useStepContext()
+  const { nextStep, prevStep, setStep } = useStepperContext()
+
+  useIsomorphicLayoutEffect(() => toggleValidation(isValid), [isValid])
+
+  const { totalSteps, currentStep } = useStepRootContext()
+
+  const progress = ((currentStep + 1) / totalSteps) * 100
+
+  const onSubmit: SubmitHandler<DescribeYourTeamFormValues> = (values) => {
+    nextStep()
+  }
+
+  const skip = () => {
+    toggleValidation(true)
+    const nextStepIndex = currentStep + 1
+    setStep(nextStepIndex)
+  }
+
   return (
-    <div className="min-h-screen flex">
-      <div className="relative p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
-        <Logo className="h-9 w-[245px] shrink-0" />
-
-        <div className="mt-[94px]">
-          <h1 className="text-[45px] leading-none font-bold text-white">
-            Connect. Create. Conquer.
-          </h1>
-
-          <div className="mt-[30px]">
-            <span className="text-white text-[22px] leading-[26.63px]">
-              From ideas to execution, find the talent that can make it happen.
-            </span>
-          </div>
-        </div>
-
-        <Triangles className="absolute bottom-0 right-0" />
-
-        <div className="relative mt-auto flex flex-col gap-y-5">
-          <span className="text-base leading-[19.36px] text-white focus-visible:outline-none">
-            Already have an account?
-          </span>
-
-          <div className="relative self-start">
-            <Button
-              className="hover:bg-white hover:text-dark-blue-400 border-white/[.2] text-white hover:border-white"
-              size="lg"
-              visual="gray"
-              variant="outlined"
-            >
-              Sign In
-            </Button>
-            <Pointer className="absolute top-[34px] right-0 -rotate-6" />
-          </div>
-        </div>
-      </div>
-
+    <div className="min-h-screen flex pl-[480px]">
+      {sidebar}
       <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
         <div className="max-w-[560px] w-full mx-auto">
           <div className="flex gap-x-2 items-center">
@@ -224,7 +119,7 @@ export const DescribeYourTeam = () => {
               show={false}
               size={15.43}
               strokeWidth={2.5}
-              value={30}
+              value={progress}
             />
             <span className="text-[11px] leading-[15.43px] text-gray-700">
               STEP 1 / 4
@@ -305,12 +200,26 @@ export const DescribeYourTeam = () => {
             </div>
 
             <div className="mt-[148px] flex items-center justify-between">
-              <Button size="md" variant="outlined" visual="gray" type="button">
+              <NextLink
+                href="/onboarding/client"
+                className={cn(
+                  buttonVariants({
+                    size: "md",
+                    variant: "outlined",
+                    visual: "gray",
+                  })
+                )}
+              >
                 Back
-              </Button>
+              </NextLink>
 
               <div className="flex items-center gap-x-6">
-                <Button variant="ghost" visual="gray" type="button">
+                <Button
+                  variant="ghost"
+                  visual="gray"
+                  type="button"
+                  onClick={skip}
+                >
                   Skip
                 </Button>
 
@@ -377,11 +286,11 @@ const shareYourGoalsFormSchema = z
 
 type ShareYourGoalsFormValues = z.infer<typeof shareYourGoalsFormSchema>
 
-export const ShareYourGoals = () => {
+export const ShareYourGoals = ({ sidebar }: { sidebar: React.ReactNode }) => {
   const {
     handleSubmit,
     control,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<ShareYourGoalsFormValues>({
     resolver: zodResolver(shareYourGoalsFormSchema),
     defaultValues: data.reduce(
@@ -390,46 +299,28 @@ export const ShareYourGoals = () => {
     ),
   })
 
-  const onSubmit: SubmitHandler<ShareYourGoalsFormValues> = (values) => {}
+  const { toggleValidation } = useStepContext()
+  const { nextStep, prevStep, setStep } = useStepperContext()
+
+  useIsomorphicLayoutEffect(() => toggleValidation(isValid), [isValid])
+
+  const { totalSteps, currentStep } = useStepRootContext()
+
+  const progress = ((currentStep + 1) / totalSteps) * 100
+
+  const onSubmit: SubmitHandler<ShareYourGoalsFormValues> = (values) => {
+    nextStep()
+  }
+
+  const skip = () => {
+    toggleValidation(true)
+    const nextStepIndex = currentStep + 1
+    setStep(nextStepIndex)
+  }
 
   return (
-    <div className="min-h-screen flex">
-      <div className="relative p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
-        <Logo className="h-9 w-[245px] shrink-0" />
-
-        <div className="mt-[94px]">
-          <h1 className="text-[45px] leading-none font-bold text-white">
-            Connect. Create. Conquer.
-          </h1>
-
-          <div className="mt-[30px]">
-            <span className="text-white text-[22px] leading-[26.63px]">
-              From ideas to execution, find the talent that can make it happen.
-            </span>
-          </div>
-        </div>
-
-        <Triangles className="absolute bottom-0 right-0" />
-
-        <div className="relative mt-auto flex flex-col gap-y-5">
-          <span className="text-base leading-[19.36px] text-white focus-visible:outline-none">
-            Already have an account?
-          </span>
-
-          <div className="relative self-start">
-            <Button
-              className="hover:bg-white hover:text-dark-blue-400 border-white/[.2] text-white hover:border-white"
-              size="lg"
-              visual="gray"
-              variant="outlined"
-            >
-              Sign In
-            </Button>
-            <Pointer className="absolute top-[34px] right-0 -rotate-6" />
-          </div>
-        </div>
-      </div>
-
+    <div className="min-h-screen flex pl-[480px]">
+      {sidebar}
       <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
         <div className="max-w-[560px] w-full mx-auto">
           <div className="flex gap-x-2 items-center">
@@ -437,7 +328,7 @@ export const ShareYourGoals = () => {
               show={false}
               size={15.43}
               strokeWidth={2.5}
-              value={30}
+              value={progress}
             />
             <span className="text-[11px] leading-[15.43px] text-gray-700">
               STEP 2 / 4
@@ -490,12 +381,23 @@ export const ShareYourGoals = () => {
             </div>
 
             <div className="mt-[50px] flex items-center justify-between">
-              <Button size="md" variant="outlined" visual="gray" type="button">
+              <Button
+                size="md"
+                variant="outlined"
+                visual="gray"
+                onClick={prevStep}
+                type="button"
+              >
                 Back
               </Button>
 
               <div className="flex items-center gap-x-10">
-                <Button variant="ghost" visual="gray" type="button">
+                <Button
+                  variant="ghost"
+                  visual="gray"
+                  onClick={skip}
+                  type="button"
+                >
                   Skip
                 </Button>
                 <Button size="md" visual="primary">
@@ -523,10 +425,10 @@ const inviteYourTeamFormSchema = z.object({
 
 type InviteYourTeamFormValues = z.infer<typeof inviteYourTeamFormSchema>
 
-export const InviteYourTeam = () => {
+export const InviteYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
   const {
     control,
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
     register,
   } = useForm<InviteYourTeamFormValues>({
@@ -535,48 +437,33 @@ export const InviteYourTeam = () => {
       emails: [{ email: "" }, { email: "" }, { email: "" }],
     },
   })
+  const { toggleValidation } = useStepContext()
+  const { nextStep, prevStep, setStep } = useStepperContext()
+
+  useIsomorphicLayoutEffect(() => toggleValidation(isValid), [isValid])
+
+  const { totalSteps, currentStep } = useStepRootContext()
+
+  const progress = ((currentStep + 1) / totalSteps) * 100
+
   const { fields, append } = useFieldArray({
     control,
     name: "emails",
   })
-  const onSubmit: SubmitHandler<InviteYourTeamFormValues> = (values) => {}
+
+  const onSubmit: SubmitHandler<InviteYourTeamFormValues> = (values) => {
+    nextStep()
+  }
+
+  const skip = () => {
+    toggleValidation(true)
+    const nextStepIndex = currentStep + 1
+    setStep(nextStepIndex)
+  }
+
   return (
-    <div className="min-h-screen flex">
-      <div className="relative p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
-        <Logo className="h-9 w-[245px] shrink-0" />
-
-        <div className="mt-[94px]">
-          <h1 className="text-[45px] leading-none font-bold text-white">
-            Connect. Create. Conquer.
-          </h1>
-
-          <div className="mt-[30px]">
-            <span className="text-white text-[22px] leading-[26.63px]">
-              From ideas to execution, find the talent that can make it happen.
-            </span>
-          </div>
-        </div>
-
-        <Triangles className="absolute bottom-0 right-0" />
-
-        <div className="relative mt-auto flex flex-col gap-y-5">
-          <span className="text-base leading-[19.36px] text-white focus-visible:outline-none">
-            Already have an account?
-          </span>
-
-          <div className="relative self-start">
-            <Button
-              className="hover:bg-white hover:text-dark-blue-400 border-white/[.2] text-white hover:border-white"
-              size="lg"
-              visual="gray"
-              variant="outlined"
-            >
-              Sign In
-            </Button>
-            <Pointer className="absolute top-[34px] right-0 -rotate-6" />
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen flex pl-[480px]">
+      {sidebar}
 
       <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
         <div className="max-w-[560px] w-full mx-auto">
@@ -585,7 +472,7 @@ export const InviteYourTeam = () => {
               show={false}
               size={15.43}
               strokeWidth={2.5}
-              value={30}
+              value={progress}
             />
             <span className="text-[11px] leading-[15.43px] text-gray-700">
               STEP 3 / 4
@@ -682,12 +569,23 @@ export const InviteYourTeam = () => {
             </ClipboardRoot>
 
             <div className="mt-[50px] flex items-center justify-between">
-              <Button size="md" variant="outlined" visual="gray" type="button">
+              <Button
+                size="md"
+                variant="outlined"
+                visual="gray"
+                onClick={prevStep}
+                type="button"
+              >
                 Back
               </Button>
 
               <div className="flex items-center gap-x-10">
-                <Button variant="ghost" visual="gray" type="button">
+                <Button
+                  variant="ghost"
+                  visual="gray"
+                  onClick={skip}
+                  type="button"
+                >
                   Skip
                 </Button>
                 <Button size="md" visual="primary">
@@ -708,54 +606,51 @@ const createYourUsernameFormSchema = z.object({
 
 type CreateYourUsernameFormValues = z.infer<typeof createYourUsernameFormSchema>
 
-export const CreateYourUsername = () => {
+export const CreateYourUsername = ({
+  sidebar,
+}: {
+  sidebar: React.ReactNode
+}) => {
   const [show, toggleShow] = useToggle(false)
   const {
-    formState: { errors },
+    formState: { errors, isValid },
     setValue,
     register,
     handleSubmit,
+    trigger,
   } = useForm<CreateYourUsernameFormValues>({
     resolver: zodResolver(createYourUsernameFormSchema),
   })
-  const onSubmit: SubmitHandler<CreateYourUsernameFormValues> = () => {}
+  const { toggleValidation } = useStepContext()
+  const { nextStep, prevStep, setStep } = useStepperContext()
+
+  useIsomorphicLayoutEffect(() => toggleValidation(isValid), [isValid])
+
+  const { totalSteps, currentStep } = useStepRootContext()
+
+  const progress = ((currentStep + 1) / totalSteps) * 100
+
+  const onSubmit: SubmitHandler<CreateYourUsernameFormValues> = () => {
+    nextStep()
+  }
+
+  const setFormValue: UseFormSetValue<CreateYourUsernameFormValues> = (
+    key,
+    value
+  ) => {
+    setValue(key, value)
+    trigger(key)
+  }
+
+  const skip = () => {
+    toggleValidation(true)
+    const nextStepIndex = currentStep + 1
+    setStep(nextStepIndex)
+  }
+
   return (
-    <div className="min-h-screen flex">
-      <div className="relative p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
-        <Logo className="h-9 w-[245px] shrink-0" />
-
-        <div className="mt-[94px]">
-          <h1 className="text-[45px] leading-none font-bold text-white">
-            Connect. Create. Conquer.
-          </h1>
-
-          <div className="mt-[30px]">
-            <span className="text-white text-[22px] leading-[26.63px]">
-              From ideas to execution, find the talent that can make it happen.
-            </span>
-          </div>
-        </div>
-
-        <Triangles className="absolute bottom-0 right-0" />
-
-        <div className="relative mt-auto flex flex-col gap-y-5">
-          <span className="text-base leading-[19.36px] text-white focus-visible:outline-none">
-            Already have an account?
-          </span>
-
-          <div className="relative self-start">
-            <Button
-              className="hover:bg-white hover:text-dark-blue-400 border-white/[.2] text-white hover:border-white"
-              size="lg"
-              visual="gray"
-              variant="outlined"
-            >
-              Sign In
-            </Button>
-            <Pointer className="absolute top-[34px] right-0 -rotate-6" />
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen flex pl-[480px]">
+      {sidebar}
 
       <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
         <div className="max-w-[560px] w-full mx-auto">
@@ -764,7 +659,7 @@ export const CreateYourUsername = () => {
               show={false}
               size={15.43}
               strokeWidth={2.5}
-              value={30}
+              value={progress}
             />
             <span className="text-[11px] leading-[15.43px] text-gray-700">
               STEP 4 / 5
@@ -807,7 +702,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.design")}
+                  onClick={() => setFormValue("username", "@esha.design")}
                 >
                   @esha.design
                 </Button>
@@ -818,7 +713,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.design")}
+                  onClick={() => setFormValue("username", "@esha.design")}
                 >
                   @esha.design
                 </Button>
@@ -829,7 +724,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.designer")}
+                  onClick={() => setFormValue("username", "@esha.designer")}
                 >
                   @esha.designer
                 </Button>
@@ -840,7 +735,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.designer")}
+                  onClick={() => setFormValue("username", "@esha.designer")}
                 >
                   @esha.designer
                 </Button>
@@ -851,7 +746,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.designer")}
+                  onClick={() => setFormValue("username", "@esha.designer")}
                 >
                   @esha.designer
                 </Button>
@@ -862,7 +757,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.designer")}
+                  onClick={() => setFormValue("username", "@esha.designer")}
                 >
                   @esha.designer
                 </Button>
@@ -873,7 +768,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.designer")}
+                  onClick={() => setFormValue("username", "@esha.designer")}
                 >
                   @esha.designer
                 </Button>
@@ -884,7 +779,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.designer")}
+                  onClick={() => setFormValue("username", "@esha.designer")}
                 >
                   @esha.designer
                 </Button>
@@ -895,7 +790,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.designer")}
+                  onClick={() => setFormValue("username", "@esha.designer")}
                 >
                   @esha.designer
                 </Button>
@@ -906,7 +801,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.designer")}
+                  onClick={() => setFormValue("username", "@esha.designer")}
                 >
                   @esha.designer
                 </Button>
@@ -917,7 +812,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.designer")}
+                  onClick={() => setFormValue("username", "@esha.designer")}
                 >
                   @esha.designer
                 </Button>
@@ -928,7 +823,7 @@ export const CreateYourUsername = () => {
                   visual="gray"
                   variant="link"
                   type="button"
-                  onClick={() => setValue("username", "@esha.designer")}
+                  onClick={() => setFormValue("username", "@esha.designer")}
                 >
                   @esha.designer
                 </Button>
@@ -942,7 +837,7 @@ export const CreateYourUsername = () => {
                     visual="gray"
                     variant="link"
                     type="button"
-                    onClick={() => setValue("username", "@esha.design")}
+                    onClick={() => setFormValue("username", "@esha.design")}
                   >
                     @esha.design
                   </Button>
@@ -952,7 +847,7 @@ export const CreateYourUsername = () => {
                     size="lg"
                     visual="gray"
                     variant="link"
-                    onClick={() => setValue("username", "@esha.design")}
+                    onClick={() => setFormValue("username", "@esha.design")}
                   >
                     @esha.design
                   </Button>
@@ -962,7 +857,7 @@ export const CreateYourUsername = () => {
                     size="lg"
                     visual="gray"
                     variant="link"
-                    onClick={() => setValue("username", "@esha.designer")}
+                    onClick={() => setFormValue("username", "@esha.designer")}
                   >
                     @esha.designer
                   </Button>{" "}
@@ -1036,13 +931,13 @@ const LookingToWorkWith = ({
   value?: string[]
   invalid?: boolean
 }) => {
-  const [inputValue, setInputValue] = useState("")
+  const [inputValue, setInputValue] = React.useState("")
   const [values, setValues] = useControllableState<string[]>({
     defaultValue: [],
     onChange: onValueChange,
     value: valueProp,
   })
-  const [selected, setSelected] = useState<string[]>([])
+  const [selected, setSelected] = React.useState<string[]>([])
 
   const resetInputValue = () => setInputValue("")
 
@@ -1084,7 +979,7 @@ const LookingToWorkWith = ({
     role.toLowerCase().includes(inputValue.toLowerCase())
   )
 
-  useEffect(() => {
+  React.useEffect(() => {
     setValues((preValues) => {
       const filteredSelected = selected.filter(
         (value) => !preValues.includes(value)
@@ -1158,13 +1053,13 @@ const SkillsLookingFor = ({
   value?: string[]
   invalid?: boolean
 }) => {
-  const [inputValue, setInputValue] = useState("")
+  const [inputValue, setInputValue] = React.useState("")
   const [values, setValues] = useControllableState<string[]>({
     defaultValue: [],
     onChange: onValueChange,
     value: valueProp,
   })
-  const [selected, setSelected] = useState<string[]>([])
+  const [selected, setSelected] = React.useState<string[]>([])
 
   const resetInputValue = () => setInputValue("")
 
@@ -1206,7 +1101,7 @@ const SkillsLookingFor = ({
     role.toLowerCase().includes(inputValue.toLowerCase())
   )
 
-  useEffect(() => {
+  React.useEffect(() => {
     setValues((preValues) => {
       const filteredSelected = selected.filter(
         (value) => !preValues.includes(value)
@@ -1345,10 +1240,14 @@ type OutlineYourInterestsFormValues = z.infer<
   typeof outlineYourInterestsFormSchema
 >
 
-export const OutlineYourInterests = () => {
+export const OutlineYourInterests = ({
+  sidebar,
+}: {
+  sidebar: React.ReactNode
+}) => {
   const {
     control,
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
   } = useForm<OutlineYourInterestsFormValues>({
     resolver: zodResolver(outlineYourInterestsFormSchema),
@@ -1363,46 +1262,28 @@ export const OutlineYourInterests = () => {
       ),
     },
   })
-  const onSubmit: SubmitHandler<OutlineYourInterestsFormValues> = () => {}
+  const { toggleValidation } = useStepContext()
+  const { nextStep, prevStep, setStep } = useStepperContext()
+
+  useIsomorphicLayoutEffect(() => toggleValidation(isValid), [isValid])
+
+  const { totalSteps, currentStep } = useStepRootContext()
+
+  const progress = ((currentStep + 1) / totalSteps) * 100
+
+  const onSubmit: SubmitHandler<OutlineYourInterestsFormValues> = () => {
+    nextStep()
+  }
+
+  const skip = () => {
+    toggleValidation(true)
+    const nextStepIndex = currentStep + 1
+    setStep(nextStepIndex)
+  }
 
   return (
-    <div className="min-h-screen flex">
-      <div className="relative p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
-        <Logo className="h-9 w-[245px] shrink-0" />
-
-        <div className="mt-[94px]">
-          <h1 className="text-[45px] leading-none font-bold text-white">
-            Connect. Create. Conquer.
-          </h1>
-
-          <div className="mt-[30px]">
-            <span className="text-white text-[22px] leading-[26.63px]">
-              From ideas to execution, find the talent that can make it happen.
-            </span>
-          </div>
-        </div>
-
-        <Triangles className="absolute bottom-0 right-0" />
-
-        <div className="relative mt-auto flex flex-col gap-y-5">
-          <span className="text-base leading-[19.36px] text-white focus-visible:outline-none">
-            Already have an account?
-          </span>
-
-          <div className="relative self-start">
-            <Button
-              className="hover:bg-white hover:text-dark-blue-400 border-white/[.2] text-white hover:border-white"
-              size="lg"
-              visual="gray"
-              variant="outlined"
-            >
-              Sign In
-            </Button>
-            <Pointer className="absolute top-[34px] right-0 -rotate-6" />
-          </div>
-        </div>
-      </div>
-
+    <div className="min-h-screen flex pl-[480px]">
+      {sidebar}
       <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
         <div className="max-w-[560px] w-full mx-auto">
           <div className="flex gap-x-2 items-center">
@@ -1410,7 +1291,7 @@ export const OutlineYourInterests = () => {
               show={false}
               size={15.43}
               strokeWidth={2.5}
-              value={30}
+              value={progress}
             />
             <span className="text-[11px] leading-[15.43px] text-gray-700">
               STEP 5 / 5
@@ -1622,12 +1503,23 @@ export const OutlineYourInterests = () => {
             </div>
 
             <div className="mt-[50px] flex items-center justify-between">
-              <Button size="md" variant="outlined" visual="gray" type="button">
+              <Button
+                size="md"
+                variant="outlined"
+                visual="gray"
+                onClick={prevStep}
+                type="button"
+              >
                 Back
               </Button>
 
               <div className="flex items-center gap-x-10">
-                <Button variant="ghost" visual="gray" type="button">
+                <Button
+                  variant="ghost"
+                  visual="gray"
+                  onClick={skip}
+                  type="button"
+                >
                   Skip
                 </Button>
                 <Button size="md" visual="primary">
@@ -1642,59 +1534,10 @@ export const OutlineYourInterests = () => {
   )
 }
 
-export const LastStep = () => {
+export const DoNext = ({ sidebar }: { sidebar: React.ReactNode }) => {
   return (
-    <div className="min-h-screen flex">
-      <div className="relative p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
-        <Logo className="h-9 w-[245px] shrink-0" />
-
-        <div className="mt-[94px]">
-          <h1 className="text-[45px] leading-none font-bold text-white">
-            Welcome to Marketeq!
-          </h1>
-
-          <div className="mt-[30px]">
-            <span className="text-white text-[22px] leading-[26.63px]">
-              Unlock your potential and explore exciting opportunities
-            </span>
-          </div>
-        </div>
-
-        <Triangles className="absolute bottom-0 right-0" />
-
-        <ul className="relative mt-[30px] flex flex-col gap-y-[30px]">
-          <li className="flex items-center gap-x-[13px]">
-            <Check className="size-[22px] text-primary-500" />
-            <span className="text-sm leading-[16.94px] text-white font-light">
-              Find top talent or exciting projects
-            </span>
-          </li>
-          <li className="flex items-center gap-x-[13px]">
-            <Check className="size-[22px] text-primary-500" />
-            <span className="text-sm leading-[16.94px] text-white font-light">
-              Manage all your projects in one place
-            </span>
-          </li>
-          <li className="flex items-center gap-x-[13px]">
-            <Check className="size-[22px] text-primary-500" />
-            <span className="text-sm leading-[16.94px] text-white font-light">
-              Track progress in real-time
-            </span>
-          </li>
-          <li className="flex items-center gap-x-[13px]">
-            <Check className="size-[22px] text-primary-500" />
-            <span className="text-sm leading-[16.94px] text-white font-light">
-              Collaborate with ease
-            </span>
-          </li>
-          <li className="flex items-center gap-x-[13px]">
-            <Check className="size-[22px] text-primary-500" />
-            <span className="text-sm leading-[16.94px] text-white font-light">
-              Secure contracts and payments
-            </span>
-          </li>
-        </ul>
-      </div>
+    <div className="min-h-screen flex pl-[480px]">
+      {sidebar}
 
       <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[150px]">
         <div className="max-w-[660px] w-full mx-auto">
@@ -1765,5 +1608,183 @@ export const LastStep = () => {
         </div>
       </div>
     </div>
+  )
+}
+
+const DoNextSidebar = () => {
+  return (
+    <div className="fixed inset-y-0 left-0 p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
+      <NextLink href="/" className="focus-visible:outline-none">
+        <Logo className="h-9 w-[245px] shrink-0" />
+      </NextLink>
+
+      <div className="mt-[94px]">
+        <h1 className="text-[45px] leading-none font-bold text-white">
+          Welcome to Marketeq!
+        </h1>
+
+        <div className="mt-[30px]">
+          <span className="text-white text-[22px] leading-[26.63px]">
+            Unlock your potential and explore exciting opportunities
+          </span>
+        </div>
+      </div>
+
+      <Triangles className="absolute bottom-0 right-0" />
+
+      <ul className="relative mt-[30px] flex flex-col gap-y-[30px]">
+        <li className="flex items-center gap-x-[13px]">
+          <Check className="size-[22px] text-primary-500" />
+          <span className="text-sm leading-[16.94px] text-white font-light">
+            Find top talent or exciting projects
+          </span>
+        </li>
+        <li className="flex items-center gap-x-[13px]">
+          <Check className="size-[22px] text-primary-500" />
+          <span className="text-sm leading-[16.94px] text-white font-light">
+            Manage all your projects in one place
+          </span>
+        </li>
+        <li className="flex items-center gap-x-[13px]">
+          <Check className="size-[22px] text-primary-500" />
+          <span className="text-sm leading-[16.94px] text-white font-light">
+            Track progress in real-time
+          </span>
+        </li>
+        <li className="flex items-center gap-x-[13px]">
+          <Check className="size-[22px] text-primary-500" />
+          <span className="text-sm leading-[16.94px] text-white font-light">
+            Collaborate with ease
+          </span>
+        </li>
+        <li className="flex items-center gap-x-[13px]">
+          <Check className="size-[22px] text-primary-500" />
+          <span className="text-sm leading-[16.94px] text-white font-light">
+            Secure contracts and payments
+          </span>
+        </li>
+      </ul>
+    </div>
+  )
+}
+
+const Sidebar = () => {
+  return (
+    <div className="fixed inset-y-0 left-0 p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
+      <NextLink href="/" className="focus-visible:outline-none">
+        <Logo className="h-9 w-[245px] shrink-0" />
+      </NextLink>
+
+      <div className="mt-[94px]">
+        <h1 className="text-[45px] leading-none font-bold text-white">
+          Connect. Create. Conquer.
+        </h1>
+
+        <div className="mt-[30px]">
+          <span className="text-white text-[22px] leading-[26.63px]">
+            From ideas to execution, find the talent that can make it happen.
+          </span>
+        </div>
+      </div>
+
+      <Triangles className="absolute bottom-0 right-0" />
+
+      <div className="relative mt-auto flex flex-col gap-y-5">
+        <span className="text-base leading-[19.36px] text-white focus-visible:outline-none">
+          Already have an account?
+        </span>
+
+        <div className="relative self-start">
+          <Button
+            className="hover:bg-white hover:text-dark-blue-400 border-white/[.2] text-white hover:border-white"
+            size="lg"
+            visual="gray"
+            variant="outlined"
+          >
+            Sign In
+          </Button>
+          <Pointer className="absolute top-[34px] right-0 -rotate-6" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const steps: Steps[] = [
+  { label: "describe-your-team", isValid: false, disabled: false },
+  { label: "share-your-goals", isValid: false, disabled: true },
+  { label: "invite-your-team", isValid: false, disabled: true },
+  { label: "create-your-username", isValid: false, disabled: true },
+  { label: "outline-your-interests", isValid: false, disabled: true },
+  { label: "do-next", isValid: false, disabled: true },
+]
+
+const ClientOnboarding = ({
+  describeYourTeam,
+  shareYourGoals,
+  inviteYourTeam,
+  createYourUsername,
+  doNext,
+  outlineYourInterests,
+}: {
+  describeYourTeam?: React.ReactNode
+  shareYourGoals?: React.ReactNode
+  inviteYourTeam?: React.ReactNode
+  createYourUsername?: React.ReactNode
+  outlineYourInterests?: React.ReactNode
+  doNext?: React.ReactNode
+}) => {
+  const {
+    nextStep,
+    prevStep,
+    setStep,
+    toggleStepValidation,
+    state: { currentStep, hasNextStep, hasPreviousStep, totalSteps },
+    stepsState,
+  } = useStepper({
+    steps,
+  })
+
+  const stepperValue = useMemo(
+    () => ({ nextStep, prevStep, setStep, toggleStepValidation }),
+    [nextStep, prevStep, setStep, toggleStepValidation]
+  )
+  const stepperRootValue = useMemo(
+    () => ({
+      currentStep,
+      hasNextStep,
+      hasPreviousStep,
+      totalSteps,
+      stepsState,
+    }),
+    [currentStep, hasNextStep, hasPreviousStep, totalSteps, stepsState]
+  )
+
+  return (
+    <StepperProvider value={stepperValue}>
+      <StepRootProvider value={stepperRootValue}>
+        <StepControl>
+          <Step>{describeYourTeam}</Step>
+          <Step>{shareYourGoals}</Step>
+          <Step>{inviteYourTeam}</Step>
+          <Step>{createYourUsername}</Step>
+          <Step>{outlineYourInterests}</Step>
+          <Step>{doNext}</Step>
+        </StepControl>
+      </StepRootProvider>
+    </StepperProvider>
+  )
+}
+
+export default function ClientOnboardingRoot() {
+  return (
+    <ClientOnboarding
+      describeYourTeam={<DescribeYourTeam sidebar={<Sidebar />} />}
+      shareYourGoals={<ShareYourGoals sidebar={<Sidebar />} />}
+      inviteYourTeam={<InviteYourTeam sidebar={<Sidebar />} />}
+      createYourUsername={<CreateYourUsername sidebar={<Sidebar />} />}
+      outlineYourInterests={<OutlineYourInterests sidebar={<Sidebar />} />}
+      doNext={<DoNext sidebar={<DoNextSidebar />} />}
+    />
   )
 }

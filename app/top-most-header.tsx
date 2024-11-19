@@ -565,8 +565,15 @@ const SearchBar = () => {
 
 const TALENT_DASH = "/talent-dashboard"
 
+const ONBOARDING = "/onboarding"
+
 export const TopMostHeader = () => {
   const pathname = usePathname()
+
+  if (pathname.startsWith(ONBOARDING)) {
+    return null
+  }
+
   return (
     <div
       className={cn(

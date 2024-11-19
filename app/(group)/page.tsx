@@ -62,10 +62,10 @@ const FavoriteProjectCard = () => {
         />
       </div>
       <div className="p-5">
-        <h1 className="text-base leading-[19.36px] font-bold text-dark-blue-600">
+        <h1 className="text-base leading-[19.36px] font-bold text-dark-blue-600 line-clamp-2">
           The Ultimate Mobile App Experience
         </h1>
-        <p className="text-sm mt-3 leading-[16.94px] font-light text-gray-500">
+        <p className="text-sm mt-3 leading-[16.94px] font-light text-gray-500 line-clamp-2">
           A complete funnel for your customer service needs
         </p>
 
@@ -176,10 +176,10 @@ const NewestAdditionCard = () => {
         />
       </div>
       <div className="flex-auto">
-        <h1 className="text-sm leading-[16.94px] lg:text-lg lg:leading-[21.78px] font-bold text-dark-blue-600">
+        <h1 className="text-sm leading-[16.94px] lg:text-lg lg:leading-[21.78px] font-bold text-dark-blue-600 line-clamp-2">
           SEO Enterprise
         </h1>
-        <p className="text-sm leading-[16.94px] font-light text-dark-blue-600 mt-[7.5px] lg:mt-[11px]">
+        <p className="text-sm leading-[16.94px] font-light text-dark-blue-600 mt-[7.5px] lg:mt-[11px] line-clamp-2">
           Sed ut perspiciatis unde omnis iste natus error sit voluptatem
           accusantium doloremque{" "}
         </p>
@@ -204,7 +204,7 @@ const NewestAdditions = () => {
         </Button>
       </div>
 
-      <div className="mt-[29px] grid md:grid-cols-2 gap-[25px] lg:gap-y-10 lg:gap-x-[42px]">
+      <div className="mt-[29px] grid md:grid-cols-2 xl:grid-cols-3 gap-[25px] lg:gap-y-10 lg:gap-x-[42px]">
         <NewestAdditionCard />
         <NewestAdditionCard />
         <NewestAdditionCard />
@@ -235,10 +235,10 @@ const PopularProjectCard = () => {
         />
       </div>
       <div className="flex-auto">
-        <h1 className="text-lg leading-[21.78px] font-bold text-dark-blue-600">
+        <h1 className="text-lg leading-[21.78px] font-bold text-dark-blue-600 line-clamp-2">
           SEO Enterprise
         </h1>
-        <p className="text-sm leading-[16.94px] font-light text-gray-500 mt-[11px]">
+        <p className="text-sm leading-[16.94px] font-light text-gray-500 mt-[11px] line-clamp-2">
           Sed ut perspiciatis unde omnis iste natus error sit voluptatem
           accusantium doloremque{" "}
         </p>
@@ -279,7 +279,7 @@ const PopularProjects = () => {
         </TabsList>
 
         <TabsContent value="view-all">
-          <div className="pt-[29px] grid md:grid-cols-2 gap-[25px] lg:gap-y-10 lg:gap-x-[42px]">
+          <div className="pt-[29px] grid md:grid-cols-2 xl:grid-cols-3 gap-[25px] lg:gap-y-10 lg:gap-x-[42px]">
             <PopularProjectCard />
             <PopularProjectCard />
             <PopularProjectCard />
