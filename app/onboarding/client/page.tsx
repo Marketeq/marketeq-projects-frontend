@@ -110,10 +110,10 @@ export const DescribeYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
   }
 
   return (
-    <div className="min-h-screen flex pl-[480px]">
+    <div className="min-h-screen flex lg:pl-[480px]">
       {sidebar}
-      <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
-        <div className="max-w-[560px] w-full mx-auto">
+      <div className="relative flex justify-between flex-col flex-auto px-5 md:px-10 py-10 lg:py-[100px] lg:px-[200px]">
+        <div className="max-w-[488px] lg:max-w-[560px] w-full mx-auto">
           <div className="flex gap-x-2 items-center">
             <CircularProgress
               show={false}
@@ -136,7 +136,7 @@ export const DescribeYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
           </p>
 
           <form
-            className="mt-[50px] flex flex-col"
+            className="mt-10 lg:mt-[50px] flex flex-col"
             onSubmit={handleSubmit(onSubmit)}
           >
             <div className="flex flex-col gap-y-1.5">
@@ -198,37 +198,39 @@ export const DescribeYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
                 )}
               />
             </div>
-
-            <div className="mt-[148px] flex items-center justify-between">
-              <NextLink
-                href="/onboarding/client"
-                className={cn(
-                  buttonVariants({
-                    size: "md",
-                    variant: "outlined",
-                    visual: "gray",
-                  })
-                )}
-              >
-                Back
-              </NextLink>
-
-              <div className="flex items-center gap-x-6">
-                <Button
-                  variant="ghost"
-                  visual="gray"
-                  type="button"
-                  onClick={skip}
-                >
-                  Skip
-                </Button>
-
-                <Button size="md" visual="primary">
-                  Continue
-                </Button>
-              </div>
-            </div>
           </form>
+        </div>
+
+        <div className="mt-10 lg:mt-[50px] max-w-[488px] lg:max-w-[560px] mx-auto w-full self-end flex justify-between">
+          <NextLink
+            href="/onboarding"
+            className={cn(
+              buttonVariants({
+                size: "md",
+                variant: "outlined",
+                visual: "gray",
+              })
+            )}
+          >
+            Back
+          </NextLink>
+
+          <div className="flex items-center gap-x-6">
+            <Button
+              className="opacity-50 hover:opacity-100"
+              variant="ghost"
+              visual="gray"
+              type="button"
+              onClick={skip}
+              size="md"
+            >
+              Skip
+            </Button>
+
+            <Button size="md" visual="primary">
+              Continue
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -319,10 +321,13 @@ export const ShareYourGoals = ({ sidebar }: { sidebar: React.ReactNode }) => {
   }
 
   return (
-    <div className="min-h-screen flex pl-[480px]">
+    <div className="min-h-screen flex lg:pl-[480px]">
       {sidebar}
-      <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
-        <div className="max-w-[560px] w-full mx-auto">
+      <form
+        className="relative flex justify-between flex-col flex-auto px-5 md:px-10 py-10 lg:py-[100px] lg:px-[200px]"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="max-w-[488px] lg:max-w-[560px] w-full mx-auto">
           <div className="flex gap-x-2 items-center">
             <CircularProgress
               show={false}
@@ -344,7 +349,7 @@ export const ShareYourGoals = ({ sidebar }: { sidebar: React.ReactNode }) => {
             set up the right way.
           </p>
 
-          <form className="mt-[50px]" onSubmit={handleSubmit(onSubmit)}>
+          <div className="mt-10 lg:mt-[50px]">
             <div className="flex flex-col gap-y-2.5">
               {data.map((item) => (
                 <Controller
@@ -379,35 +384,37 @@ export const ShareYourGoals = ({ sidebar }: { sidebar: React.ReactNode }) => {
                 )}
               />
             </div>
-
-            <div className="mt-[50px] flex items-center justify-between">
-              <Button
-                size="md"
-                variant="outlined"
-                visual="gray"
-                onClick={prevStep}
-                type="button"
-              >
-                Back
-              </Button>
-
-              <div className="flex items-center gap-x-10">
-                <Button
-                  variant="ghost"
-                  visual="gray"
-                  onClick={skip}
-                  type="button"
-                >
-                  Skip
-                </Button>
-                <Button size="md" visual="primary">
-                  Continue
-                </Button>
-              </div>
-            </div>
-          </form>
+          </div>
         </div>
-      </div>
+
+        <div className="mt-10 lg:mt-[50px] max-w-[488px] lg:max-w-[560px] mx-auto w-full self-end flex justify-between">
+          <Button
+            size="md"
+            variant="outlined"
+            visual="gray"
+            onClick={prevStep}
+            type="button"
+          >
+            Back
+          </Button>
+
+          <div className="flex items-center gap-x-6">
+            <Button
+              className="opacity-50 hover:opacity-100"
+              variant="ghost"
+              visual="gray"
+              onClick={skip}
+              type="button"
+              size="md"
+            >
+              Skip
+            </Button>
+            <Button size="md" visual="primary">
+              Continue
+            </Button>
+          </div>
+        </div>
+      </form>
     </div>
   )
 }
@@ -462,11 +469,14 @@ export const InviteYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
   }
 
   return (
-    <div className="min-h-screen flex pl-[480px]">
+    <div className="min-h-screen flex lg:pl-[480px]">
       {sidebar}
 
-      <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
-        <div className="max-w-[560px] w-full mx-auto">
+      <form
+        className="relative flex justify-between flex-col flex-auto px-5 md:px-10 py-10 lg:py-[100px] lg:px-[200px]"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="max-w-[488px] lg:max-w-[560px] w-full mx-auto">
           <div className="flex gap-x-2 items-center">
             <CircularProgress
               show={false}
@@ -488,7 +498,7 @@ export const InviteYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
             set up the right way.
           </p>
 
-          <form className="mt-[50px]" onSubmit={handleSubmit(onSubmit)}>
+          <div className="mt-10 lg:mt-[50px]">
             <div className="flex items-center gap-x-3">
               <span className="text-lg leading-[36px] font-semibold">
                 Add your teammates’ emails to invite them
@@ -567,35 +577,37 @@ export const InviteYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
                 </ClipboardTrigger>
               </ClipboardControl>
             </ClipboardRoot>
-
-            <div className="mt-[50px] flex items-center justify-between">
-              <Button
-                size="md"
-                variant="outlined"
-                visual="gray"
-                onClick={prevStep}
-                type="button"
-              >
-                Back
-              </Button>
-
-              <div className="flex items-center gap-x-10">
-                <Button
-                  variant="ghost"
-                  visual="gray"
-                  onClick={skip}
-                  type="button"
-                >
-                  Skip
-                </Button>
-                <Button size="md" visual="primary">
-                  Continue
-                </Button>
-              </div>
-            </div>
-          </form>
+          </div>
         </div>
-      </div>
+
+        <div className="mt-10 lg:mt-[50px] max-w-[488px] lg:max-w-[560px] mx-auto w-full self-end flex justify-between">
+          <Button
+            size="md"
+            variant="outlined"
+            visual="gray"
+            onClick={prevStep}
+            type="button"
+          >
+            Back
+          </Button>
+
+          <div className="flex items-center gap-x-6">
+            <Button
+              className="opacity-50 hover:opacity-100"
+              variant="ghost"
+              visual="gray"
+              onClick={skip}
+              type="button"
+              size="md"
+            >
+              Skip
+            </Button>
+            <Button size="md" visual="primary">
+              Continue
+            </Button>
+          </div>
+        </div>
+      </form>
     </div>
   )
 }
@@ -649,11 +661,14 @@ export const CreateYourUsername = ({
   }
 
   return (
-    <div className="min-h-screen flex pl-[480px]">
+    <div className="min-h-screen flex lg:pl-[480px]">
       {sidebar}
 
-      <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
-        <div className="max-w-[560px] w-full mx-auto">
+      <form
+        className="relative flex justify-between flex-col flex-auto px-5 py-10 md:px-10 lg:py-[100px] lg:px-[200px]"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="max-w-[488px] lg:max-w-[560px] w-full mx-auto">
           <div className="flex gap-x-2 items-center">
             <CircularProgress
               show={false}
@@ -675,7 +690,7 @@ export const CreateYourUsername = ({
             later...
           </p>
 
-          <form className="mt-[50px]" onSubmit={handleSubmit(onSubmit)}>
+          <div className="mt-10 lg:mt-[50px]">
             <div className="flex flex-col gap-y-1.5">
               <Label className="text-dark-blue-400" id="username" size="sm">
                 Enter Your Username
@@ -878,7 +893,7 @@ export const CreateYourUsername = ({
               </div>
             )}
 
-            <div className="mt-[50px]">
+            <div className="mt-10 lg:mt-[50px]">
               <Alert>
                 <AlertIcon>
                   <AlertCircle className="size-5" />
@@ -891,24 +906,30 @@ export const CreateYourUsername = ({
                 </AlertContent>
               </Alert>
             </div>
-
-            <div className="mt-[134px] flex items-center justify-between">
-              <Button size="md" variant="outlined" visual="gray" type="button">
-                Back
-              </Button>
-
-              <div className="flex items-center gap-x-10">
-                <Button variant="ghost" visual="gray" type="button">
-                  Skip
-                </Button>
-                <Button size="md" visual="primary">
-                  Continue
-                </Button>
-              </div>
-            </div>
-          </form>
+          </div>
         </div>
-      </div>
+
+        <div className="mt-10 lg:mt-[50px] max-w-[488px] lg:max-w-[560px] mx-auto w-full self-end flex justify-between">
+          <Button size="md" variant="outlined" visual="gray" type="button">
+            Back
+          </Button>
+
+          <div className="flex items-center gap-x-10">
+            <Button
+              variant="ghost"
+              visual="gray"
+              type="button"
+              size="md"
+              onClick={skip}
+            >
+              Skip
+            </Button>
+            <Button size="md" visual="primary">
+              Continue
+            </Button>
+          </div>
+        </div>
+      </form>
     </div>
   )
 }
@@ -1282,10 +1303,13 @@ export const OutlineYourInterests = ({
   }
 
   return (
-    <div className="min-h-screen flex pl-[480px]">
+    <div className="min-h-screen flex lg:pl-[480px]">
       {sidebar}
-      <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
-        <div className="max-w-[560px] w-full mx-auto">
+      <form
+        className="relative flex justify-between flex-col flex-auto px-5 md:px-10 py-10 lg:py-[100px] lg:px-[200px]"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="max-w-[688px] lg:max-w-[560px] w-full mx-auto">
           <div className="flex gap-x-2 items-center">
             <CircularProgress
               show={false}
@@ -1306,7 +1330,7 @@ export const OutlineYourInterests = ({
             Share an invite with your team so they can be part of the process.
           </p>
 
-          <form className="mt-[50px]" onSubmit={handleSubmit(onSubmit)}>
+          <div className="mt-[50px]">
             <div className="space-y-1.5">
               <div className="flex items-center gap-x-3">
                 <h1 className="text-lg leading-9 font-semibold text-dark-blue-400">
@@ -1345,7 +1369,7 @@ export const OutlineYourInterests = ({
               />
             </div>
 
-            <div className="mt-[50px]">
+            <div className="mt-10 lg:mt-[50px]">
               <div className="flex flex-col gap-y-1.5">
                 <Controller
                   control={control}
@@ -1389,7 +1413,7 @@ export const OutlineYourInterests = ({
               </div>
             </div>
 
-            <div className="mt-[50px]">
+            <div className="mt-10 lg:mt-[50px]">
               <div className="flex flex-col gap-y-1.5">
                 <Controller
                   control={control}
@@ -1426,7 +1450,7 @@ export const OutlineYourInterests = ({
               </div>
             </div>
 
-            <div className="space-y-1.5 mt-[50px]">
+            <div className="space-y-1.5 mt-10 lg:mt-[50px]">
               <div className="flex items-center gap-x-3">
                 <h1 className="text-lg leading-9 font-semibold text-dark-blue-400">
                   What types of projects are you interested in?
@@ -1464,7 +1488,7 @@ export const OutlineYourInterests = ({
               </div>
             </div>
 
-            <div className="space-y-1.5 mt-[50px]">
+            <div className="space-y-1.5 mt-10 lg:mt-[50px]">
               <div className="flex items-center gap-x-3">
                 <h1 className="text-lg leading-9 font-semibold text-dark-blue-400">
                   What’s your budget?
@@ -1501,46 +1525,48 @@ export const OutlineYourInterests = ({
                 />
               </div>
             </div>
-
-            <div className="mt-[50px] flex items-center justify-between">
-              <Button
-                size="md"
-                variant="outlined"
-                visual="gray"
-                onClick={prevStep}
-                type="button"
-              >
-                Back
-              </Button>
-
-              <div className="flex items-center gap-x-10">
-                <Button
-                  variant="ghost"
-                  visual="gray"
-                  onClick={skip}
-                  type="button"
-                >
-                  Skip
-                </Button>
-                <Button size="md" visual="primary">
-                  Continue
-                </Button>
-              </div>
-            </div>
-          </form>
+          </div>
         </div>
-      </div>
+
+        <div className="mt-10 lg:mt-[50px] max-w-[488px] lg:max-w-[560px] mx-auto w-full self-end flex justify-between">
+          <Button
+            size="md"
+            variant="outlined"
+            visual="gray"
+            onClick={prevStep}
+            type="button"
+          >
+            Back
+          </Button>
+
+          <div className="flex items-center gap-x-6">
+            <Button
+              className="opacity-50 hover:opacity-100"
+              variant="ghost"
+              visual="gray"
+              onClick={skip}
+              type="button"
+              size="md"
+            >
+              Skip
+            </Button>
+            <Button size="md" visual="primary">
+              Continue
+            </Button>
+          </div>
+        </div>
+      </form>
     </div>
   )
 }
 
 export const DoNext = ({ sidebar }: { sidebar: React.ReactNode }) => {
   return (
-    <div className="min-h-screen flex pl-[480px]">
+    <div className="min-h-screen flex lg:pl-[480px]">
       {sidebar}
 
-      <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[150px]">
-        <div className="max-w-[660px] w-full mx-auto">
+      <div className="relative flex justify-between flex-col flex-auto px-5 md:px-10 py-10 lg:py-[100px] lg:px-[150px]">
+        <div className="max-w-[688px] lg:max-w-[660px] w-full mx-auto">
           <h1 className="text-2xl leading-[36px] mt-2 text-dark-blue-400 font-semibold">
             What would you like to do next?
           </h1>
@@ -1549,7 +1575,7 @@ export const DoNext = ({ sidebar }: { sidebar: React.ReactNode }) => {
             Choose your next move and get started
           </p>
 
-          <div className="mt-[50px] grid grid-cols-2 gap-5">
+          <div className="mt-10 md:mt-[50px] grid md:grid-cols-2 gap-2.5 lg:gap-5">
             <div className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300">
               <div className="flex items-center gap-x-3">
                 <div className="size-11 rounded-lg border-[1.5px] shrink-0 inline-flex items-center justify-center border-[#EAECF0] text-primary-500">
@@ -1599,12 +1625,12 @@ export const DoNext = ({ sidebar }: { sidebar: React.ReactNode }) => {
               <ChevronRight className="shrink-0 size-5" />
             </div>
           </div>
+        </div>
 
-          <div className="mt-[290px] flex justify-end">
-            <Button className="text-primary-500" variant="link" visual="gray">
-              <Home03 className="size-[15px]" /> Go to Dashboard
-            </Button>
-          </div>
+        <div className="mt-10 lg:mt-[50px] max-w-[688px] lg:max-w-[660px] mx-auto w-full self-end flex justify-end">
+          <Button className="text-primary-500" variant="link" visual="gray">
+            <Home03 className="size-[15px]" /> Go to Dashboard
+          </Button>
         </div>
       </div>
     </div>
@@ -1613,7 +1639,7 @@ export const DoNext = ({ sidebar }: { sidebar: React.ReactNode }) => {
 
 const DoNextSidebar = () => {
   return (
-    <div className="fixed inset-y-0 left-0 p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
+    <div className="fixed inset-y-0 left-0 p-[75px] w-[480px] xs:max-lg:hidden shrink-0 flex flex-col bg-dark-blue-500">
       <NextLink href="/" className="focus-visible:outline-none">
         <Logo className="h-9 w-[245px] shrink-0" />
       </NextLink>
@@ -1670,7 +1696,7 @@ const DoNextSidebar = () => {
 
 const Sidebar = () => {
   return (
-    <div className="fixed inset-y-0 left-0 p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
+    <div className="fixed inset-y-0 left-0 p-[75px] w-[480px] xs:max-lg:hidden shrink-0 flex flex-col bg-dark-blue-500">
       <NextLink href="/" className="focus-visible:outline-none">
         <Logo className="h-9 w-[245px] shrink-0" />
       </NextLink>

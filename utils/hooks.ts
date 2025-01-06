@@ -5,6 +5,7 @@ import { useRef } from "react"
 import { NavigateOptions } from "next/dist/shared/lib/app-router-context.shared-runtime"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useRouter as useRouterNavigation } from "next/navigation"
+import { Time, parseTime } from "@internationalized/date"
 import { Steps, useStepper as useHeadlessStepper } from "headless-stepper"
 import nProgress from "nprogress"
 import { useMedia, useMount } from "react-use"
@@ -757,4 +758,21 @@ export const useStepper = ({
     toggleStepValidation,
     stepsState,
   }
+}
+
+export const useTimeSelector = ({
+  defaultValue,
+  onValueChange,
+}: {
+  defaultValue?: string
+  onValueChange?: (time: Time) => void
+} = {}) => {
+  const uncontrolledState = useUncontrolledState({
+    defaultValue,
+    onChange: (value) => {
+      if (value) onValueChange?.(parseTime(value))
+    },
+  })
+
+  return uncontrolledState
 }

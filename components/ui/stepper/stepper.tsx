@@ -24,6 +24,7 @@ interface StepRootContextState {
   totalSteps: number
   stepsState: { label: string; isValid?: boolean; disabled?: boolean }[]
 }
+
 export const [StepRootProvider, useStepRootContext] =
   createContext<StepRootContextState>({
     displayName: "StepRootContext",

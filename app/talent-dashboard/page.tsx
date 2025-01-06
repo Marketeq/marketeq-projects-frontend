@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { SVGProps } from "react"
+import data from "@/public/mock/projects.json"
 import { ONE_SECOND } from "@/utils/constants"
 import { cn, getId, getIsEmpty, getIsNotEmpty } from "@/utils/functions"
 import { useEditable } from "@ark-ui/react"
@@ -54,6 +55,7 @@ import {
   CircularProgress,
   Dialog,
   DialogContent,
+  DialogTrigger,
   EditableRootProvider,
   IconButton,
   Progress,
@@ -63,6 +65,10 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from "@/components/ui"
 import {
   EditableArea,
@@ -233,145 +239,283 @@ const LeftSidebar = () => {
   )
 }
 
-const RightSidebar = ({ className }: { className?: string }) => {
+const RightDrawer = ({ className }: { className?: string }) => {
   return (
     <div
       className={cn(
-        "w-[322px] shrink-0 border-l min-[1440px]:block hidden bg-white border-gray-200",
+        "w-full md:w-[322px] shrink-0 border-l bg-white border-gray-200",
         className
       )}
     >
-      <ScrollArea scrollBar={<ScrollBar className="w-4 p-1" />}>
-        <div className="divide-y divide-[#122A4B]/[.15]">
-          <div className="p-5">
-            <h1 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
-              @chrisdesign221
-            </h1>
+      <div className="divide-y divide-[#122A4B]/[.15]">
+        <div className="p-5">
+          <h1 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
+            @chrisdesign221
+          </h1>
+          <Button
+            className="underline text-dark-blue-400 hover:text-primary-500"
+            visual="gray"
+            size="md"
+            variant="link"
+          >
+            Add your job title
+          </Button>
+
+          <div className="mt-3 flex items-center gap-x-3">
+            <div className="px-2 py-1 inline-flex items-center gap-x-1 rounded-[4px] text-xs leading-[14.52px] font-medium text-gray-500 bg-gray-200 shadow-[0px_0.75px_1.51px_0px_rgba(16,24,40,.05)]">
+              <Star className="size-3" /> 0.0
+            </div>
+
+            <span className="size-xs leading-[14.52px] text-dark-blue-400">
+              no reviews yet
+            </span>
+          </div>
+        </div>
+
+        <div className="p-5 flex flex-col items-start gap-y-3">
+          <CircularProgress
+            className="text-gray-700"
+            strokeWidth={6}
+            size={50}
+            value={10}
+          />
+
+          <div className="gap-y-2 flex items-start flex-col">
             <Button
               className="underline text-dark-blue-400 hover:text-primary-500"
               visual="gray"
               size="md"
               variant="link"
             >
-              Add your job title
+              Complete Your Profile
             </Button>
 
-            <div className="mt-3 flex items-center gap-x-3">
-              <div className="px-2 py-1 inline-flex items-center gap-x-1 rounded-[4px] text-xs leading-[14.52px] font-medium text-gray-500 bg-gray-200 shadow-[0px_0.75px_1.51px_0px_rgba(16,24,40,.05)]">
-                <Star className="size-3" /> 0.0
-              </div>
-
-              <span className="size-xs leading-[14.52px] text-dark-blue-400">
-                no reviews yet
-              </span>
-            </div>
+            <span className="text-[13px] leading-[15.73px] font-light">
+              Talents with complete profiles are 4 times more likely to get
+              hired for client projects.
+            </span>
           </div>
-
-          <div className="p-5 flex flex-col items-start gap-y-3">
-            <CircularProgress
-              className="text-gray-700"
-              strokeWidth={6}
-              size={50}
-              value={10}
-            />
-
-            <div className="gap-y-2 flex items-start flex-col">
-              <Button
-                className="underline text-dark-blue-400 hover:text-primary-500"
-                visual="gray"
-                size="md"
-                variant="link"
-              >
-                Complete Your Profile
-              </Button>
-
-              <span className="text-[13px] leading-[15.73px] font-light">
-                Talents with complete profiles are 4 times more likely to get
-                hired for client projects.
-              </span>
-            </div>
-          </div>
-
-          <div className="p-5">
-            <div className="flex gap-x-[5px] items-center">
-              <ThumbsUp className="size-[15px]" />
-              <span className="text-[11px] leading-6 font-semibold text-dark-blue-400">
-                0% Client Success
-              </span>
-            </div>
-          </div>
-
-          <div className="p-5 space-y-3">
-            <div className="flex gap-x-[5px] items-center">
-              <MapPin className="size-[15px]" />
-              <NextLink
-                href="#"
-                className="text-[11px] leading-6 font-semibold text-dark-blue-400 underline hover:text-primary-500"
-              >
-                Add your location
-              </NextLink>
-            </div>
-            <div className="flex gap-x-[5px] items-center">
-              <Clock className="size-[15px]" />
-              <NextLink
-                href="#"
-                className="text-[11px] leading-6 font-semibold text-dark-blue-400 underline hover:text-primary-500"
-              >
-                Add your local time
-              </NextLink>
-            </div>
-          </div>
-
-          <div className="p-5 grid grid-cols-2 gap-x-[15px] gap-y-3">
-            <div className="flex flex-col items-start gap-y-[5px]">
-              <span className="inline-block text-sm leading-[16.94px] text-dark-blue-400">
-                Hourly Rate
-              </span>
-              <Button
-                className="text-[11px] leading-6 text-dark-blue-400 underline hover:text-primary-500"
-                visual="gray"
-                variant="link"
-              >
-                Edit
-              </Button>
-            </div>
-            <div className="flex flex-col items-start gap-y-[5px]">
-              <span className="inline-block text-sm leading-[16.94px] text-dark-blue-400">
-                Availability
-              </span>
-              <Button
-                className="text-[11px] leading-6 text-dark-blue-400 underline hover:text-primary-500"
-                visual="gray"
-                variant="link"
-              >
-                Edit
-              </Button>
-            </div>
-            <div className="flex flex-col items-start gap-y-[5px]">
-              <span className="inline-block text-sm leading-[16.94px] text-dark-blue-400">
-                Member since
-              </span>
-              <span className="text-[11px] leading-6 text-dark-blue-400 font-semibold">
-                Sep 2024
-              </span>
-            </div>
-            <div className="flex flex-col items-start gap-y-[5px]">
-              <span className="inline-block text-sm leading-[16.94px] text-dark-blue-400">
-                Hourly Rate
-              </span>
-              <Button
-                className="text-[11px] leading-6 text-dark-blue-400 underline hover:text-primary-500"
-                visual="gray"
-                variant="link"
-              >
-                Edit
-              </Button>
-            </div>
-          </div>
-
-          <Tasks />
         </div>
-      </ScrollArea>
+
+        <div className="p-5">
+          <div className="flex gap-x-[5px] items-center">
+            <ThumbsUp className="size-[15px] text-dark-blue-400" />
+            <span className="text-[11px] leading-6 font-semibold text-dark-blue-400">
+              0% Client Success
+            </span>
+          </div>
+        </div>
+
+        <div className="p-5 space-y-3">
+          <div className="flex gap-x-[5px] items-center">
+            <MapPin className="size-[15px] text-dark-blue-400" />
+            <NextLink
+              href="#"
+              className="text-[11px] leading-6 font-semibold text-dark-blue-400 underline hover:text-primary-500"
+            >
+              Add your location
+            </NextLink>
+          </div>
+          <div className="flex gap-x-[5px] items-center">
+            <Clock className="size-[15px] text-dark-blue-400" />
+            <NextLink
+              href="#"
+              className="text-[11px] leading-6 font-semibold text-dark-blue-400 underline hover:text-primary-500"
+            >
+              Add your local time
+            </NextLink>
+          </div>
+        </div>
+
+        <div className="p-5 grid grid-cols-2 gap-x-[15px] gap-y-3">
+          <div className="flex flex-col items-start gap-y-[5px]">
+            <span className="inline-block text-sm leading-[16.94px] text-dark-blue-400">
+              Hourly Rate
+            </span>
+            <Button
+              className="text-[11px] leading-6 text-dark-blue-400 underline hover:text-primary-500"
+              visual="gray"
+              variant="link"
+            >
+              Edit
+            </Button>
+          </div>
+          <div className="flex flex-col items-start gap-y-[5px]">
+            <span className="inline-block text-sm leading-[16.94px] text-dark-blue-400">
+              Availability
+            </span>
+            <Button
+              className="text-[11px] leading-6 text-dark-blue-400 underline hover:text-primary-500"
+              visual="gray"
+              variant="link"
+            >
+              Edit
+            </Button>
+          </div>
+          <div className="flex flex-col items-start gap-y-[5px]">
+            <span className="inline-block text-sm leading-[16.94px] text-dark-blue-400">
+              Member since
+            </span>
+            <span className="text-[11px] leading-6 text-dark-blue-400 font-semibold">
+              Sep 2024
+            </span>
+          </div>
+          <div className="flex flex-col items-start gap-y-[5px]">
+            <span className="inline-block text-sm leading-[16.94px] text-dark-blue-400">
+              Hourly Rate
+            </span>
+            <Button
+              className="text-[11px] leading-6 text-dark-blue-400 underline hover:text-primary-500"
+              visual="gray"
+              variant="link"
+            >
+              Edit
+            </Button>
+          </div>
+        </div>
+
+        <Tasks />
+      </div>
+    </div>
+  )
+}
+
+const RightSidebar = ({ className }: { className?: string }) => {
+  return (
+    <div
+      className={cn("w-[322px] shrink-0 min-[1440px]:block hidden", className)}
+    >
+      <div className="divide-y bg-white border rounded-lg border-gray-200 shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)] divide-[#122A4B]/[.15]">
+        <div className="p-5">
+          <h1 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
+            @chrisdesign221
+          </h1>
+          <Button
+            className="underline text-dark-blue-400 hover:text-primary-500"
+            visual="gray"
+            size="md"
+            variant="link"
+          >
+            Add your job title
+          </Button>
+
+          <div className="mt-3 flex items-center gap-x-3">
+            <div className="px-2 py-1 inline-flex items-center gap-x-1 rounded-[4px] text-xs leading-[14.52px] font-medium text-gray-500 bg-gray-200 shadow-[0px_0.75px_1.51px_0px_rgba(16,24,40,.05)]">
+              <Star className="size-3" /> 0.0
+            </div>
+
+            <span className="size-xs leading-[14.52px] text-dark-blue-400">
+              no reviews yet
+            </span>
+          </div>
+        </div>
+
+        <div className="p-5 flex flex-col items-start gap-y-3">
+          <CircularProgress
+            className="text-gray-700"
+            strokeWidth={6}
+            size={50}
+            value={10}
+          />
+
+          <div className="gap-y-2 flex items-start flex-col">
+            <Button
+              className="underline text-dark-blue-400 hover:text-primary-500"
+              visual="gray"
+              size="md"
+              variant="link"
+            >
+              Complete Your Profile
+            </Button>
+
+            <span className="text-[13px] leading-[15.73px] font-light">
+              Talents with complete profiles are 4 times more likely to get
+              hired for client projects.
+            </span>
+          </div>
+        </div>
+
+        <div className="p-5">
+          <div className="flex gap-x-[5px] items-center">
+            <ThumbsUp className="size-[15px]" />
+            <span className="text-[11px] leading-6 font-semibold text-dark-blue-400">
+              0% Client Success
+            </span>
+          </div>
+        </div>
+
+        <div className="p-5 space-y-3">
+          <div className="flex gap-x-[5px] items-center">
+            <MapPin className="size-[15px]" />
+            <NextLink
+              href="#"
+              className="text-[11px] leading-6 font-semibold text-dark-blue-400 underline hover:text-primary-500"
+            >
+              Add your location
+            </NextLink>
+          </div>
+          <div className="flex gap-x-[5px] items-center">
+            <Clock className="size-[15px]" />
+            <NextLink
+              href="#"
+              className="text-[11px] leading-6 font-semibold text-dark-blue-400 underline hover:text-primary-500"
+            >
+              Add your local time
+            </NextLink>
+          </div>
+        </div>
+
+        <div className="p-5 grid grid-cols-2 gap-x-[15px] gap-y-3">
+          <div className="flex flex-col items-start gap-y-[5px]">
+            <span className="inline-block text-sm leading-[16.94px] text-dark-blue-400">
+              Hourly Rate
+            </span>
+            <Button
+              className="text-[11px] leading-6 text-dark-blue-400 underline hover:text-primary-500"
+              visual="gray"
+              variant="link"
+            >
+              Edit
+            </Button>
+          </div>
+          <div className="flex flex-col items-start gap-y-[5px]">
+            <span className="inline-block text-sm leading-[16.94px] text-dark-blue-400">
+              Availability
+            </span>
+            <Button
+              className="text-[11px] leading-6 text-dark-blue-400 underline hover:text-primary-500"
+              visual="gray"
+              variant="link"
+            >
+              Edit
+            </Button>
+          </div>
+          <div className="flex flex-col items-start gap-y-[5px]">
+            <span className="inline-block text-sm leading-[16.94px] text-dark-blue-400">
+              Member since
+            </span>
+            <span className="text-[11px] leading-6 text-dark-blue-400 font-semibold">
+              Sep 2024
+            </span>
+          </div>
+          <div className="flex flex-col items-start gap-y-[5px]">
+            <span className="inline-block text-sm leading-[16.94px] text-dark-blue-400">
+              Hourly Rate
+            </span>
+            <Button
+              className="text-[11px] leading-6 text-dark-blue-400 underline hover:text-primary-500"
+              visual="gray"
+              variant="link"
+            >
+              Edit
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white mt-5 border rounded-lg border-gray-200 shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
+        <Tasks />
+      </div>
     </div>
   )
 }
@@ -761,43 +905,26 @@ const StarsBFill = ({ className, ...props }: SVGProps<SVGSVGElement>) => {
   )
 }
 
-export default function TalentDashboard() {
-  const [carousel, setCarousel] = React.useState<Swiper>()
-  const [isOpen, toggleIsOpen] = useToggle(false)
-
+const Welcome = ({ onToggle }: { onToggle: () => void }) => {
   return (
-    <div className="flex bg-gray-50">
-      <LeftSidebar />
-      <div className="flex-auto pt-6 md:pt-5 px-6 md:px-8 min-[1024px]:pl-[256px] xl:px-[82px] xl:pl-[306px] 2xl:pr-[180px] 2xl:pl-[404px] overflow-hidden">
-        <div className="max-w-[1010px] mx-auto">
-          <div className="md:contents flex flex-col gap-y-5">
-            <div className="flex items-end justify-between">
-              <h1 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
-                Welcome, Christopher!
-              </h1>
+    <>
+      <div className="md:contents flex flex-col gap-y-5">
+        <div className="flex items-end justify-between">
+          <h1 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
+            Welcome, Christopher!
+          </h1>
 
-              <div className="contents md:flex min-[768px]:flex-row-reverse min-[1024px]:flex-row items-center gap-x-3">
-                <Button
-                  className="min-[1440px]:hidden inline-flex"
-                  variant="light"
-                  onClick={toggleIsOpen}
-                >
-                  My Profile
-                </Button>
-
-                <Button
-                  className="bg-white text-dark-blue-400 xs:max-md:hidden"
-                  variant="outlined"
-                  visual="gray"
-                >
-                  <Plus className="size-[15px]" />
-                  Create a Project
-                </Button>
-              </div>
-            </div>
+          <div className="contents md:flex min-[768px]:flex-row-reverse min-[1024px]:flex-row items-center gap-x-3">
+            <Button
+              className="min-[1440px]:hidden inline-flex"
+              variant="light"
+              onClick={onToggle}
+            >
+              My Profile
+            </Button>
 
             <Button
-              className="bg-white text-dark-blue-400 md:hidden"
+              className="bg-white text-dark-blue-400 xs:max-md:hidden"
               variant="outlined"
               visual="gray"
             >
@@ -805,1670 +932,1066 @@ export default function TalentDashboard() {
               Create a Project
             </Button>
           </div>
+        </div>
 
-          <div className="mt-3 md:mt-5">
-            <div className="rounded-lg p-5 bg-white border border-gray-200 shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
-              <h1 className="text-lg leading-[21.78px] font-bold text-dark-blue-400">
-                My Earnings
-              </h1>
+        <Button
+          className="bg-white text-dark-blue-400 md:hidden"
+          variant="outlined"
+          visual="gray"
+        >
+          <Plus className="size-[15px]" />
+          Create a Project
+        </Button>
+      </div>
 
-              <div className="divide-y-[.76px] md:divide-y-0 md:divide-x-[0.76px] flex md:flex-row flex-col mt-5 divide-gray-200">
-                <div className="flex-auto md:flex xs:max-md:py-5">
-                  <div className="space-y-[17.41px]">
-                    <div className="flex gap-x-[6.75px]">
-                      <MoneyDollarCircleFill className="flex-none text-dark-blue-400" />
-                      <span className="text-sm leading-[16.94px] text-dark-blue-400">
-                        Lifetime Earnings
-                      </span>
-                    </div>
+      <div className="mt-3 md:mt-5">
+        <div className="rounded-lg p-5 bg-white border border-gray-200 shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
+          <h1 className="text-lg leading-[21.78px] font-bold text-dark-blue-400">
+            My Earnings
+          </h1>
 
-                    <div className="space-y-2.5">
-                      <div className="flex items-center gap-x-0.5">
-                        <span className="text-xl leading-6 text-dark-blue-400/50">
-                          $
-                        </span>
-                        <h1 className="text-2xl leading-[29.05px] font-semibold text-dark-blue-400">
-                          66,777
-                          <span className="text-sm leading-[16.94px] text-dark-blue-400">
-                            .00
-                          </span>
-                        </h1>
-                      </div>
-
-                      <p className="text-[11px] leading-[13.31px] text-dark-blue-400">
-                        Earnings since Jun 24, 2021
-                      </p>
-                    </div>
-
-                    <h3 className="text-[13px] leading-[15.73px] text-dark-blue-400">
-                      <span className="font-semibold">572</span> Total Hours
-                    </h3>
-                  </div>
-                </div>
-
-                <div className="flex-auto md:flex md:justify-center xs:max-md:py-5">
-                  <div className="space-y-[17.41px]">
-                    <div className="flex gap-x-[6.75px] ">
-                      <CalendarBold className="flex-none text-dark-blue-400" />
-                      <span className="text-sm leading-[16.94px] text-dark-blue-400">
-                        Earnings This Month
-                      </span>
-                    </div>
-
-                    <div className="space-y-2.5">
-                      <div className="flex items-center gap-x-0.5">
-                        <span className="text-xl leading-6 text-dark-blue-400/50">
-                          $
-                        </span>
-                        <h1 className="text-2xl leading-[29.05px] font-semibold text-dark-blue-400">
-                          4,566
-                          <span className="text-sm leading-[16.94px] text-dark-blue-400">
-                            .00
-                          </span>
-                        </h1>
-                      </div>
-
-                      <p className="text-[11px] leading-[13.31px] text-dark-blue-400">
-                        Earnings in August
-                      </p>
-                    </div>
-
-                    <h3 className="text-[13px] leading-[15.73px] flex items-center gap-x-1 text-dark-blue-400">
-                      <ArrowUp className="size-[14.39px] shrink-0 text-success-500" />
-                      <span>
-                        <span className="text-success-500">12.8%</span> from
-                        last month
-                      </span>
-                    </h3>
-                  </div>
-                </div>
-
-                <div className="flex-auto md:flex md:justify-end xs:max-md:pt-5">
-                  <div className="space-y-[14.68px]">
-                    <div className="flex items-center justify-between">
-                      <div className="flex gap-x-[6.75px] ">
-                        <WalletBold className="flex-none text-dark-blue-400" />
-                        <span className="text-sm leading-[16.94px] text-dark-blue-400">
-                          Next Payout
-                        </span>
-                      </div>
-
-                      <Button
-                        className="text-dark-blue-400 text-[10px] leading-5 underline hover:text-primary-500"
-                        variant="link"
-                      >
-                        See all payouts
-                      </Button>
-                    </div>
-
-                    <div className="flex items-center md:gap-x-[25px] min-[1024px]:gap-x-[30px] min-[1440px]:gap-x-[37px] xl:gap-x-[57px] 2xl:gap-x-[75px] justify-between">
-                      <div className="space-y-2.5">
-                        <div className="flex gap-x-1 items-center">
-                          <div className="flex items-center gap-x-0.5">
-                            <span className="text-xl leading-6 text-dark-blue-400/50">
-                              $
-                            </span>
-                            <h1 className="text-2xl leading-[29.05px] font-semibold text-dark-blue-400">
-                              800
-                              <span className="text-sm leading-[16.94px] text-dark-blue-400">
-                                .00
-                              </span>
-                            </h1>
-                          </div>
-
-                          <Badge visual="primary">Processing</Badge>
-                        </div>
-
-                        <p className="text-[11px] leading-[13.31px] text-dark-blue-400">
-                          Tuesday, Aug 20, 2024
-                        </p>
-                      </div>
-
-                      <Button
-                        className="bg-white h-7 px-2.5 text-[10px] leading-5 text-dark-blue-400"
-                        variant="outlined"
-                        visual="gray"
-                      >
-                        Edit Schedule
-                      </Button>
-                    </div>
-
-                    <div className="flex items-center md:gap-x-[25px] min-[1024px]:gap-x-[30px] min-[1440px]:gap-x-[37px] xl:gap-x-[57px] 2xl:gap-x-[75px] justify-between">
-                      <div className="flex items-center gap-x-1.5">
-                        <BankLine className="text-dark-blue-400" />
-                        <h3 className="text-[13px] inline-flex items-center gap-x-2 leading-[15.73px] text-dark-blue-400">
-                          Chase Bank
-                          <span className="text-[13px] leading-[15.73px] font-semibold">
-                            ...4553
-                          </span>
-                        </h3>
-                      </div>
-
-                      <Button
-                        className="text-dark-blue-400 text-[10px] leading-5 underline hover:text-primary-500"
-                        variant="link"
-                      >
-                        Manage bank info
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-3 md:mt-5">
-            <div className="border bg-white border-gray-200 rounded-lg shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
-              <div className="flex justify-between items-start pt-5 px-6">
-                <h1 className="text-lg leading-[21.78px] font-bold text-dark-blue-400">
-                  Recent Projects
-                </h1>
-
-                <Button
-                  className="text-dark-blue-400 xs:max-md:hidden"
-                  variant="link"
-                  visual="gray"
-                >
-                  View All Projects <ArrowRight className="size-3.5" />
-                </Button>
-              </div>
-
-              <Tabs className="mt-1" defaultValue="All Projects">
-                <TabsList className="px-6 w-full justify-start">
-                  <TabsTrigger className="pb-[11px]" value="All Projects">
-                    All Projects
-                  </TabsTrigger>
-                  <TabsTrigger className="pb-[11px]" value="Created by Me">
-                    Created by Me
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent className="overflow-x-hidden" value="All Projects">
-                  <div className="overflow-x-auto scrollbar-none">
-                    <table className="table-auto border-collapse w-full">
-                      <thead>
-                        <tr>
-                          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
-                            Project Name
-                          </th>
-                          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
-                            Team
-                          </th>
-                          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
-                            Status
-                          </th>
-                          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
-                            Next Milestone
-                          </th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        <tr className="first:pt-3 last:pb-3">
-                          <td className="px-6 py-3.5 text-sm leading-5 font-semibold text-dark-blue-400 inline-block truncate">
-                            Website Redesign for EcoCo
-                          </td>
-                          <td className="px-6 py-2">
-                            <AvatarGroup excess size="sm" max={3}>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                            </AvatarGroup>
-                          </td>
-                          <td className="px-6 py-[13px] items-center">
-                            <Badge visual="success">In Progress</Badge>
-                          </td>
-                          <td className="pl-6 pr-8 py-3.5">
-                            <div className="gap-x-14 flex items-center justify-between">
-                              <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
-                                Jan 6, 2024
-                              </span>
-                              <Button
-                                className="h-auto px-1.5 py-1 text-dark-blue-400"
-                                visual="gray"
-                                variant="ghost"
-                              >
-                                <MoreHorizontal className="size-[15px]" />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr className="first:pt-3 last:pb-3">
-                          <td className="px-6 py-3.5 text-sm leading-5 font-semibold text-dark-blue-400 inline-block truncate">
-                            Mobile Design for ADO
-                          </td>
-                          <td className="px-6 py-2">
-                            <AvatarGroup excess size="sm" max={3}>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                            </AvatarGroup>
-                          </td>
-                          <td className="px-6 py-[13px] items-center">
-                            <Badge visual="success">In Progress</Badge>
-                          </td>
-                          <td className="pl-6 pr-8 py-3.5">
-                            <div className="gap-x-14 flex items-center justify-between">
-                              <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
-                                Jan 6, 2024
-                              </span>
-                              <Button
-                                className="h-auto px-1.5 py-1 text-dark-blue-400"
-                                visual="gray"
-                                variant="ghost"
-                              >
-                                <MoreHorizontal className="size-[15px]" />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr className="first:pt-3 last:pb-3">
-                          <td className="px-6 py-3.5 text-sm leading-5 font-semibold text-dark-blue-400 inline-block truncate">
-                            FitLife Sales Funnel
-                          </td>
-                          <td className="px-6 py-2">
-                            <AvatarGroup excess size="sm" max={3}>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                            </AvatarGroup>
-                          </td>
-                          <td className="px-6 py-[13px] items-center">
-                            <Badge visual="gray">Pending Approval</Badge>
-                          </td>
-                          <td className="pl-6 pr-8 py-3.5">
-                            <div className="gap-x-14 flex items-center justify-between">
-                              <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
-                                Jan 6, 2024
-                              </span>
-                              <Button
-                                className="h-auto px-1.5 py-1 text-dark-blue-400"
-                                visual="gray"
-                                variant="ghost"
-                              >
-                                <MoreHorizontal className="size-[15px]" />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr className="first:pt-3 last:pb-3">
-                          <td className="px-6 py-3.5 text-sm leading-5 font-semibold text-dark-blue-400 inline-block truncate">
-                            FashionHub Store
-                          </td>
-                          <td className="px-6 py-2">
-                            <AvatarGroup excess size="sm" max={3}>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                            </AvatarGroup>
-                          </td>
-                          <td className="px-6 py-[13px] items-center">
-                            <Badge visual="success">In Progress</Badge>
-                          </td>
-                          <td className="pl-6 pr-8 py-3.5">
-                            <div className="gap-x-14 flex items-center justify-between">
-                              <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
-                                Jan 6, 2024
-                              </span>
-                              <Button
-                                className="h-auto px-1.5 py-1 text-dark-blue-400"
-                                visual="gray"
-                                variant="ghost"
-                              >
-                                <MoreHorizontal className="size-[15px]" />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr className="first:pt-3 last:pb-3">
-                          <td className="px-6 py-3.5 text-sm leading-5 font-semibold text-dark-blue-400 inline-block truncate">
-                            Referrizer Website
-                          </td>
-                          <td className="px-6 py-2">
-                            <AvatarGroup excess size="sm" max={3}>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                            </AvatarGroup>
-                          </td>
-                          <td className="px-6 py-[13px]">
-                            <Badge visual="gray">Pending Approval</Badge>
-                          </td>
-                          <td className="pl-6 pr-8 py-3.5">
-                            <div className="gap-x-14 flex items-center justify-between">
-                              <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
-                                Jan 6, 2024
-                              </span>
-                              <Button
-                                className="h-auto px-1.5 py-1 text-dark-blue-400"
-                                visual="gray"
-                                variant="ghost"
-                              >
-                                <MoreHorizontal className="size-[15px]" />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <div className="h-[49px] flex items-center md:hidden justify-center border-t border-gray-200">
-                    <Button className="text-dark-blue-400" variant="link">
-                      View All Projects <ArrowRight className="size-3.5" />
-                    </Button>
-                  </div>
-                </TabsContent>
-                <TabsContent
-                  className="overflow-x-hidden"
-                  value="Created by Me"
-                >
-                  <div className="overflow-x-auto scrollbar-none">
-                    <table className="table-auto border-collapse w-full">
-                      <thead>
-                        <tr>
-                          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
-                            Project Name
-                          </th>
-                          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
-                            Team
-                          </th>
-                          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
-                            Status
-                          </th>
-                          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
-                            Next Milestone
-                          </th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        <tr className="first:pt-3 last:pb-3">
-                          <td className="px-6 py-3.5 text-sm leading-5 font-semibold text-dark-blue-400 inline-block truncate">
-                            Website Redesign for EcoCo
-                          </td>
-                          <td className="px-6 py-2">
-                            <AvatarGroup excess size="sm" max={3}>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                            </AvatarGroup>
-                          </td>
-                          <td className="px-6 py-[13px] items-center">
-                            <Badge visual="success">In Progress</Badge>
-                          </td>
-                          <td className="pl-6 pr-8 py-3.5">
-                            <div className="gap-x-14 flex items-center justify-between">
-                              <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
-                                Jan 6, 2024
-                              </span>
-                              <Button
-                                className="h-auto px-1.5 py-1 text-dark-blue-400"
-                                visual="gray"
-                                variant="ghost"
-                              >
-                                <MoreHorizontal className="size-[15px]" />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr className="first:pt-3 last:pb-3">
-                          <td className="px-6 py-3.5 text-sm leading-5 font-semibold text-dark-blue-400 inline-block truncate">
-                            Mobile Design for ADO
-                          </td>
-                          <td className="px-6 py-2">
-                            <AvatarGroup excess size="sm" max={3}>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                            </AvatarGroup>
-                          </td>
-                          <td className="px-6 py-[13px] items-center">
-                            <Badge visual="success">In Progress</Badge>
-                          </td>
-                          <td className="pl-6 pr-8 py-3.5">
-                            <div className="gap-x-14 flex items-center justify-between">
-                              <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
-                                Jan 6, 2024
-                              </span>
-                              <Button
-                                className="h-auto px-1.5 py-1 text-dark-blue-400"
-                                visual="gray"
-                                variant="ghost"
-                              >
-                                <MoreHorizontal className="size-[15px]" />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr className="first:pt-3 last:pb-3">
-                          <td className="px-6 py-3.5 text-sm leading-5 font-semibold text-dark-blue-400 inline-block truncate">
-                            FitLife Sales Funnel
-                          </td>
-                          <td className="px-6 py-2">
-                            <AvatarGroup excess size="sm" max={3}>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                            </AvatarGroup>
-                          </td>
-                          <td className="px-6 py-[13px] items-center">
-                            <Badge visual="gray">Pending Approval</Badge>
-                          </td>
-                          <td className="pl-6 pr-8 py-3.5">
-                            <div className="gap-x-14 flex items-center justify-between">
-                              <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
-                                Jan 6, 2024
-                              </span>
-                              <Button
-                                className="h-auto px-1.5 py-1 text-dark-blue-400"
-                                visual="gray"
-                                variant="ghost"
-                              >
-                                <MoreHorizontal className="size-[15px]" />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr className="first:pt-3 last:pb-3">
-                          <td className="px-6 py-3.5 text-sm leading-5 font-semibold text-dark-blue-400 inline-block truncate">
-                            FashionHub Store
-                          </td>
-                          <td className="px-6 py-2">
-                            <AvatarGroup excess size="sm" max={3}>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                            </AvatarGroup>
-                          </td>
-                          <td className="px-6 py-[13px] items-center">
-                            <Badge visual="success">In Progress</Badge>
-                          </td>
-                          <td className="pl-6 pr-8 py-3.5">
-                            <div className="gap-x-14 flex items-center justify-between">
-                              <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
-                                Jan 6, 2024
-                              </span>
-                              <Button
-                                className="h-auto px-1.5 py-1 text-dark-blue-400"
-                                visual="gray"
-                                variant="ghost"
-                              >
-                                <MoreHorizontal className="size-[15px]" />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr className="first:pt-3 last:pb-3">
-                          <td className="px-6 py-3.5 text-sm leading-5 font-semibold text-dark-blue-400 inline-block truncate">
-                            Referrizer Website
-                          </td>
-                          <td className="px-6 py-2">
-                            <AvatarGroup excess size="sm" max={3}>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                            </AvatarGroup>
-                          </td>
-                          <td className="px-6 py-[13px]">
-                            <Badge visual="gray">Pending Approval</Badge>
-                          </td>
-                          <td className="pl-6 pr-8 py-3.5">
-                            <div className="gap-x-14 flex items-center justify-between">
-                              <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
-                                Jan 6, 2024
-                              </span>
-                              <Button
-                                className="h-auto px-1.5 py-1 text-dark-blue-400"
-                                visual="gray"
-                                variant="ghost"
-                              >
-                                <MoreHorizontal className="size-[15px]" />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <div className="h-[49px] flex items-center md:hidden justify-center border-t border-gray-200">
-                    <Button className="text-dark-blue-400" variant="link">
-                      View All Projects <ArrowRight className="size-3.5" />
-                    </Button>
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </div>
-          </div>
-
-          <div className="mt-3 md:mt-5 bg-white shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)] border rounded-lg border-gray-200 p-5 flex flex-col-reverse md:grid md:grid-cols-2 gap-5 min-[1024px]:gap-x-[100px]">
-            <div>
-              <div className="space-y-6">
-                <h1 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
-                  Step 1/5
-                </h1>
-
-                <Progress value={20} />
-
-                <div>
-                  <h3 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
-                    Create Your Own Projects
-                  </h3>
-                  <p className="text-sm leading-[16.94px] mt-3 text-dark-blue-400">
-                    Turn your skills into profitable projects. Stand out by
-                    offering unique services that clients can purchase directly
-                    from you.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-5 min-[1024px]:mt-[49px] flex flex-col items-start gap-y-3">
-                <div className="flex items-center gap-x-3">
-                  <Button
-                    className="text-dark-blue-400"
-                    size="sm"
-                    variant="outlined"
-                    visual="gray"
-                  >
-                    <Plus className="size-[15px]" /> Create a Project
-                  </Button>
-                  <Button
-                    className="text-dark-blue-400"
-                    size="sm"
-                    variant="ghost"
-                    visual="gray"
-                  >
-                    Skip
-                  </Button>
-                </div>
-                <Button
-                  className="opacity-50 hover:opacity-100"
-                  visual="gray"
-                  size="sm"
-                  variant="ghost"
-                >
-                  <Clock className="size-[15px]" /> Takes 5 min
-                </Button>
-              </div>
-            </div>
-
-            <div className="bg-[#122A4B]/[.04] rounded-lg xs:max-md:h-[140px]"></div>
-          </div>
-
-          <div className="mt-3 md:mt-5">
-            <div className="p-5 border bg-white border-gray-200 rounded-lg shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
-              <div className="flex justify-between items-start">
-                <div className="space-y-2">
-                  <h1 className="text-lg leading-[21.78px] font-bold text-dark-blue-400">
-                    Recommended for you
-                  </h1>
-                  <p className="text-sm leading-[16.94px] font-light text-dark-blue-400">
-                    Improve your recommendations by{" "}
-                    <NextLink
-                      className="focus-visible:outline-none underline hover:text-primary-500"
-                      href="#"
-                    >
-                      adding skills
-                    </NextLink>{" "}
-                    to your profile.
-                  </p>
-                </div>
-
-                <Button variant="outlined" visual="gray">
-                  View All
-                </Button>
-              </div>
-
-              <Tabs defaultValue="Projects">
-                <TabsList className="mt-3 border-b-transparent px-0">
-                  <TabsTrigger value="Projects">Projects</TabsTrigger>
-                  <TabsTrigger value="People">People</TabsTrigger>
-                </TabsList>
-                <TabsContent value="Projects">
-                  <div className="mt-3 relative isolate">
-                    <SwiperRoot
-                      slidesPerView="auto"
-                      spaceBetween={12}
-                      onInit={setCarousel}
-                      className="avatar-carousel"
-                    >
-                      <SwiperSlide>
-                        <article className="relative rounded-lg p-5 border border-[#122A4B]/[.15] shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
-                          <button className="focus-visible:outline-none absolute top-3 right-3 text-dark-blue-400/50 hover:text-dark-blue-400">
-                            <X className="size-[18px]" />
-                          </button>
-                          <div className="pt-[18px] pb-[54px]">
-                            <div className="flex items-center justify-center">
-                              <AvatarGroup size="md" max={3} excess>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                              </AvatarGroup>
-                            </div>
-
-                            <h1 className="text-sm leading-[16.94px] line-clamp-1 text-center text-dark-blue-400 mt-2.5 font-semibold">
-                              Full E-commerce Website Setup for your store
-                            </h1>
-                            <p className="text-sm leading-[16.94px] mt-1 text-center text-gray-500">
-                              5 people are working on this project
-                            </p>
-                          </div>
-
-                          <Button
-                            visual="gray"
-                            variant="outlined"
-                            className="w-full text-dark-blue-400"
-                          >
-                            <Send className="size-[15px]" /> Request to Join
-                          </Button>
-                        </article>
-                      </SwiperSlide>
-                      <SwiperSlide>
-                        <article className="relative rounded-lg p-5 border border-[#122A4B]/[.15] shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
-                          <button className="focus-visible:outline-none absolute top-3 right-3 text-dark-blue-400/50 hover:text-dark-blue-400">
-                            <X className="size-[18px]" />
-                          </button>
-                          <div className="pt-[18px] pb-[54px]">
-                            <div className="flex items-center justify-center">
-                              <AvatarGroup size="md" max={3} excess>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                              </AvatarGroup>
-                            </div>
-
-                            <h1 className="text-sm leading-[16.94px] line-clamp-1 text-center text-dark-blue-400 mt-2.5 font-semibold">
-                              Full E-commerce Website Setup for your store
-                            </h1>
-                            <p className="text-sm leading-[16.94px] mt-1 text-center text-gray-500">
-                              5 people are working on this project
-                            </p>
-                          </div>
-
-                          <Button
-                            visual="gray"
-                            variant="outlined"
-                            className="w-full text-dark-blue-400"
-                          >
-                            <Send className="size-[15px]" /> Request to Join
-                          </Button>
-                        </article>
-                      </SwiperSlide>
-                      <SwiperSlide>
-                        <article className="relative rounded-lg p-5 border border-[#122A4B]/[.15] shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
-                          <button className="focus-visible:outline-none absolute top-3 right-3 text-dark-blue-400/50 hover:text-dark-blue-400">
-                            <X className="size-[18px]" />
-                          </button>
-                          <div className="pt-[18px] pb-[54px]">
-                            <div className="flex items-center justify-center">
-                              <AvatarGroup size="md" max={3} excess>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                              </AvatarGroup>
-                            </div>
-
-                            <h1 className="text-sm leading-[16.94px] line-clamp-1 text-center text-dark-blue-400 mt-2.5 font-semibold">
-                              Full E-commerce Website Setup for your store
-                            </h1>
-                            <p className="text-sm leading-[16.94px] mt-1 text-center text-gray-500">
-                              5 people are working on this project
-                            </p>
-                          </div>
-
-                          <Button
-                            visual="gray"
-                            variant="outlined"
-                            className="w-full text-dark-blue-400"
-                          >
-                            <Send className="size-[15px]" /> Request to Join
-                          </Button>
-                        </article>
-                      </SwiperSlide>
-                      <SwiperSlide>
-                        <article className="relative rounded-lg p-5 border border-[#122A4B]/[.15] shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
-                          <button className="focus-visible:outline-none absolute top-3 right-3 text-dark-blue-400/50 hover:text-dark-blue-400">
-                            <X className="size-[18px]" />
-                          </button>
-                          <div className="pt-[18px] pb-[54px]">
-                            <div className="flex items-center justify-center">
-                              <AvatarGroup size="md" max={3} excess>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                              </AvatarGroup>
-                            </div>
-
-                            <h1 className="text-sm leading-[16.94px] line-clamp-1 text-center text-dark-blue-400 mt-2.5 font-semibold">
-                              Full E-commerce Website Setup for your store
-                            </h1>
-                            <p className="text-sm leading-[16.94px] mt-1 text-center text-gray-500">
-                              5 people are working on this project
-                            </p>
-                          </div>
-
-                          <Button
-                            visual="gray"
-                            variant="outlined"
-                            className="w-full text-dark-blue-400"
-                          >
-                            <Send className="size-[15px]" /> Request to Join
-                          </Button>
-                        </article>
-                      </SwiperSlide>
-                      <SwiperSlide>
-                        <article className="relative rounded-lg p-5 border border-[#122A4B]/[.15] shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
-                          <button className="focus-visible:outline-none absolute top-3 right-3 text-dark-blue-400/50 hover:text-dark-blue-400">
-                            <X className="size-[18px]" />
-                          </button>
-                          <div className="pt-[18px] pb-[54px]">
-                            <div className="flex items-center justify-center">
-                              <AvatarGroup size="md" max={3} excess>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                                <Avatar
-                                  className="border-2 border-white hover:ring-0 active:ring-0"
-                                  size="md"
-                                >
-                                  <AvatarImage src="/woman.jpg" alt="Woman" />
-                                  <AvatarFallback>W</AvatarFallback>
-                                </Avatar>
-                              </AvatarGroup>
-                            </div>
-
-                            <h1 className="text-sm leading-[16.94px] line-clamp-1 text-center text-dark-blue-400 mt-2.5 font-semibold">
-                              Full E-commerce Website Setup for your store
-                            </h1>
-                            <p className="text-sm leading-[16.94px] mt-1 text-center text-gray-500">
-                              5 people are working on this project
-                            </p>
-                          </div>
-
-                          <Button
-                            visual="gray"
-                            variant="outlined"
-                            className="w-full text-dark-blue-400"
-                          >
-                            <Send className="size-[15px]" /> Request to Join
-                          </Button>
-                        </article>
-                      </SwiperSlide>
-                    </SwiperRoot>
-
-                    {carousel?.allowSlideNext && (
-                      <button
-                        className="focus-visible:outline-none bg-white absolute z-10 text-gray-500 shrink-0 rounded-full size-[50px] inline-flex items-center justify-center border-gray-300 -right-2.5 -translate-y-1/2 border shadow-[0px_20px_24px_-4px_rgba(16,24,40,.08)] top-1/2"
-                        onClick={() => carousel?.slideNext()}
-                      >
-                        <ChevronRight className="size-[18px]" />
-                      </button>
-                    )}
-
-                    {carousel?.allowSlidePrev && (
-                      <button
-                        className="focus-visible:outline-none bg-white absolute z-10 text-gray-500 shrink-0 rounded-full size-[50px] inline-flex items-center justify-center border-gray-300 -left-2.5 -translate-y-1/2 border shadow-[0px_20px_24px_-4px_rgba(16,24,40,.08)] top-1/2"
-                        onClick={() => carousel?.slidePrev()}
-                      >
-                        <ChevronLeft className="size-[18px]" />
-                      </button>
-                    )}
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </div>
-          </div>
-
-          <div className="mt-3 md:mt-5 p-5 bg-white rounded-lg border border-gray-200 shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
-            <h1 className="text-lg leading-[21.78px] font-bold text-dark-blue-400">
-              Become a top seller on Marketeq in just a few steps
-            </h1>
-            <p className="text-sm mt-2 leading-[16.94px] font-light text-dark-blue-400">
-              Unlock your full potential on Marketeq by optimizing your profile,
-              promoting your work, and sharpening your skills.
-            </p>
-
-            <div className="mt-5 grid md:grid-cols-3 gap-[30px] md:gap-5 min-[1024px]:gap-8">
-              <article>
-                <Edit04 className="text-primary-200" />
-                <div className="mt-5">
-                  <h1 className="text-sm leading-[16.94px] font-semibold text-dark-blue-400">
-                    Optimize your profile to stand out
-                  </h1>
-                  <p className="text-sm leading-[16.94px] mt-2 font-light text-dark-blue-400">
-                    Fill out all sections and add samples showcasing your best
-                    work.
-                  </p>
-                </div>
-                <div className="mt-5">
-                  <Button
-                    className="text-dark-blue-400"
-                    variant="outlined"
-                    visual="gray"
-                  >
-                    Enhance Your Profile
-                  </Button>
-                </div>
-              </article>
-              <article>
-                <PresentationChart01 className="text-primary-200" />
-                <div className="mt-5">
-                  <h1 className="text-sm leading-[16.94px] font-semibold text-dark-blue-400">
-                    Create and promote your own projects
-                  </h1>
-                  <p className="text-sm leading-[16.94px] mt-2 font-light text-dark-blue-400">
-                    Take control of your Marketeq journey by starting your own
-                    projects.
-                  </p>
-                </div>
-                <div className="mt-5">
-                  <Button
-                    className="text-dark-blue-400"
-                    variant="outlined"
-                    visual="gray"
-                  >
-                    Create a Project Now
-                  </Button>
-                </div>
-              </article>
-              <article>
-                <Monitor02 className="text-primary-200" />
-                <div className="mt-5">
-                  <h1 className="text-sm leading-[16.94px] font-semibold text-dark-blue-400">
-                    Level up with Marketeq University
-                  </h1>
-                  <p className="text-sm mt-2 leading-[16.94px] font-light text-dark-blue-400">
-                    Enroll in relevant courses to enhance your expertise and
-                    stay competitive.
-                  </p>
-                </div>
-                <div className="mt-5">
-                  <Button
-                    className="text-dark-blue-400"
-                    variant="outlined"
-                    visual="gray"
-                  >
-                    Explore Courses
-                  </Button>
-                </div>
-              </article>
-            </div>
-          </div>
-
-          <div className="mt-3 md:mt-5 border border-gray-200 shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)] bg-white rounded-lg">
-            <SwiperRoot
-              pagination={{
-                clickable: true,
-              }}
-              modules={[Pagination]}
-            >
-              <SwiperSlide>
-                <div className="p-5 pb-[50px] grid md:grid-cols-2 gap-5 md:gap-x-[50px]">
-                  <div>
-                    <h1 className="text-lg leading-[21.78px] font-bold text-dark-blue-400">
-                      “Marketeq University provided me with the tools and
-                      confidence I needed to build and sustain my engineering
-                      career.”
-                    </h1>
-
-                    <div className="mt-5">
-                      <div className="flex items-center gap-x-[3px]">
-                        <Star className="size-4 text-warning-500 fill-warning-500" />
-                        <Star className="size-4 text-warning-500 fill-warning-500" />
-                        <Star className="size-4 text-warning-500 fill-warning-500" />
-                        <Star className="size-4 text-warning-500 fill-warning-500" />
-                        <Star className="size-4 text-warning-500 fill-warning-500" />
-                      </div>
-
-                      <div className="mt-2">
-                        <span className="text-sm leading-[16.94px] text-dark-blue-400">
-                          Olivia Kyle, Entrepreneurial Consultant
-                        </span>
-                      </div>
-
-                      <Button
-                        className="mt-5 text-dark-blue-400"
-                        visual="gray"
-                        variant="outlined"
-                      >
-                        Start this course
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="md:py-[37px]">
-                    <div className="flex gap-x-5">
-                      <Avatar size="2xl">
-                        <AvatarImage src="/woman.jpg" alt="Woman" />
-                        <AvatarFallback>W</AvatarFallback>
-                      </Avatar>
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-x-1">
-                          <h1 className="text-base leading-[19.36px] font-semibold text-dark-blue-400">
-                            Dylan Meringue
-                          </h1>
-                          <span className="text-sm leading-[16.94px] font-light">
-                            Instructor
-                          </span>
-                        </div>
-                        <p className="mt-1 text-[13px] leading-[15.73px] font-light text-dark-blue-400">
-                          Specializes in helping freelancers start and sustain
-                          their businesses. Strengths include strategic planning
-                          and business development.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="mt-5 flex gap-x-6">
-                      <span className="text-sm leading-[16.94px] text-dark-blue-400">
-                        Worked with:
-                      </span>
-                      <NextImage
-                        src="/google.png"
-                        alt="Google"
-                        height={18}
-                        width={51.72}
-                        style={{
-                          height: 18,
-                          width: "auto",
-                          objectFit: "contain",
-                        }}
-                      />
-                      <NextImage
-                        src="/spotify.png"
-                        alt="Spotify"
-                        height={18}
-                        width={58.53}
-                        style={{
-                          height: 18,
-                          width: "auto",
-                          objectFit: "contain",
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </SwiperSlide>
-              <SwiperSlide>
-                <div className="p-5 pb-[50px] grid md:grid-cols-2 rounded-lg gap-5 md:gap-x-[50px]">
-                  <div>
-                    <h1 className="text-lg leading-[21.78px] font-bold text-dark-blue-400">
-                      “Marketeq University provided me with the tools and
-                      confidence I needed to build and sustain my engineering
-                      career.”
-                    </h1>
-
-                    <div className="mt-5">
-                      <div className="flex items-center gap-x-[3px]">
-                        <Star className="size-4 text-warning-500 fill-warning-500" />
-                        <Star className="size-4 text-warning-500 fill-warning-500" />
-                        <Star className="size-4 text-warning-500 fill-warning-500" />
-                        <Star className="size-4 text-warning-500 fill-warning-500" />
-                        <Star className="size-4 text-warning-500 fill-warning-500" />
-                      </div>
-
-                      <div className="mt-2">
-                        <span className="text-sm leading-[16.94px] text-dark-blue-400">
-                          Olivia Kyle, Entrepreneurial Consultant
-                        </span>
-                      </div>
-
-                      <Button
-                        className="mt-5 text-dark-blue-400"
-                        visual="gray"
-                        variant="outlined"
-                      >
-                        Start this course
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="md:py-[37px]">
-                    <div className="flex gap-x-5">
-                      <Avatar size="2xl">
-                        <AvatarImage src="/man.jpg" alt="Man" />
-                        <AvatarFallback>W</AvatarFallback>
-                      </Avatar>
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-x-1">
-                          <h1 className="text-base leading-[19.36px] font-semibold text-dark-blue-400">
-                            Dylan Meringue
-                          </h1>
-                          <span className="text-sm leading-[16.94px] font-light">
-                            Instructor
-                          </span>
-                        </div>
-                        <p className="mt-1 text-[13px] leading-[15.73px] font-light text-dark-blue-400">
-                          Specializes in helping freelancers start and sustain
-                          their businesses. Strengths include strategic planning
-                          and business development.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="mt-5 flex gap-x-6">
-                      <span className="text-sm leading-[16.94px] text-dark-blue-400">
-                        Worked with:
-                      </span>
-                      <NextImage
-                        src="/google.png"
-                        alt="Google"
-                        height={18}
-                        width={51.72}
-                        style={{
-                          height: 18,
-                          width: "auto",
-                          objectFit: "contain",
-                        }}
-                      />
-                      <NextImage
-                        src="/spotify.png"
-                        alt="Spotify"
-                        height={18}
-                        width={58.53}
-                        style={{
-                          height: 18,
-                          width: "auto",
-                          objectFit: "contain",
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </SwiperSlide>
-            </SwiperRoot>
-          </div>
-
-          <div className="mt-3 md:mt-5 p-5 md:p-[50px] rounded-lg border bg-white border-gray-200 shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
-            <div className="max-w-[561px] mx-auto">
-              <h1 className="text-[22px] text-center leading-[26.63px] text-dark-blue-400 font-bold">
-                Take your careers to the next level
-              </h1>
-              <p className="text-base text-center leading-[19.36px] mt-2 text-dark-blue-400">
-                Upgrade your account to Premium or Agency and unlock exclusive
-                features to grow your business faster and more efficiently.
-              </p>
-            </div>
-
-            <div className="mt-5 md:mt-[50px] grid md:grid-cols-2 gap-5 items-end">
-              <article className="rounded-xl border border-gray-200">
-                <div className="bg-primary-25 border-b rounded-t-xl py-1 border-gray-200 flex justify-center items-center gap-x-2.5">
-                  <StarsBFill className="size-6 text-primary-500" />
-                  <span className="text-[17px] font-medium leading-[20.57px] text-dark-blue-400">
-                    Recommended for you
+          <div className="divide-y-[.76px] md:divide-y-0 md:divide-x-[0.76px] flex md:flex-row flex-col mt-5 divide-gray-200">
+            <div className="flex-auto md:flex xs:max-md:py-5">
+              <div className="space-y-[17.41px]">
+                <div className="flex gap-x-[6.75px]">
+                  <MoneyDollarCircleFill className="flex-none text-dark-blue-400" />
+                  <span className="text-sm leading-[16.94px] text-dark-blue-400">
+                    Lifetime Earnings
                   </span>
                 </div>
-                <div className="p-5">
-                  <h1 className="text-2xl font-semibold leading-[29.05px] text-dark-blue-400">
-                    Premium
-                  </h1>
-                  <p className="text-sm leading-[16.94px] mt-5 text-dark-blue-400">
-                    Recommended for solo talents looking to scale
-                  </p>
 
-                  <h1 className="text-[32px] mt-5 leading-[38.73px] font-bold text-dark-blue-400">
-                    $15{" "}
-                    <span className="text-[17px] leading-[20.57px] font-normal">
-                      / month
+                <div className="space-y-2.5">
+                  <div className="flex items-center gap-x-0.5">
+                    <span className="text-xl leading-6 text-dark-blue-400/50">
+                      $
                     </span>
-                  </h1>
-
-                  <div className="mt-5">
-                    <h3 className="text-[17px] leading-[20.57px] font-semibold text-dark-blue-400">
-                      Why we recommend it for you
-                    </h3>
-                    <ul className="flex flex-col mt-3 gap-y-2">
-                      <li className="flex items-center gap-x-2.5">
-                        <Check className="size-5 text-primary-500" />
-                        <span className="text-sm leading-[16.94px] text-dark-blue-400">
-                          Get new jobs 2x faster
-                        </span>
-                      </li>
-                      <li className="flex items-center gap-x-2.5">
-                        <Check className="size-5 text-primary-500" />
-                        <span className="text-sm leading-[16.94px] text-dark-blue-400">
-                          Increase visibility by 30%
-                        </span>
-                      </li>
-                      <li className="flex items-center gap-x-2.5">
-                        <Check className="size-5 text-primary-500" />
-                        <span className="text-sm leading-[16.94px] text-dark-blue-400">
-                          Access to exclusive jobs
-                        </span>
-                      </li>
-                      <li className="flex items-center gap-x-2.5">
-                        <Check className="size-5 text-primary-500" />
-                        <span className="text-sm leading-[16.94px] text-dark-blue-400">
-                          Track advanced analytics
-                        </span>
-                      </li>
-                    </ul>
-
-                    <Button
-                      className="mt-5 text-dark-blue-400"
-                      visual="gray"
-                      variant="outlined"
-                    >
-                      Upgrade Now
-                    </Button>
+                    <h1 className="text-2xl leading-[29.05px] font-semibold text-dark-blue-400">
+                      66,777
+                      <span className="text-sm leading-[16.94px] text-dark-blue-400">
+                        .00
+                      </span>
+                    </h1>
                   </div>
-                </div>
-              </article>
 
-              <article className="rounded-xl border border-gray-200">
-                <div className="p-5">
-                  <h1 className="text-2xl font-semibold leading-[29.05px] text-dark-blue-400">
-                    Agency
-                  </h1>
-                  <p className="text-sm leading-[16.94px] mt-5 text-dark-blue-400">
-                    Ideal for talents who want to build a team
+                  <p className="text-[11px] leading-[13.31px] text-dark-blue-400">
+                    Earnings since Jun 24, 2021
                   </p>
-
-                  <h1 className="text-[32px] mt-5 leading-[38.73px] font-bold text-dark-blue-400">
-                    $20{" "}
-                    <span className="text-[17px] leading-[20.57px] font-normal">
-                      / month
-                    </span>
-                  </h1>
-
-                  <div className="mt-5">
-                    <h3 className="text-[17px] leading-[20.57px] font-semibold text-dark-blue-400">
-                      Benefits
-                    </h3>
-                    <ul className="flex flex-col mt-3 gap-y-2">
-                      <li className="flex items-center gap-x-2.5">
-                        <Check className="size-5 text-primary-500" />
-                        <span className="text-sm leading-[16.94px] text-dark-blue-400">
-                          Build your own team
-                        </span>
-                      </li>
-                      <li className="flex items-center gap-x-2.5">
-                        <Check className="size-5 text-primary-500" />
-                        <span className="text-sm leading-[16.94px] text-dark-blue-400">
-                          Collaborate with team members
-                        </span>
-                      </li>
-                      <li className="flex items-center gap-x-2.5">
-                        <Check className="size-5 text-primary-500" />
-                        <span className="text-sm leading-[16.94px] text-dark-blue-400">
-                          Take on more clients
-                        </span>
-                      </li>
-                      <li className="flex items-center gap-x-2.5">
-                        <Check className="size-5 text-primary-500" />
-                        <span className="text-sm leading-[16.94px] text-dark-blue-400">
-                          Access in-depth metrics
-                        </span>
-                      </li>
-                    </ul>
-
-                    <Button
-                      className="mt-5 text-dark-blue-400"
-                      visual="gray"
-                      variant="outlined"
-                    >
-                      Upgrade Now
-                    </Button>
-                  </div>
                 </div>
-              </article>
-            </div>
-          </div>
 
-          <div className="mt-3 md:mt-5 px-5 xs:max-md:pt-5 md:px-6 pb-5 flex flex-col md:flex-row items-center gap-5 md:justify-between">
-            <div className="flex md:flex-row flex-col items-center gap-5 md:gap-x-[57px]">
-              <NextLink className="focus-visible:outline-none" href="/">
-                <Logo3 className="shrink-0 w-[120px] h-[17.63px]" />
-              </NextLink>
-              <span className="text-[13px] leading-[15.73px] font-light text-dark-blue-400">
-                © 2011 - 2025 Marketeq Digital Inc. All Rights Reserved.
-              </span>
+                <h3 className="text-[13px] leading-[15.73px] text-dark-blue-400">
+                  <span className="font-semibold">572</span> Total Hours
+                </h3>
+              </div>
             </div>
 
-            <div className="flex items-center gap-x-[16.6px]">
-              <IconButton
-                className="size-[30px] rounded-full"
-                variant="outlined"
-                visual="gray"
-              >
-                <Facebook className="fill-dark-blue-400 size-4" />
-              </IconButton>
-              <IconButton
-                className="size-[30px] rounded-full"
-                variant="outlined"
-                visual="gray"
-              >
-                <XIcon className="text-dark-blue-400 size-4" />
-              </IconButton>
-              <IconButton
-                className="size-[30px] rounded-full"
-                variant="outlined"
-                visual="gray"
-              >
-                <InstagramDefault className="text-dark-blue-400 size-4" />
-              </IconButton>
-              <IconButton
-                className="size-[30px] rounded-full"
-                variant="outlined"
-                visual="gray"
-              >
-                <Linkedin className="text-dark-blue-400 size-4" />
-              </IconButton>
+            <div className="flex-auto md:flex md:justify-center xs:max-md:py-5">
+              <div className="space-y-[17.41px]">
+                <div className="flex gap-x-[6.75px] ">
+                  <CalendarBold className="flex-none text-dark-blue-400" />
+                  <span className="text-sm leading-[16.94px] text-dark-blue-400">
+                    Earnings This Month
+                  </span>
+                </div>
+
+                <div className="space-y-2.5">
+                  <div className="flex items-center gap-x-0.5">
+                    <span className="text-xl leading-6 text-dark-blue-400/50">
+                      $
+                    </span>
+                    <h1 className="text-2xl leading-[29.05px] font-semibold text-dark-blue-400">
+                      4,566
+                      <span className="text-sm leading-[16.94px] text-dark-blue-400">
+                        .00
+                      </span>
+                    </h1>
+                  </div>
+
+                  <p className="text-[11px] leading-[13.31px] text-dark-blue-400">
+                    Earnings in August
+                  </p>
+                </div>
+
+                <h3 className="text-[13px] leading-[15.73px] flex items-center gap-x-1 text-dark-blue-400">
+                  <ArrowUp className="size-[14.39px] shrink-0 text-success-500" />
+                  <span>
+                    <span className="text-success-500">12.8%</span> from last
+                    month
+                  </span>
+                </h3>
+              </div>
+            </div>
+
+            <div className="flex-auto md:flex md:justify-end xs:max-md:pt-5">
+              <div className="space-y-[14.68px]">
+                <div className="flex items-center justify-between">
+                  <div className="flex gap-x-[6.75px] ">
+                    <WalletBold className="flex-none text-dark-blue-400" />
+                    <span className="text-sm leading-[16.94px] text-dark-blue-400">
+                      Next Payout
+                    </span>
+                  </div>
+
+                  <Button
+                    className="text-dark-blue-400 text-[10px] leading-5 underline hover:text-primary-500"
+                    variant="link"
+                  >
+                    See all payouts
+                  </Button>
+                </div>
+
+                <div className="flex items-center md:gap-x-[25px] min-[1024px]:gap-x-[30px] min-[1440px]:gap-x-[37px] xl:gap-x-[57px] 2xl:gap-x-[75px] justify-between">
+                  <div className="space-y-2.5">
+                    <div className="flex gap-x-1 items-center">
+                      <div className="flex items-center gap-x-0.5">
+                        <span className="text-xl leading-6 text-dark-blue-400/50">
+                          $
+                        </span>
+                        <h1 className="text-2xl leading-[29.05px] font-semibold text-dark-blue-400">
+                          800
+                          <span className="text-sm leading-[16.94px] text-dark-blue-400">
+                            .00
+                          </span>
+                        </h1>
+                      </div>
+
+                      <Badge visual="primary">Processing</Badge>
+                    </div>
+
+                    <p className="text-[11px] leading-[13.31px] text-dark-blue-400">
+                      Tuesday, Aug 20, 2024
+                    </p>
+                  </div>
+
+                  <Button
+                    className="bg-white h-7 px-2.5 text-[10px] leading-5 text-dark-blue-400"
+                    variant="outlined"
+                    visual="gray"
+                  >
+                    Edit Schedule
+                  </Button>
+                </div>
+
+                <div className="flex items-center md:gap-x-[25px] min-[1024px]:gap-x-[30px] min-[1440px]:gap-x-[37px] xl:gap-x-[57px] 2xl:gap-x-[75px] justify-between">
+                  <div className="flex items-center gap-x-1.5">
+                    <BankLine className="text-dark-blue-400" />
+                    <h3 className="text-[13px] inline-flex items-center gap-x-2 leading-[15.73px] text-dark-blue-400">
+                      Chase Bank
+                      <span className="text-[13px] leading-[15.73px] font-semibold">
+                        ...4553
+                      </span>
+                    </h3>
+                  </div>
+
+                  <Button
+                    className="text-dark-blue-400 text-[10px] leading-5 underline hover:text-primary-500"
+                    variant="link"
+                  >
+                    Manage bank info
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+    </>
+  )
+}
+
+interface Project {
+  projectName: string
+  team: { image: string; alternativeText: string }[]
+  status: string
+  nextMilestone: string
+}
+
+const TableRow = ({ projectName, nextMilestone, status, team }: Project) => {
+  return (
+    <tr className="first:pt-3 last:pb-3">
+      <td className="px-6 py-3.5 text-sm leading-5 font-semibold text-dark-blue-400 inline-block truncate">
+        {projectName}
+      </td>
+      <td className="px-6 py-2">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <AvatarGroup excess size="sm" max={3}>
+                {team.map((member, index) => (
+                  <Avatar
+                    key={index}
+                    className="border-2 border-white hover:ring-0 active:ring-0"
+                    size="sm"
+                  >
+                    <AvatarImage
+                      src={member.image}
+                      alt={member.alternativeText}
+                    />
+                    <AvatarFallback>
+                      {member.alternativeText.slice(0, 1).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                ))}
+              </AvatarGroup>
+            </TooltipTrigger>
+
+            <TooltipContent className="p-0" size="md">
+              <ScrollArea viewportClassName="max-h-[192px]" className="p-3">
+                <div className="space-y-3">
+                  {team.map((member, index) => (
+                    <div className="flex items-center gap-x-2" key={index}>
+                      <Avatar className="hover:ring-0">
+                        <AvatarImage
+                          src={member.image}
+                          alt={member.alternativeText}
+                        />
+                        <AvatarFallback>
+                          {member.alternativeText.slice(0, 1).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="text-xs font-medium leading-5">
+                        {member.alternativeText}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </td>
+      <td className="px-6 py-[13px] items-center">
+        {status === "In Progress" ? (
+          <Badge visual="success">{status}</Badge>
+        ) : (
+          <Badge visual="gray">{status}</Badge>
+        )}
+      </td>
+      <td className="pl-6 pr-8 py-3.5">
+        <div className="gap-x-14 flex items-center justify-between">
+          <span className="text-sm whitespace-nowrap leading-5 text-gray-500">
+            {nextMilestone}
+          </span>
+          <Button
+            className="h-auto px-1.5 py-1 text-dark-blue-400"
+            visual="gray"
+            variant="ghost"
+          >
+            <MoreHorizontal className="size-[15px]" />
+          </Button>
+        </div>
+      </td>
+    </tr>
+  )
+}
+
+const Table = () => {
+  return (
+    <table className="table-auto border-collapse w-full">
+      <thead>
+        <tr>
+          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
+            Project Name
+          </th>
+          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
+            Team
+          </th>
+          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
+            Status
+          </th>
+          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
+            Next Milestone
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {data.projects.map((project, index) => (
+          <TableRow {...project} key={index} />
+        ))}
+      </tbody>
+    </table>
+  )
+}
+
+const RecentProjects = () => {
+  return (
+    <div className="border bg-white border-gray-200 rounded-lg shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
+      <div className="flex justify-between items-start pt-5 px-6">
+        <h1 className="text-lg leading-[21.78px] font-bold text-dark-blue-400">
+          Recent Projects
+        </h1>
+
+        <Button
+          className="text-dark-blue-400 xs:max-md:hidden"
+          variant="link"
+          visual="gray"
+        >
+          View All Projects <ArrowRight className="size-3.5" />
+        </Button>
+      </div>
+
+      <Tabs className="mt-1" defaultValue="All Projects">
+        <TabsList className="px-6 w-full justify-start">
+          <TabsTrigger className="pb-[11px]" value="All Projects">
+            All Projects
+          </TabsTrigger>
+          <TabsTrigger className="pb-[11px]" value="Created by Me">
+            Created by Me
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent className="overflow-x-hidden" value="All Projects">
+          <div className="overflow-x-auto scrollbar-none">
+            <Table />
+          </div>
+          <div className="h-[49px] flex items-center md:hidden justify-center border-t border-gray-200">
+            <Button className="text-dark-blue-400" variant="link">
+              View All Projects <ArrowRight className="size-3.5" />
+            </Button>
+          </div>
+        </TabsContent>
+        <TabsContent className="overflow-x-hidden" value="Created by Me">
+          <div className="overflow-x-auto scrollbar-none">
+            <Table />
+          </div>
+          <div className="h-[49px] flex items-center md:hidden justify-center border-t border-gray-200">
+            <Button className="text-dark-blue-400" variant="link">
+              View All Projects <ArrowRight className="size-3.5" />
+            </Button>
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
+  )
+}
+
+const CreateYourOwnProject = () => {
+  return (
+    <div className="bg-white shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)] border rounded-lg border-gray-200 p-5 flex flex-col-reverse md:grid md:grid-cols-2 gap-5 min-[1024px]:gap-x-[100px]">
+      <div>
+        <div className="space-y-6">
+          <h1 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
+            Step 1/5
+          </h1>
+
+          <Progress value={20} />
+
+          <div>
+            <h3 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
+              Create Your Own Projects
+            </h3>
+            <p className="text-sm leading-[16.94px] mt-3 text-dark-blue-400">
+              Turn your skills into profitable projects. Stand out by offering
+              unique services that clients can purchase directly from you.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-5 min-[1024px]:mt-[49px] flex flex-col items-start gap-y-3">
+          <div className="flex items-center gap-x-3">
+            <Button
+              className="text-dark-blue-400"
+              size="sm"
+              variant="outlined"
+              visual="gray"
+            >
+              <Plus className="size-[15px]" /> Create a Project
+            </Button>
+            <Button
+              className="text-dark-blue-400"
+              size="sm"
+              variant="ghost"
+              visual="gray"
+            >
+              Skip
+            </Button>
+          </div>
+          <Button
+            className="opacity-50 hover:opacity-100"
+            visual="gray"
+            size="sm"
+            variant="ghost"
+          >
+            <Clock className="size-[15px]" /> Takes 5 min
+          </Button>
+        </div>
+      </div>
+
+      <div className="bg-[#122A4B]/[.04] rounded-lg xs:max-md:h-[140px]"></div>
+    </div>
+  )
+}
+
+const RecommendedForYouCard = () => {
+  return (
+    <article className="relative rounded-lg p-5 border border-[#122A4B]/[.15] shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
+      <button className="focus-visible:outline-none absolute top-3 right-3 text-dark-blue-400/50 hover:text-dark-blue-400">
+        <X className="size-[18px]" />
+      </button>
+      <div className="pt-[18px] pb-[54px]">
+        <div className="flex items-center justify-center">
+          <AvatarGroup size="md" max={3} excess>
+            <Avatar
+              className="border-2 border-white hover:ring-0 active:ring-0"
+              size="md"
+            >
+              <AvatarImage src="/woman.jpg" alt="Woman" />
+              <AvatarFallback>W</AvatarFallback>
+            </Avatar>
+            <Avatar
+              className="border-2 border-white hover:ring-0 active:ring-0"
+              size="md"
+            >
+              <AvatarImage src="/woman.jpg" alt="Woman" />
+              <AvatarFallback>W</AvatarFallback>
+            </Avatar>
+            <Avatar
+              className="border-2 border-white hover:ring-0 active:ring-0"
+              size="md"
+            >
+              <AvatarImage src="/woman.jpg" alt="Woman" />
+              <AvatarFallback>W</AvatarFallback>
+            </Avatar>
+            <Avatar
+              className="border-2 border-white hover:ring-0 active:ring-0"
+              size="md"
+            >
+              <AvatarImage src="/woman.jpg" alt="Woman" />
+              <AvatarFallback>W</AvatarFallback>
+            </Avatar>
+            <Avatar
+              className="border-2 border-white hover:ring-0 active:ring-0"
+              size="md"
+            >
+              <AvatarImage src="/woman.jpg" alt="Woman" />
+              <AvatarFallback>W</AvatarFallback>
+            </Avatar>
+            <Avatar
+              className="border-2 border-white hover:ring-0 active:ring-0"
+              size="md"
+            >
+              <AvatarImage src="/woman.jpg" alt="Woman" />
+              <AvatarFallback>W</AvatarFallback>
+            </Avatar>
+          </AvatarGroup>
+        </div>
+
+        <h1 className="text-sm leading-[16.94px] line-clamp-1 text-center text-dark-blue-400 mt-2.5 font-semibold">
+          Full E-commerce Website Setup for your store
+        </h1>
+        <p className="text-sm leading-[16.94px] mt-1 text-center text-gray-500">
+          5 people are working on this project
+        </p>
+      </div>
+
+      <Button
+        visual="gray"
+        variant="outlined"
+        className="w-full text-dark-blue-400"
+      >
+        <Send className="size-[15px]" /> Request to Join
+      </Button>
+    </article>
+  )
+}
+
+const RecommendedForYou = () => {
+  const [carousel, setCarousel] = React.useState<Swiper>()
+  return (
+    <div className="mt-3 md:mt-5">
+      <div className="p-5 border bg-white border-gray-200 rounded-lg shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
+        <div className="flex justify-between items-start">
+          <div className="space-y-2">
+            <h1 className="text-lg leading-[21.78px] font-bold text-dark-blue-400">
+              Recommended for you
+            </h1>
+            <p className="text-sm leading-[16.94px] font-light text-dark-blue-400">
+              Improve your recommendations by{" "}
+              <NextLink
+                className="focus-visible:outline-none underline hover:text-primary-500"
+                href="#"
+              >
+                adding skills
+              </NextLink>{" "}
+              to your profile.
+            </p>
+          </div>
+
+          <Button variant="outlined" visual="gray">
+            View All
+          </Button>
+        </div>
+
+        <Tabs defaultValue="Projects">
+          <TabsList className="mt-3 border-b-transparent px-0">
+            <TabsTrigger value="Projects">Projects</TabsTrigger>
+            <TabsTrigger value="People">People</TabsTrigger>
+          </TabsList>
+          <TabsContent value="Projects">
+            <div className="mt-3 relative isolate">
+              <SwiperRoot
+                slidesPerView="auto"
+                spaceBetween={12}
+                onInit={setCarousel}
+                className="avatar-carousel"
+              >
+                <SwiperSlide>
+                  <RecommendedForYouCard />
+                </SwiperSlide>
+                <SwiperSlide>
+                  <RecommendedForYouCard />
+                </SwiperSlide>
+                <SwiperSlide>
+                  <RecommendedForYouCard />
+                </SwiperSlide>
+                <SwiperSlide>
+                  <RecommendedForYouCard />
+                </SwiperSlide>
+                <SwiperSlide>
+                  <RecommendedForYouCard />
+                </SwiperSlide>
+              </SwiperRoot>
+
+              {carousel?.allowSlideNext && (
+                <button
+                  className="focus-visible:outline-none bg-white absolute z-10 text-gray-500 shrink-0 rounded-full size-[50px] inline-flex items-center justify-center border-gray-300 -right-2.5 -translate-y-1/2 border shadow-[0px_20px_24px_-4px_rgba(16,24,40,.08)] top-1/2"
+                  onClick={() => carousel?.slideNext()}
+                >
+                  <ChevronRight className="size-[18px]" />
+                </button>
+              )}
+
+              {carousel?.allowSlidePrev && (
+                <button
+                  className="focus-visible:outline-none bg-white absolute z-10 text-gray-500 shrink-0 rounded-full size-[50px] inline-flex items-center justify-center border-gray-300 -left-2.5 -translate-y-1/2 border shadow-[0px_20px_24px_-4px_rgba(16,24,40,.08)] top-1/2"
+                  onClick={() => carousel?.slidePrev()}
+                >
+                  <ChevronLeft className="size-[18px]" />
+                </button>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  )
+}
+
+const BecomeTopSeller = () => {
+  return (
+    <div className="mt-3 md:mt-5 p-5 bg-white rounded-lg border border-gray-200 shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
+      <h1 className="text-lg leading-[21.78px] font-bold text-dark-blue-400">
+        Become a top seller on Marketeq in just a few steps
+      </h1>
+      <p className="text-sm mt-2 leading-[16.94px] font-light text-dark-blue-400">
+        Unlock your full potential on Marketeq by optimizing your profile,
+        promoting your work, and sharpening your skills.
+      </p>
+
+      <div className="mt-5 grid md:grid-cols-3 gap-[30px] md:gap-5 min-[1024px]:gap-8">
+        <article>
+          <Edit04 className="text-primary-200" />
+          <div className="mt-5">
+            <h1 className="text-sm leading-[16.94px] font-semibold text-dark-blue-400">
+              Optimize your profile to stand out
+            </h1>
+            <p className="text-sm leading-[16.94px] mt-2 font-light text-dark-blue-400">
+              Fill out all sections and add samples showcasing your best work.
+            </p>
+          </div>
+          <div className="mt-5">
+            <Button
+              className="text-dark-blue-400"
+              variant="outlined"
+              visual="gray"
+            >
+              Enhance Your Profile
+            </Button>
+          </div>
+        </article>
+        <article>
+          <PresentationChart01 className="text-primary-200" />
+          <div className="mt-5">
+            <h1 className="text-sm leading-[16.94px] font-semibold text-dark-blue-400">
+              Create and promote your own projects
+            </h1>
+            <p className="text-sm leading-[16.94px] mt-2 font-light text-dark-blue-400">
+              Take control of your Marketeq journey by starting your own
+              projects.
+            </p>
+          </div>
+          <div className="mt-5">
+            <Button
+              className="text-dark-blue-400"
+              variant="outlined"
+              visual="gray"
+            >
+              Create a Project Now
+            </Button>
+          </div>
+        </article>
+        <article>
+          <Monitor02 className="text-primary-200" />
+          <div className="mt-5">
+            <h1 className="text-sm leading-[16.94px] font-semibold text-dark-blue-400">
+              Level up with Marketeq University
+            </h1>
+            <p className="text-sm mt-2 leading-[16.94px] font-light text-dark-blue-400">
+              Enroll in relevant courses to enhance your expertise and stay
+              competitive.
+            </p>
+          </div>
+          <div className="mt-5">
+            <Button
+              className="text-dark-blue-400"
+              variant="outlined"
+              visual="gray"
+            >
+              Explore Courses
+            </Button>
+          </div>
+        </article>
+      </div>
+    </div>
+  )
+}
+
+const Carousel = () => {
+  return (
+    <div className="border border-gray-200 shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)] bg-white rounded-lg">
+      <SwiperRoot
+        pagination={{
+          clickable: true,
+        }}
+        modules={[Pagination]}
+      >
+        <SwiperSlide>
+          <div className="p-5 pb-[50px] grid md:grid-cols-2 gap-5 md:gap-x-[50px]">
+            <div>
+              <h1 className="text-lg leading-[21.78px] font-bold text-dark-blue-400">
+                “Marketeq University provided me with the tools and confidence I
+                needed to build and sustain my engineering career.”
+              </h1>
+
+              <div className="mt-5">
+                <div className="flex items-center gap-x-[3px]">
+                  <Star className="size-4 text-warning-500 fill-warning-500" />
+                  <Star className="size-4 text-warning-500 fill-warning-500" />
+                  <Star className="size-4 text-warning-500 fill-warning-500" />
+                  <Star className="size-4 text-warning-500 fill-warning-500" />
+                  <Star className="size-4 text-warning-500 fill-warning-500" />
+                </div>
+
+                <div className="mt-2">
+                  <span className="text-sm leading-[16.94px] text-dark-blue-400">
+                    Olivia Kyle, Entrepreneurial Consultant
+                  </span>
+                </div>
+
+                <Button
+                  className="mt-5 text-dark-blue-400"
+                  visual="gray"
+                  variant="outlined"
+                >
+                  Start this course
+                </Button>
+              </div>
+            </div>
+
+            <div className="md:py-[37px]">
+              <div className="flex gap-x-5">
+                <Avatar size="2xl">
+                  <AvatarImage src="/woman.jpg" alt="Woman" />
+                  <AvatarFallback>W</AvatarFallback>
+                </Avatar>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-x-1">
+                    <h1 className="text-base leading-[19.36px] font-semibold text-dark-blue-400">
+                      Dylan Meringue
+                    </h1>
+                    <span className="text-sm leading-[16.94px] font-light">
+                      Instructor
+                    </span>
+                  </div>
+                  <p className="mt-1 text-[13px] leading-[15.73px] font-light text-dark-blue-400">
+                    Specializes in helping freelancers start and sustain their
+                    businesses. Strengths include strategic planning and
+                    business development.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-5 flex gap-x-6">
+                <span className="text-sm leading-[16.94px] text-dark-blue-400">
+                  Worked with:
+                </span>
+                <NextImage
+                  src="/google.png"
+                  alt="Google"
+                  height={18}
+                  width={51.72}
+                  style={{
+                    height: 18,
+                    width: "auto",
+                    objectFit: "contain",
+                  }}
+                />
+                <NextImage
+                  src="/spotify.png"
+                  alt="Spotify"
+                  height={18}
+                  width={58.53}
+                  style={{
+                    height: 18,
+                    width: "auto",
+                    objectFit: "contain",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </SwiperSlide>
+        <SwiperSlide>
+          <div className="p-5 pb-[50px] grid md:grid-cols-2 rounded-lg gap-5 md:gap-x-[50px]">
+            <div>
+              <h1 className="text-lg leading-[21.78px] font-bold text-dark-blue-400">
+                “Marketeq University provided me with the tools and confidence I
+                needed to build and sustain my engineering career.”
+              </h1>
+
+              <div className="mt-5">
+                <div className="flex items-center gap-x-[3px]">
+                  <Star className="size-4 text-warning-500 fill-warning-500" />
+                  <Star className="size-4 text-warning-500 fill-warning-500" />
+                  <Star className="size-4 text-warning-500 fill-warning-500" />
+                  <Star className="size-4 text-warning-500 fill-warning-500" />
+                  <Star className="size-4 text-warning-500 fill-warning-500" />
+                </div>
+
+                <div className="mt-2">
+                  <span className="text-sm leading-[16.94px] text-dark-blue-400">
+                    Olivia Kyle, Entrepreneurial Consultant
+                  </span>
+                </div>
+
+                <Button
+                  className="mt-5 text-dark-blue-400"
+                  visual="gray"
+                  variant="outlined"
+                >
+                  Start this course
+                </Button>
+              </div>
+            </div>
+
+            <div className="md:py-[37px]">
+              <div className="flex gap-x-5">
+                <Avatar size="2xl">
+                  <AvatarImage src="/man.jpg" alt="Man" />
+                  <AvatarFallback>W</AvatarFallback>
+                </Avatar>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-x-1">
+                    <h1 className="text-base leading-[19.36px] font-semibold text-dark-blue-400">
+                      Dylan Meringue
+                    </h1>
+                    <span className="text-sm leading-[16.94px] font-light">
+                      Instructor
+                    </span>
+                  </div>
+                  <p className="mt-1 text-[13px] leading-[15.73px] font-light text-dark-blue-400">
+                    Specializes in helping freelancers start and sustain their
+                    businesses. Strengths include strategic planning and
+                    business development.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-5 flex gap-x-6">
+                <span className="text-sm leading-[16.94px] text-dark-blue-400">
+                  Worked with:
+                </span>
+                <NextImage
+                  src="/google.png"
+                  alt="Google"
+                  height={18}
+                  width={51.72}
+                  style={{
+                    height: 18,
+                    width: "auto",
+                    objectFit: "contain",
+                  }}
+                />
+                <NextImage
+                  src="/spotify.png"
+                  alt="Spotify"
+                  height={18}
+                  width={58.53}
+                  style={{
+                    height: 18,
+                    width: "auto",
+                    objectFit: "contain",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </SwiperSlide>
+      </SwiperRoot>
+    </div>
+  )
+}
+
+const TakeCareersToNextLevel = () => {
+  return (
+    <div className="mt-3 md:mt-5 p-5 md:p-[50px] rounded-lg border bg-white border-gray-200 shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
+      <div className="max-w-[561px] mx-auto">
+        <h1 className="text-[22px] text-center leading-[26.63px] text-dark-blue-400 font-bold">
+          Take your careers to the next level
+        </h1>
+        <p className="text-base text-center leading-[19.36px] mt-2 text-dark-blue-400">
+          Upgrade your account to Premium or Agency and unlock exclusive
+          features to grow your business faster and more efficiently.
+        </p>
+      </div>
+
+      <div className="mt-5 md:mt-[50px] grid md:grid-cols-2 gap-5 items-end">
+        <article className="rounded-xl border border-gray-200">
+          <div className="bg-primary-25 border-b rounded-t-xl py-1 border-gray-200 flex justify-center items-center gap-x-2.5">
+            <StarsBFill className="size-6 text-primary-500" />
+            <span className="text-[17px] font-medium leading-[20.57px] text-dark-blue-400">
+              Recommended for you
+            </span>
+          </div>
+          <div className="p-5">
+            <h1 className="text-2xl font-semibold leading-[29.05px] text-dark-blue-400">
+              Premium
+            </h1>
+            <p className="text-sm leading-[16.94px] mt-5 text-dark-blue-400">
+              Recommended for solo talents looking to scale
+            </p>
+
+            <h1 className="text-[32px] mt-5 leading-[38.73px] font-bold text-dark-blue-400">
+              $15{" "}
+              <span className="text-[17px] leading-[20.57px] font-normal">
+                / month
+              </span>
+            </h1>
+
+            <div className="mt-5">
+              <h3 className="text-[17px] leading-[20.57px] font-semibold text-dark-blue-400">
+                Why we recommend it for you
+              </h3>
+              <ul className="flex flex-col mt-3 gap-y-2">
+                <li className="flex items-center gap-x-2.5">
+                  <Check className="size-5 text-primary-500" />
+                  <span className="text-sm leading-[16.94px] text-dark-blue-400">
+                    Get new jobs 2x faster
+                  </span>
+                </li>
+                <li className="flex items-center gap-x-2.5">
+                  <Check className="size-5 text-primary-500" />
+                  <span className="text-sm leading-[16.94px] text-dark-blue-400">
+                    Increase visibility by 30%
+                  </span>
+                </li>
+                <li className="flex items-center gap-x-2.5">
+                  <Check className="size-5 text-primary-500" />
+                  <span className="text-sm leading-[16.94px] text-dark-blue-400">
+                    Access to exclusive jobs
+                  </span>
+                </li>
+                <li className="flex items-center gap-x-2.5">
+                  <Check className="size-5 text-primary-500" />
+                  <span className="text-sm leading-[16.94px] text-dark-blue-400">
+                    Track advanced analytics
+                  </span>
+                </li>
+              </ul>
+
+              <Button
+                className="mt-5 text-dark-blue-400"
+                visual="gray"
+                variant="outlined"
+              >
+                Upgrade Now
+              </Button>
+            </div>
+          </div>
+        </article>
+
+        <article className="rounded-xl border border-gray-200">
+          <div className="p-5">
+            <h1 className="text-2xl font-semibold leading-[29.05px] text-dark-blue-400">
+              Agency
+            </h1>
+            <p className="text-sm leading-[16.94px] mt-5 text-dark-blue-400">
+              Ideal for talents who want to build a team
+            </p>
+
+            <h1 className="text-[32px] mt-5 leading-[38.73px] font-bold text-dark-blue-400">
+              $20{" "}
+              <span className="text-[17px] leading-[20.57px] font-normal">
+                / month
+              </span>
+            </h1>
+
+            <div className="mt-5">
+              <h3 className="text-[17px] leading-[20.57px] font-semibold text-dark-blue-400">
+                Benefits
+              </h3>
+              <ul className="flex flex-col mt-3 gap-y-2">
+                <li className="flex items-center gap-x-2.5">
+                  <Check className="size-5 text-primary-500" />
+                  <span className="text-sm leading-[16.94px] text-dark-blue-400">
+                    Build your own team
+                  </span>
+                </li>
+                <li className="flex items-center gap-x-2.5">
+                  <Check className="size-5 text-primary-500" />
+                  <span className="text-sm leading-[16.94px] text-dark-blue-400">
+                    Collaborate with team members
+                  </span>
+                </li>
+                <li className="flex items-center gap-x-2.5">
+                  <Check className="size-5 text-primary-500" />
+                  <span className="text-sm leading-[16.94px] text-dark-blue-400">
+                    Take on more clients
+                  </span>
+                </li>
+                <li className="flex items-center gap-x-2.5">
+                  <Check className="size-5 text-primary-500" />
+                  <span className="text-sm leading-[16.94px] text-dark-blue-400">
+                    Access in-depth metrics
+                  </span>
+                </li>
+              </ul>
+
+              <Button
+                className="mt-5 text-dark-blue-400"
+                visual="gray"
+                variant="outlined"
+              >
+                Upgrade Now
+              </Button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  )
+}
+
+const Footer = () => {
+  return (
+    <div className="px-5 xs:max-md:pt-5 md:px-6 pb-5 flex flex-col md:flex-row items-center gap-5 md:justify-between">
+      <div className="flex md:flex-row flex-col items-center gap-5 md:gap-x-[57px]">
+        <NextLink className="focus-visible:outline-none" href="/">
+          <Logo3 className="shrink-0 w-[120px] h-[17.63px]" />
+        </NextLink>
+        <span className="text-[13px] leading-[15.73px] font-light text-dark-blue-400">
+          © 2011 - 2025 Marketeq Digital Inc. All Rights Reserved.
+        </span>
+      </div>
+
+      <div className="flex items-center gap-x-[16.6px]">
+        <IconButton
+          className="size-[30px] rounded-full"
+          variant="outlined"
+          visual="gray"
+        >
+          <Facebook className="fill-dark-blue-400 size-4" />
+        </IconButton>
+        <IconButton
+          className="size-[30px] rounded-full"
+          variant="outlined"
+          visual="gray"
+        >
+          <XIcon className="text-dark-blue-400 size-4" />
+        </IconButton>
+        <IconButton
+          className="size-[30px] rounded-full"
+          variant="outlined"
+          visual="gray"
+        >
+          <InstagramDefault className="text-dark-blue-400 size-4" />
+        </IconButton>
+        <IconButton
+          className="size-[30px] rounded-full"
+          variant="outlined"
+          visual="gray"
+        >
+          <Linkedin className="text-dark-blue-400 size-4" />
+        </IconButton>
+      </div>
+    </div>
+  )
+}
+
+export default function TalentDashboard() {
+  const [isOpen, toggleIsOpen] = useToggle(false)
+
+  return (
+    <div className="flex bg-gray-50">
+      <LeftSidebar />
+      <div className="flex-auto p-6 gap-x-8 flex justify-center min-[1024px]:py-8 min-[1024px]:pl-[256px] min-[1024px]:pr-8 xl:pr-[50px] xl:pl-[274px] 2xl:pr-[150px] 2xl:pl-[374px] overflow-hidden">
+        <div className="max-w-[1042px] space-y-3 md:space-y-5 min-w-0">
+          <Welcome onToggle={toggleIsOpen} />
+
+          <RecentProjects />
+
+          <CreateYourOwnProject />
+
+          <RecommendedForYou />
+
+          <BecomeTopSeller />
+
+          <Carousel />
+
+          <TakeCareersToNextLevel />
+
+          <Footer />
+        </div>
+
+        <RightSidebar />
       </div>
 
       <Dialog open={isOpen} onOpenChange={toggleIsOpen}>
         <DialogContent
           variant="unanimated"
-          className="w-[322px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:slide-in-from-right-1/2 data-[state=closed]:slide-out-to-right-1/2 right-0 inset-y-0"
+          className="w-full md:w-[322px] bg-white data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:slide-in-from-right-1/2 data-[state=closed]:slide-out-to-right-1/2 inset-x-0 md:left-auto md:right-0 inset-y-0"
         >
           <button
-            className="size-[28px] -left-3.5 absolute top-[104px] text-gray-500 focus-visible:outline-none rounded-full bg-white inline-flex border border-gray-300 items-center justify-center shrink-0"
+            className="size-[28px] -left-3.5 absolute z-10 top-[104px] text-gray-500 focus-visible:outline-none rounded-full bg-white hidden md:inline-flex border border-gray-300 items-center justify-center shrink-0"
             onClick={toggleIsOpen}
           >
             <ChevronRight className="size-3" />
           </button>
-          <RightSidebar className="xs:max-[1440px]:block" />
+
+          <div className="pl-3.5 p-1 sticky top-0 h-12 flex md:hidden items-center justify-between">
+            <h1 className="text-sm leading-5 font-semibold text-dark-blue-400">
+              My Profile
+            </h1>
+
+            <DialogTrigger asChild>
+              <IconButton
+                className="opacity-50 hover:opacity-100"
+                size="md"
+                variant="ghost"
+                visual="gray"
+              >
+                <X className="size-[18px]" />
+              </IconButton>
+            </DialogTrigger>
+          </div>
+
+          <ScrollArea
+            className="w-full h-[calc(theme(size.full)-theme(size.12))]"
+            scrollBar={<ScrollBar className="w-4 p-1" />}
+          >
+            <RightDrawer />
+          </ScrollArea>
         </DialogContent>
       </Dialog>
-
-      <RightSidebar />
     </div>
   )
 }

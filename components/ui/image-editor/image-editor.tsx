@@ -346,10 +346,10 @@ export const ImageEditor = ({
       </Dialog>
 
       <Dialog open={state === "editing"}>
-        <DialogContent className="max-w-[486px] bg-white shadow-[0px_8px_8px_-4px_rgba(16,24,40,.03),0px_20px_24px_-4px_rgba(16,24,40,.08)]">
-          <div className="px-2.5 py-[15px] pl-5 flex items-center justify-between">
+        <DialogContent className="max-w-[486px] p-0 bg-white shadow-[0px_8px_8px_-4px_rgba(16,24,40,.03),0px_20px_24px_-4px_rgba(16,24,40,.08)]">
+          <div className="p-5 flex items-center justify-between">
             <Button size="md" variant="link" onClick={() => send("REMOVE")}>
-              Back
+              <ArrowLeft className="size-4" /> Back
             </Button>
 
             <h1 className="text-lg leading-7 font-semibold text-dark-blue-400">
@@ -364,7 +364,7 @@ export const ImageEditor = ({
             </button>
           </div>
 
-          <div className="px-6 pb-6">
+          <div className="px-5 pb-5">
             <div className="py-[25px] flex items-center justify-center bg-gray-100">
               <div className="rounded-full border-[5.96px] border-white">
                 <div

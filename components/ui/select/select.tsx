@@ -11,24 +11,27 @@ const SelectGroup = SelectPrimitive.Group
 
 const SelectValue = SelectPrimitive.Value
 
-const Trigger = SelectPrimitive.Trigger
-
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> & {
+    invalid?: boolean
+    indicator?: boolean
+  }
+>(({ className, children, indicator = true, ...props }, ref) => (
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "inline-flex h-11 items-center justify-between gap-x-1 rounded-l-[5px] border border-gray-300 bg-white px-[14px] py-3 text-sm text-gray-black focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+      "inline-flex h-11 items-center data-[placeholder]:text-gray-500 justify-between gap-x-1 rounded-l-[5px] border border-gray-300 bg-white px-[14px] py-3 text-sm text-gray-black focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
       className
     )}
     {...props}
   >
     {children}
-    <SelectPrimitive.Icon asChild>
-      <ChevronDown className="h-4 w-4 text-gray-500" />
-    </SelectPrimitive.Icon>
+    {indicator && (
+      <SelectPrimitive.Icon asChild>
+        <ChevronDown className="h-4 w-4 text-gray-500" />
+      </SelectPrimitive.Icon>
+    )}
   </SelectPrimitive.Trigger>
 ))
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
@@ -82,7 +85,7 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-default select-none items-center rounded-sm py-2.5 pl-3 pr-[38px] text-[13px] leading-none text-gray-500 outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 focus:bg-gray-50 focus:text-gray-black",
+      "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2.5 pl-3 pr-[38px] text-[13px] leading-none text-gray-500 outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 focus:bg-gray-50 focus:text-gray-black",
       className
     )}
     {...props}
@@ -119,5 +122,4 @@ export {
   SelectLabel,
   SelectItem,
   SelectSeparator,
-  Trigger,
 }

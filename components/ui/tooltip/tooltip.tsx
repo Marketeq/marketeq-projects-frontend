@@ -21,7 +21,7 @@ const tooltipContentVariants = cva(
       },
       visual: {
         white: "bg-white text-gray-700",
-        gray: "bg-gray-black text-white",
+        gray: "bg-gray-900 text-white",
       },
     },
     defaultVariants: {
@@ -36,12 +36,14 @@ const TooltipContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content> &
     VariantProps<typeof tooltipContentVariants>
 >(({ className, sideOffset = 4, size, visual, ...props }, ref) => (
-  <TooltipPrimitive.Content
-    ref={ref}
-    sideOffset={sideOffset}
-    className={cn(tooltipContentVariants({ size, visual, className }))}
-    {...props}
-  />
+  <TooltipPrimitive.Portal>
+    <TooltipPrimitive.Content
+      ref={ref}
+      sideOffset={sideOffset}
+      className={cn(tooltipContentVariants({ size, visual, className }))}
+      {...props}
+    />
+  </TooltipPrimitive.Portal>
 ))
 TooltipContent.displayName = TooltipPrimitive.Content.displayName
 

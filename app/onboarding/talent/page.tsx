@@ -1,31 +1,37 @@
 "use client"
 
 import React, { useEffect, useMemo, useState } from "react"
-import { HOT_KEYS } from "@/utils/constants"
-import { cn, getIsNotEmpty, hookFormHasError } from "@/utils/functions"
+import { DAY_PERIODS, HOT_KEYS, TIMES } from "@/utils/constants"
+import { cn, getIsNotEmpty, hookFormHasError, noop } from "@/utils/functions"
 import { useControllableState, useStepper } from "@/utils/hooks"
 import {
   AlertCircle,
   Briefcase02,
   Check,
-  ChevronDown,
   ChevronRight,
   Home03,
   Plus,
+  Trash03,
   Upload,
   Users03,
   X2,
 } from "@blend-metrics/icons"
 import { ErrorMessage as HookFormErrorMessage } from "@hookform/error-message"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { Time } from "@internationalized/date"
 import { Steps } from "headless-stepper"
 import {
   Controller,
   SubmitHandler,
   UseFormSetValue,
   useForm,
+  useWatch,
 } from "react-hook-form"
-import { useIsomorphicLayoutEffect, useToggle } from "react-use"
+import {
+  useIsomorphicLayoutEffect,
+  useToggle,
+  useUpdateEffect,
+} from "react-use"
 import { z } from "zod"
 import { Logo } from "@/components/icons"
 import { Pointer } from "@/components/icons/pointer"
@@ -48,15 +54,23 @@ import {
   ComboboxOptions,
   ComboboxTrigger,
   ErrorMessage,
+  IconButton,
   ImageEditor,
   Input,
   Label,
   ScaleOutIn,
   ScrollArea,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
   Step,
   StepControl,
   StepRootProvider,
   StepperProvider,
+  Switch,
   buttonVariants,
   useStepContext,
   useStepRootContext,
@@ -108,11 +122,14 @@ const IntroduceYourself = ({ sidebar }: { sidebar: React.ReactNode }) => {
   }
 
   return (
-    <div className="min-h-screen flex pl-[450px]">
+    <div className="min-h-screen flex lg:pl-[480px] bg-white">
       {sidebar}
 
-      <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
-        <div className="w-full max-w-[560px] mx-auto">
+      <form
+        className="relative grid items-start flex-auto py-10 px-5 md:px-10 lg:py-[100px] lg:px-[200px]"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="w-full max-w-[488px] lg:max-w-[560px] mx-auto">
           <div className="flex gap-x-2 items-center">
             <CircularProgress
               show={false}
@@ -134,7 +151,7 @@ const IntroduceYourself = ({ sidebar }: { sidebar: React.ReactNode }) => {
             opportunities!
           </p>
 
-          <form className="mt-[50px]" onSubmit={handleSubmit(onSubmit)}>
+          <div className="mt-10 lg:mt-[50px]">
             <div className="space-y-6">
               <div className="flex flex-col gap-y-1.5">
                 <Label
@@ -170,7 +187,7 @@ const IntroduceYourself = ({ sidebar }: { sidebar: React.ReactNode }) => {
 
                           {dataUrl ? (
                             <Button
-                              className="rounded-full"
+                              className="rounded-full bg-primary-50 text-primary-500 hover:text-white hover:bg-primary-500"
                               size="md"
                               onClick={open}
                               type="button"
@@ -179,10 +196,10 @@ const IntroduceYourself = ({ sidebar }: { sidebar: React.ReactNode }) => {
                             </Button>
                           ) : (
                             <Button
-                              className="rounded-full"
+                              className="rounded-full bg-primary-50 text-primary-500 hover:text-white hover:bg-primary-500"
                               size="md"
                               type="button"
-                              variant="outlined"
+                              variant="filled"
                               visual="gray"
                               onClick={open}
                             >
@@ -204,7 +221,7 @@ const IntroduceYourself = ({ sidebar }: { sidebar: React.ReactNode }) => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-x-6">
+              <div className="grid lg:grid-cols-2 gap-6">
                 <div className="flex flex-col gap-y-1.5">
                   <Label
                     className="text-dark-blue-400"
@@ -251,38 +268,42 @@ const IntroduceYourself = ({ sidebar }: { sidebar: React.ReactNode }) => {
                 </div>
               </div>
             </div>
-
-            <div className="mt-[190px] flex items-center justify-between">
-              <NextLink
-                className={cn(
-                  buttonVariants({
-                    size: "md",
-                    variant: "outlined",
-                    visual: "gray",
-                  })
-                )}
-                href="/onboarding"
-              >
-                Back
-              </NextLink>
-
-              <div className="flex items-center gap-x-10">
-                <Button
-                  variant="ghost"
-                  visual="gray"
-                  type="button"
-                  onClick={skip}
-                >
-                  Skip
-                </Button>
-                <Button size="md" visual="primary">
-                  Continue
-                </Button>
-              </div>
-            </div>
-          </form>
+          </div>
         </div>
-      </div>
+
+        <div className="mx-auto max-w-[488px] lg:max-w-[560px] self-end w-full mt-10 lg:mt-[50px]">
+          <div className="flex items-center justify-between">
+            <NextLink
+              className={cn(
+                buttonVariants({
+                  size: "md",
+                  variant: "outlined",
+                  visual: "gray",
+                })
+              )}
+              href="/onboarding"
+            >
+              Back
+            </NextLink>
+
+            <div className="flex items-center gap-x-6">
+              <Button
+                className="opacity-50 hover:opacity-100"
+                variant="ghost"
+                visual="gray"
+                type="button"
+                size="md"
+                onClick={skip}
+              >
+                Skip
+              </Button>
+              <Button size="md" visual="primary">
+                Continue
+              </Button>
+            </div>
+          </div>
+        </div>
+      </form>
     </div>
   )
 }
@@ -331,11 +352,14 @@ const CreateYourUsername = ({ sidebar }: { sidebar: React.ReactNode }) => {
   }
 
   return (
-    <div className="min-h-screen flex pl-[450px]">
+    <div className="min-h-screen flex lg:pl-[480px] bg-white">
       {sidebar}
 
-      <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
-        <div className="max-w-[560px] w-full mx-auto">
+      <form
+        className="relative grid items-start flex-auto px-5 md:px-10 py-10 lg:py-[100px] lg:px-[200px]"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="max-w-[488px] lg:max-w-[560px] w-full mx-auto">
           <div className="flex gap-x-2 items-center">
             <CircularProgress
               show={false}
@@ -357,7 +381,7 @@ const CreateYourUsername = ({ sidebar }: { sidebar: React.ReactNode }) => {
             later...
           </p>
 
-          <form className="mt-[50px]" onSubmit={handleSubmit(onSubmit)}>
+          <div className="mt-[50px]">
             <div className="flex flex-col gap-y-1.5">
               <Label className="text-dark-blue-400" id="username" size="sm">
                 Enter Your Username
@@ -573,35 +597,39 @@ const CreateYourUsername = ({ sidebar }: { sidebar: React.ReactNode }) => {
                 </AlertContent>
               </Alert>
             </div>
+          </div>
+        </div>
 
-            <div className="mt-[134px] flex items-center justify-between">
+        <div className="mx-auto max-w-[488px] lg:max-w-[560px] self-end w-full mt-10 lg:mt-[50px]">
+          <div className="flex items-center justify-between">
+            <Button
+              size="md"
+              variant="outlined"
+              visual="gray"
+              type="button"
+              onClick={prevStep}
+            >
+              Back
+            </Button>
+
+            <div className="flex items-center gap-x-6">
               <Button
-                size="md"
-                variant="outlined"
+                className="opacity-50 hover:opacity-100"
+                variant="ghost"
                 visual="gray"
                 type="button"
-                onClick={prevStep}
+                size="md"
+                onClick={skip}
               >
-                Back
+                Skip
               </Button>
-
-              <div className="flex items-center gap-x-10">
-                <Button
-                  variant="ghost"
-                  visual="gray"
-                  type="button"
-                  onClick={skip}
-                >
-                  Skip
-                </Button>
-                <Button size="md" visual="primary">
-                  Continue
-                </Button>
-              </div>
+              <Button size="md" visual="primary">
+                Continue
+              </Button>
             </div>
-          </form>
+          </div>
         </div>
-      </div>
+      </form>
     </div>
   )
 }
@@ -641,11 +669,14 @@ const ShareYourLocation = ({ sidebar }: { sidebar: React.ReactNode }) => {
   }
 
   return (
-    <div className="min-h-screen flex pl-[450px]">
+    <div className="min-h-screen flex lg:pl-[480px] bg-white">
       {sidebar}
 
-      <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
-        <div className="max-w-[560px] w-full mx-auto">
+      <form
+        className="relative grid items-start flex-auto px-5 md:px-10 py-10 lg:py-[100px] lg:px-[200px]"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="max-w-[488px] lg:max-w-[560px] w-full mx-auto">
           <div className="flex gap-x-2 items-center">
             <CircularProgress
               show={false}
@@ -667,7 +698,7 @@ const ShareYourLocation = ({ sidebar }: { sidebar: React.ReactNode }) => {
             matches..
           </p>
 
-          <form className="mt-[50px]" onSubmit={handleSubmit(onSubmit)}>
+          <div className="mt-10 lg:mt-[50px]">
             <div className="space-y-6">
               <div className="flex flex-col gap-y-1.5">
                 <Label
@@ -714,35 +745,39 @@ const ShareYourLocation = ({ sidebar }: { sidebar: React.ReactNode }) => {
                 />
               </div>
             </div>
+          </div>
+        </div>
 
-            <div className="mt-[134px] flex items-center justify-between">
+        <div className="mx-auto max-w-[488px] lg:max-w-[560px] self-end w-full mt-10 lg:mt-[50px]">
+          <div className="flex items-center justify-between">
+            <Button
+              size="md"
+              variant="outlined"
+              visual="gray"
+              type="button"
+              onClick={prevStep}
+            >
+              Back
+            </Button>
+
+            <div className="flex items-center gap-x-6">
               <Button
-                size="md"
-                variant="outlined"
+                className="opacity-50 hover:opacity-100"
+                variant="ghost"
                 visual="gray"
                 type="button"
-                onClick={prevStep}
+                size="md"
+                onClick={skip}
               >
-                Back
+                Skip
               </Button>
-
-              <div className="flex items-center gap-x-10">
-                <Button
-                  variant="ghost"
-                  visual="gray"
-                  type="button"
-                  onClick={skip}
-                >
-                  Skip
-                </Button>
-                <Button size="md" visual="primary">
-                  Continue
-                </Button>
-              </div>
+              <Button size="md" visual="primary">
+                Continue
+              </Button>
             </div>
-          </form>
+          </div>
         </div>
-      </div>
+      </form>
     </div>
   )
 }
@@ -942,11 +977,14 @@ const ShowcaseYourTalent = ({ sidebar }: { sidebar: React.ReactNode }) => {
   }
 
   return (
-    <div className="min-h-screen flex pl-[450px]">
+    <div className="min-h-screen flex lg:pl-[480px] bg-white">
       {sidebar}
 
-      <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
-        <div className="max-w-[560px] w-full mx-auto">
+      <form
+        className="relative grid items-start flex-auto px-5 md:px-10 py-10 lg:py-[100px] lg:px-[200px]"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="max-w-[488px] lg:max-w-[560px] w-full mx-auto">
           <div className="flex gap-x-2 items-center">
             <CircularProgress
               show={false}
@@ -968,7 +1006,7 @@ const ShowcaseYourTalent = ({ sidebar }: { sidebar: React.ReactNode }) => {
             suit you best
           </p>
 
-          <form className="mt-[50px]" onSubmit={handleSubmit(onSubmit)}>
+          <div className="mt-10 lg:mt-[50px]">
             <div className="space-y-6">
               <div className="flex flex-col gap-y-1.5">
                 <Label
@@ -1063,35 +1101,39 @@ const ShowcaseYourTalent = ({ sidebar }: { sidebar: React.ReactNode }) => {
                 />
               </div>
             </div>
+          </div>
+        </div>
 
-            <div className="mt-[50px] flex items-center justify-between">
+        <div className="mx-auto max-w-[488px] lg:max-w-[560px] self-end w-full mt-10 lg:mt-[50px]">
+          <div className="flex items-center justify-between">
+            <Button
+              size="md"
+              variant="outlined"
+              visual="gray"
+              type="button"
+              onClick={prevStep}
+            >
+              Back
+            </Button>
+
+            <div className="flex items-center gap-x-6">
               <Button
-                size="md"
-                variant="outlined"
+                className="opacity-50 hover:opacity-100"
+                variant="ghost"
                 visual="gray"
                 type="button"
-                onClick={prevStep}
+                size="md"
+                onClick={skip}
               >
-                Back
+                Skip
               </Button>
-
-              <div className="flex items-center gap-x-10">
-                <Button
-                  variant="ghost"
-                  visual="gray"
-                  type="button"
-                  onClick={skip}
-                >
-                  Skip
-                </Button>
-                <Button size="md" visual="primary">
-                  Continue
-                </Button>
-              </div>
+              <Button size="md" visual="primary">
+                Continue
+              </Button>
             </div>
-          </form>
+          </div>
         </div>
-      </div>
+      </form>
     </div>
   )
 }
@@ -1218,67 +1260,46 @@ const ProjectPreferences = ({
   )
 }
 
+const availabilities = ["Full-time", "Part-time", "Custom"]
+
 const YourAvailability = ({
   invalid,
   onValueChange,
-  value: valueProp,
+  value,
 }: {
   invalid?: boolean
-  onValueChange?: (values: string) => void
   value?: string
+  onValueChange?: (value: string) => void
 }) => {
-  const [inputValue, setInputValue] = useState("")
-  const [value, setValue] = useControllableState({
+  const [state, setState] = useControllableState({
+    value,
     onChange: onValueChange,
-    value: valueProp,
   })
 
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const {
-      target: { value },
-    } = event
-    setInputValue(value)
-  }
-
-  const filteredRoles = skills.filter((skill) =>
-    skill.toLowerCase().includes(inputValue.toLowerCase())
-  )
-
   return (
-    <div className="space-y-3">
-      <Combobox
-        className="w-full flex flex-col gap-y-1.5"
-        value={value}
-        onChange={setValue}
-      >
-        <ComboboxLabel size="sm" className="text-dark-blue-400">
+    <div className="w-full flex flex-col gap-y-1.5">
+      <Select value={state} onValueChange={setState}>
+        <Label size="sm" className="text-dark-blue-400" htmlFor="availability">
           What’s your availability?
-        </ComboboxLabel>
-        <ComboboxTrigger>
-          <ComboboxInput
-            size="lg"
-            className="pl-3.5 pr-[42px]"
-            placeholder="Select availability"
-            onChange={onChange}
-            invalid={invalid}
-          />
-          <ComboboxButton align="right">
-            <ChevronDown className="size-4" />
-          </ComboboxButton>
-        </ComboboxTrigger>
+        </Label>
+        <SelectTrigger
+          className="rounded-[5px]"
+          id="availability"
+          invalid={invalid}
+        >
+          <SelectValue placeholder="Select availability" />
+        </SelectTrigger>
 
-        <ScaleOutIn afterLeave={() => setInputValue("")}>
-          <ComboboxOptions className="top-full">
-            <ScrollArea viewportClassName="max-h-[304px]">
-              {filteredRoles.map((role, index) => (
-                <ComboboxOption key={index} value={role}>
-                  {role}
-                </ComboboxOption>
-              ))}
-            </ScrollArea>
-          </ComboboxOptions>
-        </ScaleOutIn>
-      </Combobox>
+        <SelectContent>
+          <ScrollArea viewportClassName="max-h-[304px]">
+            {availabilities.map((availability, index) => (
+              <SelectItem value={availability} key={index}>
+                {availability}
+              </SelectItem>
+            ))}
+          </ScrollArea>
+        </SelectContent>
+      </Select>
     </div>
   )
 }
@@ -1290,6 +1311,257 @@ const setYourPreferencesFormSchema = z.object({
 
 type SetYourPreferencesFormValues = z.infer<typeof setYourPreferencesFormSchema>
 
+const CustomAvailabilityTimeSelector = ({
+  label,
+  value,
+  onValueChange,
+  disabled,
+}: {
+  label: string
+  value?: Array<{
+    startTime: string
+    startTimeDayPeriod: string
+    endTime: string
+    endTimeDayPeriod: string
+  }>
+  onValueChange?: (
+    value: Array<{
+      startTime: string
+      startTimeDayPeriod: string
+      endTime: string
+      endTimeDayPeriod: string
+    }>
+  ) => void
+  disabled?: boolean
+}) => {
+  const [state, setState] = useControllableState<
+    Array<{
+      startTime: string
+      startTimeDayPeriod: string
+      endTime: string
+      endTimeDayPeriod: string
+    }>
+  >({
+    defaultValue: [
+      {
+        startTime: "09:00",
+        startTimeDayPeriod: "AM",
+        endTime: "05:00",
+        endTimeDayPeriod: "AM",
+      },
+    ],
+    value,
+    onChange: onValueChange,
+  })
+
+  const [isOn, toggleIsOn] = useToggle(disabled != null ? !disabled : true)
+
+  const add = () => {
+    setState((prev) => [
+      ...prev,
+      {
+        startTime: "09:00",
+        startTimeDayPeriod: "AM",
+        endTime: "05:00",
+        endTimeDayPeriod: "AM",
+      },
+    ])
+  }
+
+  const remove = (index: number) => {
+    setState((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  return (
+    <article
+      className={cn(
+        "py-3 flex items-start justify-between border-b border-gray-200",
+        !isOn && "opacity-50"
+      )}
+    >
+      <div className="inline-flex items-center gap-x-3 pt-2.5">
+        <Switch
+          checked={isOn}
+          onCheckedChange={toggleIsOn}
+          size="sm"
+          id={label}
+        />
+
+        <Label size="sm" className="text-dark-blue-400" htmlFor={label}>
+          {label}
+        </Label>
+      </div>
+
+      <div className="flex items-star gap-x-3">
+        <div className="flex flex-col gap-y-3">
+          {state.map((t, index) => (
+            <div className="inline-flex items-center gap-x-3" key={index}>
+              <div className="flex items-center">
+                <Select
+                  disabled={!isOn}
+                  value={t.startTime}
+                  onValueChange={(value) =>
+                    setState((prev) => {
+                      const nextState = prev
+                        .slice()
+                        .map((item, i) =>
+                          i === index ? { ...item, startTime: value } : item
+                        )
+
+                      return nextState
+                    })
+                  }
+                >
+                  <SelectTrigger indicator={false} className="rounded-r-none">
+                    <SelectValue />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <ScrollArea viewportClassName="max-h-[304px]">
+                      {TIMES.map((time, index) => (
+                        <SelectItem value={time} key={index}>
+                          {time}
+                        </SelectItem>
+                      ))}
+                    </ScrollArea>
+                  </SelectContent>
+                </Select>
+                <Select
+                  disabled={!isOn}
+                  value={t.startTimeDayPeriod}
+                  onValueChange={(value) =>
+                    setState((prev) => {
+                      const nextState = prev
+                        .slice()
+                        .map((item, i) =>
+                          i === index
+                            ? { ...item, startTimeDayPeriod: value }
+                            : item
+                        )
+
+                      return nextState
+                    })
+                  }
+                >
+                  <SelectTrigger
+                    indicator={false}
+                    className="rounded-l-none rounded-r-[5px] border-l-0"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <ScrollArea viewportClassName="max-h-[304px]">
+                      {DAY_PERIODS.map((dayPeriod, index) => (
+                        <SelectItem value={dayPeriod} key={index}>
+                          {dayPeriod}
+                        </SelectItem>
+                      ))}
+                    </ScrollArea>
+                  </SelectContent>
+                </Select>
+              </div>
+              <span className="text-base leading-8 font-semibold text-gray-400">
+                to
+              </span>
+              <div className="flex items-center">
+                <Select
+                  disabled={!isOn}
+                  value={t.endTime}
+                  onValueChange={(value) =>
+                    setState((prev) => {
+                      const nextState = prev
+                        .slice()
+                        .map((item, i) =>
+                          i === index ? { ...item, endTime: value } : item
+                        )
+
+                      return nextState
+                    })
+                  }
+                >
+                  <SelectTrigger indicator={false} className="rounded-r-none">
+                    <SelectValue />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <ScrollArea viewportClassName="max-h-[304px]">
+                      {TIMES.map((time, index) => (
+                        <SelectItem value={time} key={index}>
+                          {time}
+                        </SelectItem>
+                      ))}
+                    </ScrollArea>
+                  </SelectContent>
+                </Select>
+                <Select
+                  disabled={!isOn}
+                  value={t.endTimeDayPeriod}
+                  onValueChange={(value) =>
+                    setState((prev) => {
+                      const nextState = prev
+                        .slice()
+                        .map((item, i) =>
+                          i === index
+                            ? { ...item, endTimeDayPeriod: value }
+                            : item
+                        )
+
+                      return nextState
+                    })
+                  }
+                >
+                  <SelectTrigger
+                    indicator={false}
+                    className="rounded-l-none rounded-r-[5px] border-l-0"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <ScrollArea viewportClassName="max-h-[304px]">
+                      {DAY_PERIODS.map((dayPeriod, index) => (
+                        <SelectItem value={dayPeriod} key={index}>
+                          {dayPeriod}
+                        </SelectItem>
+                      ))}
+                    </ScrollArea>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {index > 0 ? (
+                <IconButton
+                  className="rounded-full opacity-0 hover:opacity-100"
+                  visual="error"
+                  variant="ghost"
+                  size="md"
+                  type="button"
+                  onClick={() => remove(index)}
+                >
+                  <Trash03 className="size-[15px]" />
+                </IconButton>
+              ) : (
+                <IconButton
+                  className="rounded-[5px] bg-white"
+                  variant="outlined"
+                  visual="gray"
+                  size="md"
+                  type="button"
+                  onClick={isOn ? add : noop}
+                  disabled={!isOn}
+                >
+                  <Plus className="size-[15px]" />
+                </IconButton>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </article>
+  )
+}
+
 const SetYourPreferences = ({ sidebar }: { sidebar: React.ReactNode }) => {
   const {
     formState: { errors, isValid },
@@ -1300,6 +1572,10 @@ const SetYourPreferences = ({ sidebar }: { sidebar: React.ReactNode }) => {
   })
   const { toggleValidation } = useStepContext()
   const { nextStep, prevStep, setStep } = useStepperContext()
+  const availability = useWatch({
+    control,
+    name: "yourAvailability",
+  })
 
   useIsomorphicLayoutEffect(() => toggleValidation(isValid), [isValid])
 
@@ -1318,11 +1594,14 @@ const SetYourPreferences = ({ sidebar }: { sidebar: React.ReactNode }) => {
   }
 
   return (
-    <div className="min-h-screen flex pl-[450px]">
+    <div className="min-h-screen flex lg:pl-[480px] bg-white">
       {sidebar}
 
-      <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
-        <div className="max-w-[560px] w-full mx-auto">
+      <form
+        className="relative grid items-start flex-auto px-5 md:px-10 py-10 lg:py-[100px] lg:px-[200px]"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="max-w-[488px] lg:max-w-[560px] w-full mx-auto">
           <div className="flex gap-x-2 items-center">
             <CircularProgress
               show={false}
@@ -1344,7 +1623,7 @@ const SetYourPreferences = ({ sidebar }: { sidebar: React.ReactNode }) => {
             smoother.
           </p>
 
-          <form className="mt-[50px]" onSubmit={handleSubmit(onSubmit)}>
+          <div className="mt-[50px]">
             <div className="space-y-6">
               <div className="flex flex-col gap-y-1.5">
                 <Controller
@@ -1387,46 +1666,62 @@ const SetYourPreferences = ({ sidebar }: { sidebar: React.ReactNode }) => {
                   )}
                 />
               </div>
-            </div>
 
-            <div className="mt-[174px] flex items-center justify-between">
+              {availability === "Custom" && (
+                <div className="flex flex-col">
+                  <CustomAvailabilityTimeSelector label="Sunday" disabled />
+                  <CustomAvailabilityTimeSelector label="Monday" />
+                  <CustomAvailabilityTimeSelector label="Tuesday" />
+                  <CustomAvailabilityTimeSelector label="Wednesday" />
+                  <CustomAvailabilityTimeSelector label="Thursday" />
+                  <CustomAvailabilityTimeSelector label="Friday" />
+                  <CustomAvailabilityTimeSelector label="Saturday" disabled />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="mx-auto max-w-[488px] lg:max-w-[560px] self-end w-full mt-10 lg:mt-[50px]">
+          <div className="flex items-center justify-between">
+            <Button
+              size="md"
+              variant="outlined"
+              visual="gray"
+              type="button"
+              onClick={prevStep}
+            >
+              Back
+            </Button>
+
+            <div className="flex items-center gap-x-6">
               <Button
-                size="md"
-                variant="outlined"
+                className="opacity-50 hover:opacity-100"
+                variant="ghost"
                 visual="gray"
                 type="button"
-                onClick={prevStep}
+                size="md"
+                onClick={skip}
               >
-                Back
+                Skip
               </Button>
-
-              <div className="flex items-center gap-x-10">
-                <Button
-                  variant="ghost"
-                  visual="gray"
-                  type="button"
-                  onClick={skip}
-                >
-                  Skip
-                </Button>
-                <Button size="md" visual="primary">
-                  Continue
-                </Button>
-              </div>
+              <Button size="md" visual="primary">
+                Continue
+              </Button>
             </div>
-          </form>
+          </div>
         </div>
-      </div>
+      </form>
     </div>
   )
 }
 
 const DoNext = ({ sidebar }: { sidebar: React.ReactNode }) => {
   return (
-    <div className="min-h-screen flex pl-[450px]">
+    <div className="min-h-screen flex md:pl-[480px] bg-white">
       {sidebar}
-      <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[150px]">
-        <div className="max-w-[660px] w-full mx-auto">
+      <div className="relative grid items-start flex-auto px-5 md:px-10 py-10 lg:py-[100px] lg:px-[150px]">
+        <div className="max-w-[608px] lg:max-w-[660px] w-full mx-auto">
           <h1 className="text-2xl leading-[36px] mt-2 text-dark-blue-400 font-semibold">
             What would you like to do next?
           </h1>
@@ -1435,7 +1730,7 @@ const DoNext = ({ sidebar }: { sidebar: React.ReactNode }) => {
             Choose your next move and get started
           </p>
 
-          <div className="mt-[50px] grid grid-cols-2 gap-5">
+          <div className="mt-10 lg:mt-[50px] grid md:grid-cols-2 gap-2.5 lg:gap-5">
             <div className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300">
               <div className="flex items-center gap-x-3">
                 <div className="size-11 rounded-lg border-[1.5px] shrink-0 inline-flex items-center justify-center border-[#EAECF0] text-primary-500">
@@ -1485,12 +1780,12 @@ const DoNext = ({ sidebar }: { sidebar: React.ReactNode }) => {
               <ChevronRight className="shrink-0 size-5" />
             </div>
           </div>
+        </div>
 
-          <div className="mt-[290px] flex justify-end">
-            <Button className="text-primary-500" variant="link" visual="gray">
-              <Home03 className="size-[15px]" /> Go to Dashboard
-            </Button>
-          </div>
+        <div className="mt-10 lg:mt-[50px] mx-auto w-full max-w-[608px] lg:max-w-[660px] flex self-end justify-end">
+          <Button className="text-primary-500" variant="link" visual="gray">
+            <Home03 className="size-[15px]" /> Go to Dashboard
+          </Button>
         </div>
       </div>
     </div>
@@ -1499,7 +1794,7 @@ const DoNext = ({ sidebar }: { sidebar: React.ReactNode }) => {
 
 const Sidebar = () => {
   return (
-    <div className="fixed inset-y-0 left-0 p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
+    <div className="fixed inset-y-0 left-0 p-[75px] w-[480px] xs:max-lg:hidden shrink-0 flex flex-col bg-dark-blue-500">
       <NextLink href="/" className="focus-visible:outline">
         <Logo className="h-9 w-[245px] shrink-0" />
       </NextLink>
@@ -1574,7 +1869,7 @@ const Sidebar = () => {
 
 const DoNextSidebar = () => {
   return (
-    <div className="fixed inset-y-0 left-0 p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
+    <div className="fixed inset-y-0 left-0 p-[75px] w-[480px] xs:max-lg:hidden shrink-0 flex flex-col bg-dark-blue-500">
       <NextLink href="/" className="focus-visible:outline">
         <Logo className="h-9 w-[245px] shrink-0" />
       </NextLink>

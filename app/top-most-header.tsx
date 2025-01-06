@@ -564,6 +564,7 @@ const SearchBar = () => {
 }
 
 const TALENT_DASH = "/talent-dashboard"
+const CLIENT_DASH = "/client-dashboard"
 
 const ONBOARDING = "/onboarding"
 
@@ -578,7 +579,8 @@ export const TopMostHeader = () => {
     <div
       className={cn(
         "px-3.5 md:px-6 lg:px-[50px] bg-white shadow-[0px_1px_3px_0px_rgba(16,24,40,.1)] flex flex-col xs:max-md:pt-1 xs:max-md:pb-3.5",
-        pathname === TALENT_DASH && "md:max-lg:pb-2.5 sticky top-0 z-50"
+        (pathname === TALENT_DASH || pathname === CLIENT_DASH) &&
+          "md:max-lg:pb-2.5 sticky top-0 z-50"
       )}
     >
       <div className="flex items-center justify-between md:gap-x-3 lg:gap-x-[50px] md:pt-2 md:pb-1 lg:py-3">
