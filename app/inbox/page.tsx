@@ -397,7 +397,7 @@ const Chats = () => {
   )
 }
 
-export const Inbox = ({ children }: { children?: React.ReactNode }) => {
+const Inbox = ({ children }: { children?: React.ReactNode }) => {
   const [pinnedChats, setPinnedChats] = useState(0)
   const [showPinnedIcon, toggleShowPinnedIcon] = useToggle(false)
   const onPinnedChat = useCallback(

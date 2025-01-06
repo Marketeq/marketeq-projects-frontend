@@ -82,7 +82,7 @@ const describeYourTeamFormSchema = z.object({
 
 type DescribeYourTeamFormValues = z.infer<typeof describeYourTeamFormSchema>
 
-export const DescribeYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
+const DescribeYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
   const {
     register,
     formState: { errors, isValid },
@@ -288,7 +288,7 @@ const shareYourGoalsFormSchema = z
 
 type ShareYourGoalsFormValues = z.infer<typeof shareYourGoalsFormSchema>
 
-export const ShareYourGoals = ({ sidebar }: { sidebar: React.ReactNode }) => {
+const ShareYourGoals = ({ sidebar }: { sidebar: React.ReactNode }) => {
   const {
     handleSubmit,
     control,
@@ -432,7 +432,7 @@ const inviteYourTeamFormSchema = z.object({
 
 type InviteYourTeamFormValues = z.infer<typeof inviteYourTeamFormSchema>
 
-export const InviteYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
+const InviteYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
   const {
     control,
     formState: { errors, isValid },
@@ -618,11 +618,7 @@ const createYourUsernameFormSchema = z.object({
 
 type CreateYourUsernameFormValues = z.infer<typeof createYourUsernameFormSchema>
 
-export const CreateYourUsername = ({
-  sidebar,
-}: {
-  sidebar: React.ReactNode
-}) => {
+const CreateYourUsername = ({ sidebar }: { sidebar: React.ReactNode }) => {
   const [show, toggleShow] = useToggle(false)
   const {
     formState: { errors, isValid },
@@ -1261,11 +1257,7 @@ type OutlineYourInterestsFormValues = z.infer<
   typeof outlineYourInterestsFormSchema
 >
 
-export const OutlineYourInterests = ({
-  sidebar,
-}: {
-  sidebar: React.ReactNode
-}) => {
+const OutlineYourInterests = ({ sidebar }: { sidebar: React.ReactNode }) => {
   const {
     control,
     formState: { errors, isValid },
@@ -1560,7 +1552,7 @@ export const OutlineYourInterests = ({
   )
 }
 
-export const DoNext = ({ sidebar }: { sidebar: React.ReactNode }) => {
+const DoNext = ({ sidebar }: { sidebar: React.ReactNode }) => {
   return (
     <div className="min-h-screen flex lg:pl-[480px]">
       {sidebar}
