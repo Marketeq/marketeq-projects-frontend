@@ -1000,7 +1000,7 @@ const LookingToWorkWith = ({
     role.toLowerCase().includes(inputValue.toLowerCase())
   )
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     setValues((preValues) => {
       const filteredSelected = selected.filter(
         (value) => !preValues.includes(value)
@@ -1122,7 +1122,7 @@ const SkillsLookingFor = ({
     role.toLowerCase().includes(inputValue.toLowerCase())
   )
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     setValues((preValues) => {
       const filteredSelected = selected.filter(
         (value) => !preValues.includes(value)

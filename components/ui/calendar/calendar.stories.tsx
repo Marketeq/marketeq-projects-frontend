@@ -32,7 +32,6 @@ export const DoubleCalendarVariant = () => {
 
 export const DateRangeCalendarVariant = () => {
   const [value, setValue] = useState<{ end: Date; start: Date }>()
-  console.log({ value })
 
   return <DateRangeCalendar value={value} onValueChange={setValue} />
 }

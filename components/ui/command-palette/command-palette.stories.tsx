@@ -7,7 +7,7 @@ import {
   File,
   Film,
   Globe,
-  Image,
+  Image as ImageIcon,
   Lock01,
   Mail,
   Numbers,
@@ -276,7 +276,7 @@ export const Default = () => {
               </CommandPaletteItem>
               <CommandPaletteItem value="image upload">
                 <div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg border-[1.5px] border-gray-200">
-                  <Image className="h-5 w-5 text-primary-500" />
+                  <ImageIcon className="h-5 w-5 text-primary-500" />
                 </div>
                 <div className="flex flex-grow flex-col">
                   <span className="text-sm font-medium leading-6 text-gray-900">

@@ -16,7 +16,7 @@ import { useControllableState, useToggle } from "@/utils/hooks"
 import {
   Check,
   File,
-  Image,
+  Image as ImageIcon,
   Trash2,
   UploadCloud,
   Video,
@@ -195,7 +195,9 @@ export const Dropzone = ({
                   <div className="flex">
                     <div className="flex flex-auto gap-x-4 pt-2">
                       <div className="inline-flex h-8 w-8 flex-none items-center justify-center rounded-full border-[4px] border-primary-25 bg-primary-50 text-primary-500">
-                        {category === "img" && <Image className="h-4 w-4" />}
+                        {category === "img" && (
+                          <ImageIcon className="h-4 w-4" />
+                        )}
                         {category === "video" && <Video className="h-4 w-4" />}
                         {category === "doc" && <File className="h-4 w-4" />}
                         {category === "other" && (
@@ -440,7 +442,7 @@ export const CircularProgressDropzone = ({
                   </div>
                   <div className="relative flex items-start">
                     <div className="inline-flex h-8 w-8 flex-none items-center justify-center rounded-full border-[4px] border-primary-25 bg-primary-50 text-primary-500">
-                      {category === "img" && <Image className="h-4 w-4" />}
+                      {category === "img" && <ImageIcon className="h-4 w-4" />}
                       {category === "doc" && <File className="h-4 w-4" />}
                       {category === "video" && <Video className="h-4 w-4" />}
                       {category === "other" && (

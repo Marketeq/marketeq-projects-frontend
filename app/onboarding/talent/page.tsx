@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useMemo, useState } from "react"
 import { DAY_PERIODS, HOT_KEYS, TIMES } from "@/utils/constants"
 import { cn, getIsNotEmpty, hookFormHasError, noop } from "@/utils/functions"
 import { useControllableState, useStepper } from "@/utils/hooks"
@@ -867,7 +867,7 @@ const TopSkills = ({
     skill.toLowerCase().includes(inputValue.toLowerCase())
   )
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     setValues((preValues) => {
       const filteredSelected = selected.filter(
         (value) => !preValues.includes(value)
@@ -1195,7 +1195,7 @@ const ProjectPreferences = ({
     skill.toLowerCase().includes(inputValue.toLowerCase())
   )
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     setValues((preValues) => {
       const filteredSelected = selected.filter(
         (value) => !preValues.includes(value)
@@ -1958,8 +1958,6 @@ const TalentOnboarding = ({
   } = useStepper({
     steps,
   })
-
-  console.log({ stepsState, currentStep })
 
   const stepperValue = useMemo(
     () => ({ nextStep, prevStep, setStep, toggleStepValidation }),
