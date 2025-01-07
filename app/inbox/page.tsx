@@ -3,11 +3,14 @@
 import React, { useCallback, useMemo, useState } from "react"
 import { Bubble, YourBubble } from "@/stories/inbox.stories"
 import {
+  AlertTriangle,
+  Archive,
   Attachment01,
   ChevronDown,
   Edit05,
   Image03,
   Info,
+  Mail05,
   MoreHorizontal,
   Pin02,
   Plus,
@@ -15,6 +18,7 @@ import {
   Send,
   Smile,
   Star,
+  Trash2,
   X,
 } from "@blend-metrics/icons"
 import { useToggle } from "react-use"
@@ -40,11 +44,16 @@ import {
   InputRightElement,
   ScrollArea,
   ScrollBar,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from "@/components/ui"
 
 const LeftSidebar = () => {
-  const { pinnedChats, toggleShowPinnedIcon, showPinnedIcon } =
+  const { pinnedChats, toggleShowPinnedIcon, showPinnedIcon, checkedChats } =
     useChatsContext()
+
   return (
     <div className="w-[322px] shrink-0 border-r bg-white border-gray-200">
       <div className="pt-1 p-3 border-b border-gray-200">
@@ -52,23 +61,120 @@ const LeftSidebar = () => {
           All Messages <ChevronDown className="size-4" />
         </button>
 
-        <div className="flex items-center gap-x-1">
-          <InputGroup className="flex-auto">
-            <Input
-              id="search-bar"
-              type="text"
-              className="h-8 pl-[34px] py-2.5 pr-3 text-xs leading-5"
-              placeholder="Search inbox"
-            />
-            <InputLeftElement>
-              <SearchMd className="text-gray-400 size-4" />
-            </InputLeftElement>
-          </InputGroup>
+        {checkedChats > 0 ? (
+          <div className="flex items-center justify-between">
+            <span className="inline-flex gap-x-0.5 items-center">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <IconButton
+                      className="rounded-full size-7"
+                      visual="gray"
+                      variant="ghost"
+                    >
+                      <X className="size-4" />
+                    </IconButton>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">Close</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <span className="text-[13px] font-semibold leading-[18.88px] text-dark-blue-400">
+                {checkedChats} selected
+              </span>
+            </span>
 
-          <IconButton className="size-8" visual="gray" variant="ghost">
-            <Edit05 className="size-4" />
-          </IconButton>
-        </div>
+            <div className="flex items-center gap-x-2">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <IconButton
+                      className="rounded-full size-7"
+                      visual="gray"
+                      variant="ghost"
+                    >
+                      <Mail05 className="size-4" />
+                    </IconButton>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">Mark Unread</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <IconButton
+                      className="rounded-full size-7"
+                      visual="gray"
+                      variant="ghost"
+                    >
+                      <Pin02 className="size-4" />
+                    </IconButton>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">Pin</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <IconButton
+                      className="rounded-full size-7"
+                      visual="gray"
+                      variant="ghost"
+                    >
+                      <Archive className="size-4" />
+                    </IconButton>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">Archive</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <IconButton
+                      className="rounded-full size-7"
+                      visual="gray"
+                      variant="ghost"
+                    >
+                      <AlertTriangle className="size-4" />
+                    </IconButton>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">Move to Spam</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <IconButton
+                      className="rounded-full size-7 hover:text-error-500 hover:bg-error-100"
+                      visual="gray"
+                      variant="ghost"
+                    >
+                      <Trash2 className="size-4" />
+                    </IconButton>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">Delete</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center gap-x-1">
+            <InputGroup className="flex-auto">
+              <Input
+                id="search-bar"
+                type="text"
+                className="h-8 pl-[34px] py-2.5 pr-3 text-xs leading-5"
+                placeholder="Search inbox"
+              />
+              <InputLeftElement>
+                <SearchMd className="text-gray-400 size-4" />
+              </InputLeftElement>
+            </InputGroup>
+
+            <IconButton className="size-8" visual="gray" variant="ghost">
+              <Edit05 className="size-4" />
+            </IconButton>
+          </div>
+        )}
       </div>
       {pinnedChats > 0 && (
         <div className="py-1 flex h-7 items-center justify-between pr-2 pl-4 bg-gray-25 border-b border-gray-200">
@@ -400,7 +506,9 @@ const Chats = () => {
 const Inbox = ({ children }: { children?: React.ReactNode }) => {
   const [pinnedChats, setPinnedChats] = useState(0)
   const [showPinnedIcon, toggleShowPinnedIcon] = useToggle(false)
-  const onPinnedChat = useCallback(
+  const [checkedChats, setCheckedChats] = useState(0)
+
+  const onChatPinned = useCallback(
     (value: boolean) =>
       value
         ? setPinnedChats((prev) => prev + 1)
@@ -408,9 +516,31 @@ const Inbox = ({ children }: { children?: React.ReactNode }) => {
     []
   )
 
+  const onChatChecked = useCallback(
+    (value: boolean) =>
+      value
+        ? setCheckedChats((prev) => prev + 1)
+        : setCheckedChats((prev) => prev - 1),
+    []
+  )
+
   const value = useMemo(
-    () => ({ pinnedChats, onPinnedChat, showPinnedIcon, toggleShowPinnedIcon }),
-    [pinnedChats, onPinnedChat, showPinnedIcon, toggleShowPinnedIcon]
+    () => ({
+      pinnedChats,
+      onChatPinned,
+      showPinnedIcon,
+      toggleShowPinnedIcon,
+      onChatChecked,
+      checkedChats,
+    }),
+    [
+      pinnedChats,
+      onChatPinned,
+      showPinnedIcon,
+      toggleShowPinnedIcon,
+      onChatChecked,
+      checkedChats,
+    ]
   )
 
   return <ChatsContextProvider value={value}>{children}</ChatsContextProvider>

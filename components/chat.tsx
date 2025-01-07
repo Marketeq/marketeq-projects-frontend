@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { cn } from "@/utils/functions"
-import { useUncontrolledState } from "@/utils/hooks"
+import { useControllableState, useUncontrolledState } from "@/utils/hooks"
 import { createContext } from "@/utils/react-utils"
 import {
   AlertCircle,
@@ -13,6 +13,7 @@ import {
   Pin02,
   Trash2,
 } from "@blend-metrics/icons"
+import { CheckedState } from "@radix-ui/react-checkbox"
 import { cva } from "class-variance-authority"
 import { useToggle } from "react-use"
 import {
@@ -20,7 +21,14 @@ import {
   AvatarFallbackIcon,
   AvatarImage,
   Badge,
+  Button,
   Checkbox,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -36,25 +44,45 @@ const chatVariants = cva(
 
 export const [ChatsContextProvider, useChatsContext] = createContext<{
   pinnedChats: number
-  onPinnedChat: (pinned: boolean) => void
+  onChatPinned: (pinned: boolean) => void
+  onChatChecked: (checked: boolean) => void
   showPinnedIcon: boolean
   toggleShowPinnedIcon: () => void
+  checkedChats: number
 }>({
   displayName: "ChatsContext",
 })
 
-export const Chat = ({
-  variant = "default",
-  className,
-}: {
-  variant?: "default" | "active"
+interface UserDetailProps {
   className?: string
-}) => {
-  const { onPinnedChat, showPinnedIcon } = useChatsContext()
-  const [isPinned, setIsPinned] = useUncontrolledState({
+  variant?: "default" | "active"
+  pinned?: boolean
+  onPinnedChange?: (value: boolean) => void
+}
+
+export const UserDetail = ({
+  className,
+  variant = "default",
+  pinned,
+  onPinnedChange,
+}: UserDetailProps) => {
+  const { onChatPinned, showPinnedIcon, onChatChecked, checkedChats } =
+    useChatsContext()
+  const [isPinned, setIsPinned] = useControllableState({
     defaultValue: false,
-    onChange: (value) => onPinnedChat(value),
+    value: pinned,
+    onChange: (value) => {
+      onPinnedChange?.(value)
+      onChatPinned(value)
+    },
   })
+  const [selected, setSelected] = useUncontrolledState<CheckedState>({
+    defaultValue: false,
+    onChange: (value) => typeof value === "boolean" && onChatChecked(value),
+  })
+  const [open, toggle] = useToggle(false)
+  const showCheckbox = checkedChats > 0
+
   return (
     <article className={cn(chatVariants({ className }))} data-state={variant}>
       <div className="pt-3.5 group">
@@ -62,13 +90,25 @@ export const Chat = ({
           size="md"
           className="hover:ring-0 active:ring-primary-100"
           isOnline
-          containerClassName="group-hover:hidden"
+          containerClassName={cn(
+            "group-hover:hidden",
+            showCheckbox && "hidden"
+          )}
         >
           <AvatarImage src="/man.jpg" alt="Man" />
           <AvatarFallbackIcon />
         </Avatar>
-        <div className="size-10 group-hover:inline-flex shrink-0 justify-center items-center hidden">
-          <Checkbox size="md" />
+        <div
+          className={cn(
+            "size-10 group-hover:inline-flex shrink-0 justify-center items-center hidden",
+            showCheckbox && "inline-flex"
+          )}
+        >
+          <Checkbox
+            size="md"
+            onCheckedChange={setSelected}
+            checked={selected}
+          />
         </div>
       </div>
       <div className="pr-3.5 flex flex-col flex-auto gap-y-0.5 items-start py-[18px] border-b border-gray-200">
@@ -94,7 +134,7 @@ export const Chat = ({
                 <AlertCircle className="h-4 w-4" /> Move to Spam
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => setIsPinned((prev) => !prev)}>
-                <Pin02 className="h-4 w-4" /> {showPinnedIcon ? "Unpin" : "Pin"}
+                <Pin02 className="h-4 w-4" /> {isPinned ? "Unpin" : "Pin"}
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Archive className="h-4 w-4" /> Archive
@@ -103,11 +143,29 @@ export const Chat = ({
                 <AlertTriangle className="h-4 w-4" /> Block / Report
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem visual="destructive">
+              <DropdownMenuItem visual="destructive" onClick={toggle}>
                 <Trash2 className="h-4 w-4" /> Delete Chat
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <Dialog open={open} onOpenChange={toggle}>
+            <DialogContent className="max-w-[348px] p-7 rounded-xl">
+              <DialogTitle>Delete this chat?</DialogTitle>
+              <DialogDescription className="mt-2">
+                This chat will be deleted permanently. You will not be able to
+                recover it.
+              </DialogDescription>
+              <div className="mt-8 grid grid-cols-2 gap-x-3">
+                <DialogClose asChild>
+                  <Button visual="gray" variant="outlined">
+                    Cancel
+                  </Button>
+                </DialogClose>
+                <Button>Yes, Delete</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
 
           {showPinnedIcon && isPinned && (
             <Pin02 className="size-4 absolute shrink-0 text-primary-500 fill-primary-500 top-[3px] right-1" />
@@ -134,5 +192,32 @@ export const Chat = ({
         </div>
       </div>
     </article>
+  )
+}
+
+type ChatProps = UserDetailProps
+
+export const Chat = ({ variant, className }: ChatProps) => {
+  const { showPinnedIcon } = useChatsContext()
+  const [isPinned, setIsPinned] = useState(false)
+
+  if (showPinnedIcon) {
+    return isPinned ? (
+      <UserDetail
+        pinned={isPinned}
+        onPinnedChange={setIsPinned}
+        variant={variant}
+        className={className}
+      />
+    ) : null
+  }
+
+  return (
+    <UserDetail
+      pinned={isPinned}
+      onPinnedChange={setIsPinned}
+      variant={variant}
+      className={className}
+    />
   )
 }

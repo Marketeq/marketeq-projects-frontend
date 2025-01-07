@@ -1,14 +1,7 @@
 import { UploadCloud, X } from "@blend-metrics/icons"
 import { Image as ImageIcon } from "@blend-metrics/icons"
 import { Meta } from "@storybook/react"
-import {
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  IconButton,
-} from "@/components/ui"
+import { Button, CircularProgress, IconButton } from "@/components/ui"
 
 const meta: Meta = {
   title: "File Attachments",
