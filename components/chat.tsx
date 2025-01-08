@@ -100,7 +100,7 @@ export const UserDetail = ({
         </Avatar>
         <div
           className={cn(
-            "size-10 group-hover:inline-flex shrink-0 justify-center items-center hidden",
+            "size-10 rounded-full bg-white group-hover:inline-flex shrink-0 justify-center items-center hidden",
             showCheckbox && "inline-flex"
           )}
         >

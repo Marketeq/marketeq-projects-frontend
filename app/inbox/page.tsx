@@ -2,6 +2,8 @@
 
 import React, { useCallback, useMemo, useState } from "react"
 import { Bubble, YourBubble } from "@/stories/inbox.stories"
+import { noop } from "@/utils/functions"
+import { useUpdateEffect } from "@/utils/hooks"
 import {
   AlertTriangle,
   Archive,
@@ -19,8 +21,15 @@ import {
   Smile,
   Star,
   Trash2,
+  UploadCloud,
   X,
 } from "@blend-metrics/icons"
+import {
+  DropboxBrand,
+  GoogleDrive1Brand,
+  MsOnedriveBrand,
+} from "@blend-metrics/icons/brands"
+import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu"
 import { useToggle } from "react-use"
 import { Chat, ChatsContextProvider, useChatsContext } from "@/components/chat"
 import {
@@ -29,6 +38,12 @@ import {
   AvatarImage,
   Badge,
   Button,
+  CircularProgressDropzone,
+  CircularProgressDropzoneState,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTrigger,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -353,6 +368,9 @@ const RightSidebar = () => {
 }
 
 const Chats = () => {
+  const [state, setState] = useState<CircularProgressDropzoneState>()
+  const [open, toggle] = useToggle(false)
+
   return (
     <div className="flex-auto relative">
       <div className="px-8 sticky top-0 border-b flex items-center justify-between border-gray-200 py-6">
@@ -470,22 +488,88 @@ const Chats = () => {
           >
             <Smile className="size-[22px]" />
           </IconButton>
-          <IconButton
-            className="rounded-full text-gray-500"
-            visual="gray"
-            variant="ghost"
-            size="lg"
-          >
-            <Image03 className="size-[22px]" />
-          </IconButton>
-          <IconButton
-            className="rounded-full text-gray-500"
-            visual="gray"
-            variant="ghost"
-            size="lg"
-          >
-            <Attachment01 className="size-[22px]" />
-          </IconButton>
+
+          <Dialog open={open} onOpenChange={toggle}>
+            <DialogTrigger asChild>
+              <IconButton
+                className="rounded-full text-gray-500"
+                visual="gray"
+                variant="ghost"
+                size="lg"
+              >
+                <Image03 className="size-[22px]" />
+              </IconButton>
+            </DialogTrigger>
+            <DialogContent className="max-w-[467px] p-4">
+              <h3 className="text-xs text-gray-900 leading-[14.52px] font-semibold">
+                Upload Files
+              </h3>
+              <DialogClose asChild>
+                <IconButton
+                  className="absolute rounded-full top-[3px] right-[3px] text-gray-800/50 hover:text-gray-900"
+                  visual="gray"
+                  variant="ghost"
+                >
+                  <X className="size-4" />
+                </IconButton>
+              </DialogClose>
+
+              <div className="mt-[9px]">
+                <CircularProgressDropzone
+                  icon
+                  value={state}
+                  onChange={setState}
+                />
+              </div>
+
+              <div className="mt-[120px] grid grid-cols-2 gap-x-3">
+                <DialogClose asChild>
+                  <Button visual="gray" variant="outlined">
+                    Cancel
+                  </Button>
+                </DialogClose>
+                <Button
+                  visual="primary"
+                  variant="filled"
+                  disabled={!Boolean(state?.length)}
+                  onClick={Boolean(state?.length) ? toggle : noop}
+                >
+                  Send
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <IconButton
+                className="rounded-full text-gray-500"
+                visual="gray"
+                variant="ghost"
+                size="lg"
+              >
+                <Attachment01 className="size-[22px]" />
+              </IconButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-[196px]">
+              <DropdownMenuItem>
+                <UploadCloud className="size-4" /> Upload from Desktop
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <DropboxBrand className="size-4" /> Upload via Dropbox
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <GoogleDrive1Brand className="h-4 w-4" /> Upload via Google
+                Drive
+              </DropdownMenuItem>
+
+              <DropdownMenuItem>
+                <MsOnedriveBrand className="h-4 w-4" /> Upload via OneDrive
+              </DropdownMenuItem>
+
+              <DropdownMenuArrow className="fill-white" />
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <InputGroup className="flex-auto">
