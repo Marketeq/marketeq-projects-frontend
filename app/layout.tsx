@@ -31,10 +31,7 @@ export default function RootLayout({
   return (
     <html className={`scroll-smooth ${font.variable}`} lang="en">
       <body>
-        <div className="min-h-screen flex flex-col bg-gray-50">
-          <TopMostHeader />
-          {children}
-        </div>
+        <div className="min-h-screen flex flex-col bg-gray-50">{children}</div>
         <Suspense fallback={null}>
           <NProgressBar />
         </Suspense>
