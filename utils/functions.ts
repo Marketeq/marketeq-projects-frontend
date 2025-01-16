@@ -3,6 +3,7 @@ import { format, parseISO } from "date-fns"
 import { FieldErrors, FieldPath, get } from "react-hook-form"
 import { twMerge } from "tailwind-merge"
 import { z } from "zod"
+import { Keys } from "@/types/core"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(...inputs))
@@ -495,4 +496,38 @@ export const convertToTitleCase = (str: string) => {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(" ")
     .trim()
+}
+
+export enum EmojiProperties {
+  name = "n",
+  unified = "u",
+  variations = "v",
+  added_in = "a",
+  imgUrl = "imgUrl",
+}
+
+export interface DataEmoji {
+  [EmojiProperties.name]: string[]
+  [EmojiProperties.unified]: string
+  [EmojiProperties.variations]?: string[]
+  [EmojiProperties.added_in]: string
+  [EmojiProperties.imgUrl]?: string
+}
+
+export const emojiUnified = (emoji: DataEmoji): string => {
+  const unified = emoji[EmojiProperties.unified]
+  return unified
+}
+
+export function omit<T extends object, K extends keyof T>(
+  obj: T,
+  ...keys: K[]
+): Omit<T, K> {
+  const result = { ...obj }
+  keys.forEach((key) => delete result[key])
+  return result
+}
+
+export function getMiddleIndex<T extends any[] | string>(value: T) {
+  return Math.round(value.length / 2)
 }

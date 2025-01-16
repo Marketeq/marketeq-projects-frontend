@@ -38,7 +38,7 @@ export default function SignUp() {
   const onSubmit: SubmitHandler<SignUpFormValues> = () => {}
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-white">
       <div className="relative hidden lg:flex overflow-hidden flex-col justify-between p-[75px] w-[480px] bg-dark-blue-500 shrink-0">
         <div>
           <Logo className="w-[245px] h-9" />

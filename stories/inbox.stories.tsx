@@ -1,3 +1,7 @@
+import { useEffect, useState } from "react"
+import { isNotUndefined } from "@/utils/functions"
+import { useUncontrolledState } from "@/utils/hooks"
+import { createContext } from "@/utils/react-utils"
 import {
   AlertCircle,
   Archive,
@@ -5,11 +9,13 @@ import {
   DotsHorizontal,
   Edit03,
   EyeOff,
+  Send03,
   Smile,
   Tag,
   Trash2,
 } from "@blend-metrics/icons"
 import { Meta } from "@storybook/react"
+import { useIsomorphicLayoutEffect, useToggle } from "react-use"
 import { Chat } from "@/components/chat"
 import {
   Avatar,
@@ -93,7 +99,29 @@ export const Bubble = () => {
   )
 }
 
-export const YourBubble = () => {
+export const [EditContextProvider, useEditContext] = createContext<{
+  chat: string | undefined
+  onChatChange: (value: string | undefined) => void
+  isSaved: boolean
+  onSave: () => void
+  onUnsave: () => void
+}>({
+  displayName: "EditContext",
+})
+
+export const YourBubble = ({ message }: { message: string }) => {
+  const [value, setValue] = useState(message)
+  const { onChatChange, chat, isSaved, onUnsave } = useEditContext()
+
+  useIsomorphicLayoutEffect(() => {
+    if (chat !== undefined && isSaved) {
+      console.log("YourBubble: useEffect", chat)
+
+      setValue(chat)
+      onUnsave()
+    }
+  }, [isSaved])
+
   return (
     <article className="inline-flex items-end gap-x-2">
       <Avatar
@@ -132,20 +160,14 @@ export const YourBubble = () => {
                   align="start"
                   className="min-w-[142px]"
                 >
-                  <DropdownMenuItem>
-                    <Archive className="h-4 w-4" /> Archive
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <AlertCircle className="h-4 w-4" /> Move to Spam
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <EyeOff className="h-4 w-4" /> Mark Unread
+                  <DropdownMenuItem onSelect={() => onChatChange(value)}>
+                    <Edit03 className="h-4 w-4" /> Edit
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Edit03 className="h-4 w-4" /> Pin
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Tag className="h-4 w-4" /> Tag
+                    <Send03 className="h-4 w-4" /> Forward
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem visual="destructive">
@@ -157,8 +179,7 @@ export const YourBubble = () => {
           </div>
 
           <span className="text-sm leading-[16.94px] text-dark-blue-400">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            {value}
           </span>
         </div>
 

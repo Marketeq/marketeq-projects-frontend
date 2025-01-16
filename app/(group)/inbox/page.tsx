@@ -1,9 +1,15 @@
 "use client"
 
-import React, { useCallback, useMemo, useState } from "react"
-import { Bubble, YourBubble } from "@/stories/inbox.stories"
-import { noop } from "@/utils/functions"
-import { useUpdateEffect } from "@/utils/hooks"
+import React, { useCallback, useMemo, useRef, useState } from "react"
+import {
+  Bubble,
+  EditContextProvider,
+  YourBubble,
+  useEditContext,
+} from "@/stories/inbox.stories"
+import { noop, toPxIfNumber } from "@/utils/functions"
+import { useControllableState, useUncontrolledState } from "@/utils/hooks"
+import { createContext } from "@/utils/react-utils"
 import {
   AlertTriangle,
   Archive,
@@ -30,7 +36,7 @@ import {
   MsOnedriveBrand,
 } from "@blend-metrics/icons/brands"
 import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu"
-import { useToggle } from "react-use"
+import { useMeasure, useToggle } from "react-use"
 import { Chat, ChatsContextProvider, useChatsContext } from "@/components/chat"
 import {
   Avatar,
@@ -59,6 +65,7 @@ import {
   InputRightElement,
   ScrollArea,
   ScrollBar,
+  Textarea,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -371,6 +378,20 @@ const Chats = () => {
   const [state, setState] = useState<CircularProgressDropzoneState>()
   const [open, toggle] = useToggle(false)
 
+  const [bottomRef, { height }] = useMeasure<HTMLDivElement>()
+  const { onChatChange, onSave, chat } = useEditContext()
+  const [textareaValue, setTextareaValue] = useControllableState({
+    value: chat,
+    onChange: onChatChange,
+  })
+
+  const onChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const {
+      target: { value },
+    } = event
+    setTextareaValue(value)
+  }
+
   return (
     <div className="flex-auto relative">
       <div className="px-8 sticky top-0 border-b flex items-center justify-between border-gray-200 py-6">
@@ -423,62 +444,71 @@ const Chats = () => {
         </div>
       </div>
 
-      <ScrollArea
-        viewportClassName="max-h-[calc(theme(height.screen)-158px)]"
-        scrollBar={<ScrollBar className="w-4 p-1" />}
+      <div
+        style={{
+          ...({ "--h": toPxIfNumber(height) } as Record<string, string>),
+        }}
       >
-        <div className="p-8 pb-[100px] grid gap-y-6">
-          <div className="flex gap-x-3 py-6 items-center">
-            <span className="inline-block bg-gray-200 flex-auto h-px" />
-            <span className="text-xs leading-[14.52px] font-medium text-gray-500">
-              Jun 14, 2024
-            </span>
-            <span className="inline-block bg-gray-200 flex-auto h-px" />
-          </div>
+        <ScrollArea
+          viewportClassName="max-h-[calc(theme(height.screen)-158px)]"
+          scrollBar={<ScrollBar className="w-4 p-1" />}
+        >
+          <div className="p-8 pb-[100px] grid gap-y-6">
+            <div className="flex gap-x-3 py-6 items-center">
+              <span className="inline-block bg-gray-200 flex-auto h-px" />
+              <span className="text-xs leading-[14.52px] font-medium text-gray-500">
+                Jun 14, 2024
+              </span>
+              <span className="inline-block bg-gray-200 flex-auto h-px" />
+            </div>
 
-          <div className="flex justify-start">
-            <YourBubble />
-          </div>
+            <div className="flex justify-start">
+              <YourBubble message="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+            </div>
 
-          <div className="flex justify-end">
-            <Bubble />
-          </div>
+            <div className="flex justify-end">
+              <Bubble />
+            </div>
 
-          <div className="flex justify-start">
-            <YourBubble />
-          </div>
+            <div className="flex justify-start">
+              <YourBubble message="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+            </div>
 
-          <div className="flex gap-x-3 py-6 items-center">
-            <span className="inline-block bg-gray-200 flex-auto h-px" />
-            <span className="text-xs leading-[14.52px] font-medium text-gray-500">
-              Jun 14, 2024
-            </span>
-            <span className="inline-block bg-gray-200 flex-auto h-px" />
-          </div>
+            <div className="flex gap-x-3 py-6 items-center">
+              <span className="inline-block bg-gray-200 flex-auto h-px" />
+              <span className="text-xs leading-[14.52px] font-medium text-gray-500">
+                Jun 14, 2024
+              </span>
+              <span className="inline-block bg-gray-200 flex-auto h-px" />
+            </div>
 
-          <div className="flex justify-end">
-            <Bubble />
-          </div>
+            <div className="flex justify-end">
+              <Bubble />
+            </div>
 
-          <div className="flex justify-start">
-            <YourBubble />
-          </div>
+            <div className="flex justify-start">
+              <YourBubble message="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+            </div>
 
-          <div className="flex gap-x-3 py-6 items-center">
-            <span className="inline-block bg-gray-200 flex-auto h-px" />
-            <span className="text-xs leading-[14.52px] font-medium text-gray-500">
-              Jun 14, 2024
-            </span>
-            <span className="inline-block bg-gray-200 flex-auto h-px" />
-          </div>
+            <div className="flex gap-x-3 py-6 items-center">
+              <span className="inline-block bg-gray-200 flex-auto h-px" />
+              <span className="text-xs leading-[14.52px] font-medium text-gray-500">
+                Jun 14, 2024
+              </span>
+              <span className="inline-block bg-gray-200 flex-auto h-px" />
+            </div>
 
-          <div className="flex justify-end">
-            <Bubble />
+            <div className="flex justify-end">
+              <Bubble />
+            </div>
           </div>
-        </div>
-      </ScrollArea>
+        </ScrollArea>
+      </div>
 
-      <div className="px-3 flex h-[68px] bg-white items-center gap-x-3 absolute bottom-0 inset-x-0">
+      <div
+        className="p-3 flex min-h-[68px] bg-white items-end gap-x-3 absolute bottom-0 inset-x-0"
+        ref={bottomRef}
+      >
         <div className="flex items-center gap-x-1">
           <IconButton
             className="rounded-full text-gray-500"
@@ -551,20 +581,19 @@ const Chats = () => {
                 <Attachment01 className="size-[22px]" />
               </IconButton>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[196px]">
+            <DropdownMenuContent className="w-[212px]">
               <DropdownMenuItem>
-                <UploadCloud className="size-4" /> Upload from Desktop
+                <UploadCloud className="size-6" /> Upload from Desktop
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <DropboxBrand className="size-4" /> Upload via Dropbox
+                <DropboxBrand className="size-6" /> Upload via Dropbox
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <GoogleDrive1Brand className="h-4 w-4" /> Upload via Google
-                Drive
+                <GoogleDrive1Brand className="size-6" /> Upload via Google Drive
               </DropdownMenuItem>
 
               <DropdownMenuItem>
-                <MsOnedriveBrand className="h-4 w-4" /> Upload via OneDrive
+                <MsOnedriveBrand className="size-6" /> Upload via OneDrive
               </DropdownMenuItem>
 
               <DropdownMenuArrow className="fill-white" />
@@ -572,14 +601,17 @@ const Chats = () => {
           </DropdownMenu>
         </div>
 
-        <InputGroup className="flex-auto">
-          <Input
-            className="pr-[38px]"
-            type="text"
+        <InputGroup className="flex-auto w-[calc(theme(size.full)-164px)]">
+          <Textarea
             placeholder="Send message..."
+            className="[field-sizing:content] h-auto pr-11 w-full"
+            value={textareaValue}
+            onChange={onChange}
           />
-          <InputRightElement>
-            <Send className="text-gray-500 size-[18px]" />
+          <InputRightElement className="items-end pb-[13px]">
+            <button className="focus-visible:outline-none" onClick={onSave}>
+              <Send className="text-gray-500 hover:text-primary-500 size-[18px]" />
+            </button>
           </InputRightElement>
         </InputGroup>
       </div>
@@ -627,7 +659,34 @@ const Inbox = ({ children }: { children?: React.ReactNode }) => {
     ]
   )
 
-  return <ChatsContextProvider value={value}>{children}</ChatsContextProvider>
+  const [chat, setChat] = useState<string>()
+  const [isSaved, setIsSaved] = useState(false)
+
+  const onSave = useCallback(() => {
+    setIsSaved(true)
+  }, [])
+
+  const onUnsave = useCallback(() => {
+    setChat(undefined)
+    setIsSaved(false)
+  }, [])
+
+  const editContextValue = useMemo(
+    () => ({
+      chat,
+      onChatChange: setChat,
+      onSave,
+      isSaved,
+      onUnsave,
+    }),
+    [chat, setChat, onSave, isSaved, onUnsave]
+  )
+
+  return (
+    <EditContextProvider value={editContextValue}>
+      <ChatsContextProvider value={value}>{children}</ChatsContextProvider>
+    </EditContextProvider>
+  )
 }
 
 export default function InboxRoot() {
