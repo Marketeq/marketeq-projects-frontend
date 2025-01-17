@@ -37,6 +37,7 @@ import {
 } from "@blend-metrics/icons/brands"
 import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu"
 import { useMeasure, useToggle } from "react-use"
+import { ToggleGroupItem, ToggleGroupRoot } from "@/components/ui/toggle-group"
 import { Chat, ChatsContextProvider, useChatsContext } from "@/components/chat"
 import {
   Avatar,
@@ -90,7 +91,7 @@ const LeftSidebar = () => {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <IconButton
-                      className="rounded-full size-7"
+                      className="rounded-full size-7 text-gray-400 hover:text-dark-blue-400"
                       visual="gray"
                       variant="ghost"
                     >
@@ -110,7 +111,7 @@ const LeftSidebar = () => {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <IconButton
-                      className="rounded-full size-7"
+                      className="rounded-full size-7 text-gray-400 hover:text-dark-blue-400"
                       visual="gray"
                       variant="ghost"
                     >
@@ -124,7 +125,7 @@ const LeftSidebar = () => {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <IconButton
-                      className="rounded-full size-7"
+                      className="rounded-full size-7 text-gray-400 hover:text-dark-blue-400"
                       visual="gray"
                       variant="ghost"
                     >
@@ -138,7 +139,7 @@ const LeftSidebar = () => {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <IconButton
-                      className="rounded-full size-7"
+                      className="rounded-full size-7 text-gray-400 hover:text-dark-blue-400"
                       visual="gray"
                       variant="ghost"
                     >
@@ -152,7 +153,7 @@ const LeftSidebar = () => {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <IconButton
-                      className="rounded-full size-7"
+                      className="rounded-full size-7 text-gray-400 hover:text-dark-blue-400"
                       visual="gray"
                       variant="ghost"
                     >
@@ -166,7 +167,7 @@ const LeftSidebar = () => {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <IconButton
-                      className="rounded-full size-7 hover:text-error-500 hover:bg-error-100"
+                      className="rounded-full size-7 text-gray-400 hover:text-error-500 hover:bg-error-100"
                       visual="gray"
                       variant="ghost"
                     >
@@ -421,26 +422,33 @@ const Chats = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-x-1">
-          <IconButton
-            className="rounded-full text-gray-500"
-            visual="gray"
-            variant="ghost"
-            size="lg"
-          >
-            <Info className="size-[22px]" />
-          </IconButton>
-          <div className="size-11 flex items-center justify-center shrink-0">
-            <Favorite className="text-gray-500" />
+        <div className="flex items-center gap-x-6">
+          <ToggleGroupRoot defaultValue={["Messages"]}>
+            <ToggleGroupItem value="Messages">Messages</ToggleGroupItem>
+            <ToggleGroupItem value="Pinned">Pinned</ToggleGroupItem>
+          </ToggleGroupRoot>
+
+          <div className="flex items-center gap-x-1">
+            <IconButton
+              className="rounded-full text-gray-500"
+              visual="gray"
+              variant="ghost"
+              size="lg"
+            >
+              <Info className="size-[22px]" />
+            </IconButton>
+            <div className="size-11 flex items-center justify-center shrink-0">
+              <Favorite className="text-gray-500" />
+            </div>
+            <IconButton
+              className="rounded-full text-gray-500"
+              visual="gray"
+              variant="ghost"
+              size="lg"
+            >
+              <MoreHorizontal className="size-[22px]" />
+            </IconButton>
           </div>
-          <IconButton
-            className="rounded-full text-gray-500"
-            visual="gray"
-            variant="ghost"
-            size="lg"
-          >
-            <MoreHorizontal className="size-[22px]" />
-          </IconButton>
         </div>
       </div>
 
@@ -467,7 +475,7 @@ const Chats = () => {
             </div>
 
             <div className="flex justify-end">
-              <Bubble />
+              <Bubble message="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
             </div>
 
             <div className="flex justify-start">
@@ -483,7 +491,7 @@ const Chats = () => {
             </div>
 
             <div className="flex justify-end">
-              <Bubble />
+              <Bubble message="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
             </div>
 
             <div className="flex justify-start">
@@ -499,7 +507,7 @@ const Chats = () => {
             </div>
 
             <div className="flex justify-end">
-              <Bubble />
+              <Bubble message="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
             </div>
           </div>
         </ScrollArea>
@@ -609,9 +617,21 @@ const Chats = () => {
             onChange={onChange}
           />
           <InputRightElement className="items-end pb-[13px]">
-            <button className="focus-visible:outline-none" onClick={onSave}>
-              <Send className="text-gray-500 hover:text-primary-500 size-[18px]" />
-            </button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger
+                  className="focus-visible:outline-none text-gray-500 hover:disabled:text-gray-500/50 hover:text-primary-500 disabled:text-gray-500/50"
+                  onClick={() => textareaValue && onSave()}
+                  disabled={!textareaValue}
+                >
+                  <Send className="size-[18px]" />
+                </TooltipTrigger>
+
+                <TooltipContent>
+                  {textareaValue ? "Send" : "Edit"}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </InputRightElement>
         </InputGroup>
       </div>
@@ -659,7 +679,7 @@ const Inbox = ({ children }: { children?: React.ReactNode }) => {
     ]
   )
 
-  const [chat, setChat] = useState<string>()
+  const [chat, setChat] = useState("")
   const [isSaved, setIsSaved] = useState(false)
 
   const onSave = useCallback(() => {
@@ -667,7 +687,7 @@ const Inbox = ({ children }: { children?: React.ReactNode }) => {
   }, [])
 
   const onUnsave = useCallback(() => {
-    setChat(undefined)
+    setChat("")
     setIsSaved(false)
   }, [])
 

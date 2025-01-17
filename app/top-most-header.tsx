@@ -578,7 +578,7 @@ export const TopMostHeader = () => {
   return (
     <div
       className={cn(
-        "px-3.5 md:px-6 lg:px-[50px] bg-white shadow-[0px_1px_3px_0px_rgba(16,24,40,.1)] flex flex-col xs:max-md:pt-1 xs:max-md:pb-3.5",
+        "px-3.5 md:px-6 lg:px-[50px] relative bg-white shadow-[0px_1px_3px_0px_rgba(16,24,40,.1)] flex flex-col xs:max-md:pt-1 xs:max-md:pb-3.5",
         (pathname === TALENT_DASH || pathname === CLIENT_DASH) &&
           "md:max-lg:pb-2.5 sticky top-0 z-50"
       )}

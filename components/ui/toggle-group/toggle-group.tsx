@@ -8,7 +8,7 @@ export const ToggleGroupRoot = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ToggleGroup.Root
     className={cn(
-      "flex items-center border shrink-0 border-gray-200 divide-x divide-gray-200 rounded-[5px] overflow-hidden",
+      "flex items-center border gap-x-1 p-1 border-gray-200 bg-gray-100 rounded-lg",
       className
     )}
     {...props}
@@ -24,7 +24,7 @@ export const ToggleGroupItem = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ToggleGroup.Item
     className={cn(
-      "size-[30px] lg:size-10 focus-visible:outline-none shrink-0 inline-flex items-center justify-center text-dark-blue-800 bg-gray-100 data-[focus]:bg-white data-[state=on]:bg-white",
+      "h-9 text-sm transition duration-300 leading-5 px-3 font-semibold focus-visible:outline-none shrink-0 inline-flex items-center gap-x-2 justify-center text-gray-500 data-[focus]:bg-white data-[state=on]:shadow-[0px_1px_2px_0px_rgba(16,24,40,.06)_0px_1px_3px_0px_rgba(16,24,40,.1)] py-3 rounded-md data-[state=on]:bg-white",
       className
     )}
     {...props}

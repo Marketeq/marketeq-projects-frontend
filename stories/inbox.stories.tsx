@@ -34,7 +34,19 @@ const meta: Meta = {
 
 export default meta
 
-export const Bubble = () => {
+export const Bubble = ({ message }: { message: string }) => {
+  const [value, setValue] = useState(message)
+  const { onChatChange, chat, isSaved, onUnsave } = useEditContext()
+
+  useIsomorphicLayoutEffect(() => {
+    if (chat && isSaved) {
+      console.log("YourBubble: useEffect", chat)
+
+      setValue(chat)
+      onUnsave()
+    }
+  }, [isSaved])
+
   return (
     <article className="group inline-flex flex-col items-start gap-y-2">
       <div className="p-5 pt-2.5 flex-auto rounded-xl flex flex-col gap-y-2 bg-primary-500/[.04]">
@@ -63,20 +75,14 @@ export const Bubble = () => {
                 align="start"
                 className="min-w-[142px]"
               >
-                <DropdownMenuItem>
-                  <Archive className="h-4 w-4" /> Archive
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <AlertCircle className="h-4 w-4" /> Move to Spam
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <EyeOff className="h-4 w-4" /> Mark Unread
+                <DropdownMenuItem onSelect={() => onChatChange(value)}>
+                  <Edit03 className="h-4 w-4" /> Edit
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Edit03 className="h-4 w-4" /> Pin
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Tag className="h-4 w-4" /> Tag
+                  <Send03 className="h-4 w-4" /> Forward
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem visual="destructive">
@@ -88,7 +94,7 @@ export const Bubble = () => {
         </div>
 
         <span className="text-sm leading-[16.94px] text-dark-blue-400">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          {value}
         </span>
       </div>
 
@@ -100,8 +106,8 @@ export const Bubble = () => {
 }
 
 export const [EditContextProvider, useEditContext] = createContext<{
-  chat: string | undefined
-  onChatChange: (value: string | undefined) => void
+  chat: string
+  onChatChange: (value: string) => void
   isSaved: boolean
   onSave: () => void
   onUnsave: () => void
@@ -110,18 +116,6 @@ export const [EditContextProvider, useEditContext] = createContext<{
 })
 
 export const YourBubble = ({ message }: { message: string }) => {
-  const [value, setValue] = useState(message)
-  const { onChatChange, chat, isSaved, onUnsave } = useEditContext()
-
-  useIsomorphicLayoutEffect(() => {
-    if (chat !== undefined && isSaved) {
-      console.log("YourBubble: useEffect", chat)
-
-      setValue(chat)
-      onUnsave()
-    }
-  }, [isSaved])
-
   return (
     <article className="inline-flex items-end gap-x-2">
       <Avatar
@@ -160,7 +154,7 @@ export const YourBubble = ({ message }: { message: string }) => {
                   align="start"
                   className="min-w-[142px]"
                 >
-                  <DropdownMenuItem onSelect={() => onChatChange(value)}>
+                  <DropdownMenuItem>
                     <Edit03 className="h-4 w-4" /> Edit
                   </DropdownMenuItem>
                   <DropdownMenuItem>
@@ -179,7 +173,7 @@ export const YourBubble = ({ message }: { message: string }) => {
           </div>
 
           <span className="text-sm leading-[16.94px] text-dark-blue-400">
-            {value}
+            {message}
           </span>
         </div>
 
