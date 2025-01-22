@@ -2,8 +2,16 @@
 
 import * as React from "react"
 import { useMemo } from "react"
+import AuthenticatedRoute from "@/hoc/AuthenticatedRoute"
+import { ClientAPI } from "@/service/http/client"
 import { HOT_KEYS } from "@/utils/constants"
-import { cn, getIsNotEmpty, hookFormHasError, keys } from "@/utils/functions"
+import {
+  cn,
+  containsOneLowerCaseLetter,
+  getIsNotEmpty,
+  hookFormHasError,
+  keys,
+} from "@/utils/functions"
 import { useControllableState, useStepper } from "@/utils/hooks"
 import {
   AlertCircle,
@@ -30,6 +38,8 @@ import {
 } from "react-hook-form"
 import { useIsomorphicLayoutEffect, useToggle } from "react-use"
 import { z } from "zod"
+import { CreateClientType } from "@/types/client"
+import { Spinner } from "@/components/ui/spinner/spinner"
 import { Logo } from "@/components/icons"
 import { Pointer } from "@/components/icons/pointer"
 import NextLink from "@/components/next-link"
@@ -72,6 +82,7 @@ import {
   useStepContext,
   useStepRootContext,
   useStepperContext,
+  useToast,
 } from "@/components/ui"
 
 const describeYourTeamFormSchema = z.object({
@@ -82,16 +93,29 @@ const describeYourTeamFormSchema = z.object({
 
 type DescribeYourTeamFormValues = z.infer<typeof describeYourTeamFormSchema>
 
-const DescribeYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
+const DescribeYourTeam = ({
+  sidebar,
+  stepData,
+  setStepData,
+}: {
+  sidebar: React.ReactNode
+  stepData: CreateClientType | null
+  setStepData: React.Dispatch<React.SetStateAction<CreateClientType | null>>
+}) => {
   const {
     register,
     formState: { errors, isValid },
     handleSubmit,
   } = useForm<DescribeYourTeamFormValues>({
     resolver: zodResolver(describeYourTeamFormSchema),
+    defaultValues: {
+      teamName: stepData?.teamName || "",
+      industry: stepData?.industry || "",
+      role: stepData?.role || "",
+    },
   })
   const { toggleValidation } = useStepContext()
-  const { nextStep, prevStep, setStep } = useStepperContext()
+  const { nextStep, setStep } = useStepperContext()
 
   useIsomorphicLayoutEffect(() => toggleValidation(isValid), [isValid])
 
@@ -100,6 +124,13 @@ const DescribeYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
   const progress = ((currentStep + 1) / totalSteps) * 100
 
   const onSubmit: SubmitHandler<DescribeYourTeamFormValues> = (values) => {
+    setStepData({
+      ...stepData,
+      teamName: values?.teamName,
+      role: values?.role,
+      industry: values?.industry,
+    })
+
     nextStep()
   }
 
@@ -112,7 +143,10 @@ const DescribeYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
   return (
     <div className="min-h-screen flex lg:pl-[480px]">
       {sidebar}
-      <div className="relative flex justify-between flex-col flex-auto px-5 md:px-10 py-10 lg:py-[100px] lg:px-[200px]">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="relative flex justify-between flex-col flex-auto px-5 md:px-10 py-10 lg:py-[100px] lg:px-[200px]"
+      >
         <div className="max-w-[488px] lg:max-w-[560px] w-full mx-auto">
           <div className="flex gap-x-2 items-center">
             <CircularProgress
@@ -122,7 +156,7 @@ const DescribeYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
               value={progress}
             />
             <span className="text-[11px] leading-[15.43px] text-gray-700">
-              STEP 1 / 4
+              STEP 1 / 5
             </span>
           </div>
 
@@ -135,10 +169,7 @@ const DescribeYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
             set up the right way.
           </p>
 
-          <form
-            className="mt-10 lg:mt-[50px] flex flex-col"
-            onSubmit={handleSubmit(onSubmit)}
-          >
+          <div className="mt-10 lg:mt-[50px] flex flex-col">
             <div className="flex flex-col gap-y-1.5">
               <Label htmlFor="your-team-name" size="sm">
                 What’s your team name?
@@ -198,7 +229,7 @@ const DescribeYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
                 )}
               />
             </div>
-          </form>
+          </div>
         </div>
 
         <div className="mt-10 lg:mt-[50px] max-w-[488px] lg:max-w-[560px] mx-auto w-full self-end flex justify-between">
@@ -232,7 +263,7 @@ const DescribeYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
             </Button>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   )
 }
@@ -288,15 +319,28 @@ const shareYourGoalsFormSchema = z
 
 type ShareYourGoalsFormValues = z.infer<typeof shareYourGoalsFormSchema>
 
-const ShareYourGoals = ({ sidebar }: { sidebar: React.ReactNode }) => {
+const ShareYourGoals = ({
+  sidebar,
+  stepData,
+  setStepData,
+}: {
+  sidebar: React.ReactNode
+  stepData: CreateClientType | null
+  setStepData: React.Dispatch<React.SetStateAction<CreateClientType | null>>
+}) => {
   const {
     handleSubmit,
     control,
     formState: { errors, isValid },
+    getValues,
   } = useForm<ShareYourGoalsFormValues>({
     resolver: zodResolver(shareYourGoalsFormSchema),
     defaultValues: data.reduce(
-      (previous, current) => ({ ...previous, [current.label]: false }),
+      (previous, current) => ({
+        ...previous,
+        [current.label]:
+          stepData?.businessTypes?.includes(current.label) || false,
+      }),
       {} as { [Property in (typeof data)[number]["label"]]: boolean }
     ),
   })
@@ -311,6 +355,15 @@ const ShareYourGoals = ({ sidebar }: { sidebar: React.ReactNode }) => {
   const progress = ((currentStep + 1) / totalSteps) * 100
 
   const onSubmit: SubmitHandler<ShareYourGoalsFormValues> = (values) => {
+    const businessTypes = Object.entries(values)
+      .filter(([key, value]) => value === true)
+      .map(([key]) => key)
+
+    setStepData({
+      ...stepData,
+      businessTypes,
+    })
+
     nextStep()
   }
 
@@ -318,6 +371,18 @@ const ShareYourGoals = ({ sidebar }: { sidebar: React.ReactNode }) => {
     toggleValidation(true)
     const nextStepIndex = currentStep + 1
     setStep(nextStepIndex)
+  }
+
+  const back = () => {
+    const businessTypes = Object.entries(getValues())
+      .filter(([key, value]) => value === true)
+      .map(([key]) => key)
+
+    setStepData({
+      ...stepData,
+      businessTypes,
+    })
+    prevStep()
   }
 
   return (
@@ -336,7 +401,7 @@ const ShareYourGoals = ({ sidebar }: { sidebar: React.ReactNode }) => {
               value={progress}
             />
             <span className="text-[11px] leading-[15.43px] text-gray-700">
-              STEP 2 / 4
+              STEP 2 / 5
             </span>
           </div>
 
@@ -392,7 +457,7 @@ const ShareYourGoals = ({ sidebar }: { sidebar: React.ReactNode }) => {
             size="md"
             variant="outlined"
             visual="gray"
-            onClick={prevStep}
+            onClick={back}
             type="button"
           >
             Back
@@ -432,17 +497,30 @@ const inviteYourTeamFormSchema = z.object({
 
 type InviteYourTeamFormValues = z.infer<typeof inviteYourTeamFormSchema>
 
-const InviteYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
+const InviteYourTeam = ({
+  sidebar,
+  stepData,
+  setStepData,
+}: {
+  sidebar: React.ReactNode
+  stepData: CreateClientType | null
+  setStepData: React.Dispatch<React.SetStateAction<CreateClientType | null>>
+}) => {
+  const defaultValues = {
+    emails: stepData?.teammateEmails?.length
+      ? stepData?.teammateEmails?.map((value) => ({ email: value }))
+      : [{ email: "" }, { email: "" }, { email: "" }],
+  }
+
   const {
     control,
     formState: { errors, isValid },
     handleSubmit,
     register,
+    getValues,
   } = useForm<InviteYourTeamFormValues>({
     resolver: zodResolver(inviteYourTeamFormSchema),
-    defaultValues: {
-      emails: [{ email: "" }, { email: "" }, { email: "" }],
-    },
+    defaultValues,
   })
   const { toggleValidation } = useStepContext()
   const { nextStep, prevStep, setStep } = useStepperContext()
@@ -459,6 +537,10 @@ const InviteYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
   })
 
   const onSubmit: SubmitHandler<InviteYourTeamFormValues> = (values) => {
+    setStepData({
+      ...stepData,
+      teammateEmails: values?.emails?.map(({ email }) => email),
+    })
     nextStep()
   }
 
@@ -466,6 +548,14 @@ const InviteYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
     toggleValidation(true)
     const nextStepIndex = currentStep + 1
     setStep(nextStepIndex)
+  }
+
+  const back = () => {
+    setStepData({
+      ...stepData,
+      teammateEmails: getValues("emails")?.map(({ email }) => email),
+    })
+    prevStep()
   }
 
   return (
@@ -485,7 +575,7 @@ const InviteYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
               value={progress}
             />
             <span className="text-[11px] leading-[15.43px] text-gray-700">
-              STEP 3 / 4
+              STEP 3 / 5
             </span>
           </div>
 
@@ -585,7 +675,7 @@ const InviteYourTeam = ({ sidebar }: { sidebar: React.ReactNode }) => {
             size="md"
             variant="outlined"
             visual="gray"
-            onClick={prevStep}
+            onClick={back}
             type="button"
           >
             Back
@@ -618,9 +708,18 @@ const createYourUsernameFormSchema = z.object({
 
 type CreateYourUsernameFormValues = z.infer<typeof createYourUsernameFormSchema>
 
-const CreateYourUsername = ({ sidebar }: { sidebar: React.ReactNode }) => {
+const CreateYourUsername = ({
+  sidebar,
+  stepData,
+  setStepData,
+}: {
+  sidebar: React.ReactNode
+  stepData: CreateClientType | null
+  setStepData: React.Dispatch<React.SetStateAction<CreateClientType | null>>
+}) => {
   const [show, toggleShow] = useToggle(false)
   const {
+    getValues,
     formState: { errors, isValid },
     setValue,
     register,
@@ -628,6 +727,9 @@ const CreateYourUsername = ({ sidebar }: { sidebar: React.ReactNode }) => {
     trigger,
   } = useForm<CreateYourUsernameFormValues>({
     resolver: zodResolver(createYourUsernameFormSchema),
+    defaultValues: {
+      username: stepData?.username || "",
+    },
   })
   const { toggleValidation } = useStepContext()
   const { nextStep, prevStep, setStep } = useStepperContext()
@@ -638,7 +740,12 @@ const CreateYourUsername = ({ sidebar }: { sidebar: React.ReactNode }) => {
 
   const progress = ((currentStep + 1) / totalSteps) * 100
 
-  const onSubmit: SubmitHandler<CreateYourUsernameFormValues> = () => {
+  const onSubmit: SubmitHandler<CreateYourUsernameFormValues> = (values) => {
+    setStepData({
+      ...stepData,
+      username: values.username,
+    })
+
     nextStep()
   }
 
@@ -654,6 +761,14 @@ const CreateYourUsername = ({ sidebar }: { sidebar: React.ReactNode }) => {
     toggleValidation(true)
     const nextStepIndex = currentStep + 1
     setStep(nextStepIndex)
+  }
+
+  const back = () => {
+    setStepData({
+      ...stepData,
+      username: getValues("username"),
+    })
+    prevStep()
   }
 
   return (
@@ -906,7 +1021,13 @@ const CreateYourUsername = ({ sidebar }: { sidebar: React.ReactNode }) => {
         </div>
 
         <div className="mt-10 lg:mt-[50px] max-w-[488px] lg:max-w-[560px] mx-auto w-full self-end flex justify-between">
-          <Button size="md" variant="outlined" visual="gray" type="button">
+          <Button
+            size="md"
+            variant="outlined"
+            visual="gray"
+            type="button"
+            onClick={back}
+          >
             Back
           </Button>
 
@@ -1257,22 +1378,44 @@ type OutlineYourInterestsFormValues = z.infer<
   typeof outlineYourInterestsFormSchema
 >
 
-const OutlineYourInterests = ({ sidebar }: { sidebar: React.ReactNode }) => {
+const OutlineYourInterests = ({
+  sidebar,
+  stepData,
+  setStepData,
+}: {
+  sidebar: React.ReactNode
+  stepData: CreateClientType | null
+  setStepData: React.Dispatch<React.SetStateAction<CreateClientType | null>>
+}) => {
+  const { toast } = useToast()
+
+  const [isLoading, setIsLoading] = React.useState(false)
+
   const {
     control,
     formState: { errors, isValid },
     handleSubmit,
+    getValues,
   } = useForm<OutlineYourInterestsFormValues>({
     resolver: zodResolver(outlineYourInterestsFormSchema),
     defaultValues: {
       industriesOrVerticals: industriesOrVerticals.reduce(
-        (previous, current) => ({ ...previous, [current]: false }),
+        (previous, current) => ({
+          ...previous,
+          [current]: stepData?.industries?.includes(current) || false,
+        }),
         {} as { [Key in (typeof industriesOrVerticals)[number]]: boolean }
       ),
       projects: projects.reduce(
-        (previous, current) => ({ ...previous, [current]: false }),
+        (previous, current) => ({
+          ...previous,
+          [current]: stepData?.projectTypes?.includes(current) || false,
+        }),
         {} as { [Key in (typeof projects)[number]]: boolean }
       ),
+      lookingToWorkWith: stepData?.lookingToWorkWith || [],
+      skillsLookingFor: stepData?.skills || [],
+      // budget: stepData?.budget,
     },
   })
   const { toggleValidation } = useStepContext()
@@ -1284,14 +1427,82 @@ const OutlineYourInterests = ({ sidebar }: { sidebar: React.ReactNode }) => {
 
   const progress = ((currentStep + 1) / totalSteps) * 100
 
-  const onSubmit: SubmitHandler<OutlineYourInterestsFormValues> = () => {
-    nextStep()
+  const onSubmit: SubmitHandler<OutlineYourInterestsFormValues> = (values) => {
+    setIsLoading(true)
+
+    const clientData: CreateClientType = {
+      ...stepData,
+      budget: values.budget,
+      skills: values?.skillsLookingFor,
+      industries: Object.entries(values?.industriesOrVerticals)
+        .filter(([key, value]) => value === true)
+        .map(([key]) => key),
+      lookingToWorkWith: values?.lookingToWorkWith,
+      projectTypes:
+        Object.entries(values?.projects)
+          .filter(([key, value]) => value === true)
+          .map(([key]) => key) || [],
+
+      firstName: "John", // Dynamic from first step
+      lastName: "Deo", // Dynamic from first step
+    }
+
+    ClientAPI.CreateClient(clientData)
+      .then((response) => {
+        if (response?.status === 201 && response?.data) {
+          nextStep()
+          setStepData(null)
+        }
+      })
+      .catch((error) => {
+        if (error?.response?.data?.errors?.message) {
+          toast({
+            title: error?.response?.data?.errors?.message,
+            variant: "destructive",
+          })
+        } else if (
+          Array.isArray(error?.response?.data?.message) &&
+          error?.response?.data?.message?.length > 0
+        ) {
+          toast({
+            title: error?.response?.data?.message?.[0],
+            variant: "destructive",
+          })
+        } else {
+          toast({
+            title: error?.response?.data?.message,
+            variant: "destructive",
+          })
+        }
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
 
   const skip = () => {
     toggleValidation(true)
     const nextStepIndex = currentStep + 1
     setStep(nextStepIndex)
+  }
+
+  const back = () => {
+    const values = getValues()
+
+    setStepData({
+      ...stepData,
+      budget: values.budget,
+      skills: values?.skillsLookingFor,
+      industries: Object.entries(values?.industriesOrVerticals)
+        .filter(([key, value]) => value === true)
+        .map(([key]) => key),
+      lookingToWorkWith: values?.lookingToWorkWith,
+      projectTypes:
+        Object.entries(values?.projects)
+          .filter(([key, value]) => value === true)
+          .map(([key]) => key) || [],
+    })
+    prevStep()
   }
 
   return (
@@ -1525,7 +1736,7 @@ const OutlineYourInterests = ({ sidebar }: { sidebar: React.ReactNode }) => {
             size="md"
             variant="outlined"
             visual="gray"
-            onClick={prevStep}
+            onClick={back}
             type="button"
           >
             Back
@@ -1543,7 +1754,16 @@ const OutlineYourInterests = ({ sidebar }: { sidebar: React.ReactNode }) => {
               Skip
             </Button>
             <Button size="md" visual="primary">
-              Continue
+              {isLoading ? (
+                <Spinner
+                  size={24}
+                  className="stroke-white"
+                  trackClassName="stroke-primary-500"
+                  strokeWidth={2}
+                />
+              ) : (
+                "Continue"
+              )}
             </Button>
           </div>
         </div>
@@ -1795,14 +2015,48 @@ const ClientOnboarding = ({
 }
 
 export default function ClientOnboardingRoot() {
+  const [stepData, setStepData] = React.useState<CreateClientType | null>(null)
+
   return (
-    <ClientOnboarding
-      describeYourTeam={<DescribeYourTeam sidebar={<Sidebar />} />}
-      shareYourGoals={<ShareYourGoals sidebar={<Sidebar />} />}
-      inviteYourTeam={<InviteYourTeam sidebar={<Sidebar />} />}
-      createYourUsername={<CreateYourUsername sidebar={<Sidebar />} />}
-      outlineYourInterests={<OutlineYourInterests sidebar={<Sidebar />} />}
-      doNext={<DoNext sidebar={<DoNextSidebar />} />}
-    />
+    <AuthenticatedRoute>
+      <ClientOnboarding
+        describeYourTeam={
+          <DescribeYourTeam
+            sidebar={<Sidebar />}
+            stepData={stepData}
+            setStepData={setStepData}
+          />
+        }
+        shareYourGoals={
+          <ShareYourGoals
+            sidebar={<Sidebar />}
+            stepData={stepData}
+            setStepData={setStepData}
+          />
+        }
+        inviteYourTeam={
+          <InviteYourTeam
+            sidebar={<Sidebar />}
+            stepData={stepData}
+            setStepData={setStepData}
+          />
+        }
+        createYourUsername={
+          <CreateYourUsername
+            sidebar={<Sidebar />}
+            stepData={stepData}
+            setStepData={setStepData}
+          />
+        }
+        outlineYourInterests={
+          <OutlineYourInterests
+            sidebar={<Sidebar />}
+            stepData={stepData}
+            setStepData={setStepData}
+          />
+        }
+        doNext={<DoNext sidebar={<DoNextSidebar />} />}
+      />
+    </AuthenticatedRoute>
   )
 }

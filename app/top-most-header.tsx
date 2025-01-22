@@ -2,6 +2,7 @@
 
 import React, { useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/auth"
 import { cn } from "@/utils/functions"
 import {
   BarChart2,
@@ -571,6 +572,8 @@ const ONBOARDING = "/onboarding"
 export const TopMostHeader = () => {
   const pathname = usePathname()
 
+  const { logoutHandler, user } = useAuth()
+
   if (pathname.startsWith(ONBOARDING)) {
     return null
   }
@@ -643,15 +646,27 @@ export const TopMostHeader = () => {
             <DropdownMenuTrigger className="hidden lg:inline-flex items-center gap-x-2 px-3 py-1.5 rounded-[8px] hover:bg-gray-100 focus-visible:outline-none">
               <div className="inline-flex items-center gap-x-2">
                 <Avatar>
-                  <AvatarImage src="/man.jpg" alt="Man" />
-                  <AvatarFallback>M</AvatarFallback>
+                  <AvatarImage
+                    src={
+                      user?.avatarUrl
+                        ? user?.avatarUrl?.startsWith("https://") ||
+                          user?.avatarUrl?.startsWith("http://")
+                          ? user?.avatarUrl
+                          : `${process?.env?.NEXT_PUBLIC_API_URL}/${user?.avatarUrl}`
+                        : ""
+                    }
+                    alt="Man"
+                  />
+                  <AvatarFallback>
+                    {user?.firstName?.[0]?.toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
                   <span className="text-xs font-semibold leading-[15px] text-gray-700">
-                    Christopher Torres
+                    {user?.firstName || ""} {user?.lastName || ""}
                   </span>
                   <span className="text-[9px] leading-[14px] text-gray-500">
-                    chris@blendmetrics.com
+                    {user?.email}
                   </span>
                 </div>
               </div>
@@ -666,7 +681,7 @@ export const TopMostHeader = () => {
                       User ID: 2459749
                     </span>
                     <span className="text-[13px] leading-5 text-primary-500">
-                      chris@marketeqdigital.com
+                      {user?.email}
                     </span>
                   </div>
 
@@ -704,7 +719,7 @@ export const TopMostHeader = () => {
                   <LifeBuoy className="size-4" />
                   Help Center
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => logoutHandler()}>
                   <LogOut className="size-4" />
                   Log out
                 </DropdownMenuItem>

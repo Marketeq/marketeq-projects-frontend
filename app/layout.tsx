@@ -1,7 +1,9 @@
 import { Suspense } from "react"
 import type { Metadata } from "next"
+import { AuthProvider } from "@/contexts/auth"
 import { font } from "@/utils/font"
 import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google"
+import { GoogleOAuthProvider } from "@react-oauth/google"
 import "swiper/css"
 import "swiper/css/effect-fade"
 import "swiper/css/navigation"
@@ -31,12 +33,20 @@ export default function RootLayout({
   return (
     <html className={`scroll-smooth ${font.variable}`} lang="en">
       <body>
-        <div className="min-h-screen flex flex-col bg-gray-50">{children}</div>
-        <Suspense fallback={null}>
-          <NProgressBar />
-        </Suspense>
-        <Toaster />
-        <InviteWindow />
+        <GoogleOAuthProvider
+          clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}
+        >
+          <AuthProvider>
+            <div className="min-h-screen flex flex-col bg-gray-50">
+              {children}
+            </div>
+            <Suspense fallback={null}>
+              <NProgressBar />
+            </Suspense>
+            <Toaster />
+            <InviteWindow />
+          </AuthProvider>
+        </GoogleOAuthProvider>
       </body>
       <GoogleAnalytics gaId="G-265438626K" />
       <GoogleTagManager gtmId="GTM-MKB89M5M" />
