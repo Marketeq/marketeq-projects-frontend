@@ -22,6 +22,7 @@ import {
   Video,
 } from "@blend-metrics/icons"
 import { ErrorCode, useDropzone } from "react-dropzone"
+import { Button } from "../button"
 import { IconButton } from "../icon-button"
 import { CircularProgress, Progress } from "../progress"
 
@@ -48,6 +49,7 @@ interface DropzoneProps {
   onTryAgain?: () => void
   icon?: boolean
   accepted?: string[]
+  size?: "sm" | "lg"
 }
 
 export const Dropzone = ({
@@ -59,6 +61,7 @@ export const Dropzone = ({
   maxFiles = 0,
   icon = false,
   accepted = [".svg", ".png", ".gif", ".jpg"],
+  size = "sm",
 }: DropzoneProps) => {
   const [isDragAccept, { off, on }] = useToggle()
   const [state, setState] = useControllableState<DropzoneState | undefined>({
@@ -246,32 +249,76 @@ export const Dropzone = ({
           ))}
         </div>
       ) : (
-        <div className="rounded-lg border border-gray-200 bg-white px-[25px] py-[17px] hover:border-2 hover:border-primary-500 hover:px-6 hover:py-4">
-          {icon && (
-            <div className="mb-3 flex items-center justify-center">
-              <div className="inline-flex h-10 w-10 items-center justify-center rounded-full border-[6px] border-gray-50 bg-gray-100">
-                <UploadCloud className="h-5 w-5 text-gray-500" />
+        <>
+          {size === "sm" ? (
+            <div className="rounded-lg border border-gray-200 bg-white px-[25px] py-[17px]">
+              {icon && (
+                <div className="mb-3 flex items-center justify-center">
+                  <div className="inline-flex size-10 items-center justify-center rounded-full border-[6px] border-gray-50 bg-gray-100">
+                    <UploadCloud className="size-5 text-gray-500" />
+                  </div>
+                </div>
+              )}
+              <div className="flex items-center justify-center gap-x-1">
+                <button
+                  className="text-center text-sm font-semibold text-primary-500 hover:underline focus:outline-none"
+                  onClick={open}
+                  type="button"
+                >
+                  Click to upload
+                </button>
+                <span className="text-center text-sm text-gray-600">
+                  or drag and drop
+                </span>
+              </div>
+              <div className="mt-1 flex justify-center">
+                <span className="text-center text-sm leading-[18px] text-gray-600">
+                  {accepted.join(" ")}
+                </span>
               </div>
             </div>
+          ) : (
+            <div className="space-y-[5px]">
+              <div className="py-[100px] px-6 bg-gray-50 border border-dashed border-gray-300 rounded-lg">
+                {icon && (
+                  <div className="mb-3 flex items-center justify-center">
+                    <div className="inline-flex size-[52px] items-center justify-center rounded-full border-[6px] border-gray-100 bg-white">
+                      <UploadCloud className="size-5 text-gray-500" />
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex justify-center items-center gap-x-1">
+                  <span className="text-xs leading-5 text-gray-600">
+                    Drag and drop a cover image or
+                  </span>
+                  <Button size="md" variant="link" onClick={open} type="button">
+                    Choose a File
+                  </Button>
+                </div>
+
+                <div className="mt-3 max-w-[408px] mx-auto text-center">
+                  <span className="text-xs leading-[14.52px] font-light text-gray-500">
+                    Upload a cover photo that will help your potential clients
+                    understand your project and increase your chance of getting
+                    featured.
+                  </span>
+                </div>
+
+                <div className="mt-3 flex items-center justify-center">
+                  <span className="text-xs text-center leading-[14.52px] text-gray-500">
+                    Recommended Size: 1600px x 1200px
+                  </span>
+                </div>
+              </div>
+
+              <span className="text-xs leading-[14.52px] text-gray-500 block">
+                Supported formats:{" "}
+                {accepted.map((item) => item.toUpperCase()).join(", ")}
+              </span>
+            </div>
           )}
-          <div className="flex items-center justify-center gap-x-1">
-            <button
-              className="text-center text-sm font-semibold text-primary-500 hover:underline focus:outline-none"
-              onClick={open}
-              type="button"
-            >
-              Click to upload
-            </button>
-            <span className="text-center text-sm text-gray-600">
-              or drag and drop
-            </span>
-          </div>
-          <div className="mt-1 flex justify-center">
-            <span className="text-center text-sm leading-[18px] text-gray-600">
-              {accepted.join(" ")}
-            </span>
-          </div>
-        </div>
+        </>
       )}
     </div>
   )
