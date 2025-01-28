@@ -1,11 +1,23 @@
 import {
+  cn,
+  containsNumberOfChars,
+  containsOneLowerCaseLetter,
+  containsOneNumber,
+  containsOneSymbol,
+  containsOneUpperCaseLetter,
+} from "@/utils/functions"
+import {
   AlertCircle,
   ArrowLeft,
   ArrowRight,
   Check,
   EyeOff,
 } from "@blend-metrics/icons"
+import { ErrorMessage as HookFormErrorMessage } from "@hookform/error-message"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Meta } from "@storybook/react"
+import { useForm, useWatch } from "react-hook-form"
+import { z } from "zod"
 import {
   Button,
   CircularProgress,
@@ -17,6 +29,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  ErrorMessage,
   Input,
   InputGroup,
   InputRightElement,
@@ -35,7 +48,48 @@ const meta: Meta = {
 
 export default meta
 
+const secureYourAccountFormSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, "Please enter at least 8 character(s)")
+      .refine(containsOneNumber, {
+        message: "Please enter at least 1 number(s)",
+      })
+      .refine(containsOneUpperCaseLetter, {
+        message: "Please enter at least 1 uppercase letter(s)",
+      })
+      .refine(containsOneSymbol, {
+        message: "Please enter at least 1 symbol(s)",
+      })
+      .refine(containsOneLowerCaseLetter, {
+        message: "Please enter at least 1 lower letter(s)",
+      }),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  })
+
+type SecureYourAccountForm = z.infer<typeof secureYourAccountFormSchema>
+
 export const Step1 = () => {
+  const {
+    register,
+    control,
+    formState: { errors },
+  } = useForm<SecureYourAccountForm>({
+    resolver: zodResolver(secureYourAccountFormSchema),
+    defaultValues: {
+      confirmPassword: "",
+      password: "",
+    },
+  })
+  const password = useWatch({
+    control,
+    name: "password",
+  })
   return (
     <Dialog>
       <DialogTrigger>
@@ -70,16 +124,26 @@ export const Step1 = () => {
               >
                 Create Password
               </Label>
+
               <InputGroup>
                 <Input
                   id="create-password"
                   type="text"
                   placeholder="Type your password"
+                  {...register("password")}
                 />
                 <InputRightElement>
                   <EyeOff className="text-gray-400 size-4" />
                 </InputRightElement>
               </InputGroup>
+
+              <HookFormErrorMessage
+                name="password"
+                errors={errors}
+                render={({ message }) => (
+                  <ErrorMessage size="sm">{message}</ErrorMessage>
+                )}
+              />
             </div>
 
             <div className="space-y-1.5">
@@ -104,31 +168,59 @@ export const Step1 = () => {
 
             <ul className="space-y-2">
               <li className="pl-3 flex items-center gap-x-2">
-                <Check className="size-[18px] text-gray-300" />
+                <Check
+                  className={cn(
+                    "size-[18px] text-gray-300",
+                    containsNumberOfChars({
+                      numberOfChars: 8,
+                      value: password,
+                    }) && "text-green-500"
+                  )}
+                />
                 <span className="text-sm leading-5 text-gray-600">
                   At least 8 characters
                 </span>
               </li>
               <li className="pl-3 flex items-center gap-x-2">
-                <Check className="size-[18px] text-gray-300" />
+                <Check
+                  className={cn(
+                    "size-[18px] text-gray-300",
+                    containsOneLowerCaseLetter(password) && "text-green-500"
+                  )}
+                />
                 <span className="text-sm leading-5 text-gray-600">
                   One lowercase letter
                 </span>
               </li>
               <li className="pl-3 flex items-center gap-x-2">
-                <Check className="size-[18px] text-gray-300" />
+                <Check
+                  className={cn(
+                    "size-[18px] text-gray-300",
+                    containsOneUpperCaseLetter(password) && "text-green-500"
+                  )}
+                />
                 <span className="text-sm leading-5 text-gray-600">
                   One uppercase letter
                 </span>
               </li>
               <li className="pl-3 flex items-center gap-x-2">
-                <Check className="size-[18px] text-gray-300" />
+                <Check
+                  className={cn(
+                    "size-[18px] text-gray-300",
+                    containsOneNumber(password) && "text-green-500"
+                  )}
+                />
                 <span className="text-sm leading-5 text-gray-600">
                   One number
                 </span>
               </li>
               <li className="pl-3 flex items-center gap-x-2">
-                <Check className="size-[18px] text-gray-300" />
+                <Check
+                  className={cn(
+                    "size-[18px] text-gray-300",
+                    containsOneSymbol(password) && "text-green-500"
+                  )}
+                />
                 <span className="text-sm leading-5 text-gray-600">
                   One symbol
                 </span>
