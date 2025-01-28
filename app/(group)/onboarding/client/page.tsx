@@ -2,6 +2,8 @@
 
 import * as React from "react"
 import { useMemo } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/auth"
 import AuthenticatedRoute from "@/hoc/AuthenticatedRoute"
 import { ClientAPI } from "@/service/http/client"
 import { HOT_KEYS } from "@/utils/constants"
@@ -23,6 +25,7 @@ import {
   Link01,
   Mail,
   Plus,
+  Plus1,
   Users03,
   X2,
 } from "@blend-metrics/icons"
@@ -39,6 +42,7 @@ import {
 import { useIsomorphicLayoutEffect, useToggle } from "react-use"
 import { z } from "zod"
 import { CreateClientType } from "@/types/client"
+import { User } from "@/types/user"
 import { Spinner } from "@/components/ui/spinner/spinner"
 import { Logo } from "@/components/icons"
 import { Pointer } from "@/components/icons/pointer"
@@ -1382,10 +1386,12 @@ const OutlineYourInterests = ({
   sidebar,
   stepData,
   setStepData,
+  setClientUser,
 }: {
   sidebar: React.ReactNode
   stepData: CreateClientType | null
   setStepData: React.Dispatch<React.SetStateAction<CreateClientType | null>>
+  setClientUser: React.Dispatch<React.SetStateAction<User | null>>
 }) => {
   const { toast } = useToast()
 
@@ -1449,9 +1455,10 @@ const OutlineYourInterests = ({
 
     ClientAPI.CreateClient(clientData)
       .then((response) => {
-        if (response?.status === 201 && response?.data) {
+        if (response?.status === 201 && response?.data?.user) {
           nextStep()
           setStepData(null)
+          setClientUser(response?.data?.user)
         }
       })
       .catch((error) => {
@@ -1772,7 +1779,17 @@ const OutlineYourInterests = ({
   )
 }
 
-const DoNext = ({ sidebar }: { sidebar: React.ReactNode }) => {
+const DoNext = ({
+  sidebar,
+  clientUser,
+}: {
+  sidebar: React.ReactNode
+  clientUser: User | null
+}) => {
+  const router = useRouter()
+
+  const { setUser } = useAuth()
+
   return (
     <div className="min-h-screen flex lg:pl-[480px]">
       {sidebar}
@@ -1788,19 +1805,26 @@ const DoNext = ({ sidebar }: { sidebar: React.ReactNode }) => {
           </p>
 
           <div className="mt-10 md:mt-[50px] grid md:grid-cols-2 gap-2.5 lg:gap-5">
-            <div className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300">
+            <div
+              className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300"
+              onClick={() => {
+                setUser(clientUser)
+                router.push("/")
+              }}
+            >
               <div className="flex items-center gap-x-3">
                 <div className="size-11 rounded-lg border-[1.5px] shrink-0 inline-flex items-center justify-center border-[#EAECF0] text-primary-500">
-                  <Briefcase02 className="size-5" />
+                  <Plus1 className="size-5" />
                 </div>
                 <span className="text-sm leading-[16.94px] inline-block font-medium text-gray-900">
-                  Browse Projects
+                  Create a New Project
                 </span>
               </div>
 
               <ChevronRight className="shrink-0 size-5" />
             </div>
-            <div className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300">
+
+            {/* <div className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300">
               <div className="flex items-center gap-x-3">
                 <div className="size-11 rounded-lg border-[1.5px] shrink-0 inline-flex items-center justify-center border-[#EAECF0] text-primary-500">
                   <Users03 className="size-5" />
@@ -1835,12 +1859,20 @@ const DoNext = ({ sidebar }: { sidebar: React.ReactNode }) => {
               </div>
 
               <ChevronRight className="shrink-0 size-5" />
-            </div>
+            </div> */}
           </div>
         </div>
 
         <div className="mt-10 lg:mt-[50px] max-w-[688px] lg:max-w-[660px] mx-auto w-full self-end flex justify-end">
-          <Button className="text-primary-500" variant="link" visual="gray">
+          <Button
+            onClick={() => {
+              setUser(clientUser)
+              router.push("/client-dashboard")
+            }}
+            className="text-primary-500"
+            variant="link"
+            visual="gray"
+          >
             <Home03 className="size-[15px]" /> Go to Dashboard
           </Button>
         </div>
@@ -2015,6 +2047,7 @@ const ClientOnboarding = ({
 }
 
 export default function ClientOnboardingRoot() {
+  const [clientUser, setClientUser] = React.useState<User | null>(null)
   const [stepData, setStepData] = React.useState<CreateClientType | null>(null)
 
   return (
@@ -2053,9 +2086,10 @@ export default function ClientOnboardingRoot() {
             sidebar={<Sidebar />}
             stepData={stepData}
             setStepData={setStepData}
+            setClientUser={setClientUser}
           />
         }
-        doNext={<DoNext sidebar={<DoNextSidebar />} />}
+        doNext={<DoNext clientUser={clientUser} sidebar={<DoNextSidebar />} />}
       />
     </AuthenticatedRoute>
   )

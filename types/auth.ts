@@ -1,6 +1,6 @@
 export type SignUpParams = {
   email: string
-  password: string
+  password?: string
 }
 
 export type LoginParams = {

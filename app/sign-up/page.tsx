@@ -61,7 +61,7 @@ export default function SignUp() {
   const onSubmit: SubmitHandler<SignUpFormValues> = ({ email }) => {
     setIsLoading(true)
 
-    AuthAPI.SignUpWithEmail({ email, password: "Test@123" })
+    AuthAPI.SignUpWithEmail({ email })
       .then((response) => {
         if (
           response?.status === 201 &&

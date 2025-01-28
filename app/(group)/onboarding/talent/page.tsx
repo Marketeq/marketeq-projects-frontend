@@ -1,6 +1,8 @@
 "use client"
 
 import React, { useMemo, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/auth"
 import AuthenticatedRoute from "@/hoc/AuthenticatedRoute"
 import { TalentAPI } from "@/service/http/talent"
 import { DAY_PERIODS, HOT_KEYS, TIMES } from "@/utils/constants"
@@ -43,6 +45,7 @@ import {
 import { z } from "zod"
 import { DAYS } from "@/types/day"
 import { AVAILABILITY, CreateTalentType } from "@/types/talent"
+import { User } from "@/types/user"
 import { Spinner } from "@/components/ui/spinner/spinner"
 import { Logo } from "@/components/icons"
 import { Pointer } from "@/components/icons/pointer"
@@ -1723,10 +1726,12 @@ const SetYourPreferences = ({
   sidebar,
   stepData,
   setStepData,
+  setTalentUser,
 }: {
   sidebar: React.ReactNode
   stepData: CreateTalentType | null
   setStepData: React.Dispatch<React.SetStateAction<CreateTalentType | null>>
+  setTalentUser: React.Dispatch<React.SetStateAction<User | null>>
 }) => {
   const { toast } = useToast()
 
@@ -1800,9 +1805,14 @@ const SetYourPreferences = ({
 
     TalentAPI.CreateTalent(formData)
       .then((response) => {
-        if (response?.status === 201 && response?.data) {
+        if (
+          response?.status === 201 &&
+          response?.data &&
+          response?.data?.user
+        ) {
           nextStep()
           setStepData(null)
+          setTalentUser(response?.data?.user)
         }
       })
       .catch((error) => {
@@ -2031,7 +2041,17 @@ const SetYourPreferences = ({
   )
 }
 
-const DoNext = ({ sidebar }: { sidebar: React.ReactNode }) => {
+const DoNext = ({
+  sidebar,
+  talentUser,
+}: {
+  sidebar: React.ReactNode
+  talentUser: User | null
+}) => {
+  const router = useRouter()
+
+  const { setUser } = useAuth()
+
   return (
     <div className="min-h-screen flex md:pl-[480px] bg-white">
       {sidebar}
@@ -2046,19 +2066,26 @@ const DoNext = ({ sidebar }: { sidebar: React.ReactNode }) => {
           </p>
 
           <div className="mt-10 lg:mt-[50px] grid md:grid-cols-2 gap-2.5 lg:gap-5">
-            <div className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300">
+            <div
+              className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300"
+              onClick={() => {
+                setUser(talentUser)
+                router.push("/")
+              }}
+            >
               <div className="flex items-center gap-x-3">
                 <div className="size-11 rounded-lg border-[1.5px] shrink-0 inline-flex items-center justify-center border-[#EAECF0] text-primary-500">
                   <Briefcase02 className="size-5" />
                 </div>
                 <span className="text-sm leading-[16.94px] inline-block font-medium text-gray-900">
-                  Browse Projects
+                  Find open projects
                 </span>
               </div>
 
               <ChevronRight className="shrink-0 size-5" />
             </div>
-            <div className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300">
+
+            {/* <div className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300">
               <div className="flex items-center gap-x-3">
                 <div className="size-11 rounded-lg border-[1.5px] shrink-0 inline-flex items-center justify-center border-[#EAECF0] text-primary-500">
                   <Users03 className="size-5" />
@@ -2093,12 +2120,20 @@ const DoNext = ({ sidebar }: { sidebar: React.ReactNode }) => {
               </div>
 
               <ChevronRight className="shrink-0 size-5" />
-            </div>
+            </div> */}
           </div>
         </div>
 
         <div className="mt-10 lg:mt-[50px] mx-auto w-full max-w-[608px] lg:max-w-[660px] flex self-end justify-end">
-          <Button className="text-primary-500" variant="link" visual="gray">
+          <Button
+            onClick={() => {
+              setUser(talentUser)
+              router.push("/talent-dashboard")
+            }}
+            className="text-primary-500"
+            variant="link"
+            visual="gray"
+          >
             <Home03 className="size-[15px]" /> Go to Dashboard
           </Button>
         </div>
@@ -2306,6 +2341,7 @@ const TalentOnboarding = ({
 }
 
 export default function TalentOnboardingRoot() {
+  const [talentUser, setTalentUser] = useState<User | null>(null)
   const [stepData, setStepData] = React.useState<CreateTalentType | null>(null)
 
   return (
@@ -2344,9 +2380,10 @@ export default function TalentOnboardingRoot() {
             sidebar={<Sidebar />}
             stepData={stepData}
             setStepData={setStepData}
+            setTalentUser={setTalentUser}
           />
         }
-        doNext={<DoNext sidebar={<DoNextSidebar />} />}
+        doNext={<DoNext talentUser={talentUser} sidebar={<DoNextSidebar />} />}
       />
     </AuthenticatedRoute>
   )
