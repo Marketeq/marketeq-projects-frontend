@@ -4,6 +4,7 @@ import { AuthProvider } from "@/contexts/auth"
 import { font } from "@/utils/font"
 import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google"
 import { GoogleOAuthProvider } from "@react-oauth/google"
+import "react-international-phone/style.css"
 import "swiper/css"
 import "swiper/css/effect-fade"
 import "swiper/css/navigation"
@@ -13,7 +14,6 @@ import { NProgressBar } from "@/components/n-progress-bar"
 import { Toaster } from "@/components/ui"
 import "@/styles/globals.css"
 import "@/styles/nprogress.css"
-import { TopMostHeader } from "./top-most-header"
 
 export const metadata: Metadata = {
   title: "Marketeq",

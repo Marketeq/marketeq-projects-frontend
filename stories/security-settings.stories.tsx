@@ -5,19 +5,23 @@ import {
   containsOneNumber,
   containsOneSymbol,
   containsOneUpperCaseLetter,
+  hookFormHasError,
 } from "@/utils/functions"
 import {
   AlertCircle,
   ArrowLeft,
   ArrowRight,
   Check,
+  Eye,
   EyeOff,
 } from "@blend-metrics/icons"
 import { ErrorMessage as HookFormErrorMessage } from "@hookform/error-message"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Meta } from "@storybook/react"
-import { useForm, useWatch } from "react-hook-form"
+import { Controller, SubmitHandler, useForm, useWatch } from "react-hook-form"
+import { useToggle } from "react-use"
 import { z } from "zod"
+import { PhoneNumberInput } from "@/components/phone-number-input"
 import {
   Button,
   CircularProgress,
@@ -53,9 +57,6 @@ const secureYourAccountFormSchema = z
     password: z
       .string()
       .min(8, "Please enter at least 8 character(s)")
-      .refine(containsOneNumber, {
-        message: "Please enter at least 1 number(s)",
-      })
       .refine(containsOneUpperCaseLetter, {
         message: "Please enter at least 1 uppercase letter(s)",
       })
@@ -64,32 +65,40 @@ const secureYourAccountFormSchema = z
       })
       .refine(containsOneLowerCaseLetter, {
         message: "Please enter at least 1 lower letter(s)",
+      })
+      .refine(containsOneNumber, {
+        message: "Please enter at least 1 number(s)",
       }),
     confirmPassword: z.string(),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine((data) => data.password !== data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
   })
 
-type SecureYourAccountForm = z.infer<typeof secureYourAccountFormSchema>
+type SecureYourAccountFormValues = z.infer<typeof secureYourAccountFormSchema>
 
 export const Step1 = () => {
   const {
     register,
     control,
     formState: { errors },
-  } = useForm<SecureYourAccountForm>({
+    handleSubmit,
+  } = useForm<SecureYourAccountFormValues>({
     resolver: zodResolver(secureYourAccountFormSchema),
     defaultValues: {
       confirmPassword: "",
       password: "",
     },
   })
+  const [showPassword, toggleShowPassword] = useToggle(true)
+  const [showConfirmPassword, toggleShowConfirmPassword] = useToggle(true)
   const password = useWatch({
     control,
     name: "password",
   })
+  const onSubmit: SubmitHandler<SecureYourAccountFormValues> = (values) => {}
+
   return (
     <Dialog>
       <DialogTrigger>
@@ -114,7 +123,7 @@ export const Step1 = () => {
           </h3>
         </div>
 
-        <form className="mt-8">
+        <form className="mt-8" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-6">
             <div className="space-y-1.5">
               <Label
@@ -128,12 +137,22 @@ export const Step1 = () => {
               <InputGroup>
                 <Input
                   id="create-password"
-                  type="text"
+                  type={showPassword ? "text" : "password"}
                   placeholder="Type your password"
                   {...register("password")}
+                  isInvalid={hookFormHasError({ errors, name: "password" })}
                 />
                 <InputRightElement>
-                  <EyeOff className="text-gray-400 size-4" />
+                  <button
+                    className="focus-visible:outline-none"
+                    onClick={toggleShowPassword}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="text-gray-400 size-4" />
+                    ) : (
+                      <Eye className="text-gray-400 size-4" />
+                    )}
+                  </button>
                 </InputRightElement>
               </InputGroup>
 
@@ -157,13 +176,34 @@ export const Step1 = () => {
               <InputGroup>
                 <Input
                   id="confirm-password"
-                  type="text"
+                  type={showConfirmPassword ? "text" : "password"}
                   placeholder="Type your password again"
+                  isInvalid={hookFormHasError({
+                    errors,
+                    name: "confirmPassword",
+                  })}
                 />
                 <InputRightElement>
-                  <EyeOff className="text-gray-400 size-4" />
+                  <button
+                    className="focus-visible:outline-none"
+                    onClick={toggleShowConfirmPassword}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="text-gray-400 size-4" />
+                    ) : (
+                      <Eye className="text-gray-400 size-4" />
+                    )}
+                  </button>
                 </InputRightElement>
               </InputGroup>
+
+              <HookFormErrorMessage
+                name="confirmPassword"
+                errors={errors}
+                render={({ message }) => (
+                  <ErrorMessage size="sm">{message}</ErrorMessage>
+                )}
+              />
             </div>
 
             <ul className="space-y-2">
@@ -237,7 +277,22 @@ export const Step1 = () => {
   )
 }
 
+const secondStepFormSchema = z.object({
+  phoneNumber: z.string().min(1, "Please enter your phone number"),
+})
+
+type SecondStepFormValues = z.infer<typeof secondStepFormSchema>
+
 export const Step2 = () => {
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<SecondStepFormValues>({
+    resolver: zodResolver(secondStepFormSchema),
+  })
+  const onSubmit: SubmitHandler<SecondStepFormValues> = (values) => {}
+
   return (
     <Dialog>
       <DialogTrigger>
@@ -272,33 +327,32 @@ export const Step2 = () => {
           </p>
         </div>
 
-        <form className="mt-6">
+        <form className="mt-6" onClick={handleSubmit(onSubmit)}>
           <div className="space-y-1.5">
             <Label size="sm" htmlFor="phone-number" className="text-gray-700">
               Phone Number
             </Label>
-            <div className="flex items-center">
-              <Select defaultValue="US">
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a country" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="US">US</SelectItem>
-                    <SelectItem value="BE">BE</SelectItem>
-                    <SelectItem value="RS">RS</SelectItem>
-                    <SelectItem value="TR">TR</SelectItem>
-                    <SelectItem value="LV">LV</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <Input
-                className="rounded-l-none"
-                type="tel"
-                id="phone-number"
-                placeholder="+1 (555) 000-0000"
-              />
-            </div>
+            <Controller
+              control={control}
+              name="phoneNumber"
+              render={({ field }) => (
+                <PhoneNumberInput
+                  {...field}
+                  invalid={hookFormHasError({
+                    errors,
+                    name: "phoneNumber",
+                  })}
+                />
+              )}
+            />
+
+            <HookFormErrorMessage
+              name="phoneNumber"
+              errors={errors}
+              render={({ message }) => (
+                <ErrorMessage size="sm">{message}</ErrorMessage>
+              )}
+            />
           </div>
 
           <div className="flex items-center justify-between mt-[168px]">

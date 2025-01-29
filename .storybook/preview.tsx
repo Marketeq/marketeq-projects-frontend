@@ -1,5 +1,6 @@
 import React from "react"
 import type { Preview } from "@storybook/react"
+import "react-international-phone/style.css"
 import "swiper/css"
 import "swiper/css/effect-fade"
 import "swiper/css/navigation"
