@@ -1,8 +1,18 @@
 "use client"
 
 import React, { useMemo, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/auth"
+import AuthenticatedRoute from "@/hoc/AuthenticatedRoute"
+import { TalentAPI } from "@/service/http/talent"
 import { DAY_PERIODS, HOT_KEYS, TIMES } from "@/utils/constants"
-import { cn, getIsNotEmpty, hookFormHasError, noop } from "@/utils/functions"
+import {
+  capitalize,
+  cn,
+  getIsNotEmpty,
+  hookFormHasError,
+  noop,
+} from "@/utils/functions"
 import { useControllableState, useStepper } from "@/utils/hooks"
 import {
   AlertCircle,
@@ -33,6 +43,10 @@ import {
   useUpdateEffect,
 } from "react-use"
 import { z } from "zod"
+import { DAYS } from "@/types/day"
+import { AVAILABILITY, CreateTalentType } from "@/types/talent"
+import { User } from "@/types/user"
+import { Spinner } from "@/components/ui/spinner/spinner"
 import { Logo } from "@/components/icons"
 import { Pointer } from "@/components/icons/pointer"
 import NextLink from "@/components/next-link"
@@ -75,6 +89,7 @@ import {
   useStepContext,
   useStepRootContext,
   useStepperContext,
+  useToast,
 } from "@/components/ui"
 
 const introduceYourselfFormSchema = z.object({
@@ -89,7 +104,15 @@ const introduceYourselfFormSchema = z.object({
 
 type IntroduceYourselfFormValues = z.infer<typeof introduceYourselfFormSchema>
 
-const IntroduceYourself = ({ sidebar }: { sidebar: React.ReactNode }) => {
+const IntroduceYourself = ({
+  sidebar,
+  stepData,
+  setStepData,
+}: {
+  sidebar: React.ReactNode
+  stepData: CreateTalentType | null
+  setStepData: React.Dispatch<React.SetStateAction<CreateTalentType | null>>
+}) => {
   const {
     register,
     formState: { errors, isValid },
@@ -98,8 +121,9 @@ const IntroduceYourself = ({ sidebar }: { sidebar: React.ReactNode }) => {
   } = useForm<IntroduceYourselfFormValues>({
     resolver: zodResolver(introduceYourselfFormSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
+      avatar: stepData?.avatar ? [stepData?.avatar] : undefined,
+      firstName: stepData?.firstName || "",
+      lastName: stepData?.lastName || "",
     },
   })
   const { toggleValidation } = useStepContext()
@@ -111,7 +135,18 @@ const IntroduceYourself = ({ sidebar }: { sidebar: React.ReactNode }) => {
 
   const progress = ((currentStep + 1) / totalSteps) * 100
 
-  const onSubmit: SubmitHandler<IntroduceYourselfFormValues> = () => {
+  const onSubmit: SubmitHandler<IntroduceYourselfFormValues> = ({
+    avatar,
+    firstName,
+    lastName,
+  }) => {
+    setStepData({
+      ...stepData,
+      firstName,
+      lastName,
+      avatar: avatar[0],
+    })
+
     nextStep()
   }
 
@@ -314,7 +349,15 @@ const createYourUsernameFormSchema = z.object({
 
 type CreateYourUsernameFormValues = z.infer<typeof createYourUsernameFormSchema>
 
-const CreateYourUsername = ({ sidebar }: { sidebar: React.ReactNode }) => {
+const CreateYourUsername = ({
+  sidebar,
+  stepData,
+  setStepData,
+}: {
+  sidebar: React.ReactNode
+  stepData: CreateTalentType | null
+  setStepData: React.Dispatch<React.SetStateAction<CreateTalentType | null>>
+}) => {
   const [show, toggleShow] = useToggle(false)
   const {
     formState: { errors, isValid },
@@ -322,15 +365,25 @@ const CreateYourUsername = ({ sidebar }: { sidebar: React.ReactNode }) => {
     register,
     handleSubmit,
     trigger,
+    getValues,
   } = useForm<CreateYourUsernameFormValues>({
     resolver: zodResolver(createYourUsernameFormSchema),
+    defaultValues: {
+      username: stepData?.username || "",
+    },
   })
   const { toggleValidation } = useStepContext()
   const { nextStep, prevStep, setStep } = useStepperContext()
 
   useIsomorphicLayoutEffect(() => toggleValidation(isValid), [isValid])
 
-  const onSubmit: SubmitHandler<CreateYourUsernameFormValues> = () => {
+  const onSubmit: SubmitHandler<CreateYourUsernameFormValues> = ({
+    username,
+  }) => {
+    setStepData({
+      ...stepData,
+      username,
+    })
     nextStep()
   }
   const setFormValue: UseFormSetValue<CreateYourUsernameFormValues> = (
@@ -349,6 +402,14 @@ const CreateYourUsername = ({ sidebar }: { sidebar: React.ReactNode }) => {
     toggleValidation(true)
     const nextStepIndex = currentStep + 1
     setStep(nextStepIndex)
+  }
+
+  const back = () => {
+    setStepData({
+      ...stepData,
+      username: getValues("username"),
+    })
+    prevStep()
   }
 
   return (
@@ -607,7 +668,7 @@ const CreateYourUsername = ({ sidebar }: { sidebar: React.ReactNode }) => {
               variant="outlined"
               visual="gray"
               type="button"
-              onClick={prevStep}
+              onClick={back}
             >
               Back
             </Button>
@@ -641,20 +702,41 @@ const shareYourGoalsFormSchema = z.object({
 
 type ShareYourGoalsFormValues = z.infer<typeof shareYourGoalsFormSchema>
 
-const ShareYourLocation = ({ sidebar }: { sidebar: React.ReactNode }) => {
+const ShareYourLocation = ({
+  sidebar,
+  stepData,
+  setStepData,
+}: {
+  sidebar: React.ReactNode
+  stepData: CreateTalentType | null
+  setStepData: React.Dispatch<React.SetStateAction<CreateTalentType | null>>
+}) => {
   const {
     register,
     formState: { errors, isValid },
     handleSubmit,
+    getValues,
   } = useForm<ShareYourGoalsFormValues>({
     resolver: zodResolver(shareYourGoalsFormSchema),
+    defaultValues: {
+      location: stepData?.location || "",
+      languages: stepData?.language || "",
+    },
   })
   const { toggleValidation } = useStepContext()
   const { nextStep, prevStep, setStep } = useStepperContext()
 
   useIsomorphicLayoutEffect(() => toggleValidation(isValid), [isValid])
 
-  const onSubmit: SubmitHandler<ShareYourGoalsFormValues> = (values) => {
+  const onSubmit: SubmitHandler<ShareYourGoalsFormValues> = ({
+    languages,
+    location,
+  }) => {
+    setStepData({
+      ...stepData,
+      location,
+      language: languages,
+    })
     nextStep()
   }
 
@@ -666,6 +748,15 @@ const ShareYourLocation = ({ sidebar }: { sidebar: React.ReactNode }) => {
     toggleValidation(true)
     const nextStepIndex = currentStep + 1
     setStep(nextStepIndex)
+  }
+
+  const back = () => {
+    setStepData({
+      ...stepData,
+      location: getValues("location"),
+      language: getValues("languages"),
+    })
+    prevStep()
   }
 
   return (
@@ -755,7 +846,7 @@ const ShareYourLocation = ({ sidebar }: { sidebar: React.ReactNode }) => {
               variant="outlined"
               visual="gray"
               type="button"
-              onClick={prevStep}
+              onClick={back}
             >
               Back
             </Button>
@@ -943,18 +1034,28 @@ const showcaseYourTalentFormSchema = z.object({
 
 type ShowcaseYourTalentFormValues = z.infer<typeof showcaseYourTalentFormSchema>
 
-const ShowcaseYourTalent = ({ sidebar }: { sidebar: React.ReactNode }) => {
+const ShowcaseYourTalent = ({
+  sidebar,
+  stepData,
+  setStepData,
+}: {
+  sidebar: React.ReactNode
+  stepData: CreateTalentType | null
+  setStepData: React.Dispatch<React.SetStateAction<CreateTalentType | null>>
+}) => {
   const {
     register,
     formState: { errors, isValid },
     handleSubmit,
     control,
+    getValues,
   } = useForm<ShowcaseYourTalentFormValues>({
     resolver: zodResolver(showcaseYourTalentFormSchema),
     defaultValues: {
-      industriesWorkedWith: "",
-      recentJobTitle: "",
-      studying: false,
+      industriesWorkedWith: stepData?.industriesWorkedIn || "",
+      yourTopSkills: stepData?.lookingToWorkWith || [],
+      recentJobTitle: stepData?.recentJobTitle || "",
+      studying: stepData?.isStudent || false,
     },
   })
   const { toggleValidation } = useStepContext()
@@ -962,7 +1063,19 @@ const ShowcaseYourTalent = ({ sidebar }: { sidebar: React.ReactNode }) => {
 
   useIsomorphicLayoutEffect(() => toggleValidation(isValid), [isValid])
 
-  const onSubmit: SubmitHandler<ShowcaseYourTalentFormValues> = (values) => {
+  const onSubmit: SubmitHandler<ShowcaseYourTalentFormValues> = ({
+    recentJobTitle,
+    studying,
+    industriesWorkedWith,
+    yourTopSkills,
+  }) => {
+    setStepData({
+      ...stepData,
+      recentJobTitle,
+      isStudent: studying,
+      industriesWorkedIn: industriesWorkedWith,
+      lookingToWorkWith: yourTopSkills,
+    })
     nextStep()
   }
 
@@ -974,6 +1087,17 @@ const ShowcaseYourTalent = ({ sidebar }: { sidebar: React.ReactNode }) => {
     toggleValidation(true)
     const nextStepIndex = currentStep + 1
     setStep(nextStepIndex)
+  }
+
+  const back = () => {
+    setStepData({
+      ...stepData,
+      recentJobTitle: getValues("recentJobTitle"),
+      isStudent: getValues("studying"),
+      industriesWorkedIn: getValues("industriesWorkedWith"),
+      lookingToWorkWith: getValues("yourTopSkills"),
+    })
+    prevStep()
   }
 
   return (
@@ -1111,7 +1235,7 @@ const ShowcaseYourTalent = ({ sidebar }: { sidebar: React.ReactNode }) => {
               variant="outlined"
               visual="gray"
               type="button"
-              onClick={prevStep}
+              onClick={back}
             >
               Back
             </Button>
@@ -1304,9 +1428,22 @@ const YourAvailability = ({
   )
 }
 
+const TimeSchema = z.object({
+  startTime: z.string().optional(),
+  startTimeDayPeriod: z.string().optional(),
+  endTime: z.string().optional().optional(),
+  endTimeDayPeriod: z.string().optional(),
+})
+
+const DaySchema = z.object({
+  day: z.string().optional(),
+  times: z.array(TimeSchema).optional(),
+})
+
 const setYourPreferencesFormSchema = z.object({
   projects: z.array(z.string()).min(1, "Please enter at least 1 project(s)"),
   yourAvailability: z.string().min(1, "Please enter at least 1 project(s)"),
+  customAvailability: z.array(DaySchema).optional(),
 })
 
 type SetYourPreferencesFormValues = z.infer<typeof setYourPreferencesFormSchema>
@@ -1316,6 +1453,7 @@ const CustomAvailabilityTimeSelector = ({
   value,
   onValueChange,
   disabled,
+  onToggle,
 }: {
   label: string
   value?: Array<{
@@ -1333,6 +1471,15 @@ const CustomAvailabilityTimeSelector = ({
     }>
   ) => void
   disabled?: boolean
+  onToggle: (
+    value: boolean,
+    times: Array<{
+      startTime: string
+      startTimeDayPeriod: string
+      endTime: string
+      endTimeDayPeriod: string
+    }>
+  ) => void
 }) => {
   const [state, setState] = useControllableState<
     Array<{
@@ -1382,7 +1529,10 @@ const CustomAvailabilityTimeSelector = ({
       <div className="inline-flex items-center gap-x-3 pt-2.5">
         <Switch
           checked={isOn}
-          onCheckedChange={toggleIsOn}
+          onCheckedChange={(checked) => {
+            toggleIsOn(checked)
+            onToggle(checked, state)
+          }}
           size="sm"
           id={label}
         />
@@ -1562,13 +1712,46 @@ const CustomAvailabilityTimeSelector = ({
   )
 }
 
-const SetYourPreferences = ({ sidebar }: { sidebar: React.ReactNode }) => {
+const days: { id: number; lable: DAYS; disabled: boolean }[] = [
+  { id: 1, lable: DAYS.SUNDAY, disabled: true },
+  { id: 2, lable: DAYS.MONDAY, disabled: true },
+  { id: 3, lable: DAYS.TUESDAY, disabled: true },
+  { id: 4, lable: DAYS.WEDNESDAY, disabled: true },
+  { id: 5, lable: DAYS.THURSDAY, disabled: true },
+  { id: 6, lable: DAYS.FRIDAY, disabled: true },
+  { id: 7, lable: DAYS.SATURDAY, disabled: true },
+]
+
+const SetYourPreferences = ({
+  sidebar,
+  stepData,
+  setStepData,
+  setTalentUser,
+}: {
+  sidebar: React.ReactNode
+  stepData: CreateTalentType | null
+  setStepData: React.Dispatch<React.SetStateAction<CreateTalentType | null>>
+  setTalentUser: React.Dispatch<React.SetStateAction<User | null>>
+}) => {
+  const { toast } = useToast()
+
+  const [isLoading, setIsLoading] = React.useState(false)
+
   const {
+    getValues,
+    setValue,
     formState: { errors, isValid },
     control,
     handleSubmit,
   } = useForm<SetYourPreferencesFormValues>({
     resolver: zodResolver(setYourPreferencesFormSchema),
+    defaultValues: {
+      projects: stepData?.projectTypes,
+      yourAvailability: capitalize(
+        stepData?.availability?.replaceAll("_", "-") || ""
+      ),
+      customAvailability: stepData?.customAvailability,
+    },
   })
   const { toggleValidation } = useStepContext()
   const { nextStep, prevStep, setStep } = useStepperContext()
@@ -1579,8 +1762,83 @@ const SetYourPreferences = ({ sidebar }: { sidebar: React.ReactNode }) => {
 
   useIsomorphicLayoutEffect(() => toggleValidation(isValid), [isValid])
 
-  const onSubmit: SubmitHandler<SetYourPreferencesFormValues> = (values) => {
-    nextStep()
+  const onSubmit: SubmitHandler<SetYourPreferencesFormValues> = ({
+    projects,
+    yourAvailability,
+    customAvailability,
+  }) => {
+    setIsLoading(true)
+
+    const availability: AVAILABILITY = yourAvailability
+      ?.replaceAll("-", "_")
+      ?.toUpperCase() as AVAILABILITY
+
+    const formData = new FormData()
+
+    formData.append("avatar", stepData?.avatar || "")
+    formData.append("username", stepData?.username || "")
+    formData.append("firstName", stepData?.firstName || "")
+    formData.append("lastName", stepData?.lastName || "")
+    formData.append("location", stepData?.location || "")
+    formData.append("language", stepData?.language || "")
+    formData.append("recentJobTitle", stepData?.recentJobTitle || "")
+    formData.append("industriesWorkedIn", stepData?.industriesWorkedIn || "")
+
+    stepData?.lookingToWorkWith?.forEach((item) => {
+      formData.append("lookingToWorkWith", item)
+    })
+
+    projects?.forEach((item) => {
+      formData.append("projectTypes", item)
+    })
+
+    formData.append("isStudent", stepData?.isStudent?.toString() || "false")
+
+    formData.append("availability", availability || "")
+
+    if (availability === AVAILABILITY.CUSTOM) {
+      formData.append(
+        "customAvailability",
+        JSON.stringify(customAvailability) || ""
+      )
+    }
+
+    TalentAPI.CreateTalent(formData)
+      .then((response) => {
+        if (
+          response?.status === 201 &&
+          response?.data &&
+          response?.data?.user
+        ) {
+          nextStep()
+          setStepData(null)
+          setTalentUser(response?.data?.user)
+        }
+      })
+      .catch((error) => {
+        if (error?.response?.data?.errors?.message) {
+          toast({
+            title: error?.response?.data?.errors?.message,
+            variant: "destructive",
+          })
+        } else if (
+          Array.isArray(error?.response?.data?.message) &&
+          error?.response?.data?.message?.length > 0
+        ) {
+          toast({
+            title: error?.response?.data?.message?.[0],
+            variant: "destructive",
+          })
+        } else {
+          toast({
+            title: error?.response?.data?.message,
+            variant: "destructive",
+          })
+        }
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
 
   const { totalSteps, currentStep } = useStepRootContext()
@@ -1591,6 +1849,42 @@ const SetYourPreferences = ({ sidebar }: { sidebar: React.ReactNode }) => {
     toggleValidation(true)
     const nextStepIndex = currentStep + 1
     setStep(nextStepIndex)
+  }
+
+  const back = () => {
+    const availability: AVAILABILITY = getValues("yourAvailability")
+      ?.replaceAll("-", "_")
+      ?.toUpperCase() as AVAILABILITY
+
+    setStepData({
+      ...stepData,
+      projectTypes: getValues("projects"),
+      availability: availability,
+      customAvailability: getValues("customAvailability"),
+    })
+    prevStep()
+  }
+
+  const handleCustomAvailabity = (
+    day: string,
+    times: {
+      startTimeDayPeriod?: string
+      endTimeDayPeriod?: string
+      startTime?: string
+      endTime?: string
+    }[]
+  ) => {
+    const data =
+      getValues("customAvailability")?.filter((item) => item?.day !== day) || []
+
+    data?.push({ day, times })
+    setValue("customAvailability", data)
+  }
+
+  const handleCustomAvailabityDisable = (day: string) => {
+    const data =
+      getValues("customAvailability")?.filter((item) => item?.day !== day) || []
+    setValue("customAvailability", data)
   }
 
   return (
@@ -1669,13 +1963,35 @@ const SetYourPreferences = ({ sidebar }: { sidebar: React.ReactNode }) => {
 
               {availability === "Custom" && (
                 <div className="flex flex-col">
-                  <CustomAvailabilityTimeSelector label="Sunday" disabled />
-                  <CustomAvailabilityTimeSelector label="Monday" />
-                  <CustomAvailabilityTimeSelector label="Tuesday" />
-                  <CustomAvailabilityTimeSelector label="Wednesday" />
-                  <CustomAvailabilityTimeSelector label="Thursday" />
-                  <CustomAvailabilityTimeSelector label="Friday" />
-                  <CustomAvailabilityTimeSelector label="Saturday" disabled />
+                  {days?.map(({ id, lable, disabled }) => {
+                    // const value = getValues("customAvailability")?.find(
+                    //   ({ day }) => day === lable
+                    // )?.times as Array<{
+                    //   startTime: string
+                    //   startTimeDayPeriod: string
+                    //   endTime: string
+                    //   endTimeDayPeriod: string
+                    // }>
+
+                    return (
+                      <CustomAvailabilityTimeSelector
+                        key={id}
+                        label={lable}
+                        disabled={disabled}
+                        // value={value?.length ? value : undefined}
+                        onValueChange={(value) => {
+                          handleCustomAvailabity(lable, value)
+                        }}
+                        onToggle={(checked, times) => {
+                          if (checked) {
+                            handleCustomAvailabity(lable, times)
+                          } else {
+                            handleCustomAvailabityDisable(lable)
+                          }
+                        }}
+                      />
+                    )
+                  })}
                 </div>
               )}
             </div>
@@ -1689,7 +2005,7 @@ const SetYourPreferences = ({ sidebar }: { sidebar: React.ReactNode }) => {
               variant="outlined"
               visual="gray"
               type="button"
-              onClick={prevStep}
+              onClick={back}
             >
               Back
             </Button>
@@ -1705,8 +2021,17 @@ const SetYourPreferences = ({ sidebar }: { sidebar: React.ReactNode }) => {
               >
                 Skip
               </Button>
-              <Button size="md" visual="primary">
-                Continue
+              <Button disabled={isLoading} size="md" visual="primary">
+                {isLoading ? (
+                  <Spinner
+                    size={24}
+                    className="stroke-white"
+                    trackClassName="stroke-primary-500"
+                    strokeWidth={2}
+                  />
+                ) : (
+                  "Continue"
+                )}
               </Button>
             </div>
           </div>
@@ -1716,7 +2041,17 @@ const SetYourPreferences = ({ sidebar }: { sidebar: React.ReactNode }) => {
   )
 }
 
-const DoNext = ({ sidebar }: { sidebar: React.ReactNode }) => {
+const DoNext = ({
+  sidebar,
+  talentUser,
+}: {
+  sidebar: React.ReactNode
+  talentUser: User | null
+}) => {
+  const router = useRouter()
+
+  const { setUser } = useAuth()
+
   return (
     <div className="min-h-screen flex md:pl-[480px] bg-white">
       {sidebar}
@@ -1731,19 +2066,26 @@ const DoNext = ({ sidebar }: { sidebar: React.ReactNode }) => {
           </p>
 
           <div className="mt-10 lg:mt-[50px] grid md:grid-cols-2 gap-2.5 lg:gap-5">
-            <div className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300">
+            <div
+              className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300"
+              onClick={() => {
+                setUser(talentUser)
+                router.push("/")
+              }}
+            >
               <div className="flex items-center gap-x-3">
                 <div className="size-11 rounded-lg border-[1.5px] shrink-0 inline-flex items-center justify-center border-[#EAECF0] text-primary-500">
                   <Briefcase02 className="size-5" />
                 </div>
                 <span className="text-sm leading-[16.94px] inline-block font-medium text-gray-900">
-                  Browse Projects
+                  Find open projects
                 </span>
               </div>
 
               <ChevronRight className="shrink-0 size-5" />
             </div>
-            <div className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300">
+
+            {/* <div className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300">
               <div className="flex items-center gap-x-3">
                 <div className="size-11 rounded-lg border-[1.5px] shrink-0 inline-flex items-center justify-center border-[#EAECF0] text-primary-500">
                   <Users03 className="size-5" />
@@ -1778,12 +2120,20 @@ const DoNext = ({ sidebar }: { sidebar: React.ReactNode }) => {
               </div>
 
               <ChevronRight className="shrink-0 size-5" />
-            </div>
+            </div> */}
           </div>
         </div>
 
         <div className="mt-10 lg:mt-[50px] mx-auto w-full max-w-[608px] lg:max-w-[660px] flex self-end justify-end">
-          <Button className="text-primary-500" variant="link" visual="gray">
+          <Button
+            onClick={() => {
+              setUser(talentUser)
+              router.push("/talent-dashboard")
+            }}
+            className="text-primary-500"
+            variant="link"
+            visual="gray"
+          >
             <Home03 className="size-[15px]" /> Go to Dashboard
           </Button>
         </div>
@@ -1991,14 +2341,50 @@ const TalentOnboarding = ({
 }
 
 export default function TalentOnboardingRoot() {
+  const [talentUser, setTalentUser] = useState<User | null>(null)
+  const [stepData, setStepData] = React.useState<CreateTalentType | null>(null)
+
   return (
-    <TalentOnboarding
-      introduceYourself={<IntroduceYourself sidebar={<Sidebar />} />}
-      createYourUsername={<CreateYourUsername sidebar={<Sidebar />} />}
-      shareYourLocation={<ShareYourLocation sidebar={<Sidebar />} />}
-      showcaseYourTalent={<ShowcaseYourTalent sidebar={<Sidebar />} />}
-      setYourPreferences={<SetYourPreferences sidebar={<Sidebar />} />}
-      doNext={<DoNext sidebar={<DoNextSidebar />} />}
-    />
+    <AuthenticatedRoute>
+      <TalentOnboarding
+        introduceYourself={
+          <IntroduceYourself
+            sidebar={<Sidebar />}
+            stepData={stepData}
+            setStepData={setStepData}
+          />
+        }
+        createYourUsername={
+          <CreateYourUsername
+            sidebar={<Sidebar />}
+            stepData={stepData}
+            setStepData={setStepData}
+          />
+        }
+        shareYourLocation={
+          <ShareYourLocation
+            sidebar={<Sidebar />}
+            stepData={stepData}
+            setStepData={setStepData}
+          />
+        }
+        showcaseYourTalent={
+          <ShowcaseYourTalent
+            sidebar={<Sidebar />}
+            stepData={stepData}
+            setStepData={setStepData}
+          />
+        }
+        setYourPreferences={
+          <SetYourPreferences
+            sidebar={<Sidebar />}
+            stepData={stepData}
+            setStepData={setStepData}
+            setTalentUser={setTalentUser}
+          />
+        }
+        doNext={<DoNext talentUser={talentUser} sidebar={<DoNextSidebar />} />}
+      />
+    </AuthenticatedRoute>
   )
 }

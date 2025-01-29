@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
+import AuthenticatedRoute from "@/hoc/AuthenticatedRoute"
 import {
   ArrowRight,
   ArrowUp,
@@ -483,118 +484,120 @@ export default function MarketPlaceLayout({
 }) {
   return (
     <>
-      <div className="px-3.5 md:px-6 lg:px-[50px] bg-white shadow-[0px_1px_3px_0px_rgba(16,24,40,.1)] xs:max-md:hidden">
-        <div className="pt-0.5 pb-3.5 lg:py-3 flex items-end gap-x-6 lg:justify-between lg:gap-x-[30px] ">
-          <div className="flex flex-col">
-            <span className="inline-block text-[10px] leading-[12.1px] lg:text-xs lg:leading-[16.34px] text-dark-blue-400">
-              You currently have
-            </span>
+      <AuthenticatedRoute>
+        <div className="px-3.5 md:px-6 lg:px-[50px] bg-white shadow-[0px_1px_3px_0px_rgba(16,24,40,.1)] xs:max-md:hidden">
+          <div className="pt-0.5 pb-3.5 lg:py-3 flex items-end gap-x-6 lg:justify-between lg:gap-x-[30px] ">
+            <div className="flex flex-col">
+              <span className="inline-block text-[10px] leading-[12.1px] lg:text-xs lg:leading-[16.34px] text-dark-blue-400">
+                You currently have
+              </span>
 
-            <Sidebar />
-          </div>
+              <Sidebar />
+            </div>
 
-          <div className="flex items-center gap-x-6 lg:gap-x-[54.17px] lg:ml-[26.5px]">
-            <Button
-              className="text-[11px] lg:text-[13px] leading-6 opacity-60 hover:opacity-100"
-              variant="link"
-              visual="gray"
-            >
-              Research
-            </Button>
-            <Button
-              className="text-[11px] lg:text-[13px] leading-6 opacity-60 hover:opacity-100"
-              variant="link"
-              visual="gray"
-            >
-              Design
-            </Button>
-            <Button
-              className="text-[11px] lg:text-[13px] leading-6 opacity-60 hover:opacity-100"
-              variant="link"
-              visual="gray"
-            >
-              Development
-            </Button>
-            <Button
-              className="text-[11px] lg:text-[13px] leading-6 opacity-60 hover:opacity-100"
-              variant="link"
-              visual="gray"
-            >
-              Testing
-            </Button>
-            <Button
-              className="text-[11px] lg:text-[13px] leading-6 opacity-60 hover:opacity-100"
-              variant="link"
-              visual="gray"
-            >
-              Security
-            </Button>
-            <Button
-              className="text-[11px] lg:text-[13px] leading-6 opacity-60 hover:opacity-100"
-              variant="link"
-              visual="gray"
-            >
-              Maintenance
-            </Button>
-            <Button
-              className="text-[11px] lg:text-[13px] leading-6 opacity-60 hover:opacity-100"
-              variant="link"
-              visual="gray"
-            >
-              Digital Marketing
-            </Button>
+            <div className="flex items-center gap-x-6 lg:gap-x-[54.17px] lg:ml-[26.5px]">
+              <Button
+                className="text-[11px] lg:text-[13px] leading-6 opacity-60 hover:opacity-100"
+                variant="link"
+                visual="gray"
+              >
+                Research
+              </Button>
+              <Button
+                className="text-[11px] lg:text-[13px] leading-6 opacity-60 hover:opacity-100"
+                variant="link"
+                visual="gray"
+              >
+                Design
+              </Button>
+              <Button
+                className="text-[11px] lg:text-[13px] leading-6 opacity-60 hover:opacity-100"
+                variant="link"
+                visual="gray"
+              >
+                Development
+              </Button>
+              <Button
+                className="text-[11px] lg:text-[13px] leading-6 opacity-60 hover:opacity-100"
+                variant="link"
+                visual="gray"
+              >
+                Testing
+              </Button>
+              <Button
+                className="text-[11px] lg:text-[13px] leading-6 opacity-60 hover:opacity-100"
+                variant="link"
+                visual="gray"
+              >
+                Security
+              </Button>
+              <Button
+                className="text-[11px] lg:text-[13px] leading-6 opacity-60 hover:opacity-100"
+                variant="link"
+                visual="gray"
+              >
+                Maintenance
+              </Button>
+              <Button
+                className="text-[11px] lg:text-[13px] leading-6 opacity-60 hover:opacity-100"
+                variant="link"
+                visual="gray"
+              >
+                Digital Marketing
+              </Button>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  className="text-[11px] lg:text-[13px] leading-6 opacity-60 hover:opacity-100 lg:hidden"
-                  variant="link"
-                  visual="gray"
-                >
-                  More <ChevronDown className="size-[15px]" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <ScrollArea
-                  viewportClassName="max-h-[250px]"
-                  scrollBar={<ScrollBar className="w-4 p-1" />}
-                >
-                  <DropdownMenuCheckItem>Option 1</DropdownMenuCheckItem>
-                  <DropdownMenuCheckItem>Option 2</DropdownMenuCheckItem>
-                  <DropdownMenuCheckItem>Option 3</DropdownMenuCheckItem>
-                  <DropdownMenuCheckItem>Option 4</DropdownMenuCheckItem>
-                  <DropdownMenuCheckItem>Option 5</DropdownMenuCheckItem>
-                  <DropdownMenuCheckItem>Option 6</DropdownMenuCheckItem>
-                  <DropdownMenuCheckItem>Option 7</DropdownMenuCheckItem>
-                  <DropdownMenuCheckItem>Option 8</DropdownMenuCheckItem>
-                  <DropdownMenuCheckItem>Option 9</DropdownMenuCheckItem>
-                </ScrollArea>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    className="text-[11px] lg:text-[13px] leading-6 opacity-60 hover:opacity-100 lg:hidden"
+                    variant="link"
+                    visual="gray"
+                  >
+                    More <ChevronDown className="size-[15px]" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <ScrollArea
+                    viewportClassName="max-h-[250px]"
+                    scrollBar={<ScrollBar className="w-4 p-1" />}
+                  >
+                    <DropdownMenuCheckItem>Option 1</DropdownMenuCheckItem>
+                    <DropdownMenuCheckItem>Option 2</DropdownMenuCheckItem>
+                    <DropdownMenuCheckItem>Option 3</DropdownMenuCheckItem>
+                    <DropdownMenuCheckItem>Option 4</DropdownMenuCheckItem>
+                    <DropdownMenuCheckItem>Option 5</DropdownMenuCheckItem>
+                    <DropdownMenuCheckItem>Option 6</DropdownMenuCheckItem>
+                    <DropdownMenuCheckItem>Option 7</DropdownMenuCheckItem>
+                    <DropdownMenuCheckItem>Option 8</DropdownMenuCheckItem>
+                    <DropdownMenuCheckItem>Option 9</DropdownMenuCheckItem>
+                  </ScrollArea>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
 
-          <div className="flex items-center gap-x-[18px] ml-auto xs:max-lg:hidden">
-            <Button
-              className="text-[13px] leading-6 opacity-60 hover:opacity-100"
-              variant="link"
-              visual="gray"
-            >
-              My Favorites
-            </Button>
-            <span className="inline-block h-4 w-px shrink-0 bg-gray-300" />
-            <Button
-              className="text-[13px] leading-6 opacity-60 hover:opacity-100"
-              variant="link"
-              visual="gray"
-            >
-              My Dashboard
-            </Button>
+            <div className="flex items-center gap-x-[18px] ml-auto xs:max-lg:hidden">
+              <Button
+                className="text-[13px] leading-6 opacity-60 hover:opacity-100"
+                variant="link"
+                visual="gray"
+              >
+                My Favorites
+              </Button>
+              <span className="inline-block h-4 w-px shrink-0 bg-gray-300" />
+              <Button
+                className="text-[13px] leading-6 opacity-60 hover:opacity-100"
+                variant="link"
+                visual="gray"
+              >
+                My Dashboard
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {children}
-      <Footer />
+        {children}
+        <Footer />
+      </AuthenticatedRoute>
     </>
   )
 }
