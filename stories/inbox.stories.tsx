@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react"
+import Image from "next/image"
 import { isNotUndefined } from "@/utils/functions"
 import { useUncontrolledState } from "@/utils/hooks"
 import { createContext } from "@/utils/react-utils"
 import {
   AlertCircle,
   Archive,
+  Compass03,
   CornerUpLeft,
   DotsHorizontal,
+  Download02,
   Edit03,
   EyeOff,
   Send03,
@@ -14,6 +17,7 @@ import {
   Tag,
   Trash2,
 } from "@blend-metrics/icons"
+import { GoogleDrive1Brand } from "@blend-metrics/icons/brands"
 import { Meta } from "@storybook/react"
 import { useIsomorphicLayoutEffect, useToggle } from "react-use"
 import { Chat } from "@/components/chat"
@@ -40,8 +44,6 @@ export const Bubble = ({ message }: { message: string }) => {
 
   useIsomorphicLayoutEffect(() => {
     if (chat && isSaved) {
-      console.log("YourBubble: useEffect", chat)
-
       setValue(chat)
       onUnsave()
     }
@@ -191,4 +193,107 @@ export const ChatDefault = () => {
 
 export const ChatActive = () => {
   return <Chat variant="active" />
+}
+
+export const BubbleWithPicture = () => {
+  return (
+    <div className="flex flex-col items-end gap-y-2">
+      <div className="p-5 pt-2.5 rounded-xl bg-primary-25">
+        <h3 className="text-sm leading-[16.94px] text-dark-blue-400 font-bold">
+          Me
+          <span className="text-xs leading-[14.52px]">@uxguy297$</span>
+        </h3>
+
+        <div className="relative mt-2 h-[146.09px] rounded-lg border-primary-50 border-[4px] overflow-hidden">
+          <Image
+            className="object-cover"
+            src="/dashboard.png"
+            alt="Message"
+            fill
+          />
+        </div>
+
+        <div className="mt-3 flex items-center gap-x-2">
+          <Download02 className="size-[15px] shrink-0" />
+          <span className="text-sm leading-5 text-dark-blue-400 font-semibold">
+            ai_screenshot.png <span className="font-normal">(2 MB)</span>
+          </span>
+        </div>
+      </div>
+
+      <span className="text-[11px] leading-[15.47px] text-gray-500">
+        Sent
+        <span className="font-semibold">12:01 AM</span>
+      </span>
+    </div>
+  )
+}
+
+export const BubbleWithLink = () => {
+  return (
+    <div className="flex flex-col items-end gap-y-2">
+      <div className="flex flex-col rounded-lg overflow-hidden border border-gray-200 bg-white">
+        <div className="relative flex items-center justify-center h-[131px] p-2.5 bg-gray-100">
+          <Image
+            className="object-cover"
+            src="/google-drive-01.png"
+            alt="Google Drive"
+            fill
+          />
+        </div>
+
+        <div className="p-2 bg-gray-50 border-t border-gray-200 flex items-center gap-x-2 rounded-b-lg">
+          <div className="size-7 inline-flex shrink-0 items-center justify-center bg-white border-gray-200 border rounded-full shadow-[0px_1px_4px_0px_rgba(0,0,0,.03)]">
+            <GoogleDrive1Brand className="size-7" />
+          </div>
+
+          <div className="flex flex-col gap-y-px">
+            <h1 className="text-xs leading-[14.52px] font-semibold text-dark-blue-400">
+              Google Drive
+            </h1>
+            <span className="text-xs leading-[21.1px] text-dark-blue-400 line-clamp-1">
+              https//drive.google.com
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <span className="text-[11px] leading-[15.47px] text-gray-500">
+        Sent
+        <span className="font-semibold">12:01 AM</span>
+      </span>
+    </div>
+  )
+}
+
+export const BubbleWithLinkBlack = () => {
+  return (
+    <div className="flex flex-col items-end gap-y-2">
+      <div className="flex flex-col rounded-lg overflow-hidden border border-gray-200 bg-white">
+        <div className="relative flex items-center justify-center h-[131px] p-2.5 bg-gray-100">
+          <Compass03 className="size-16 shrink-0 text-gray-300 stroke-[3px]" />
+        </div>
+
+        <div className="p-2 bg-gray-50 border-t border-gray-200 flex items-center gap-x-2 rounded-b-lg">
+          <div className="size-7 inline-flex shrink-0 items-center justify-center bg-white border-gray-200 border rounded-full shadow-[0px_1px_4px_0px_rgba(0,0,0,.03)]">
+            <GoogleDrive1Brand className="size-7" />
+          </div>
+
+          <div className="flex flex-col gap-y-px">
+            <h1 className="text-xs leading-[14.52px] font-semibold text-dark-blue-400">
+              Google Drive
+            </h1>
+            <span className="text-xs leading-[21.1px] text-dark-blue-400 line-clamp-1">
+              https//drive.google.com
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <span className="text-[11px] leading-[15.47px] text-gray-500">
+        Sent
+        <span className="font-semibold">12:01 AM</span>
+      </span>
+    </div>
+  )
 }
