@@ -279,7 +279,7 @@ export const Dropzone = ({
             </div>
           ) : (
             <div className="space-y-[5px]">
-              <div className="py-[100px] px-6 bg-gray-50 border border-dashed border-gray-300 rounded-lg">
+              <div className="py-10 md:py-[100px] px-6 bg-gray-50 border border-dashed border-gray-300 rounded-lg">
                 {icon && (
                   <div className="mb-3 flex items-center justify-center">
                     <div className="inline-flex size-[52px] items-center justify-center rounded-full border-[6px] border-gray-100 bg-white">

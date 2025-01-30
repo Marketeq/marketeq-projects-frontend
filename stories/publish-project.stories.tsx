@@ -11,6 +11,7 @@ import {
   Lightbulb05,
   Lock01,
   MoreHorizontal,
+  PlayCircle,
   Plus,
   Plus2,
   SearchMd,
@@ -72,7 +73,7 @@ export default meta
 
 export const Sidebar = () => {
   return (
-    <div className="py-6 px-[15px] flex flex-col shrink-0 gap-y-5 w-[260px] border-r border-gray-200 bg-gray-50">
+    <div className="py-6 px-[15px] flex flex-col shrink-0 gap-y-5 xs:max-[1024px]:hidden w-[260px] border-r border-gray-200 bg-gray-50">
       <button
         className="group flex items-center justify-between focus-visible:outline-none hover:bg-gray-100 disabled:hover:bg-transparent rounded-md"
         data-state="active"
@@ -183,7 +184,7 @@ export const Header = () => {
 
 export const BottomBar = () => {
   return (
-    <div className="h-[78px] z-40 fixed left-[260px] bottom-0 right-0 bg-white border-b border-gray-200">
+    <div className="h-[78px] z-40 fixed left-0 min-[1024px]:left-[260px] bottom-0 right-0 bg-white border-b border-gray-200">
       <Progress className="rounded-none" value={30} />
       <div className="flex h-[70px] items-center justify-between py-[15px] pr-[17px] pl-[32px]">
         <span className="text-xs leading-[18px] font-semibold text-gray-700">
@@ -215,7 +216,29 @@ export const Dashboard = () => {
           className="h-[calc(theme(size.full)-148px)]"
           scrollBar={<ScrollBar className="w-4 p-1" />}
         >
-          <div className="py-[50px] px-[75px] flex gap-x-[41.45px]">
+          <div className="py-10 px-5 md:px-10 min-[1024px]:py-[50px] min-[1024px]:px-[75px] flex flex-col min-[1024px]:flex-row gap-y-10 min-[1024px]:gap-x-[41.45px]">
+            <div className="p-3 pr-9 border rounded-lg border-blue-300 bg-blue-100 min-[1024px]:hidden">
+              <div className="flex items-start gap-x-3">
+                <Lightbulb05 className="size-[30px] text-primary-500" />
+
+                <div className="flex flex-col flex-auto items-start md:items-center gap-y-3 md:flex-row gap-x-0.5">
+                  <div className="space-y-0.5 flex-auto">
+                    <h1 className="text-base leading-[30px] font-semibold text-gray-900">
+                      Tip
+                    </h1>
+                    <p className="text-xs leading-[14.52px] text-dark-blue-400 tracking-[0.01em]">
+                      A great title gives your audience a reason to open your
+                      project
+                    </p>
+                  </div>
+
+                  <Button variant="link">
+                    <PlayCircle className="size-5" /> Show me how
+                  </Button>
+                </div>
+              </div>
+            </div>
+
             <div className="flex-auto">
               <h1 className="text-xl leading-[30px] font-semibold text-gray-900">
                 Project Info
@@ -536,7 +559,7 @@ export const Dashboard = () => {
                 </div>
               </div>
             </div>
-            <div className="pl-[17.45px]">
+            <div className="pl-[17.45px] xs:max-[1024px]:hidden">
               <div className="p-5 rounded-lg w-[269px] bg-primary-50 relative">
                 <div className="absolute size-[25.45px] rotate-45 top-[35px] -left-[12.725px] bg-primary-50" />
 
@@ -607,7 +630,28 @@ export const Media = () => {
           className="h-[calc(theme(size.full)-148px)]"
           scrollBar={<ScrollBar className="w-4 p-1" />}
         >
-          <div className="py-[50px] px-[75px] flex gap-x-[41.45px]">
+          <div className="py-10 px-5 md:px-10 min-[1024px]:py-[50px] min-[1024px]:px-[75px] flex flex-col gap-y-10 min-[1024px]:flex-row min-[1024px]:gap-x-[41.45px]">
+            <div className="p-3 pr-9 border rounded-lg border-blue-300 bg-blue-100 min-[1024px]:hidden">
+              <div className="flex items-start gap-x-3">
+                <Lightbulb05 className="size-[30px] text-primary-500" />
+
+                <div className="flex flex-col flex-auto items-start md:items-center gap-y-3 md:flex-row gap-x-0.5">
+                  <div className="space-y-0.5 flex-auto">
+                    <h1 className="text-base leading-[30px] font-semibold text-gray-900">
+                      Tip
+                    </h1>
+                    <p className="text-xs leading-[14.52px] text-dark-blue-400 tracking-[0.01em]">
+                      Make your project stand out with better images.
+                    </p>
+                  </div>
+
+                  <Button variant="link">
+                    <PlayCircle className="size-5" /> Show me how
+                  </Button>
+                </div>
+              </div>
+            </div>
+
             <div className="flex-auto">
               <h1 className="text-xl leading-[30px] font-semibold text-gray-900">
                 Media
@@ -702,7 +746,8 @@ export const Media = () => {
                 </InputGroup>
               </div>
             </div>
-            <div className="pl-[17.45px]">
+
+            <div className="pl-[17.45px] xs:max-[1024px]:hidden">
               <div className="p-5 rounded-lg w-[269px] bg-primary-50 relative">
                 <div className="absolute size-[25.45px] rotate-45 top-[35px] -left-[12.725px] bg-primary-50" />
 
@@ -776,7 +821,29 @@ export const ProjectScope = () => {
           className="h-[calc(theme(size.full)-148px)]"
           scrollBar={<ScrollBar className="w-4 p-1" />}
         >
-          <div className="py-[50px] px-[75px] flex gap-x-[41.45px]">
+          <div className="py-10 px-5 md:px-10 min-[1024px]:py-[50px] min-[1024px]:px-[75px] flex flex-col gap-y-10 min-[1024px]:flex-row min-[1024px]:gap-x-[41.45px]">
+            <div className="p-3 pr-9 border rounded-lg border-blue-300 bg-blue-100 min-[1024px]:hidden">
+              <div className="flex items-start gap-x-3">
+                <Lightbulb05 className="size-[30px] text-primary-500" />
+
+                <div className="flex flex-col flex-auto items-start md:items-center gap-y-3 md:flex-row gap-x-0.5">
+                  <div className="space-y-0.5 flex-auto">
+                    <h1 className="text-base leading-[30px] font-semibold text-gray-900">
+                      Tip
+                    </h1>
+                    <p className="text-xs leading-[14.52px] text-dark-blue-400 tracking-[0.01em]">
+                      A great title gives your audience a reason to open your
+                      project
+                    </p>
+                  </div>
+
+                  <Button variant="link">
+                    <PlayCircle className="size-5" /> Show me how
+                  </Button>
+                </div>
+              </div>
+            </div>
+
             <Accordion type="multiple" className="flex-auto">
               <AccordionItem value="Research" asChild>
                 <div className="rounded-lg border border-gray-100 shadow-xs">
@@ -923,7 +990,7 @@ export const ProjectScope = () => {
               </AccordionItem>
             </Accordion>
 
-            <div className="pl-[17.45px]">
+            <div className="pl-[17.45px] xs:max-[1024px]:hidden">
               <div className="p-5 rounded-lg w-[269px] bg-primary-50 relative">
                 <div className="absolute size-[25.45px] rotate-45 top-[35px] -left-[12.725px] bg-primary-50" />
 
