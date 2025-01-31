@@ -920,10 +920,8 @@ const CreateYourUsername = ({
                   id="username"
                   {...register("username")}
                   isInvalid={hookFormHasError({ errors, name: "username" })}
-                  onChange={(e) => {
-                    setValue("username", e?.target?.value)
-
-                    if (e?.target?.value?.length < 3) {
+                  onKeyUp={(e) => {
+                    if (username?.length < 3) {
                       setIsAvailable(null)
                     }
                   }}
