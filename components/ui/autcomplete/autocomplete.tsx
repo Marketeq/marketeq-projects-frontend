@@ -204,7 +204,7 @@ const AutocompleteOption = React.forwardRef<
             })}
           />
         </div>
-        {children}
+        {children as React.ReactNode}
       </>
     )}
   </AutocompletePrimitives.Option>

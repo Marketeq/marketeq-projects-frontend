@@ -3,8 +3,10 @@
 import * as React from "react"
 import { useMemo } from "react"
 import { useRouter } from "next/navigation"
+import { USERNAME_SUGGESTIONS_LIST } from "@/constants/username-suggestions"
 import { useAuth } from "@/contexts/auth"
 import AuthenticatedRoute from "@/hoc/AuthenticatedRoute"
+import { AuthAPI } from "@/service/http/auth"
 import { ClientAPI } from "@/service/http/client"
 import { HOT_KEYS } from "@/utils/constants"
 import {
@@ -19,6 +21,8 @@ import {
   AlertCircle,
   Briefcase02,
   Check,
+  Check1,
+  ChevronDown,
   ChevronRight,
   Home03,
   Info,
@@ -26,7 +30,10 @@ import {
   Mail,
   Plus,
   Plus1,
+  SearchMd,
+  User02,
   Users03,
+  X,
   X2,
 } from "@blend-metrics/icons"
 import { ErrorMessage as HookFormErrorMessage } from "@hookform/error-message"
@@ -39,7 +46,7 @@ import {
   useFieldArray,
   useForm,
 } from "react-hook-form"
-import { useIsomorphicLayoutEffect, useToggle } from "react-use"
+import { useDebounce, useIsomorphicLayoutEffect, useToggle } from "react-use"
 import { z } from "zod"
 import { CreateClientType } from "@/types/client"
 import { User } from "@/types/user"
@@ -69,9 +76,18 @@ import {
   ComboboxOption,
   ComboboxOptions,
   ComboboxTrigger,
+  DropdownCommand,
+  DropdownCommandEmpty,
+  DropdownCommandGroup,
+  DropdownCommandInput,
+  DropdownCommandItem,
+  DropdownPopover,
+  DropdownPopoverContent,
+  DropdownPopoverTrigger,
   ErrorMessage,
   Input,
   InputGroup,
+  InputLeftElement,
   InputRightElement,
   Label,
   RadioGroup,
@@ -97,6 +113,8 @@ const describeYourTeamFormSchema = z.object({
 
 type DescribeYourTeamFormValues = z.infer<typeof describeYourTeamFormSchema>
 
+const industryList = ["Technology", "Healthcard", "Retail"] as const
+
 const DescribeYourTeam = ({
   sidebar,
   stepData,
@@ -108,8 +126,10 @@ const DescribeYourTeam = ({
 }) => {
   const {
     register,
+    setValue,
     formState: { errors, isValid },
     handleSubmit,
+    watch,
   } = useForm<DescribeYourTeamFormValues>({
     resolver: zodResolver(describeYourTeamFormSchema),
     defaultValues: {
@@ -118,6 +138,8 @@ const DescribeYourTeam = ({
       role: stepData?.role || "",
     },
   })
+  const values = watch()
+
   const { toggleValidation } = useStepContext()
   const { nextStep, setStep } = useStepperContext()
 
@@ -219,12 +241,51 @@ const DescribeYourTeam = ({
               <Label htmlFor="your-industry" size="sm">
                 What’s your industry?
               </Label>
-              <Input
-                id="your-industry"
-                placeholder="Enter your industry (e.g. Technology, Healthcare, Retail)"
+
+              <DropdownPopover
+                selected={values?.industry}
+                onSelectedChange={(value) => setValue("industry", value || "")}
                 {...register("industry")}
-                isInvalid={hookFormHasError({ errors, name: "industry" })}
-              />
+              >
+                <DropdownPopoverTrigger>
+                  {values?.industry ? (
+                    values?.industry
+                  ) : (
+                    <span className="text-gray-500">Select a industry</span>
+                  )}
+                  <ChevronDown className="ml-auto h-5 w-5 text-gray-500" />
+                </DropdownPopoverTrigger>
+                <DropdownPopoverContent>
+                  <DropdownCommand className="overflow-hidden">
+                    <InputGroup>
+                      <InputLeftElement className="w-8">
+                        <SearchMd className="h-[15] w-[15] text-gray-500" />
+                      </InputLeftElement>
+                      <DropdownCommandInput
+                        placeholder="Search..."
+                        className="pl-8"
+                      />
+                    </InputGroup>
+
+                    <DropdownCommandEmpty className="text-sm text-gray-900">
+                      No industry found.
+                    </DropdownCommandEmpty>
+
+                    <DropdownCommandGroup>
+                      {industryList.map((industry) => (
+                        <DropdownCommandItem
+                          key={industry}
+                          itemValue={industry}
+                        >
+                          {industry}
+                          <Check1 className="ml-auto text-primary-500 opacity-0 group-data-[state=selected]:opacity-100" />
+                        </DropdownCommandItem>
+                      ))}
+                    </DropdownCommandGroup>
+                  </DropdownCommand>
+                </DropdownPopoverContent>
+              </DropdownPopover>
+
               <HookFormErrorMessage
                 errors={errors}
                 name="industry"
@@ -707,7 +768,7 @@ const InviteYourTeam = ({
 }
 
 const createYourUsernameFormSchema = z.object({
-  username: z.string().min(1, "Please enter at least 1 character(s)"),
+  username: z.string()?.trim().min(3, "Please enter at least 3 character(s)"),
 })
 
 type CreateYourUsernameFormValues = z.infer<typeof createYourUsernameFormSchema>
@@ -722,10 +783,15 @@ const CreateYourUsername = ({
   setStepData: React.Dispatch<React.SetStateAction<CreateClientType | null>>
 }) => {
   const [show, toggleShow] = useToggle(false)
+  const [isAvailable, setIsAvailable] = React.useState<boolean | null>(null)
+  const [isUsernameLoading, setIsUsernameLoading] = useToggle(false)
+
   const {
-    getValues,
+    watch,
     formState: { errors, isValid },
     setValue,
+    clearErrors,
+    setError,
     register,
     handleSubmit,
     trigger,
@@ -735,6 +801,9 @@ const CreateYourUsername = ({
       username: stepData?.username || "",
     },
   })
+
+  const { username } = watch()
+
   const { toggleValidation } = useStepContext()
   const { nextStep, prevStep, setStep } = useStepperContext()
 
@@ -770,10 +839,46 @@ const CreateYourUsername = ({
   const back = () => {
     setStepData({
       ...stepData,
-      username: getValues("username"),
+      username,
     })
     prevStep()
   }
+
+  const checkUsernameAvailability = () => {
+    if (username?.length > 2) {
+      setIsUsernameLoading(true)
+      clearErrors("username")
+
+      AuthAPI.CheckUsername({ username })
+        .then((response) => {
+          if (response?.status === 200 && response?.data?.available) {
+            setIsAvailable(response?.data?.available)
+          } else {
+            setIsAvailable(false)
+          }
+        })
+        .catch((error) => {
+          if (error?.response?.data?.errors?.message) {
+            setError(
+              "username",
+              {
+                ...errors?.username,
+                message: error?.response?.data?.errors?.message,
+              },
+              {
+                shouldFocus: true,
+              }
+            )
+            setIsAvailable(false)
+          }
+        })
+        .finally(() => {
+          setIsUsernameLoading(false)
+        })
+    }
+  }
+
+  useDebounce(checkUsernameAvailability, 700, [username])
 
   return (
     <div className="min-h-screen flex lg:pl-[480px]">
@@ -810,11 +915,48 @@ const CreateYourUsername = ({
               <Label className="text-dark-blue-400" id="username" size="sm">
                 Enter Your Username
               </Label>
-              <Input
-                id="username"
-                {...register("username")}
-                isInvalid={hookFormHasError({ errors, name: "username" })}
-              />
+              <div className="relative">
+                <Input
+                  id="username"
+                  {...register("username")}
+                  isInvalid={hookFormHasError({ errors, name: "username" })}
+                  onChange={(e) => {
+                    setValue("username", e?.target?.value)
+
+                    if (e?.target?.value?.length < 3) {
+                      setIsAvailable(null)
+                    }
+                  }}
+                  className="pr-32"
+                />
+
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                  {isUsernameLoading ? (
+                    <Spinner size={20} strokeWidth={2} />
+                  ) : (
+                    <>
+                      {isAvailable === false && (
+                        <ErrorMessage
+                          size="sm"
+                          className="flex flex-row items-center gap-0.5"
+                        >
+                          <X width={20} height={20} /> Not Available
+                        </ErrorMessage>
+                      )}
+
+                      {isAvailable && (
+                        <ErrorMessage
+                          size="sm"
+                          className="text-emerald-600 flex flex-row items-center gap-0.5"
+                        >
+                          <Check />
+                          Available
+                        </ErrorMessage>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
               <HookFormErrorMessage
                 errors={errors}
                 name="username"
@@ -826,171 +968,49 @@ const CreateYourUsername = ({
 
             {show ? (
               <div className="mt-6">
-                <Button
-                  className="text-primary-500/50 hover:text-primary-500"
-                  size="lg"
-                  visual="gray"
-                  variant="link"
-                  type="button"
-                  onClick={() => setFormValue("username", "@esha.design")}
-                >
-                  @esha.design
-                </Button>
-                ,{" "}
-                <Button
-                  className="text-primary-500/50 hover:text-primary-500"
-                  size="lg"
-                  visual="gray"
-                  variant="link"
-                  type="button"
-                  onClick={() => setFormValue("username", "@esha.design")}
-                >
-                  @esha.design
-                </Button>
-                ,{" "}
-                <Button
-                  className="text-primary-500/50 hover:text-primary-500"
-                  size="lg"
-                  visual="gray"
-                  variant="link"
-                  type="button"
-                  onClick={() => setFormValue("username", "@esha.designer")}
-                >
-                  @esha.designer
-                </Button>
-                ,{" "}
-                <Button
-                  className="text-primary-500/50 hover:text-primary-500"
-                  size="lg"
-                  visual="gray"
-                  variant="link"
-                  type="button"
-                  onClick={() => setFormValue("username", "@esha.designer")}
-                >
-                  @esha.designer
-                </Button>
-                ,{" "}
-                <Button
-                  className="text-primary-500/50 hover:text-primary-500"
-                  size="lg"
-                  visual="gray"
-                  variant="link"
-                  type="button"
-                  onClick={() => setFormValue("username", "@esha.designer")}
-                >
-                  @esha.designer
-                </Button>
-                ,{" "}
-                <Button
-                  className="text-primary-500/50 hover:text-primary-500"
-                  size="lg"
-                  visual="gray"
-                  variant="link"
-                  type="button"
-                  onClick={() => setFormValue("username", "@esha.designer")}
-                >
-                  @esha.designer
-                </Button>
-                ,{" "}
-                <Button
-                  className="text-primary-500/50 hover:text-primary-500"
-                  size="lg"
-                  visual="gray"
-                  variant="link"
-                  type="button"
-                  onClick={() => setFormValue("username", "@esha.designer")}
-                >
-                  @esha.designer
-                </Button>
-                ,{" "}
-                <Button
-                  className="text-primary-500/50 hover:text-primary-500"
-                  size="lg"
-                  visual="gray"
-                  variant="link"
-                  type="button"
-                  onClick={() => setFormValue("username", "@esha.designer")}
-                >
-                  @esha.designer
-                </Button>
-                ,{" "}
-                <Button
-                  className="text-primary-500/50 hover:text-primary-500"
-                  size="lg"
-                  visual="gray"
-                  variant="link"
-                  type="button"
-                  onClick={() => setFormValue("username", "@esha.designer")}
-                >
-                  @esha.designer
-                </Button>
-                ,{" "}
-                <Button
-                  className="text-primary-500/50 hover:text-primary-500"
-                  size="lg"
-                  visual="gray"
-                  variant="link"
-                  type="button"
-                  onClick={() => setFormValue("username", "@esha.designer")}
-                >
-                  @esha.designer
-                </Button>
-                ,{" "}
-                <Button
-                  className="text-primary-500/50 hover:text-primary-500"
-                  size="lg"
-                  visual="gray"
-                  variant="link"
-                  type="button"
-                  onClick={() => setFormValue("username", "@esha.designer")}
-                >
-                  @esha.designer
-                </Button>
-                ,{" "}
-                <Button
-                  className="text-primary-500/50 hover:text-primary-500"
-                  size="lg"
-                  visual="gray"
-                  variant="link"
-                  type="button"
-                  onClick={() => setFormValue("username", "@esha.designer")}
-                >
-                  @esha.designer
-                </Button>
+                {USERNAME_SUGGESTIONS_LIST?.map((username, index) => (
+                  <>
+                    <Button
+                      key={index}
+                      className="text-primary-500/50 hover:text-primary-500"
+                      size="lg"
+                      visual="gray"
+                      variant="link"
+                      type="button"
+                      onClick={() => setFormValue("username", username)}
+                    >
+                      {username}
+                    </Button>
+
+                    {index !== USERNAME_SUGGESTIONS_LIST?.length - 1 && (
+                      <span>, </span>
+                    )}
+                  </>
+                ))}
               </div>
             ) : (
               <div className="mt-6">
                 <span className="block text-sm leading-[16.94px] text-gray-500">
-                  <Button
-                    className="text-primary-500/50 hover:text-primary-500"
-                    size="lg"
-                    visual="gray"
-                    variant="link"
-                    type="button"
-                    onClick={() => setFormValue("username", "@esha.design")}
-                  >
-                    @esha.design
-                  </Button>
-                  ,{" "}
-                  <Button
-                    className="text-primary-500/50 hover:text-primary-500"
-                    size="lg"
-                    visual="gray"
-                    variant="link"
-                    onClick={() => setFormValue("username", "@esha.design")}
-                  >
-                    @esha.design
-                  </Button>
-                  , and{" "}
-                  <Button
-                    className="text-primary-500/50 hover:text-primary-500"
-                    size="lg"
-                    visual="gray"
-                    variant="link"
-                    onClick={() => setFormValue("username", "@esha.designer")}
-                  >
-                    @esha.designer
-                  </Button>{" "}
+                  {USERNAME_SUGGESTIONS_LIST?.slice(0, 3)?.map(
+                    (username, index) => (
+                      <>
+                        <Button
+                          key={index}
+                          className="text-primary-500/50 hover:text-primary-500"
+                          size="lg"
+                          visual="gray"
+                          variant="link"
+                          type="button"
+                          onClick={() => setFormValue("username", username)}
+                        >
+                          {username}
+                        </Button>
+
+                        {index === 0 && <span>, </span>}
+                        {index === 1 && <span> and </span>}
+                      </>
+                    )
+                  )}{" "}
                   are available
                 </span>
 
@@ -1015,8 +1035,9 @@ const CreateYourUsername = ({
                 </AlertIcon>
                 <AlertContent>
                   <AlertDescription className="mt-0">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Aliquid pariatur, ipsum similique veniam.
+                    {`We’ve just released a new feature Feel free to browse
+                    projects and explore talent without a username. To connect
+                    with profiles or post a project, you'll need to create one.`}
                   </AlertDescription>
                 </AlertContent>
               </Alert>
@@ -1045,7 +1066,7 @@ const CreateYourUsername = ({
             >
               Skip
             </Button>
-            <Button size="md" visual="primary">
+            <Button size="md" visual="primary" disabled={isAvailable === false}>
               Continue
             </Button>
           </div>
@@ -1122,11 +1143,16 @@ const LookingToWorkWith = ({
   )
 
   useIsomorphicLayoutEffect(() => {
-    setValues((preValues) => {
+    setValues((prevValues) => {
       const filteredSelected = selected.filter(
-        (value) => !preValues.includes(value)
+        (value) => !prevValues.includes(value)
       )
-      return [...preValues, ...filteredSelected]
+
+      if (filteredSelected.length > 0) {
+        return [...prevValues, ...filteredSelected]
+      }
+
+      return prevValues
     })
   }, [selected])
 
@@ -1244,11 +1270,16 @@ const SkillsLookingFor = ({
   )
 
   useIsomorphicLayoutEffect(() => {
-    setValues((preValues) => {
+    setValues((prevValues) => {
       const filteredSelected = selected.filter(
-        (value) => !preValues.includes(value)
+        (value) => !prevValues.includes(value)
       )
-      return [...preValues, ...filteredSelected]
+
+      if (filteredSelected.length > 0) {
+        return [...prevValues, ...filteredSelected]
+      }
+
+      return prevValues
     })
   }, [selected])
 
@@ -1339,6 +1370,7 @@ const budget = [
   "$250,000 - $500,000",
   "$10,000 - $25,000",
   "$500,000 +",
+  "My budget is flexible",
 ] as const
 
 const outlineYourInterestsFormSchema = z
@@ -1682,7 +1714,7 @@ const OutlineYourInterests = ({
                         {...field}
                       >
                         <span className="text-sm leading-5 font-medium text-dark-blue-400">
-                          Sprints (1 - 3 weeks)
+                          {item}
                         </span>
                       </CheckboxSelector>
                     )}
@@ -1719,7 +1751,7 @@ const OutlineYourInterests = ({
                       {budget.map((item, index) => (
                         <RadioGroupItemSelector value={item} key={index}>
                           <span className="text-sm leading-5 font-medium text-dark-blue-400">
-                            $100 - $500
+                            {item}
                           </span>
                         </RadioGroupItemSelector>
                       ))}
@@ -1805,6 +1837,45 @@ const DoNext = ({
           </p>
 
           <div className="mt-10 md:mt-[50px] grid md:grid-cols-2 gap-2.5 lg:gap-5">
+            <div className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300">
+              <div className="flex items-center gap-x-3">
+                <div className="size-11 rounded-lg border-[1.5px] shrink-0 inline-flex items-center justify-center border-[#EAECF0] text-primary-500">
+                  <Briefcase02 className="size-5" />
+                </div>
+                <span className="text-sm leading-[16.94px] inline-block font-medium text-gray-900">
+                  Browse Projects
+                </span>
+              </div>
+
+              <ChevronRight className="shrink-0 size-5" />
+            </div>
+
+            <div className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300">
+              <div className="flex items-center gap-x-3">
+                <div className="size-11 rounded-lg border-[1.5px] shrink-0 inline-flex items-center justify-center border-[#EAECF0] text-primary-500">
+                  <Users03 className="size-5" />
+                </div>
+                <span className="text-sm leading-[16.94px] inline-block font-medium text-gray-900">
+                  Browse Teams
+                </span>
+              </div>
+
+              <ChevronRight className="shrink-0 size-5" />
+            </div>
+
+            <div className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300">
+              <div className="flex items-center gap-x-3">
+                <div className="size-11 rounded-lg border-[1.5px] shrink-0 inline-flex items-center justify-center border-[#EAECF0] text-primary-500">
+                  <User02 className="size-5" />
+                </div>
+                <span className="text-sm leading-[16.94px] inline-block font-medium text-gray-900">
+                  Find Talent
+                </span>
+              </div>
+
+              <ChevronRight className="shrink-0 size-5" />
+            </div>
+
             <div
               className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300"
               onClick={() => {
@@ -1823,43 +1894,6 @@ const DoNext = ({
 
               <ChevronRight className="shrink-0 size-5" />
             </div>
-
-            {/* <div className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300">
-              <div className="flex items-center gap-x-3">
-                <div className="size-11 rounded-lg border-[1.5px] shrink-0 inline-flex items-center justify-center border-[#EAECF0] text-primary-500">
-                  <Users03 className="size-5" />
-                </div>
-                <span className="text-sm leading-[16.94px] inline-block font-medium text-gray-900">
-                  Browse Teams
-                </span>
-              </div>
-
-              <ChevronRight className="shrink-0 size-5" />
-            </div>
-            <div className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300">
-              <div className="flex items-center gap-x-3">
-                <div className="size-11 rounded-lg border-[1.5px] shrink-0 inline-flex items-center justify-center border-[#EAECF0] text-primary-500">
-                  <Briefcase02 className="size-5" />
-                </div>
-                <span className="text-sm leading-[16.94px] inline-block font-medium text-gray-900">
-                  Find Talent
-                </span>
-              </div>
-
-              <ChevronRight className="shrink-0 size-5" />
-            </div>
-            <div className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300">
-              <div className="flex items-center gap-x-3">
-                <div className="size-11 rounded-lg border-[1.5px] shrink-0 inline-flex items-center justify-center border-[#EAECF0] text-primary-500">
-                  <Briefcase02 className="size-5" />
-                </div>
-                <span className="text-sm leading-[16.94px] inline-block font-medium text-gray-900">
-                  Browse Projects
-                </span>
-              </div>
-
-              <ChevronRight className="shrink-0 size-5" />
-            </div> */}
           </div>
         </div>
 
@@ -1965,14 +1999,17 @@ const Sidebar = () => {
         </span>
 
         <div className="relative self-start">
-          <Button
-            className="hover:bg-white hover:text-dark-blue-400 border-white/[.2] text-white hover:border-white"
-            size="lg"
-            visual="gray"
-            variant="outlined"
-          >
-            Sign In
-          </Button>
+          <NextLink href="/onboarding" className="focus-visible:outline-none">
+            <Button
+              className="hover:bg-white hover:text-dark-blue-400 border-white/[.2] text-white hover:border-white"
+              size="lg"
+              visual="gray"
+              variant="outlined"
+            >
+              Sign In
+            </Button>
+          </NextLink>
+
           <Pointer className="absolute top-[34px] right-0 -rotate-6" />
         </div>
       </div>
