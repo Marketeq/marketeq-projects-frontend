@@ -1,4 +1,5 @@
 import {
+  CheckUsernameParams,
   GoogleLoginParams,
   LinkedInLoginParams,
   LoginParams,
@@ -21,5 +22,9 @@ export const AuthAPI = {
 
   LoginWithLinkedIn: (data: LinkedInLoginParams) => {
     return AxiosRequest.post("/auth/linkedin/login", data)
+  },
+
+  CheckUsername: (data: CheckUsernameParams) => {
+    return AxiosRequest.post("/auth/check-username", data)
   },
 }

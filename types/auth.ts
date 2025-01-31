@@ -16,3 +16,7 @@ export type LinkedInLoginParams = {
   code: string
   redirectUrl: string
 }
+
+export type CheckUsernameParams = {
+  username: string
+}
