@@ -776,3 +776,18 @@ export const useTimeSelector = ({
 
   return uncontrolledState
 }
+
+export const useDeferredValue = <TValue>(value: TValue, delay = 1_000) => {
+  const [state, setState] = React.useState(value)
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      setState(value)
+    }, delay)
+
+    return () => {
+      clearTimeout(timeout)
+    }
+  }, [delay, value])
+
+  return state
+}

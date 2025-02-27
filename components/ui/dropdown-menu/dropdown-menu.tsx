@@ -189,21 +189,28 @@ DropdownMenuCheckboxItem.displayName =
 
 const DropdownMenuRadioItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem>
->(({ className, children, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem> & {
+    hideIndicator?: boolean
+  }
+>(({ className, children, hideIndicator = true, ...props }, ref) => (
   <DropdownMenuPrimitive.RadioItem
     ref={ref}
     className={cn(
-      "group relative flex cursor-pointer select-none items-center py-2.5 pl-9 pr-3 text-[13px] font-medium leading-[13.25px] text-gray-500 outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50 hover:bg-gray-50 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-black",
+      "group relative flex cursor-pointer select-none items-center py-2.5 pl-3 pr-3 text-[13px] font-medium leading-[13.25px] text-gray-500 outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50 hover:bg-gray-50 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-black",
+      {
+        "pl-9": hideIndicator,
+      },
       className
     )}
     {...props}
   >
-    <span className="absolute left-3 flex h-4 w-4 items-center justify-center rounded-full border-[1.5px] border-gray-300 text-white group-hover:ring group-hover:ring-primary-100 group-focus:border-primary-400 group-focus:ring group-focus:ring-primary-100 group-disabled:border-gray-200 group-disabled:bg-gray-50 group-disabled:text-gray-200 group-data-[state=checked]:border-primary-500 group-data-[state=checked]:text-primary-500 hover:border-primary-400">
-      <DropdownMenuPrimitive.ItemIndicator>
-        <Circle className="h-1.5 w-1.5 fill-current" />
-      </DropdownMenuPrimitive.ItemIndicator>
-    </span>
+    {hideIndicator && (
+      <span className="absolute left-3 flex h-4 w-4 items-center justify-center rounded-full border-[1.5px] border-gray-300 text-white group-hover:ring group-hover:ring-primary-100 group-focus:border-primary-400 group-focus:ring group-focus:ring-primary-100 group-disabled:border-gray-200 group-disabled:bg-gray-50 group-disabled:text-gray-200 group-data-[state=checked]:border-primary-500 group-data-[state=checked]:text-primary-500 hover:border-primary-400">
+        <DropdownMenuPrimitive.ItemIndicator>
+          <Circle className="h-1.5 w-1.5 fill-current" />
+        </DropdownMenuPrimitive.ItemIndicator>
+      </span>
+    )}
     {children}
   </DropdownMenuPrimitive.RadioItem>
 ))

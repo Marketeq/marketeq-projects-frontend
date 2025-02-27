@@ -2,11 +2,7 @@ import React from "react"
 import { debounce } from "@/utils/functions"
 import { useUnmountEffect } from "@/utils/hooks"
 import { Meta, StoryObj } from "@storybook/react"
-import {
-  CircularProgressDropzone,
-  Dropzone,
-  DropzoneState,
-} from "@/components/ui"
+import { Dropzone, DropzoneState } from "@/components/ui"
 
 const meta: Meta = {
   title: "Dropzone",
@@ -67,77 +63,7 @@ export const DefaultDestructive = () => {
     <Dropzone
       value={data}
       maxFiles={2}
-      onChange={(value) => {
-        setState(value)
-
-        ref.current.forEach((cb) => cb())
-        ref.current.clear()
-
-        ref.current.add(
-          debounce(
-            () =>
-              setState(
-                (prev) => prev?.map((value) => ({ ...value, progress: 50 }))
-              ),
-            1000 * 3
-          ).cancel
-        )
-        ref.current.add(
-          debounce(
-            () =>
-              setState(
-                (prev) => prev?.map((value) => ({ ...value, hasError: true }))
-              ),
-            1000 * 6
-          ).cancel
-        )
-      }}
-    />
-  )
-}
-
-export const CircularProgressVariant: StoryObj = {
-  argTypes: {
-    maxFiles: {
-      control: { type: "number", min: 0 },
-    },
-    icon: {
-      type: "boolean",
-    },
-    accepted: {
-      control: "multi-select",
-      options: [
-        ".jpg",
-        ".jpeg",
-        ".png",
-        ".svg",
-        ".bmp",
-        ".webp",
-        ".pdf",
-        ".lottie",
-      ],
-    },
-  },
-  args: {
-    icon: true,
-  },
-  render: (args) => <CircularProgressDropzone {...args} />,
-}
-
-export const CircularProgressDropzoneDestructive = () => {
-  const [data, setState] = React.useState<DropzoneState>()
-  const ref = React.useRef(new Set<() => void>())
-
-  useUnmountEffect(() => {
-    ref.current.forEach((cb) => cb())
-    ref.current.clear()
-  })
-
-  return (
-    <CircularProgressDropzone
-      value={data}
-      maxFiles={2}
-      onChange={(value) => {
+      onValueChange={(value) => {
         setState(value)
 
         ref.current.forEach((cb) => cb())

@@ -531,3 +531,9 @@ export function omit<T extends object, K extends keyof T>(
 export function getMiddleIndex<T extends any[] | string>(value: T) {
   return Math.round(value.length / 2)
 }
+
+export function strToArray(value: string) {
+  if (typeof value === "string") {
+    return value.split(",").map((item) => item.trim())
+  }
+}

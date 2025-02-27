@@ -5,7 +5,7 @@ import { cn } from "@/utils/functions"
 import { Slot } from "@radix-ui/react-slot"
 import { type VariantProps, cva } from "class-variance-authority"
 
-const badgeVariants = cva(
+export const badgeVariants = cva(
   "inline-flex shrink-0 items-center justify-center gap-x-1.5 whitespace-nowrap font-medium rounded-full",
   {
     variants: {

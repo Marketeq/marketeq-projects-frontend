@@ -1,13 +1,20 @@
+import React from "react"
+import { cn } from "@/utils/functions"
 import {
   AlertCircle,
+  AlertTriangle,
   Check,
   CheckCircle,
+  CheckCircleBroken,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  ChevronUp,
+  ChevronsDown,
+  ChevronsUp,
+  Edit03,
   Eye,
   HelpCircle,
+  Home03,
   Lightbulb05,
   Lock01,
   MoreHorizontal,
@@ -15,6 +22,7 @@ import {
   Plus,
   Plus2,
   SearchMd,
+  Send,
   X,
 } from "@blend-metrics/icons"
 import { Usflag } from "@blend-metrics/icons/flags"
@@ -35,11 +43,17 @@ import {
   DialogTrigger,
   DisclosureContent,
   Dropzone,
+  EditableArea,
+  EditableInput,
+  EditableLabel,
+  EditablePreview,
+  EditableRoot,
   HelperText,
   IconButton,
   Input,
   InputGroup,
   InputLeftAddon,
+  InputLeftElement,
   InputRightElement,
   Label,
   Listbox,
@@ -168,9 +182,21 @@ export const Header = () => {
       </h3>
 
       <div className="flex items-center gap-x-3">
-        <IconButton className="text-gray-500" variant="outlined" visual="gray">
-          <HelpCircle className="size-4" />
-        </IconButton>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <IconButton
+                className="text-gray-500"
+                variant="outlined"
+                visual="gray"
+              >
+                <HelpCircle className="size-4" />
+              </IconButton>
+            </TooltipTrigger>
+            <TooltipContent>Help</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
         <Button className="bg-primary-500/15 text-primary-500 hover:bg-primary-500 hover:text-white">
           <Eye className="size-[15px]" /> Preview
         </Button>
@@ -205,7 +231,76 @@ export const BottomBar = () => {
   )
 }
 
-export const Dashboard = () => {
+const ProjectInfoTip = ({
+  closeTrigger,
+  showArrow,
+  className,
+}: {
+  closeTrigger?: React.ReactNode
+  showArrow?: boolean
+  className?: string
+}) => {
+  return (
+    <div
+      className={cn(
+        "p-5 rounded-lg w-[269px] bg-primary-50 relative",
+        className
+      )}
+    >
+      {showArrow && (
+        <div className="absolute size-[25.45px] rotate-45 top-[35px] -left-[12.725px] bg-primary-50" />
+      )}
+
+      {closeTrigger}
+
+      <div className="flex items-center gap-x-2">
+        <Lightbulb05 className="size-[30px] shrink-0 text-primary-500" />
+        <span className="text-base leading-[30px] font-semibold text-gray-900">
+          Tip
+        </span>
+      </div>
+      <div className="mt-1">
+        <span className="text-xs leading-[14.52px] text-black/60">
+          A great title gives your audience a reason to open your project
+        </span>
+      </div>
+
+      <div className="mt-3 p-4 rounded-lg border-gray-300 bg-gray-25">
+        <div className="flex items-center gap-x-3">
+          <CheckCircle className="size-5 shrink-0 text-primary-500" />{" "}
+          <span className="text-sm leading-5 font-semibold text-gray-700">
+            Focus on purpose
+          </span>
+        </div>
+
+        <div className="mt-3">
+          <span className="text-sm leading-[16.94px] text-gray-500">
+            Use impactful keywords that communicate value and make it easy to
+            identify in a list of projects.
+          </span>
+        </div>
+      </div>
+
+      <div className="mt-3 p-4 rounded-lg border-gray-300 bg-gray-25">
+        <div className="flex items-center gap-x-3">
+          <CheckCircle className="size-5 shrink-0 text-primary-500" />{" "}
+          <span className="text-sm leading-5 font-semibold text-gray-700">
+            Focus on purpose
+          </span>
+        </div>
+
+        <div className="mt-3">
+          <span className="text-sm leading-[16.94px] text-gray-500">
+            Use impactful keywords that communicate value and make it easy to
+            identify in a list of projects.
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export const ProjectInfo = () => {
   return (
     <div className="flex h-screen">
       <Sidebar />
@@ -232,9 +327,30 @@ export const Dashboard = () => {
                     </p>
                   </div>
 
-                  <Button variant="link">
-                    <PlayCircle className="size-5" /> Show me how
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="link">
+                        <PlayCircle className="size-5" /> Show me how
+                      </Button>
+                    </DialogTrigger>
+
+                    <DialogContent className="max-w-[317.55px] p-0">
+                      <ProjectInfoTip
+                        className="w-full"
+                        closeTrigger={
+                          <DialogClose asChild>
+                            <IconButton
+                              className="text-primary-500/50 hover:text-primary-500 absolute top-[11px] right-[11.55px]"
+                              variant="light"
+                              visual="gray"
+                            >
+                              <X className="size-5" />
+                            </IconButton>
+                          </DialogClose>
+                        }
+                      />
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
             </div>
@@ -560,59 +676,82 @@ export const Dashboard = () => {
               </div>
             </div>
             <div className="pl-[17.45px] xs:max-[1024px]:hidden">
-              <div className="p-5 rounded-lg w-[269px] bg-primary-50 relative">
-                <div className="absolute size-[25.45px] rotate-45 top-[35px] -left-[12.725px] bg-primary-50" />
-
-                <div className="flex items-center gap-x-2">
-                  <Lightbulb05 className="size-[30px] shrink-0 text-primary-500" />
-                  <span className="text-base leading-[30px] font-semibold text-gray-900">
-                    Tip
-                  </span>
-                </div>
-                <div className="mt-1">
-                  <span className="text-xs leading-[14.52px] text-black/60">
-                    A great title gives your audience a reason to open your
-                    project
-                  </span>
-                </div>
-
-                <div className="mt-3 p-4 rounded-lg border-gray-300 bg-gray-25">
-                  <div className="flex items-center gap-x-3">
-                    <CheckCircle className="size-5 shrink-0 text-primary-500" />{" "}
-                    <span className="text-sm leading-5 font-semibold text-gray-700">
-                      Focus on purpose
-                    </span>
-                  </div>
-
-                  <div className="mt-3">
-                    <span className="text-sm leading-[16.94px] text-gray-500">
-                      Use impactful keywords that communicate value and make it
-                      easy to identify in a list of projects.
-                    </span>
-                  </div>
-                </div>
-
-                <div className="mt-3 p-4 rounded-lg border-gray-300 bg-gray-25">
-                  <div className="flex items-center gap-x-3">
-                    <CheckCircle className="size-5 shrink-0 text-primary-500" />{" "}
-                    <span className="text-sm leading-5 font-semibold text-gray-700">
-                      Focus on purpose
-                    </span>
-                  </div>
-
-                  <div className="mt-3">
-                    <span className="text-sm leading-[16.94px] text-gray-500">
-                      Use impactful keywords that communicate value and make it
-                      easy to identify in a list of projects.
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <ProjectInfoTip showArrow />
             </div>
           </div>
         </ScrollArea>
 
         <BottomBar />
+      </div>
+    </div>
+  )
+}
+
+const MediaTip = ({
+  showArrow,
+  closeTrigger,
+  className,
+}: {
+  showArrow?: boolean
+  closeTrigger?: React.ReactNode
+  className?: string
+}) => {
+  return (
+    <div
+      className={cn(
+        "p-5 rounded-lg w-[269px] bg-primary-50 relative",
+        className
+      )}
+    >
+      {showArrow && (
+        <div className="absolute size-[25.45px] rotate-45 top-[35px] -left-[12.725px] bg-primary-50" />
+      )}
+      {closeTrigger}
+      <div className="flex items-center gap-x-2">
+        <Lightbulb05 className="size-[30px] shrink-0 text-primary-500" />
+        <span className="text-base leading-[30px] font-semibold text-gray-900">
+          Tip
+        </span>
+      </div>
+      <div className="mt-1">
+        <span className="text-xs leading-[14.52px] text-black/60">
+          Make your project stand out with better images.
+        </span>
+      </div>
+
+      <div className="mt-3 p-4 rounded-lg border-gray-300 bg-gray-25">
+        <div className="flex items-center gap-x-3">
+          <Check className="size-5 shrink-0 text-success-500" />{" "}
+          <span className="text-sm leading-5 font-semibold text-gray-700">
+            Best practice
+          </span>
+        </div>
+
+        <ul className="mt-3 list-disc pl-4">
+          <li className="text-sm leading-[16.94px] text-gray-500">
+            Upload a professional, high-quality image to represent your scope.
+          </li>
+          <li className="text-sm leading-[16.94px] text-gray-500 mt-5">
+            Ensure it reflects the essence of your work and attracts attention
+            in the marketplace.
+          </li>
+        </ul>
+      </div>
+
+      <div className="mt-3 p-4 rounded-lg border-gray-300 bg-gray-25">
+        <div className="flex items-center gap-x-3">
+          <X className="size-5 shrink-0 text-error-500" />{" "}
+          <span className="text-sm leading-5 font-semibold text-gray-700">
+            Avoid
+          </span>
+        </div>
+
+        <div className="mt-3">
+          <span className="text-sm leading-[16.94px] text-gray-500">
+            Use impactful keywords that communicate value and make it easy to
+            identify in a list of projects.
+          </span>
+        </div>
       </div>
     </div>
   )
@@ -645,9 +784,30 @@ export const Media = () => {
                     </p>
                   </div>
 
-                  <Button variant="link">
-                    <PlayCircle className="size-5" /> Show me how
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="link">
+                        <PlayCircle className="size-5" /> Show me how
+                      </Button>
+                    </DialogTrigger>
+
+                    <DialogContent className="max-w-[317.55px] p-0">
+                      <MediaTip
+                        className="w-full"
+                        closeTrigger={
+                          <DialogClose asChild>
+                            <IconButton
+                              className="text-primary-500/50 hover:text-primary-500 absolute top-[11px] right-[11.55px]"
+                              variant="light"
+                              visual="gray"
+                            >
+                              <X className="size-5" />
+                            </IconButton>
+                          </DialogClose>
+                        }
+                      />
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
             </div>
@@ -748,62 +908,101 @@ export const Media = () => {
             </div>
 
             <div className="pl-[17.45px] xs:max-[1024px]:hidden">
-              <div className="p-5 rounded-lg w-[269px] bg-primary-50 relative">
-                <div className="absolute size-[25.45px] rotate-45 top-[35px] -left-[12.725px] bg-primary-50" />
-
-                <div className="flex items-center gap-x-2">
-                  <Lightbulb05 className="size-[30px] shrink-0 text-primary-500" />
-                  <span className="text-base leading-[30px] font-semibold text-gray-900">
-                    Tip
-                  </span>
-                </div>
-                <div className="mt-1">
-                  <span className="text-xs leading-[14.52px] text-black/60">
-                    Make your project stand out with better images.
-                  </span>
-                </div>
-
-                <div className="mt-3 p-4 rounded-lg border-gray-300 bg-gray-25">
-                  <div className="flex items-center gap-x-3">
-                    <Check className="size-5 shrink-0 text-success-500" />{" "}
-                    <span className="text-sm leading-5 font-semibold text-gray-700">
-                      Best practice
-                    </span>
-                  </div>
-
-                  <ul className="mt-3 list-disc pl-4">
-                    <li className="text-sm leading-[16.94px] text-gray-500">
-                      Upload a professional, high-quality image to represent
-                      your scope.
-                    </li>
-                    <li className="text-sm leading-[16.94px] text-gray-500 mt-5">
-                      Ensure it reflects the essence of your work and attracts
-                      attention in the marketplace.
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="mt-3 p-4 rounded-lg border-gray-300 bg-gray-25">
-                  <div className="flex items-center gap-x-3">
-                    <X className="size-5 shrink-0 text-error-500" />{" "}
-                    <span className="text-sm leading-5 font-semibold text-gray-700">
-                      Avoid
-                    </span>
-                  </div>
-
-                  <div className="mt-3">
-                    <span className="text-sm leading-[16.94px] text-gray-500">
-                      Use impactful keywords that communicate value and make it
-                      easy to identify in a list of projects.
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <MediaTip />
             </div>
           </div>
         </ScrollArea>
 
         <BottomBar />
+      </div>
+    </div>
+  )
+}
+
+export const ProjectScopeTip = ({
+  showArrow,
+  closeTrigger,
+  className,
+}: {
+  showArrow?: boolean
+  closeTrigger?: React.ReactNode
+  className?: string
+}) => {
+  return (
+    <div
+      className={cn(
+        "p-5 rounded-lg w-[269px] bg-primary-50 relative",
+        className
+      )}
+    >
+      {showArrow && (
+        <div className="absolute size-[25.45px] rotate-45 top-[35px] -left-[12.725px] bg-primary-50" />
+      )}
+
+      {closeTrigger}
+
+      <div className="flex items-center gap-x-2">
+        <Lightbulb05 className="size-[30px] shrink-0 text-primary-500" />
+        <span className="text-base leading-[30px] font-semibold text-gray-900">
+          Tip
+        </span>
+      </div>
+      <div className="mt-1">
+        <span className="text-xs leading-[14.52px] block text-dark-blue-400">
+          Review and Refine Your Project Scope
+        </span>
+
+        <ul className="mt-3 list-disc pl-4 space-y-5">
+          <li className="text-xs leading-[14.52px] tracking-[0.01em] text-dark-blue-400">
+            Ensure all phases and tasks align with your project goals and
+            deliverables.
+          </li>
+          <li className="text-xs leading-[14.52px] tracking-[0.01em] text-dark-blue-400">
+            Review dependencies, timelines, and assignments for clarity.
+          </li>
+        </ul>
+      </div>
+
+      <div className="mt-3 p-4 rounded-lg border-gray-300 bg-gray-25">
+        <div className="flex items-center gap-x-3">
+          <Check className="size-5 shrink-0 text-success-500" />{" "}
+          <span className="text-sm leading-5 font-semibold text-gray-700">
+            Best practice
+          </span>
+        </div>
+
+        <ul className="mt-3 list-disc pl-4 space-y-5">
+          <li className="text-sm leading-[16.94px] text-gray-500">
+            Use the project planner to edit existing phases or tasks
+            effortlessly.
+          </li>
+          <li className="text-sm leading-[16.94px] text-gray-500">
+            Double-check for any overlapping or missing tasks to maintain
+            efficiency.
+          </li>
+          <li className="text-sm leading-[16.94px] text-gray-500">
+            Add new phases, tasks, or processes quickly with the + Add option. •
+          </li>
+        </ul>
+      </div>
+
+      <div className="mt-3 p-4 rounded-lg border-gray-300 bg-gray-25">
+        <div className="flex items-center gap-x-3">
+          <X className="size-5 shrink-0 text-error-500" />{" "}
+          <span className="text-sm leading-5 font-semibold text-gray-700">
+            Avoid
+          </span>
+        </div>
+
+        <ul className="mt-3 list-disc pl-4 space-y-5">
+          <li className="text-sm leading-[16.94px] text-gray-500">
+            Leaving phases or tasks incomplete or ambiguous.
+          </li>
+          <li className="text-sm leading-[16.94px] text-gray-500">
+            Try not to overload a single phase with too many tasks; break them
+            down if needed.
+          </li>
+        </ul>
       </div>
     </div>
   )
@@ -821,7 +1020,7 @@ export const ProjectScope = () => {
           className="h-[calc(theme(size.full)-148px)]"
           scrollBar={<ScrollBar className="w-4 p-1" />}
         >
-          <div className="py-10 px-5 md:px-10 min-[1024px]:py-[50px] min-[1024px]:px-[75px] flex flex-col gap-y-10 min-[1024px]:flex-row min-[1024px]:gap-x-[41.45px]">
+          <div className="py-10 px-5 md:px-10 min-[1024px]:py-[50px] min-[1024px]:px-[75px] min-[1024px]:flex space-y-10 min-[1024px]:space-y-0 min-[1024px]:flex-row min-[1024px]:gap-x-[41.45px]">
             <div className="p-3 pr-9 border rounded-lg border-blue-300 bg-blue-100 min-[1024px]:hidden">
               <div className="flex items-start gap-x-3">
                 <Lightbulb05 className="size-[30px] text-primary-500" />
@@ -837,235 +1036,438 @@ export const ProjectScope = () => {
                     </p>
                   </div>
 
-                  <Button variant="link">
-                    <PlayCircle className="size-5" /> Show me how
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="link">
+                        <PlayCircle className="size-5" /> Show me how
+                      </Button>
+                    </DialogTrigger>
+
+                    <DialogContent className="max-w-[317.55px] p-0">
+                      <ProjectScopeTip
+                        className="w-full"
+                        closeTrigger={
+                          <DialogClose asChild>
+                            <IconButton
+                              className="text-primary-500/50 hover:text-primary-500 absolute top-[11px] right-[11.55px]"
+                              variant="light"
+                              visual="gray"
+                            >
+                              <X className="size-5" />
+                            </IconButton>
+                          </DialogClose>
+                        }
+                      />
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
             </div>
 
-            <Accordion type="multiple" className="flex-auto">
-              <AccordionItem value="Research" asChild>
-                <div className="rounded-lg border border-gray-100 shadow-xs">
-                  <div className="mb-3 flex items-start justify-between px-3 pt-3">
-                    <AccordionTrigger className="inline-flex items-center gap-x-3.5">
-                      <ChevronDown className="size-5 shrink-0 text-gray-500 group-data-[state=open]/item:-rotate-180 transition duration-300" />
-                      <span className="text-[18px] font-semibold leading-7 text-gray-900">
-                        Files uploaded{" "}
-                        <span className="font-light">Research</span>
-                      </span>
-                    </AccordionTrigger>
+            <div className="space-y-6 flex-auto">
+              <div className="flex md:flex-row flex-col gap-y-6 md:gap-y-0 md:items-center justify-between">
+                <h1 className="text-xl leading-[30px] font-semibold text-gray-800">
+                  Project Scope
+                </h1>
 
-                    <div className="flex gap-x-4 items-center">
-                      <div className="inline-flex items-center gap-x-2">
-                        <span className="text-[13px] leading-[15.73px] text-dark-blue-400 font-semibold">
-                          Day 1
-                        </span>
-                        <span className="text-[13px] leading-[15.73px] text-dark-blue-400 font-semibold">
-                          -
-                        </span>
-                        <span className="text-[13px] leading-[15.73px] text-dark-blue-400 font-semibold">
-                          Day 8
-                        </span>
-                      </div>
-
-                      <Button
-                        className="h-[23px] px-1.5 py-1 text-gray-500"
-                        variant="ghost"
-                        visual="gray"
-                      >
-                        <MoreHorizontal className="h-[15px] w-[15px]" />
-                      </Button>
-
-                      <IconButton
-                        className="text-gray-500"
-                        variant="outlined"
-                        visual="gray"
-                      >
-                        <Plus className="size-3" />
-                      </IconButton>
-                    </div>
+                <div className="flex items-center md:gap-x-3">
+                  <div className="flex items-center">
+                    <Button
+                      className="border-r-0 rounded-r-none"
+                      variant="outlined"
+                      visual="gray"
+                    >
+                      <ChevronsDown className="size-[15px]" /> Expand all
+                    </Button>
+                    <Button
+                      className="rounded-l-none md:rounded-r-[5px] rounded-r-none"
+                      variant="outlined"
+                      visual="gray"
+                    >
+                      <ChevronsUp className="size-[15px]" /> Collapse All
+                    </Button>
                   </div>
 
-                  <DisclosureContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Task Name</TableHead>
-                          <TableHead>Role</TableHead>
-                          <TableHead>Location</TableHead>
-                          <TableHead>Experience</TableHead>
-                          <TableHead>Duration</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell>
-                            <span className="flex flex-col text-sm font-semibold text-gray-900">
-                              Affinity Mapping
-                            </span>
-                          </TableCell>
-                          <TableCell>UX Designer</TableCell>
-                          <TableCell>
-                            <button className="bg-gray-100 focus-visible:outline-none pr-2 p-[5px] border border-gray-300 border-dashed rounded-[5px] inline-flex items-center gap-x-1.5">
-                              <span className="inline-flex items-center justify-center size-[18px] shrink-0 rounded-full overflow-hidden">
-                                <Usflag className="size-[18px]" />
-                              </span>
-                              <span className="text-xs leading-[18px] font-medium text-gray-700">
-                                USA
-                              </span>
-                              <ChevronDown className="size-[18px] shrink-0 text-gray-500" />
-                            </button>
-                          </TableCell>
-                          <TableCell>
-                            <button className="bg-gray-100 focus-visible:outline-none pr-2 p-[5px] border border-gray-300 border-dashed rounded-[5px] inline-flex items-center gap-x-1.5">
-                              <span className="text-xs leading-[18px] font-medium text-gray-700">
-                                Guru
-                              </span>
-                              <ChevronDown className="size-[18px] shrink-0 text-gray-500" />
-                            </button>
-                          </TableCell>
-                          <TableCell>40 hours</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>
-                            <span className="flex flex-col text-sm font-semibold text-gray-900">
-                              Affinity Mapping
-                            </span>
-                          </TableCell>
-                          <TableCell>UX Designer</TableCell>
-                          <TableCell>
-                            <button className="bg-gray-100 focus-visible:outline-none pr-2 p-[5px] border border-gray-300 border-dashed rounded-[5px] inline-flex items-center gap-x-1.5">
-                              <span className="inline-flex items-center justify-center size-[18px] shrink-0 rounded-full overflow-hidden">
-                                <Usflag className="size-[18px]" />
-                              </span>
-                              <span className="text-xs leading-[18px] font-medium text-gray-700">
-                                USA
-                              </span>
-                              <ChevronDown className="size-[18px] shrink-0 text-gray-500" />
-                            </button>
-                          </TableCell>
-                          <TableCell>
-                            <button className="bg-gray-100 focus-visible:outline-none pr-2 p-[5px] border border-gray-300 border-dashed rounded-[5px] inline-flex items-center gap-x-1.5">
-                              <span className="text-xs leading-[18px] font-medium text-gray-700">
-                                Guru
-                              </span>
-                              <ChevronDown className="size-[18px] shrink-0 text-gray-500" />
-                            </button>
-                          </TableCell>
-                          <TableCell>40 hours</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>
-                            <span className="flex flex-col text-sm font-semibold text-gray-900">
-                              Affinity Mapping
-                            </span>
-                          </TableCell>
-                          <TableCell>UX Designer</TableCell>
-                          <TableCell>
-                            <button className="bg-gray-100 focus-visible:outline-none pr-2 p-[5px] border border-gray-300 border-dashed rounded-[5px] inline-flex items-center gap-x-1.5">
-                              <span className="inline-flex items-center justify-center size-[18px] shrink-0 rounded-full overflow-hidden">
-                                <Usflag className="size-[18px]" />
-                              </span>
-                              <span className="text-xs leading-[18px] font-medium text-gray-700">
-                                USA
-                              </span>
-                              <ChevronDown className="size-[18px] shrink-0 text-gray-500" />
-                            </button>
-                          </TableCell>
-                          <TableCell>
-                            <button className="bg-gray-100 focus-visible:outline-none pr-2 p-[5px] border border-gray-300 border-dashed rounded-[5px] inline-flex items-center gap-x-1.5">
-                              <span className="text-xs leading-[18px] font-medium text-gray-700">
-                                Guru
-                              </span>
-                              <ChevronDown className="size-[18px] shrink-0 text-gray-500" />
-                            </button>
-                          </TableCell>
-                          <TableCell>40 hours</TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </DisclosureContent>
-                </div>
-              </AccordionItem>
-            </Accordion>
-
-            <div className="pl-[17.45px] xs:max-[1024px]:hidden">
-              <div className="p-5 rounded-lg w-[269px] bg-primary-50 relative">
-                <div className="absolute size-[25.45px] rotate-45 top-[35px] -left-[12.725px] bg-primary-50" />
-
-                <div className="flex items-center gap-x-2">
-                  <Lightbulb05 className="size-[30px] shrink-0 text-primary-500" />
-                  <span className="text-base leading-[30px] font-semibold text-gray-900">
-                    Tip
-                  </span>
-                </div>
-                <div className="mt-1">
-                  <span className="text-xs leading-[14.52px] block text-dark-blue-400">
-                    Review and Refine Your Project Scope
-                  </span>
-
-                  <ul className="mt-3 list-disc pl-4 space-y-5">
-                    <li className="text-xs leading-[14.52px] tracking-[0.01em] text-dark-blue-400">
-                      Ensure all phases and tasks align with your project goals
-                      and deliverables.
-                    </li>
-                    <li className="text-xs leading-[14.52px] tracking-[0.01em] text-dark-blue-400">
-                      Review dependencies, timelines, and assignments for
-                      clarity.
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="mt-3 p-4 rounded-lg border-gray-300 bg-gray-25">
-                  <div className="flex items-center gap-x-3">
-                    <Check className="size-5 shrink-0 text-success-500" />{" "}
-                    <span className="text-sm leading-5 font-semibold text-gray-700">
-                      Best practice
-                    </span>
-                  </div>
-
-                  <ul className="mt-3 list-disc pl-4 space-y-5">
-                    <li className="text-sm leading-[16.94px] text-gray-500">
-                      Use the project planner to edit existing phases or tasks
-                      effortlessly.
-                    </li>
-                    <li className="text-sm leading-[16.94px] text-gray-500">
-                      Double-check for any overlapping or missing tasks to
-                      maintain efficiency.
-                    </li>
-                    <li className="text-sm leading-[16.94px] text-gray-500">
-                      Add new phases, tasks, or processes quickly with the + Add
-                      option. •
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="mt-3 p-4 rounded-lg border-gray-300 bg-gray-25">
-                  <div className="flex items-center gap-x-3">
-                    <X className="size-5 shrink-0 text-error-500" />{" "}
-                    <span className="text-sm leading-5 font-semibold text-gray-700">
-                      Avoid
-                    </span>
-                  </div>
-
-                  <ul className="mt-3 list-disc pl-4 space-y-5">
-                    <li className="text-sm leading-[16.94px] text-gray-500">
-                      Leaving phases or tasks incomplete or ambiguous.
-                    </li>
-                    <li className="text-sm leading-[16.94px] text-gray-500">
-                      Try not to overload a single phase with too many tasks;
-                      break them down if needed.
-                    </li>
-                  </ul>
+                  <Button
+                    className="border-l-0 rounded-l-none md:border-l md:rounded-l-[5px]"
+                    variant="outlined"
+                    visual="gray"
+                  >
+                    <Plus className="size-[15px]" /> Expand all
+                  </Button>
                 </div>
               </div>
+
+              <InputGroup>
+                <Input type="text" placeholder="Find a phase or task" />
+                <InputLeftElement>
+                  <SearchMd className="text-gray-500 h-5 w-5" />
+                </InputLeftElement>
+              </InputGroup>
+
+              <Accordion
+                defaultValue={["Research"]}
+                type="multiple"
+                className="flex-auto"
+              >
+                <AccordionItem value="Research" asChild>
+                  <div className="rounded-lg border border-gray-100 shadow-xs">
+                    <div className="mb-3 flex items-start gap-x-4 px-3 pt-3">
+                      <div className="flex flex-auto gap-y-2 md:flex-row md:justify-between md:items-center flex-col">
+                        <AccordionTrigger className="inline-flex items-center gap-x-3.5">
+                          <ChevronDown className="size-5 shrink-0 text-gray-500 group-data-[state=open]/item:-rotate-180 transition duration-300" />
+                          <span className="text-base md:text-[18px] font-semibold leading-7 text-gray-900">
+                            Phase One{" "}
+                            <span className="font-light">Research</span>
+                          </span>
+                        </AccordionTrigger>
+
+                        <div className="inline-flex items-center gap-x-2 md:pl-0 pl-10">
+                          <span className="text-xs leading-[14.52px] md:text-[13px] md:leading-[15.73px] text-dark-blue-400 font-semibold">
+                            Day 1
+                          </span>
+                          <span className="text-xs leading-[14.52px] md:text-[13px] md:leading-[15.73px] text-dark-blue-400 font-semibold">
+                            -
+                          </span>
+                          <span className="text-xs leading-[14.52px] md:text-[13px] md:leading-[15.73px] text-dark-blue-400 font-semibold">
+                            Day 8
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-x-4 items-center">
+                        <Button
+                          className="h-[23px] px-1.5 py-1 text-gray-500"
+                          variant="ghost"
+                          visual="gray"
+                        >
+                          <MoreHorizontal className="h-[15px] w-[15px]" />
+                        </Button>
+
+                        <IconButton
+                          className="text-gray-500"
+                          variant="outlined"
+                          visual="gray"
+                        >
+                          <Plus className="size-3" />
+                        </IconButton>
+                      </div>
+                    </div>
+
+                    <DisclosureContent className="overflow-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Task Name</TableHead>
+                            <TableHead>Role</TableHead>
+                            <TableHead>Location</TableHead>
+                            <TableHead>Experience</TableHead>
+                            <TableHead>Duration</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          <TableRow>
+                            <TableCell>
+                              <span className="flex flex-col text-sm font-semibold text-gray-900">
+                                Affinity Mapping
+                              </span>
+                            </TableCell>
+                            <TableCell>UX Designer</TableCell>
+                            <TableCell>
+                              <button className="bg-gray-100 focus-visible:outline-none pr-2 p-[5px] border border-gray-300 border-dashed rounded-[5px] inline-flex items-center gap-x-1.5">
+                                <span className="inline-flex items-center justify-center size-[18px] shrink-0 rounded-full overflow-hidden">
+                                  <Usflag className="size-[18px]" />
+                                </span>
+                                <span className="text-xs leading-[18px] font-medium text-gray-700">
+                                  USA
+                                </span>
+                                <ChevronDown className="size-[18px] shrink-0 text-gray-500" />
+                              </button>
+                            </TableCell>
+                            <TableCell>
+                              <button className="bg-gray-100 focus-visible:outline-none pr-2 p-[5px] border border-gray-300 border-dashed rounded-[5px] inline-flex items-center gap-x-1.5">
+                                <span className="text-xs leading-[18px] font-medium text-gray-700">
+                                  Guru
+                                </span>
+                                <ChevronDown className="size-[18px] shrink-0 text-gray-500" />
+                              </button>
+                            </TableCell>
+                            <TableCell>40 hours</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell>
+                              <span className="flex flex-col text-sm font-semibold text-gray-900">
+                                Affinity Mapping
+                              </span>
+                            </TableCell>
+                            <TableCell>UX Designer</TableCell>
+                            <TableCell>
+                              <button className="bg-gray-100 focus-visible:outline-none pr-2 p-[5px] border border-gray-300 border-dashed rounded-[5px] inline-flex items-center gap-x-1.5">
+                                <span className="inline-flex items-center justify-center size-[18px] shrink-0 rounded-full overflow-hidden">
+                                  <Usflag className="size-[18px]" />
+                                </span>
+                                <span className="text-xs leading-[18px] font-medium text-gray-700">
+                                  USA
+                                </span>
+                                <ChevronDown className="size-[18px] shrink-0 text-gray-500" />
+                              </button>
+                            </TableCell>
+                            <TableCell>
+                              <button className="bg-gray-100 focus-visible:outline-none pr-2 p-[5px] border border-gray-300 border-dashed rounded-[5px] inline-flex items-center gap-x-1.5">
+                                <span className="text-xs leading-[18px] font-medium text-gray-700">
+                                  Guru
+                                </span>
+                                <ChevronDown className="size-[18px] shrink-0 text-gray-500" />
+                              </button>
+                            </TableCell>
+                            <TableCell>40 hours</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell>
+                              <span className="flex flex-col text-sm font-semibold text-gray-900">
+                                Affinity Mapping
+                              </span>
+                            </TableCell>
+                            <TableCell>UX Designer</TableCell>
+                            <TableCell>
+                              <button className="bg-gray-100 focus-visible:outline-none pr-2 p-[5px] border border-gray-300 border-dashed rounded-[5px] inline-flex items-center gap-x-1.5">
+                                <span className="inline-flex items-center justify-center size-[18px] shrink-0 rounded-full overflow-hidden">
+                                  <Usflag className="size-[18px]" />
+                                </span>
+                                <span className="text-xs leading-[18px] font-medium text-gray-700">
+                                  USA
+                                </span>
+                                <ChevronDown className="size-[18px] shrink-0 text-gray-500" />
+                              </button>
+                            </TableCell>
+                            <TableCell>
+                              <button className="bg-gray-100 focus-visible:outline-none pr-2 p-[5px] border border-gray-300 border-dashed rounded-[5px] inline-flex items-center gap-x-1.5">
+                                <span className="text-xs leading-[18px] font-medium text-gray-700">
+                                  Guru
+                                </span>
+                                <ChevronDown className="size-[18px] shrink-0 text-gray-500" />
+                              </button>
+                            </TableCell>
+                            <TableCell>40 hours</TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    </DisclosureContent>
+                  </div>
+                </AccordionItem>
+              </Accordion>
+            </div>
+
+            <div className="pl-[17.45px] xs:max-[1024px]:hidden">
+              <ProjectScopeTip showArrow />
             </div>
           </div>
         </ScrollArea>
 
         <BottomBar />
       </div>
+    </div>
+  )
+}
+
+export const PublishMarketPlaceEmptyState = () => {
+  return (
+    <div className="flex h-screen">
+      <Sidebar />
+
+      <div className="flex-auto">
+        <Header />
+
+        <ScrollArea
+          className="h-[calc(theme(size.full)-148px)]"
+          scrollBar={<ScrollBar className="w-4 p-1" />}
+        >
+          <div className="py-10 px-5 md:px-10 min-[1024px]:py-[50px] min-[1024px]:px-[75px] min-[1024px]:flex space-y-10 min-[1024px]:space-y-0 min-[1024px]:flex-row min-[1024px]:gap-x-[41.45px]">
+            <div className="p-3 pr-9 border rounded-lg border-blue-300 bg-blue-100 min-[1024px]:hidden">
+              <div className="flex items-start gap-x-3">
+                <Lightbulb05 className="size-[30px] text-primary-500" />
+
+                <div className="flex flex-col flex-auto items-start md:items-center gap-y-3 md:flex-row gap-x-0.5">
+                  <div className="space-y-0.5 flex-auto">
+                    <h1 className="text-base leading-[30px] font-semibold text-gray-900">
+                      Tip
+                    </h1>
+                    <p className="text-xs leading-[14.52px] text-dark-blue-400 tracking-[0.01em]">
+                      A great title gives your audience a reason to open your
+                      project
+                    </p>
+                  </div>
+
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="link">
+                        <PlayCircle className="size-5" /> Show me how
+                      </Button>
+                    </DialogTrigger>
+
+                    <DialogContent className="max-w-[317.55px] p-0">
+                      <ProjectScopeTip
+                        className="w-full"
+                        closeTrigger={
+                          <DialogClose asChild>
+                            <IconButton
+                              className="text-primary-500/50 hover:text-primary-500 absolute top-[11px] right-[11.55px]"
+                              variant="light"
+                              visual="gray"
+                            >
+                              <X className="size-5" />
+                            </IconButton>
+                          </DialogClose>
+                        }
+                      />
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-6 flex-auto">
+              <div className="flex md:flex-row flex-col gap-y-6 md:gap-y-0 md:items-center justify-between">
+                <h1 className="text-xl leading-[30px] font-semibold text-gray-800">
+                  Project Scope
+                </h1>
+
+                <div className="flex items-center md:gap-x-3">
+                  <div className="flex items-center">
+                    <Button
+                      className="border-r-0 rounded-r-none"
+                      variant="outlined"
+                      visual="gray"
+                    >
+                      <ChevronsDown className="size-[15px]" /> Expand all
+                    </Button>
+                    <Button
+                      className="rounded-l-none md:rounded-r-[5px] rounded-r-none"
+                      variant="outlined"
+                      visual="gray"
+                    >
+                      <ChevronsUp className="size-[15px]" /> Collapse All
+                    </Button>
+                  </div>
+
+                  <Button
+                    className="border-l-0 rounded-l-none md:border-l md:rounded-l-[5px]"
+                    variant="outlined"
+                    visual="gray"
+                  >
+                    <Plus className="size-[15px]" /> Expand all
+                  </Button>
+                </div>
+              </div>
+
+              <InputGroup>
+                <Input type="text" placeholder="Find a phase or task" />
+                <InputLeftElement>
+                  <SearchMd className="text-gray-500 h-5 w-5" />
+                </InputLeftElement>
+              </InputGroup>
+
+              <Accordion
+                defaultValue={["Research"]}
+                type="multiple"
+                className="flex-auto"
+              >
+                <AccordionItem value="Research" asChild>
+                  <div className="rounded-lg border border-gray-100 shadow-xs">
+                    <div className="mb-3 flex items-center gap-x-4 px-3 pt-3">
+                      <div className="flex flex-auto gap-y-2 md:flex-row md:justify-between md:items-center flex-col">
+                        <div className="inline-flex items-start md:items-center gap-x-3.5">
+                          <AccordionTrigger>
+                            <Button variant="ghost" visual="gray">
+                              <ChevronDown className="size-5 shrink-0 text-gray-500 group-data-[state=open]/item:-rotate-180 transition duration-300" />
+                            </Button>
+                          </AccordionTrigger>
+
+                          <div className="inline-flex md:flex-row flex-col md:items-center gap-y-3 md:gap-x-5">
+                            <span className="text-base md:text-[18px] font-light leading-7 text-gray-900">
+                              Phase One
+                            </span>{" "}
+                            <button className="focus-visible:outline-none inline-flex items-center gap-x-2">
+                              <Edit03 className="size-[15px] text-gray-800" />
+                              <span className="inline-block text-sm leading-5 font-semibold text-gray-800">
+                                Edit Phase Name
+                              </span>
+                            </button>
+                            <div className="inline-block md:hidden">
+                              <span className="text-xs leading-[14.52px] md:text-[13px] md:leading-[15.73px] text-dark-blue-400 font-semibold">
+                                Day 1
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="hidden md:inline-flex items-center gap-x-2 md:pl-0 pl-10">
+                          <span className="text-xs leading-[14.52px] md:text-[13px] md:leading-[15.73px] text-dark-blue-400 font-semibold">
+                            Day 1
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-x-4 items-center">
+                        <Button
+                          className="h-[23px] px-1.5 py-1 text-gray-500"
+                          variant="ghost"
+                          visual="gray"
+                        >
+                          <MoreHorizontal className="h-[15px] w-[15px]" />
+                        </Button>
+
+                        <IconButton
+                          className="text-gray-500"
+                          variant="outlined"
+                          visual="gray"
+                        >
+                          <Plus className="size-3" />
+                        </IconButton>
+                      </div>
+                    </div>
+                    <DisclosureContent className="overflow-auto">
+                      <div className="w-full overflow-auto flex border-t border-gray-200 flex-col justify-center min-h-[272px] md:min-h-[292px] lg:min-h-[530px]">
+                        <div className="max-w-[352px] mx-auto">
+                          <div className="flex justify-center">
+                            <div className="size-[48px] rounded-full bg-gray-100 inline-flex items-center justify-center border-[8px] border-gray-50">
+                              <CheckCircleBroken className="size-[24px] text-gray-500" />
+                            </div>
+                          </div>
+
+                          <h1 className="text-base mt-4 font-semibold text-center leading-6 text-gray-800">
+                            Create your first task
+                          </h1>
+                          <p className="text-sm mt-1 leading-5 text-center text-gray-800">
+                            Start defining your project scope with a clear,
+                            actionable step.
+                          </p>
+
+                          <div className="mt-6 flex justify-center">
+                            <Button className="bg-primary-50 text-primary-500 hover:bg-primary-500 hover:text-white">
+                              Add Task
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </DisclosureContent>
+                  </div>
+                </AccordionItem>
+
+                <Button className="mt-5" variant="ghost" visual="gray">
+                  <Plus className="size-[15px]" /> Add Phase
+                </Button>
+              </Accordion>
+            </div>
+
+            <div className="pl-[17.45px] xs:max-[1024px]:hidden">
+              <ProjectScopeTip showArrow />
+            </div>
+          </div>
+        </ScrollArea>
+      </div>
+
+      <BottomBar />
     </div>
   )
 }
@@ -1253,5 +1655,114 @@ export const SaveExit = () => {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  )
+}
+
+export const Empty1 = () => {
+  return (
+    <div className="mx-auto">
+      <div className="flex flex-col items-center justify-between">
+        <div className="size-[56px] shrink-0 rounded-full inline-flex items-center justify-center bg-primary-50 text-primary-500">
+          <Send className="size-7" />
+        </div>
+
+        <h1 className="mt-8 text-xl text-center text-gray-800 leading-[30px] font-semibold">
+          Your Project Has Been Submitted for a Review!
+        </h1>
+
+        <p className="mt-6 text-sm leading-[16.94px] text-center text-gray-500">
+          Our team will review your project over the next few days and will get
+          back to you if there are any changes to be made.
+        </p>
+
+        <div className="flex items-center justify-center gap-x-1 mt-6">
+          <p className="text-sm leading-[16.94px] text-gray-500">
+            You can check your project status anytime in
+          </p>
+          <Button variant="link">My Projects</Button>
+        </div>
+
+        <p className="text-sm leading-[30px] font-semibold text-center text-gray-800 mt-6">
+          Thanks for submitting, we’ll be in touch soon!
+        </p>
+
+        <div className="flex justify-center mt-8">
+          <Button visual="gray" variant="outlined">
+            <Home03 className="size-[15px]" />
+            Take me home
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export const Empty2 = () => {
+  return (
+    <div className="mx-auto">
+      <div className="flex flex-col">
+        <div className="flex justify-center">
+          <div className="size-[56px] shrink-0 rounded-full inline-flex items-center justify-center bg-success-100 text-success-500">
+            <CheckCircle className="size-7" />
+          </div>
+        </div>
+
+        <h1 className="mt-8 text-xl text-center text-gray-800 leading-[30px] font-semibold">
+          Your project has been successfully published
+        </h1>
+
+        <p className="mt-6 text-sm leading-[16.94px] text-center text-gray-500">
+          Your project is now live in the marketplace and available for others
+          to discover and collaborate. Thank you for contributing!
+        </p>
+
+        <div className="mt-6 text-center">
+          <p className="text-sm leading-[16.94px] text-gray-500">
+            You can check your project status anytime in
+          </p>{" "}
+          <Button variant="link">My Projects</Button>
+        </div>
+
+        <div className="flex gap-3 md:flex-row flex-col justify-center mt-8">
+          <Button visual="gray" variant="outlined">
+            <Home03 className="size-[15px]" />
+            Take me home
+          </Button>
+          <Button>View in Marketplace</Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export const Empty3 = () => {
+  return (
+    <div className="mx-auto">
+      <div className="flex flex-col items-center justify-between">
+        <div className="size-[56px] shrink-0 rounded-full inline-flex items-center justify-center bg-warning-100 text-warning-500">
+          <AlertTriangle className="size-7" />
+        </div>
+
+        <h1 className="mt-8 text-xl text-center text-gray-800 leading-[30px] font-semibold">
+          Please update your project to meet community guidelines.
+        </h1>
+
+        <p className="mt-6 text-sm leading-[16.94px] text-gray-500 text-center">
+          Review and adjust your project to ensure it complies with our policies
+          before publishing.
+        </p>
+
+        <div className="flex items-center justify-center gap-x-1 mt-6">
+          <p className="text-sm leading-[16.94px] text-gray-500">
+            Read community guidelines
+          </p>
+          <Button variant="link">Here.</Button>
+        </div>
+
+        <div className="flex justify-center mt-8">
+          <Button>Update Project</Button>
+        </div>
+      </div>
+    </div>
   )
 }

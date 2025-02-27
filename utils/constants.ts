@@ -108,3 +108,5 @@ export const configByCategory: Record<Categories, CategoryConfig> = {
     name: "Flags",
   },
 }
+
+export const HTTPS = "https://"
