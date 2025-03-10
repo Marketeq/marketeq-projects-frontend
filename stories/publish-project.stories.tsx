@@ -1375,16 +1375,20 @@ export const PublishMarketPlaceEmptyState = () => {
                 <AccordionItem value="Research" asChild>
                   <div className="rounded-lg border border-gray-100 shadow-xs">
                     <div className="mb-3 flex items-center gap-x-4 px-3 pt-3">
-                      <div className="flex flex-auto gap-y-2 md:flex-row md:justify-between md:items-center flex-col">
-                        <div className="inline-flex items-start md:items-center gap-x-3.5">
-                          <AccordionTrigger>
-                            <Button variant="ghost" visual="gray">
+                      <div className="flex flex-auto justify-between items-center">
+                        <div className="inline-flex items-center gap-x-3.5">
+                          <AccordionTrigger asChild>
+                            <IconButton
+                              className="size-8"
+                              variant="ghost"
+                              visual="gray"
+                            >
                               <ChevronDown className="size-5 shrink-0 text-gray-500 group-data-[state=open]/item:-rotate-180 transition duration-300" />
-                            </Button>
+                            </IconButton>
                           </AccordionTrigger>
 
                           <div className="inline-flex md:flex-row flex-col md:items-center gap-y-3 md:gap-x-5">
-                            <span className="text-base md:text-[18px] font-light leading-7 text-gray-900">
+                            <span className="text-base md:text-[18px] font-semibold md:font-light leading-7 text-gray-900">
                               Phase One
                             </span>{" "}
                             <button className="focus-visible:outline-none inline-flex items-center gap-x-2">
@@ -1660,8 +1664,8 @@ export const SaveExit = () => {
 
 export const Empty1 = () => {
   return (
-    <div className="mx-auto">
-      <div className="flex flex-col items-center justify-between">
+    <div className="grid flex-auto place-items-center">
+      <div className="flex flex-col max-w-[440px] items-center justify-between">
         <div className="size-[56px] shrink-0 rounded-full inline-flex items-center justify-center bg-primary-50 text-primary-500">
           <Send className="size-7" />
         </div>
@@ -1686,11 +1690,13 @@ export const Empty1 = () => {
           Thanks for submitting, we’ll be in touch soon!
         </p>
 
-        <div className="flex justify-center mt-8">
+        <div className="flex justify-center gap-x-3 items-center mt-8">
           <Button visual="gray" variant="outlined">
             <Home03 className="size-[15px]" />
             Take me home
           </Button>
+
+          <Button>View in Dashboard</Button>
         </div>
       </div>
     </div>

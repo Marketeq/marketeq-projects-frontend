@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { getFileName, getHasExtension } from "@/utils/dom-utils"
+import { ONE_SECOND } from "@/utils/constants"
+import { getFileName, getHasExtension, getPreview } from "@/utils/dom-utils"
 import {
   cn,
   convertByteToMb,
@@ -23,6 +24,7 @@ import {
   File,
   Image as ImageIcon,
   Plus,
+  Repeat04,
   Trash01,
   Trash2,
   UploadCloud,
@@ -45,6 +47,110 @@ export type DropzoneState = {
 const ACCEPTED_EXTENSIONS = [".png", ".jpg", ".jpeg"]
 
 export const ONE_MB = 1024 * 1024
+
+const Success = ({
+  progress,
+  meta,
+  onRemove,
+  open,
+}: {
+  progress: number
+  meta: File
+  onRemove: () => void
+  open: () => void
+}) => {
+  const [showPreview, { off, on }] = hooks.useToggle(false)
+  React.useEffect(() => {
+    if (progress === 100) {
+      const timeout = setTimeout(on, ONE_SECOND)
+
+      return () => clearTimeout(timeout)
+    }
+  }, [progress, off, on])
+  const [preview, setPreview] = React.useState<string>()
+
+  React.useEffect(() => {
+    const unsubscribe = getPreview(meta, setPreview)
+    return unsubscribe
+  }, [meta])
+
+  return (
+    <>
+      {showPreview ? (
+        <div className="group h-[336px] rounded-lg bg-gray-50 border border-gray-200 hover:border-gray-300 overflow-hidden relative">
+          <div className="absolute inset-0">
+            {preview ? (
+              <img
+                className="size-full object-cover"
+                src={preview}
+                alt={getFileName(meta)}
+              />
+            ) : null}
+
+            <div className="absolute opacity-0 transition duration-300 group-hover:opacity-100 inset-x-0 top-1/2 -translate-y-1 flex justify-center items-center gap-x-2">
+              <button
+                className="inline-flex text-sm items-center font-semibold text-white gap-x-2 py-2 px-3.5 rounded-[5px] shadow-[0px_1px_2px_0px_rgba(16,24,40,.05)] bg-black/40 focus-visible:outline-none"
+                onClick={open}
+              >
+                <Repeat04 className="size-[15px]" /> Change Image
+              </button>
+              <button
+                className="inline-flex text-sm items-center font-semibold text-white gap-x-2 py-2 px-3.5 rounded-[5px] shadow-[0px_1px_2px_0px_rgba(16,24,40,.05)] bg-black/40 focus-visible:outline-none"
+                onClick={onRemove}
+              >
+                <Trash01 className="size-[15px]" /> Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="p-[100px] rounded-lg bg-gray-50 border-2 border-dashed border-gray-200 hover:border-gray-300 overflow-hidden relative">
+          <div className="rounded-lg p-2 pb-4 pl-4">
+            <div className="flex">
+              <div className="flex flex-auto pt-2">
+                <div className="flex flex-auto flex-col">
+                  <span className="inline-block text-sm font-medium text-gray-700">
+                    {getFileName(meta)}
+                  </span>
+                  <span className="inline-block text-sm text-gray-500">
+                    {convertToKbOrMb(meta.size)}
+                  </span>
+                </div>
+              </div>
+
+              {progress === 100 ? (
+                <div className="pr-2 pt-2">
+                  <span className="inline-flex h-4 w-4 flex-none items-center justify-center rounded-full bg-primary-500">
+                    <Check className="h-2.5 w-2.5 text-white" />
+                  </span>
+                </div>
+              ) : (
+                <IconButton
+                  onClick={onRemove}
+                  className="text-gray-500 hover:text-error-500"
+                  variant="ghost"
+                  visual="error"
+                  type="button"
+                >
+                  <Trash2 className="h-5 w-5" />
+                </IconButton>
+              )}
+            </div>
+
+            <div className="mt-1 flex items-center gap-x-3">
+              <div className="flex-auto py-1.5">
+                <Progress value={progress} />
+              </div>
+              <span className="text-sm font-medium text-gray-700">
+                {progress}%
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
 
 export const Dropzone = ({
   maxFiles = 1,
@@ -213,93 +319,142 @@ export const Dropzone = ({
                 : isDoc(getFileName(meta))
                   ? "doc"
                   : "other"
+
             return (
               <React.Fragment key={idx}>
-                {hasError ? (
-                  <div className="rounded-lg border border-error-300 bg-error-25 p-2 pb-4 pl-4">
-                    <div className="flex">
-                      <div className="flex flex-auto gap-x-4 pt-2">
-                        <div className="inline-flex h-8 w-8 flex-none items-center justify-center rounded-full border-[4px] border-error-50 bg-error-100 text-error-500">
-                          <UploadCloud className="h-4 w-4" />
-                        </div>
-                        <div className="flex flex-auto flex-col items-start">
-                          <span className="inline-block text-sm font-medium text-error-500">
-                            Upload failed, please try again
-                          </span>
-                          <span className="inline-block text-sm text-error-500">
-                            {getFileName(meta)}
-                          </span>
-                          <button
-                            className="mt-1 text-sm font-semibold text-error-500 hover:underline focus:outline-none"
-                            onClick={() => onRetry(idx)}
+                {size === "sm" ? (
+                  <>
+                    {hasError ? (
+                      <div className="rounded-lg border border-error-300 bg-error-25 p-2 pb-4 pl-4">
+                        <div className="flex">
+                          <div className="flex flex-auto gap-x-4 pt-2">
+                            <div className="inline-flex h-8 w-8 flex-none items-center justify-center rounded-full border-[4px] border-error-50 bg-error-100 text-error-500">
+                              <UploadCloud className="h-4 w-4" />
+                            </div>
+                            <div className="flex flex-auto flex-col items-start">
+                              <span className="inline-block text-sm font-medium text-error-500">
+                                Upload failed, please try again
+                              </span>
+                              <span className="inline-block text-sm text-error-500">
+                                {getFileName(meta)}
+                              </span>
+                              <button
+                                className="mt-1 text-sm font-semibold text-error-500 hover:underline focus:outline-none"
+                                onClick={() => onRetry(idx)}
+                              >
+                                Try again
+                              </button>
+                            </div>
+                          </div>
+                          <IconButton
+                            onClick={() => onRemove(idx)}
+                            variant="ghost"
+                            visual="error"
+                            type="button"
                           >
-                            Try again
-                          </button>
+                            <Trash2 className="h-5 w-5" />
+                          </IconButton>
                         </div>
                       </div>
-                      <IconButton
-                        onClick={() => onRemove(idx)}
-                        variant="ghost"
-                        visual="error"
-                        type="button"
-                      >
-                        <Trash2 className="h-5 w-5" />
-                      </IconButton>
-                    </div>
-                  </div>
+                    ) : (
+                      <div className="rounded-lg border border-gray-200 bg-white p-2 pb-4 pl-4 hover:border-primary-500 hover:ring-1 hover:ring-primary-500">
+                        <div className="flex">
+                          <div className="flex flex-auto gap-x-4 pt-2">
+                            <div className="inline-flex h-8 w-8 flex-none items-center justify-center rounded-full border-[4px] border-primary-25 bg-primary-50 text-primary-500">
+                              {category === "img" && (
+                                <ImageIcon className="h-4 w-4" />
+                              )}
+                              {category === "video" && (
+                                <Video className="h-4 w-4" />
+                              )}
+                              {category === "doc" && (
+                                <File className="h-4 w-4" />
+                              )}
+                              {category === "other" && (
+                                <UploadCloud className="h-4 w-4" />
+                              )}
+                            </div>
+                            <div className="flex flex-auto flex-col">
+                              <span className="inline-block text-sm font-medium text-gray-700">
+                                {getFileName(meta)}
+                              </span>
+                              <span className="inline-block text-sm text-gray-500">
+                                {size}
+                              </span>
+                            </div>
+                          </div>
+
+                          {progress === 100 ? (
+                            <div className="pr-2 pt-2">
+                              <span className="inline-flex h-4 w-4 flex-none items-center justify-center rounded-full bg-primary-500">
+                                <Check className="h-2.5 w-2.5 text-white" />
+                              </span>
+                            </div>
+                          ) : (
+                            <IconButton
+                              onClick={() => onRemove(idx)}
+                              variant="ghost"
+                              visual="error"
+                              type="button"
+                            >
+                              <Trash2 className="h-5 w-5" />
+                            </IconButton>
+                          )}
+                        </div>
+
+                        <div className="mt-1 flex items-center gap-x-3 pl-12">
+                          <div className="flex-auto py-1.5">
+                            <Progress value={progress} />
+                          </div>
+                          <span className="text-sm font-medium text-gray-700">
+                            {progress}%
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 ) : (
-                  <div className="rounded-lg border border-gray-200 bg-white p-2 pb-4 pl-4 hover:border-primary-500 hover:ring-1 hover:ring-primary-500">
-                    <div className="flex">
-                      <div className="flex flex-auto gap-x-4 pt-2">
-                        <div className="inline-flex h-8 w-8 flex-none items-center justify-center rounded-full border-[4px] border-primary-25 bg-primary-50 text-primary-500">
-                          {category === "img" && (
-                            <ImageIcon className="h-4 w-4" />
-                          )}
-                          {category === "video" && (
-                            <Video className="h-4 w-4" />
-                          )}
-                          {category === "doc" && <File className="h-4 w-4" />}
-                          {category === "other" && (
-                            <UploadCloud className="h-4 w-4" />
-                          )}
-                        </div>
-                        <div className="flex flex-auto flex-col">
-                          <span className="inline-block text-sm font-medium text-gray-700">
-                            {getFileName(meta)}
-                          </span>
-                          <span className="inline-block text-sm text-gray-500">
-                            {size}
-                          </span>
+                  <>
+                    {hasError ? (
+                      <div className="p-[100px] rounded-lg bg-gray-50 border-2 border-dashed hover:border-gray-300 overflow-hidden relative border-error-300">
+                        <div className="rounded-lg p-2 pb-4 pl-4">
+                          <div className="flex">
+                            <div className="flex flex-auto pt-2">
+                              <div className="flex flex-auto flex-col items-start">
+                                <span className="inline-block text-sm font-medium text-error-500">
+                                  Upload failed, please try again
+                                </span>
+                                <span className="inline-block text-sm text-error-500">
+                                  {getFileName(meta)}
+                                </span>
+                                <button
+                                  className="mt-1 text-sm font-semibold text-error-500 hover:underline focus:outline-none"
+                                  onClick={() => onRetry(idx)}
+                                >
+                                  Try again
+                                </button>
+                              </div>
+                            </div>
+                            <IconButton
+                              onClick={() => onRemove(idx)}
+                              variant="ghost"
+                              visual="error"
+                              type="button"
+                            >
+                              <Trash2 className="h-5 w-5" />
+                            </IconButton>
+                          </div>
                         </div>
                       </div>
-
-                      {progress === 100 ? (
-                        <div className="pr-2 pt-2">
-                          <span className="inline-flex h-4 w-4 flex-none items-center justify-center rounded-full bg-primary-500">
-                            <Check className="h-2.5 w-2.5 text-white" />
-                          </span>
-                        </div>
-                      ) : (
-                        <IconButton
-                          onClick={() => onRemove(idx)}
-                          variant="ghost"
-                          visual="error"
-                          type="button"
-                        >
-                          <Trash2 className="h-5 w-5" />
-                        </IconButton>
-                      )}
-                    </div>
-
-                    <div className="mt-1 flex items-center gap-x-3 pl-12">
-                      <div className="flex-auto py-1.5">
-                        <Progress value={progress} />
-                      </div>
-                      <span className="text-sm font-medium text-gray-700">
-                        {progress}%
-                      </span>
-                    </div>
-                  </div>
+                    ) : (
+                      <Success
+                        open={open}
+                        meta={meta}
+                        progress={progress}
+                        onRemove={() => onRemove(idx)}
+                      />
+                    )}
+                  </>
                 )}
               </React.Fragment>
             )
@@ -428,7 +583,7 @@ const SquareShapeDropzoneSuccess = ({
       ) : null}
 
       <button
-        className="absolute right-2.5 text-white hover:text-error-500 top-2.5 size-7 focus-visible:outline-none bg-black/20 rounded-full inline-flex items-center justify-center"
+        className="absolute right-2.5 transition duration-300 group-hover:opacity-100 opacity-0 text-white hover:text-error-500 top-2.5 size-7 focus-visible:outline-none bg-black/20 rounded-full inline-flex items-center justify-center"
         onClick={onRemove}
         type="button"
       >

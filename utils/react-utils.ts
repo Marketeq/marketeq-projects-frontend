@@ -23,7 +23,7 @@ export const createContext = <TValue>({
     return context
   }
 
-  return [Context.Provider, useContext] as const
+  return [Context.Provider, useContext, Context.Consumer] as const
 }
 
 export const createStrictContext = <TValue>({
