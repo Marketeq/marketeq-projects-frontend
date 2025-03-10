@@ -2929,7 +2929,7 @@ const ProjectScope = () => {
   )
   const [accordionState, setAccordionState] = useState(["item-0"])
   const { projectScopeMethods } = useProjectScopeContext()
-  const { toggleValidation, status } = useStepContext()
+  const { toggleValidation } = useStepContext()
 
   const [projectScopeState, setProjectScopeState] = projectScopeMethods
 
@@ -3104,6 +3104,17 @@ const ProjectScope = () => {
     },
     [setPhases]
   )
+  const fieldsValidationArr = [
+    pickFromProjectScopeSchema({ task: true }).safeParse(phases),
+    pickFromProjectScopeSchema({ experience: true }).safeParse(phases),
+    pickFromProjectScopeSchema({ role: true }).safeParse(phases),
+    pickFromProjectScopeSchema({ location: true }).safeParse(phases),
+    pickFromProjectScopeSchema({ duration: true }).safeParse(phases),
+  ]
+  const progressValue =
+    (fieldsValidationArr.filter((item) => item).length /
+      fieldsValidationArr.length) *
+    100
 
   return (
     <>
@@ -3444,7 +3455,7 @@ const ProjectScope = () => {
         </div>
       </ScrollArea>
 
-      <BottomBar progressValue={0} />
+      <BottomBar progressValue={progressValue} />
     </>
   )
 }
