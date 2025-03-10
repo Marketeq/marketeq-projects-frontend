@@ -89,13 +89,13 @@ const Success = ({
 
             <div className="absolute opacity-0 transition duration-300 group-hover:opacity-100 inset-x-0 top-1/2 -translate-y-1 flex justify-center items-center gap-x-2">
               <button
-                className="inline-flex text-sm items-center font-semibold text-white gap-x-2 py-2 px-3.5 rounded-[5px] shadow-[0px_1px_2px_0px_rgba(16,24,40,.05)] bg-black/40 focus-visible:outline-none"
+                className="hover:bg-black inline-flex text-sm items-center font-semibold text-white gap-x-2 py-2 px-3.5 rounded-[5px] shadow-[0px_1px_2px_0px_rgba(16,24,40,.05)] bg-black/40 focus-visible:outline-none"
                 onClick={open}
               >
                 <Repeat04 className="size-[15px]" /> Change Image
               </button>
               <button
-                className="inline-flex text-sm items-center font-semibold text-white gap-x-2 py-2 px-3.5 rounded-[5px] shadow-[0px_1px_2px_0px_rgba(16,24,40,.05)] bg-black/40 focus-visible:outline-none"
+                className="hover:bg-black hover:text-error-500 inline-flex text-sm items-center font-semibold text-white gap-x-2 py-2 px-3.5 rounded-[5px] shadow-[0px_1px_2px_0px_rgba(16,24,40,.05)] bg-black/40 focus-visible:outline-none"
                 onClick={onRemove}
               >
                 <Trash01 className="size-[15px]" /> Remove
@@ -583,7 +583,7 @@ const SquareShapeDropzoneSuccess = ({
       ) : null}
 
       <button
-        className="absolute right-2.5 transition duration-300 group-hover:opacity-100 opacity-0 text-white hover:text-error-500 top-2.5 size-7 focus-visible:outline-none bg-black/20 rounded-full inline-flex items-center justify-center"
+        className="absolute right-2.5 transition duration-300 group-hover:opacity-100 opacity-0 text-white hover:text-error-500 top-2.5 size-7 focus-visible:outline-none bg-black/20 hover:bg-black rounded-full inline-flex items-center justify-center"
         onClick={onRemove}
         type="button"
       >

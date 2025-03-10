@@ -9,17 +9,16 @@ import {
   useState,
 } from "react"
 import React from "react"
+import options from "@/public/mock/options.json"
 import { Empty1 } from "@/stories/publish-project.stories"
 import { HTTPS, ONE_SECOND } from "@/utils/constants"
 import {
   cn,
   debounce,
   getId,
-  getIsEmpty,
   getIsNotEmpty,
   hookFormHasError,
   keys,
-  pick,
 } from "@/utils/functions"
 import {
   useCallbackRef,
@@ -101,13 +100,13 @@ import {
   useForm,
   useWatch,
 } from "react-hook-form"
+import ReactPlayer from "react-player"
 import {
   useIsomorphicLayoutEffect,
-  usePrevious,
   useToggle,
   useUpdateEffect,
 } from "react-use"
-import { z } from "zod"
+import { util, z } from "zod"
 import { Prettify } from "@/types/core"
 import { GripVertical2 } from "@/components/icons/grip-vertical-2"
 import { Network } from "@/components/icons/network"
@@ -213,7 +212,7 @@ const meta = {
     { label: "Featured Video", name: "featuredVideo" },
   ],
   "Project Scope": [
-    { label: "Task Name", name: "taskName" },
+    { label: "Task Name", name: "task" },
     { label: "Role", name: "role" },
     { label: "Location", name: "location" },
     { label: "Experience", name: "experience" },
@@ -245,14 +244,32 @@ const rowSchema = taskFormSchema.merge(
   })
 )
 
-const projectScopeSchema = z
-  .array(
-    z.object({
-      phaseName: z.string().min(1, "Please enter at least 1 character(s)"),
-      rows: z.array(rowSchema).min(1, "Please add at least 1 task(s)"),
-    })
-  )
-  .min(1, "Please add at least 1 phase(s)")
+const pickFromProjectScopeSchema = (
+  options: {
+    [Property in keyof z.infer<typeof rowSchema>]?: true
+  } = {}
+) => {
+  return {
+    safeParse: (data: unknown, params?: Partial<z.ParseParams>) => {
+      const { success } = z
+        .array(
+          z.object({
+            phaseName: z
+              .string()
+              .min(1, "Please enter at least 1 character(s)"),
+            rows: z
+              .array(rowSchema.pick(options))
+              .min(1, "Please add at least 1 task(s)"),
+          })
+        )
+        .min(1, "Please add at least 1 phase(s)")
+        .safeParse(data, params)
+      return success
+    },
+  }
+}
+
+const projectScopeSchema = pickFromProjectScopeSchema()
 
 const Sidebar = () => {
   const { currentStep, stepsState } = useStepRootContext()
@@ -366,82 +383,25 @@ const Sidebar = () => {
                           </span>
 
                           {(field.label === "Task Name" &&
-                            phases.reduce(
-                              (previous, { rows }) =>
-                                previous &&
-                                rows !== undefined &&
-                                rows &&
-                                rows.reduce(
-                                  (prev, { task }) =>
-                                    prev &&
-                                    rowSchema
-                                      .pick({ task: true })
-                                      .safeParse({ task }).success,
-                                  true
-                                ),
-                              true
-                            )) ||
+                            pickFromProjectScopeSchema({
+                              task: true,
+                            }).safeParse(phases)) ||
                           (field.label === "Role" &&
-                            phases.reduce(
-                              (previous, { rows }) =>
-                                previous &&
-                                rows !== undefined &&
-                                rows.reduce(
-                                  (prev, { role }) =>
-                                    prev &&
-                                    rowSchema
-                                      .pick({ role: true })
-                                      .safeParse({ role }).success,
-                                  true
-                                ),
-                              true
-                            )) ||
+                            pickFromProjectScopeSchema({
+                              role: true,
+                            }).safeParse(phases)) ||
                           (field.label === "Location" &&
-                            phases.reduce(
-                              (previous, { rows }) =>
-                                previous &&
-                                rows !== undefined &&
-                                rows.reduce(
-                                  (prev, { location }) =>
-                                    prev &&
-                                    rowSchema
-                                      .pick({ location: true })
-                                      .safeParse({ location }).success,
-                                  true
-                                ),
-                              true
-                            )) ||
+                            pickFromProjectScopeSchema({
+                              location: true,
+                            }).safeParse(phases)) ||
                           (field.label === "Experience" &&
-                            phases.reduce(
-                              (previous, { rows }) =>
-                                previous &&
-                                rows !== undefined &&
-                                rows &&
-                                rows.reduce(
-                                  (prev, { experience }) =>
-                                    prev &&
-                                    rowSchema
-                                      .pick({ experience: true })
-                                      .safeParse({ experience }).success,
-                                  true
-                                ),
-                              true
-                            )) ||
+                            pickFromProjectScopeSchema({
+                              experience: true,
+                            }).safeParse(phases)) ||
                           (field.label === "Duration" &&
-                            phases.reduce(
-                              (previous, { rows }) =>
-                                previous &&
-                                rows !== undefined &&
-                                rows.reduce(
-                                  (prev, { duration }) =>
-                                    prev &&
-                                    rowSchema
-                                      .pick({ duration: true })
-                                      .safeParse({ duration }).success,
-                                  true
-                                ),
-                              true
-                            )) ? (
+                            pickFromProjectScopeSchema({
+                              duration: true,
+                            }).safeParse(phases)) ? (
                             <div className="size-[18px] rounded-full inline-flex items-center justify-center shrink-0 bg-success-500">
                               <Check className="size-3 text-white" />
                             </div>
@@ -687,7 +647,7 @@ const ProjectInfo = () => {
   } = methods
 
   useIsomorphicLayoutEffect(() => {
-    toggleValidation(true)
+    toggleValidation(isValid)
   }, [isValid])
 
   const onSubmit: SubmitHandler<ProjectInfoFormValues> = (values) => {}
@@ -879,7 +839,10 @@ const ProjectInfo = () => {
                                     <TagsInputItemInput />
                                   </TagsInputItem>
                                 ))}
-                                <TagsInputInput placeholder="Add Sub-Category(s)" />
+                                <TagsInputInput
+                                  placeholder="Add Sub-Category(s)"
+                                  options={options.value}
+                                />
 
                                 <SearchMd className="size-4 shrink-0 absolute inset-y-0 right-3 my-auto text-gray-400" />
                               </TagsInputControl>
@@ -966,7 +929,10 @@ const ProjectInfo = () => {
                                     <TagsInputItemInput />
                                   </TagsInputItem>
                                 ))}
-                                <TagsInputInput placeholder="Add Sub-Category(s)" />
+                                <TagsInputInput
+                                  options={options.value}
+                                  placeholder="Add Sub-Category(s)"
+                                />
 
                                 <SearchMd className="size-4 shrink-0 absolute inset-y-0 right-3 my-auto text-gray-400" />
                               </TagsInputControl>
@@ -1053,7 +1019,10 @@ const ProjectInfo = () => {
                                     <TagsInputItemInput />
                                   </TagsInputItem>
                                 ))}
-                                <TagsInputInput placeholder="Add Sub-Category(s)" />
+                                <TagsInputInput
+                                  options={options.value}
+                                  placeholder="Add Sub-Category(s)"
+                                />
 
                                 <SearchMd className="size-4 shrink-0 absolute inset-y-0 right-3 my-auto text-gray-400" />
                               </TagsInputControl>
@@ -1156,7 +1125,10 @@ const ProjectInfo = () => {
                                 <TagsInputItemInput />
                               </TagsInputItem>
                             ))}
-                            <TagsInputInput placeholder="Add tags" />
+                            <TagsInputInput
+                              options={options.value}
+                              placeholder="Add tags"
+                            />
 
                             <SearchMd className="size-4 shrink-0 absolute inset-y-0 right-3 my-auto text-gray-400" />
                           </TagsInputControl>
@@ -1308,7 +1280,10 @@ const ProjectInfo = () => {
                                 <TagsInputItemInput />
                               </TagsInputItem>
                             ))}
-                            <TagsInputInput placeholder="Add tags" />
+                            <TagsInputInput
+                              options={options.value}
+                              placeholder="Add tags"
+                            />
 
                             <SearchMd className="size-4 shrink-0 absolute inset-y-0 right-3 my-auto text-gray-400" />
                           </TagsInputControl>
@@ -1380,7 +1355,10 @@ const ProjectInfo = () => {
                                 <TagsInputItemInput />
                               </TagsInputItem>
                             ))}
-                            <TagsInputInput placeholder="Add skills" />
+                            <TagsInputInput
+                              options={options.value}
+                              placeholder="Add skills"
+                            />
 
                             <SearchMd className="size-4 shrink-0 absolute inset-y-0 right-3 my-auto text-gray-400" />
                           </TagsInputControl>
@@ -1567,19 +1545,22 @@ const mediaFormSchema = z
   )
   .refine(
     (data) =>
-      data.additionalImages.reduce(
-        (_, previousValue) =>
-          previousValue
-            ? previousValue.reduce(
-                (__, previousItem) => previousItem.progress === 100,
-                false
-              )
-            : true,
-        false
-      ),
+      z
+        .array(
+          z
+            .array(
+              z.object({
+                meta: z.any(),
+                progress: z.literal(100),
+                hasError: z.literal(false).optional(),
+              })
+            )
+            .optional()
+        )
+        .safeParse(data.additionalImages),
     {
       message: "Please let the images get uploaded to the server",
-      path: ["featuredImage"],
+      path: ["additionalImages"],
     }
   )
 
@@ -1608,7 +1589,7 @@ const Media = () => {
   } = useMediaContext()
 
   useIsomorphicLayoutEffect(() => {
-    toggleValidation(true)
+    toggleValidation(isValid)
   }, [isValid])
 
   const onSubmit: SubmitHandler<MediaFormValues> = (values) => {}
@@ -1852,6 +1833,19 @@ const Media = () => {
                   <ErrorMessage size="sm">{message}</ErrorMessage>
                 )}
               />
+
+              {error?.formErrors.fieldErrors.featuredVideo ? null : (
+                <ReactPlayer
+                  url={mediaValues.featuredVideo}
+                  width={229}
+                  height={140}
+                  style={{
+                    borderRadius: "0.5rem",
+                    overflow: "hidden",
+                    marginTop: "1.5rem",
+                  }}
+                />
+              )}
             </div>
           </div>
 
@@ -2946,7 +2940,7 @@ const ProjectScope = () => {
       expandAll()
     },
   })
-  const { success } = projectScopeSchema.safeParse(phases)
+  const success = projectScopeSchema.safeParse(phases)
 
   useIsomorphicLayoutEffect(() => {
     toggleValidation(success)
