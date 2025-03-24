@@ -62,6 +62,7 @@
     "clsx": "^2.0.0",
     "cmdk": "^1.0.0",
     "date-fns": "^3.3.1",
+    "embla-carousel-react": "^8.5.2",
     "framer-motion": "^11.0.3",
     "google-libphonenumber": "^3.2.40",
     "headless-stepper": "^1.11.0",

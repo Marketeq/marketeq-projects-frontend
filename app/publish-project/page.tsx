@@ -58,6 +58,7 @@ import {
   Plus2,
   SearchMd,
   Send,
+  Trash01,
   Trash2,
   Type,
   X,
@@ -1403,7 +1404,7 @@ const ProjectInfo = () => {
                               ? [...projectInfoValues.skills, suggestedSkill]
                               : [suggestedSkill]
                           )
-                          trigger("skills")
+                          isValid ? trigger("skills") : noop()
                         }}
                       >
                         {suggestedSkill}
@@ -1586,6 +1587,7 @@ const Media = () => {
     setError,
     handleSubmit,
     trigger,
+    setValue,
   } = useMediaContext()
 
   useIsomorphicLayoutEffect(() => {
@@ -1835,16 +1837,28 @@ const Media = () => {
               />
 
               {error?.formErrors.fieldErrors.featuredVideo ? null : (
-                <ReactPlayer
-                  url={mediaValues.featuredVideo}
-                  width={229}
-                  height={140}
-                  style={{
-                    borderRadius: "0.5rem",
-                    overflow: "hidden",
-                    marginTop: "1.5rem",
-                  }}
-                />
+                <div className="group relative inline-block mt-6">
+                  <ReactPlayer
+                    url={mediaValues.featuredVideo}
+                    width={229}
+                    height={140}
+                    style={{
+                      borderRadius: "0.5rem",
+                      overflow: "hidden",
+                    }}
+                  />
+
+                  <button
+                    className="absolute right-[9.56px] transition duration-300 group-hover:opacity-100 opacity-0 text-white hover:text-error-500 top-2.5 size-7 focus-visible:outline-none bg-black/20 hover:bg-black rounded-full inline-flex items-center justify-center"
+                    type="button"
+                    onClick={() => {
+                      setValue("featuredVideo", "")
+                      isValid ? trigger("featuredVideo") : noop()
+                    }}
+                  >
+                    <Trash01 className="size-4" />
+                  </button>
+                </div>
               )}
             </div>
           </div>

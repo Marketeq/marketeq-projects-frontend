@@ -206,7 +206,7 @@ export const ListboxOption = React.forwardRef(
   ({ className, value, children, iconClassName, ...props }: ListboxOption) => (
     <ListboxPrimitive.Option
       className={cn(
-        "flex cursor-pointer items-center gap-x-2 p-3 text-[13px] leading-[13.25px] text-gray-500 ui-active:bg-gray-50 ui-active:text-gray-black",
+        "flex cursor-pointer items-center gap-x-2 p-3 text-[13px] truncate leading-[13.25px] text-gray-500 ui-active:bg-gray-50 ui-active:text-gray-black",
         className
       )}
       value={value}

@@ -74,7 +74,7 @@ const Tabs = React.forwardRef<
 
 Tabs.displayName = "Tabs"
 
-const tabsListVariants = cva(
+export const tabsListVariants = cva(
   "inline-flex items-end overflow-x-auto scrollbar-none justify-center gap-4 border-b border-b-gray-200 px-5 pt-3"
 )
 

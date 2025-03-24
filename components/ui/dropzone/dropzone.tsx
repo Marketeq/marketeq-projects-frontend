@@ -91,12 +91,14 @@ const Success = ({
               <button
                 className="hover:bg-black inline-flex text-sm items-center font-semibold text-white gap-x-2 py-2 px-3.5 rounded-[5px] shadow-[0px_1px_2px_0px_rgba(16,24,40,.05)] bg-black/40 focus-visible:outline-none"
                 onClick={open}
+                type="button"
               >
                 <Repeat04 className="size-[15px]" /> Change Image
               </button>
               <button
                 className="hover:bg-black hover:text-error-500 inline-flex text-sm items-center font-semibold text-white gap-x-2 py-2 px-3.5 rounded-[5px] shadow-[0px_1px_2px_0px_rgba(16,24,40,.05)] bg-black/40 focus-visible:outline-none"
                 onClick={onRemove}
+                type="button"
               >
                 <Trash01 className="size-[15px]" /> Remove
               </button>
