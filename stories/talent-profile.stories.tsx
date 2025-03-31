@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react"
 import { getComputedStyle } from "@/utils/dom-utils"
-import { cn, toPxIfNumber } from "@/utils/functions"
+import { cn } from "@/utils/functions"
 import {
   ArrowLeft,
   ArrowRight,
@@ -35,6 +35,8 @@ import {
   X,
   XCircle,
 } from "@blend-metrics/icons"
+import { AdobeBrand, WordpressBrand } from "@blend-metrics/icons/brands"
+import { GoogleDefault } from "@blend-metrics/icons/social"
 import {
   FacebookSolid,
   InstagramSolid,
@@ -43,6 +45,7 @@ import {
 import * as RadixTabs from "@radix-ui/react-tabs"
 import { TooltipArrow } from "@radix-ui/react-tooltip"
 import { Meta } from "@storybook/react"
+import { useToggle } from "react-use"
 import {
   Campaigns,
   LinkedinSolid,
@@ -50,10 +53,17 @@ import {
   Project,
   Talent,
 } from "@/components/icons"
+import { Adobe } from "@/components/icons/adobe"
+import { Arrow } from "@/components/icons/arrow"
+import { Dropbox } from "@/components/icons/dropbox"
+import { Microsoft } from "@/components/icons/microsoft"
+import { Nasdaq } from "@/components/icons/nasdaq"
 import { InviteWindowTrigger } from "@/components/invite-window"
 import NextImage from "@/components/next-image"
 import NextLink from "@/components/next-link"
 import { ThreeHorizontalLines } from "@/components/three-horizontal-lines"
+import { ThumbsDownToggle } from "@/components/thumbs-down"
+import { ThumbsUpToggle } from "@/components/thumbs-up"
 import {
   Avatar,
   AvatarFallback,
@@ -80,6 +90,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioTrigger,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   Favorite,
@@ -99,10 +111,12 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  Toggle,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
+  buttonVariants,
   tabsListVariants,
   useCarousel,
 } from "@/components/ui"
@@ -962,6 +976,78 @@ const CarouselPreviousTrigger = () => {
   ) : null
 }
 
+const CarouselNextTrigger = () => {
+  const { canScrollNext } = useCarousel()
+  return canScrollNext ? (
+    <CarouselNext className="size-7 border-0 bg-black/80 hover:bg-black transition text-white duration-300 -right-4" />
+  ) : null
+}
+
+const SaveButton = () => {
+  const [isOpen, toggleIsOpen] = useToggle(false)
+  const [value, setValue] = React.useState("")
+
+  return (
+    <div className="flex items-center">
+      <Toggle
+        className={buttonVariants({
+          className:
+            "group border-r-0 xs:max-lg:gap-x-[5.1px] xs:max-lg:leading-[12.75px] xs:max-lg:text-[8.93px] xs:max-lg:h-[25.75px] rounded-r-none",
+          variant: "outlined",
+          visual: "gray",
+          size: "md",
+        })}
+      >
+        <Star className="size-[12.75px] lg:size-5 text-gray-300 group-hover:text-gray-500 group-hover:group-data-[state=on]:text-primary-500 group-data-[state=on]:text-primary-500  group-data-[state=on]:fill-primary-500" />
+        <span className="group-data-[state=off]:inline-block hidden">Save</span>
+        <span className="hidden group-data-[state=on]:inline-block">Saved</span>
+      </Toggle>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <IconButton
+            className="group rounded-l-none xs:max-lg:size-[25.5px] text-gray-500"
+            variant="outlined"
+            visual="gray"
+            size="md"
+          >
+            <ChevronDown className="duration transition group-data-[state=open]:-rotate-180 size-[12.75px] lg:size-5" />
+          </IconButton>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" side="bottom">
+          <DropdownMenuRadioGroup value={value} onValueChange={setValue}>
+            <DropdownMenuRadioTrigger value="Digital Marketing">
+              Digital Marketing
+            </DropdownMenuRadioTrigger>
+            <DropdownMenuRadioTrigger value="Customer Service">
+              Customer Service
+            </DropdownMenuRadioTrigger>
+            <DropdownMenuRadioTrigger value="Email Marketing">
+              Email Marketing
+            </DropdownMenuRadioTrigger>
+          </DropdownMenuRadioGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => toggleIsOpen()}
+            className="text-primary-500"
+          >
+            <Plus className="size-4" /> Create New List
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Dialog open={isOpen} onOpenChange={toggleIsOpen}>
+        <DialogContent>
+          <form className="flex items-center gap-x-3">
+            <Input placeholder="Enter List Name" className="flex-auto" />
+            <Button size="lg">Save</Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}
+
 export const Default = () => {
   const cardRef = useRef<HTMLDivElement>(null)
   const toolbarRef = useRef<HTMLDivElement>(null)
@@ -1025,169 +1111,134 @@ export const Default = () => {
                   <AvatarFallback />
                 </Avatar>
 
-                <div className="flex-auto flex items-start">
-                  <div className="flex-auto">
-                    <h1 className="text-[28px] leading-none font-bold text-dark-blue-400">
-                      Dheeraj
-                      <span className="text-[26px] font-extralight">
-                        @dheerajnagdali
-                      </span>
-                    </h1>
-                    <h2 className="text-[22px] mt-1 leading-none text-dark-blue-400 font-medium">
-                      Expert React Developer
-                    </h2>
+                <div className="flex-auto">
+                  <div className="flex items-start">
+                    <div className="flex-auto">
+                      <h1 className="text-[28px] leading-[34px] font-bold text-dark-blue-400">
+                        Dheeraj
+                        <span className="text-[26px] font-extralight">
+                          @dheerajnagdali
+                        </span>
+                      </h1>
+                      <h2 className="text-[22px] mt-1 leading-[27px] text-dark-blue-400 font-medium">
+                        Expert React Developer
+                      </h2>
 
-                    <p className="mt-2 text-sm leading-none text-gray-500">
-                      10 years of experience
-                    </p>
+                      <p className="mt-2 text-sm leading-none text-gray-500">
+                        10 years of experience
+                      </p>
 
-                    <div className="mt-6 flex items-center gap-x-3">
-                      <Badge
-                        className="bg-primary-500 text-white"
-                        visual="primary"
-                      >
-                        <Star className="size-3 fill-white" /> 4.5
-                      </Badge>
+                      <div className="mt-6 flex items-center gap-x-3">
+                        <Badge
+                          className="bg-primary-500 text-white rounded-[4px]"
+                          visual="primary"
+                        >
+                          <Star className="size-3 fill-white" /> 4.5
+                        </Badge>
 
-                      <span className="text-xs leading-none text-gray-500">
-                        24 reviews
-                      </span>
-                    </div>
-
-                    <div className="mt-6">
-                      <div className="flex items-center gap-x-[9px]">
-                        <MapPin className="size-4" />
-                        <p className="text-sm leading-none font-medium text-dark-blue-400">
-                          Nainital, Uttarakhand, India
-                        </p>
+                        <span className="text-xs leading-none text-gray-500">
+                          24 reviews
+                        </span>
                       </div>
 
-                      <div className="flex items-center mt-3 gap-x-[9px]">
-                        <Clock className="size-4" />
-                        <p className="text-sm leading-none font-extralight text-dark-blue-400">
-                          Dheeraj is{" "}
-                          <span className="text-success-600 font-medium">
-                            available
-                          </span>{" "}
-                          for hire
-                        </p>
-                      </div>
+                      <div className="mt-6">
+                        <div className="flex items-center gap-x-[9px]">
+                          <MapPin className="size-4" />
+                          <p className="text-sm leading-none font-medium text-dark-blue-400">
+                            Nainital, Uttarakhand, India
+                          </p>
+                        </div>
 
-                      <div className="mt-[58px]">
-                        <h1 className="text-sm font-bold leading-none text-dark-blue-400">
-                          What I do
-                        </h1>
-
-                        <div className="mt-3 flex gap-x-3">
-                          <Badge
-                            className="text-gray-700"
-                            visual="gray"
-                            size="lg"
-                          >
-                            Typescript
-                          </Badge>
-                          <Badge
-                            className="text-gray-700"
-                            visual="gray"
-                            size="lg"
-                          >
-                            React.js
-                          </Badge>
-                          <Badge
-                            className="text-gray-700"
-                            visual="gray"
-                            size="lg"
-                          >
-                            Tailwind CSS
-                          </Badge>
-                          <Badge
-                            className="text-gray-700"
-                            visual="gray"
-                            size="lg"
-                          >
-                            Next.js
-                          </Badge>
-                          <Badge
-                            className="text-gray-700"
-                            visual="gray"
-                            size="lg"
-                          >
-                            <Plus2 className="h-3 w-3" /> 17 more...
-                          </Badge>
+                        <div className="flex items-center mt-3 gap-x-[9px]">
+                          <Clock className="size-4" />
+                          <p className="text-sm leading-none font-extralight text-dark-blue-400">
+                            Dheeraj is{" "}
+                            <span className="text-success-600 font-medium">
+                              available
+                            </span>{" "}
+                            for hire
+                          </p>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="flex items-center gap-x-3">
-                    <TooltipProvider delayDuration={75}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button size="md">
-                            <Plus className="size-[15px]" />
-                            Hire Me
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent
-                          visual="white"
-                          size="md"
-                          className="text-gray-700 p-6 max-w-[344px] border border-gray-200 shadow-[0px_24px_48px_-12px_rgba(16,24,40,.18)]"
-                          sideOffset={14}
-                          side="bottom"
-                        >
-                          <TooltipArrow className="fill-white" />
-                          <div className="flex items-center mt-3 gap-x-[9px]">
-                            <Clock className="size-4" />
-                            <p className="text-sm leading-none font-extralight text-dark-blue-400">
-                              Dheeraj{" "}
-                              <span className="font-medium">
-                                is not currently available
-                              </span>{" "}
-                              for hire
-                            </p>
-                          </div>
+                    <div className="flex items-center gap-x-3">
+                      <TooltipProvider delayDuration={75}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button size="md">
+                              <Plus className="size-[15px]" />
+                              Hire Me
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent
+                            visual="white"
+                            size="md"
+                            className="group text-gray-700 p-6 max-w-[344px] border border-gray-200 shadow-[0px_24px_48px_-12px_rgba(16,24,40,.18)]"
+                            sideOffset={14}
+                            side="bottom"
+                          >
+                            <div className="flex items-center mt-3 gap-x-2">
+                              <Clock className="size-4" />
+                              <p className="text-sm leading-none font-extralight text-dark-blue-400">
+                                Dheeraj{" "}
+                                <span className="font-medium">
+                                  is not currently available
+                                </span>{" "}
+                                for hire
+                              </p>
+                            </div>
 
-                          <Button className="mt-3" size="md" variant="link">
-                            View similar talent{" "}
-                            <ArrowRight className="size-3" />
-                          </Button>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                            <Button className="mt-3" size="md" variant="link">
+                              View similar talent{" "}
+                              <ArrowRight className="size-3" />
+                            </Button>
 
-                    <div className="inline-flex items-center">
-                      <Button
-                        className="rounded-r-none"
-                        variant="outlined"
-                        visual="gray"
-                        size="md"
-                      >
-                        <Star className="size-[15px] text-gray-500" />
-                        Save
-                      </Button>
+                            <span className="absolute inline-block size-4 border-b border-r border-gray-200 bg-white rotate-45 group-data-[side=bottom]:border-r-0 group-data-[side=bottom]:border-b-0 group-data-[side=bottom]:border-l group-data-[side=bottom]:border-t inset-x-0 mx-auto group-data-[side=top]:-bottom-2 group-data-[side=bottom]:-top-2" />
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <SaveButton />
+
                       <IconButton
-                        className="rounded-l-none border-l-0 text-gray-500"
+                        className="text-gray-500"
                         variant="outlined"
                         visual="gray"
                         size="md"
                       >
-                        <ChevronDown className="size-[20px]" />
+                        <Share className="size-[20px]" />
                       </IconButton>
                     </div>
+                  </div>
 
-                    <IconButton
-                      className="text-gray-500"
-                      variant="outlined"
-                      visual="gray"
-                      size="md"
-                    >
-                      <Share className="size-[20px]" />
-                    </IconButton>
+                  <div className="mt-[54px]">
+                    <h1 className="text-sm font-bold leading-none text-dark-blue-400">
+                      What I do
+                    </h1>
+
+                    <div className="mt-3 flex gap-x-3">
+                      <Badge className="text-gray-700" visual="gray" size="lg">
+                        Typescript
+                      </Badge>
+                      <Badge className="text-gray-700" visual="gray" size="lg">
+                        React.js
+                      </Badge>
+                      <Badge className="text-gray-700" visual="gray" size="lg">
+                        Tailwind CSS
+                      </Badge>
+                      <Badge className="text-gray-700" visual="gray" size="lg">
+                        Next.js
+                      </Badge>
+                      <Badge className="text-gray-700" visual="gray" size="lg">
+                        <Plus2 className="h-3 w-3" /> 17 more...
+                      </Badge>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="py-3 px-8 border-t border-gray-200 grid grid-cols-5 divide-x divide-gray-200 bg-[#122A4B]/2">
+              <div className="py-3 px-8 border-t border-gray-200 grid grid-cols-5 divide-x divide-gray-200 bg-[#122A4B]/[.02]">
                 <div className="flex gap-x-2 justify-center items-center">
                   <span className="text-sm font-extralight leading-none text-dark-blue-400">
                     Rate
@@ -1237,7 +1288,7 @@ export const Default = () => {
 
           <Tabs className="mt-6 isolate" defaultValue="Portfolio">
             <TabsList
-              className="group/list p-0 bg-transparent z-10 transition duration-300 top-[64px] sticky block data-[status=stuck]:bg-white border-0"
+              className="group/list p-0 bg-transparent data-[status=stuck]:border-b data-[status=stuck]:border-gray-200 z-10 transition duration-300 top-[64px] sticky block data-[status=stuck]:bg-white border-0"
               data-status={isToolbarStuck ? "stuck" : "unstuck"}
               ref={toolbarRef}
             >
@@ -1268,22 +1319,30 @@ export const Default = () => {
                       className={cn(
                         tabsListVariants({
                           className:
-                            "bg-transparent justify-start w-full group-data-[status=stuck]/list:mt-3 inline-flex",
+                            "bg-transparent justify-start w-full group-data-[status=stuck]/list:border-b-0 group-data-[status=stuck]/list:mt-3 inline-flex",
                         })
                       )}
                     >
-                      <TabsTrigger value="Portfolio">Portfolio</TabsTrigger>
-                      <TabsTrigger value="Skills">Skills</TabsTrigger>
-                      <TabsTrigger value="Overview">Overview</TabsTrigger>
-                      <TabsTrigger value="Offers">Offers</TabsTrigger>
-                      <TabsTrigger value="Work Experience">
-                        Work Experience
+                      <TabsTrigger value="Portfolio" asChild>
+                        <NextLink href="#">Portfolio</NextLink>
                       </TabsTrigger>
-                      <TabsTrigger value="Education">
-                        Work Experience
+                      <TabsTrigger value="Skills" asChild>
+                        <NextLink href="#">Skills</NextLink>
                       </TabsTrigger>
-                      <TabsTrigger value="Project History">
-                        Project History
+                      <TabsTrigger value="Overview" asChild>
+                        <NextLink href="#">Overview</NextLink>
+                      </TabsTrigger>
+                      <TabsTrigger value="Offers" asChild>
+                        <NextLink href="#">Offers</NextLink>
+                      </TabsTrigger>
+                      <TabsTrigger value="Work Experience" asChild>
+                        <NextLink href="#">Work Experience</NextLink>
+                      </TabsTrigger>
+                      <TabsTrigger value="Education" asChild>
+                        <NextLink href="#">Work Experience</NextLink>
+                      </TabsTrigger>
+                      <TabsTrigger value="Project History" asChild>
+                        <NextLink href="#">Project History</NextLink>
                       </TabsTrigger>
                     </div>
                   </div>
@@ -1325,25 +1384,7 @@ export const Default = () => {
                         </Tooltip>
                       </TooltipProvider>
 
-                      <div className="inline-flex items-center">
-                        <Button
-                          className="rounded-r-none"
-                          variant="outlined"
-                          visual="gray"
-                          size="md"
-                        >
-                          <Star className="size-[15px] text-gray-500" />
-                          Save
-                        </Button>
-                        <IconButton
-                          className="rounded-l-none border-l-0 text-gray-500"
-                          variant="outlined"
-                          visual="gray"
-                          size="md"
-                        >
-                          <ChevronDown className="size-[20px]" />
-                        </IconButton>
-                      </div>
+                      <SaveButton />
 
                       <IconButton
                         className="text-gray-500"
@@ -1369,21 +1410,23 @@ export const Default = () => {
                 </div>
               </div>
             </TabsList>
-            <TabsContent
-              className="max-w-[1440px] mx-auto px-[100px]"
-              value="Portfolio"
-            >
+            <div className="max-w-[1440px] mx-auto px-[100px]">
               <div className="pt-6 flex gap-x-8">
                 <div className="flex-auto">
                   <div className="grid grid-cols-3 flex-auto gap-x-6">
-                    <article className="relative rounded-lg overflow-hidden h-[200px]">
+                    <article className="group relative rounded-lg overflow-hidden h-[200px]">
                       <NextImage
                         className="object-cover"
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
                       />
-                      <div className="absolute flex flex-col justify-end gap-y-2 p-[15px] inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_50.12%,rgba(0,0,0,.5)_82.64%)]">
+                      <div className="group inset-0 absolute flex items-center justify-center hover:bg-black/50 transition duration-300">
+                        <Button className="group-hover:opacity-100 opacity-0 bg-white text-gray-700 transition duration-300 hover:bg-primary-500 hover:text-white">
+                          View Project
+                        </Button>
+                      </div>
+                      <div className="absolute group-hover:hidden flex flex-col justify-end gap-y-2 p-[15px] inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_50.12%,rgba(0,0,0,.5)_82.64%)]">
                         <h1 className="text-sm text-white leading-none font-medium">
                           React.js Front End Ecommerce Store
                         </h1>
@@ -1393,21 +1436,23 @@ export const Default = () => {
                           </Badge>
                           <Badge className="bg-white/20 text-white">
                             Visual Design
-                          </Badge>
-                          <Badge className="bg-white/20 text-white">
-                            UX Prototyping
                           </Badge>
                         </div>
                       </div>
                     </article>
-                    <article className="relative rounded-lg overflow-hidden h-[200px]">
+                    <article className="group relative rounded-lg overflow-hidden h-[200px]">
                       <NextImage
                         className="object-cover"
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
                       />
-                      <div className="absolute flex flex-col justify-end gap-y-2 p-[15px] inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_50.12%,rgba(0,0,0,.5)_82.64%)]">
+                      <div className="group inset-0 absolute flex items-center justify-center hover:bg-black/50 transition duration-300">
+                        <Button className="group-hover:opacity-100 opacity-0 bg-white text-gray-700 transition duration-300 hover:bg-primary-500 hover:text-white">
+                          View Project
+                        </Button>
+                      </div>
+                      <div className="absolute group-hover:hidden flex flex-col justify-end gap-y-2 p-[15px] inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_50.12%,rgba(0,0,0,.5)_82.64%)]">
                         <h1 className="text-sm text-white leading-none font-medium">
                           React.js Front End Ecommerce Store
                         </h1>
@@ -1417,21 +1462,23 @@ export const Default = () => {
                           </Badge>
                           <Badge className="bg-white/20 text-white">
                             Visual Design
-                          </Badge>
-                          <Badge className="bg-white/20 text-white">
-                            UX Prototyping
                           </Badge>
                         </div>
                       </div>
                     </article>
-                    <article className="relative rounded-lg overflow-hidden h-[200px]">
+                    <article className="group relative rounded-lg overflow-hidden h-[200px]">
                       <NextImage
                         className="object-cover"
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
                       />
-                      <div className="absolute flex flex-col justify-end gap-y-2 p-[15px] inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_50.12%,rgba(0,0,0,.5)_82.64%)]">
+                      <div className="group inset-0 absolute flex items-center justify-center hover:bg-black/50 transition duration-300">
+                        <Button className="group-hover:opacity-100 opacity-0 bg-white text-gray-700 transition duration-300 hover:bg-primary-500 hover:text-white">
+                          View Project
+                        </Button>
+                      </div>
+                      <div className="group-hover:hidden absolute flex flex-col justify-end gap-y-2 p-[15px] inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_50.12%,rgba(0,0,0,.5)_82.64%)]">
                         <h1 className="text-sm text-white leading-none font-medium">
                           React.js Front End Ecommerce Store
                         </h1>
@@ -1441,9 +1488,6 @@ export const Default = () => {
                           </Badge>
                           <Badge className="bg-white/20 text-white">
                             Visual Design
-                          </Badge>
-                          <Badge className="bg-white/20 text-white">
-                            UX Prototyping
                           </Badge>
                         </div>
                       </div>
@@ -1513,7 +1557,10 @@ export const Default = () => {
                       </Button>
                     </div>
 
-                    <RadixTabs.Tabs className="p-6 border-x border-b rounded-b-lg border-gray-200 bg-white">
+                    <RadixTabs.Tabs
+                      defaultValue="Featured Clients"
+                      className="p-6 h-[134px] border-x border-b rounded-b-lg border-gray-200 bg-white"
+                    >
                       <RadixTabs.List className="flex items-center gap-x-3">
                         <RadixTabs.Trigger
                           value="Featured Clients"
@@ -1536,7 +1583,47 @@ export const Default = () => {
                       </RadixTabs.List>
 
                       <RadixTabs.Content value="Featured Clients">
-                        <div className="pt-6"></div>
+                        <div className="pt-6 flex items-center gap-x-6">
+                          <Dropbox />
+                          <Microsoft />
+                          <Adobe />
+                          <Nasdaq />
+                        </div>
+                      </RadixTabs.Content>
+                      <RadixTabs.Content value="Certifications">
+                        <div className="pt-6 flex items-center gap-x-6">
+                          <div className="inline-flex text-sm leading-none font-medium text-dark-blue-400 items-center gap-x-1.5">
+                            <AdobeBrand className="size-7" />
+                            Adobe Certified Professional
+                          </div>
+                          <div className="inline-flex text-sm leading-none font-medium text-dark-blue-400 items-center gap-x-1.5">
+                            <GoogleDefault className="size-6" />
+                            Google UX Design Certificate
+                          </div>
+                          <div className="inline-flex text-sm leading-none font-medium text-dark-blue-400 items-center gap-x-1.5">
+                            <WordpressBrand className="size-7" />
+                            Certified Wordpress Developer
+                          </div>
+                        </div>
+                      </RadixTabs.Content>
+                      <RadixTabs.Content value="Industry Expertise">
+                        <div className="pt-6 flex items-center gap-x-3">
+                          <Badge size="lg" visual="gray">
+                            Real Estate
+                          </Badge>
+                          <Badge size="lg" visual="gray">
+                            Finance
+                          </Badge>
+                          <Badge size="lg" visual="gray">
+                            Accounting
+                          </Badge>
+                          <Badge size="lg" visual="gray">
+                            Insurance
+                          </Badge>
+                          <Badge size="lg" visual="gray">
+                            Music
+                          </Badge>
+                        </div>
                       </RadixTabs.Content>
                     </RadixTabs.Tabs>
                   </div>
@@ -1607,14 +1694,17 @@ export const Default = () => {
                             </div>
 
                             <div className="mt-3 flex items-start gap-x-3">
-                              <h1 className="font-bold flex-auto text-base leading-none text-dark-blue-400">
+                              <NextLink
+                                href="#"
+                                className="focus-visible:outline-none font-bold flex-auto text-base leading-none text-dark-blue-400 hover:underline"
+                              >
                                 The Ultimate Mobile App Experience
-                              </h1>
+                              </NextLink>
 
-                              <div className="inline-flex items-center gap-x-3">
+                              <div className="inline-flex items-center gap-x-1">
                                 <Star className="size-[15px] text-primary-500 fill-primary-500" />
-                                <span className="text-sm leading-none text-dark-blue-400 font-medium">
-                                  4.9(5)
+                                <span className="inline-flex items-center gap-x-1 text-sm leading-none text-dark-blue-400 font-medium">
+                                  4.9 <span>(5)</span>
                                 </span>
                               </div>
                             </div>
@@ -1884,14 +1974,17 @@ export const Default = () => {
                             </div>
 
                             <div className="mt-3 flex items-start gap-x-3">
-                              <h1 className="font-bold flex-auto text-base leading-none text-dark-blue-400">
+                              <NextLink
+                                href="#"
+                                className="focus-visible:outline-none font-bold flex-auto text-base leading-none text-dark-blue-400 hover:underline"
+                              >
                                 The Ultimate Mobile App Experience
-                              </h1>
+                              </NextLink>
 
-                              <div className="inline-flex items-center gap-x-3">
+                              <div className="inline-flex items-center gap-x-1">
                                 <Star className="size-[15px] text-primary-500 fill-primary-500" />
-                                <span className="text-sm leading-none text-dark-blue-400 font-medium">
-                                  4.9(5)
+                                <span className="inline-flex items-center gap-x-1 text-sm leading-none text-dark-blue-400 font-medium">
+                                  4.9 <span>(5)</span>
                                 </span>
                               </div>
                             </div>
@@ -2161,14 +2254,17 @@ export const Default = () => {
                             </div>
 
                             <div className="mt-3 flex items-start gap-x-3">
-                              <h1 className="font-bold flex-auto text-base leading-none text-dark-blue-400">
+                              <NextLink
+                                href="#"
+                                className="focus-visible:outline-none font-bold flex-auto text-base leading-none text-dark-blue-400 hover:underline"
+                              >
                                 The Ultimate Mobile App Experience
-                              </h1>
+                              </NextLink>
 
-                              <div className="inline-flex items-center gap-x-3">
+                              <div className="inline-flex items-center gap-x-1">
                                 <Star className="size-[15px] text-primary-500 fill-primary-500" />
-                                <span className="text-sm leading-none text-dark-blue-400 font-medium">
-                                  4.9(5)
+                                <span className="inline-flex items-center gap-x-1 text-sm leading-none text-dark-blue-400 font-medium">
+                                  4.9 <span>(5)</span>
                                 </span>
                               </div>
                             </div>
@@ -2509,18 +2605,15 @@ export const Default = () => {
                                   leo lectus. Risus nunc sit urna neque volutpat
                                   at sed. Tortor integer faucibus sed viverra
                                   malesuada ornare tellus enim sollicitudin. Id
-                                  odio porttitor interdum nulla sit. Felis ut a
-                                  id malesuada. Etiam augue neque arcu
-                                  ultricies. Id nibh scelerisque et lacinia
-                                  aliquam eget nisi pellentesque. Commodo etiam
-                                  nisi interdum est volutpat odio consequat. Et
-                                  quisque blandit phasellus tellus tortor in
-                                  ipsum interdum consequat. Suspendisse morbi
-                                  nunc eu commodo. Maecenas turpis fermentum
-                                  tristique aliquam malesuada sed a elementum
-                                  felis. Dolor aenean lacus morbi metus vel leo.
-                                  Sit malesuada tellus lacus amet nulla
-                                  vestibulum luctus turpis.
+                                  odio porttitor interdum nulla. Lorem ipsum
+                                  dolor sit amet consectetur{" "}
+                                  <Button
+                                    className="hover:text-gray-700 font-semibold"
+                                    visual="gray"
+                                    variant="link"
+                                  >
+                                    ...Read More
+                                  </Button>
                                 </p>
 
                                 <div className="mt-3 flex items-center justify-between">
@@ -2531,10 +2624,6 @@ export const Default = () => {
                                     <Badge visual="gray">Sketch App</Badge>
                                     <Badge visual="gray">Sketch App</Badge>
                                   </div>
-
-                                  <Button visual="gray" variant="link">
-                                    Read More
-                                  </Button>
                                 </div>
                               </div>
 
@@ -2561,18 +2650,15 @@ export const Default = () => {
                                   leo lectus. Risus nunc sit urna neque volutpat
                                   at sed. Tortor integer faucibus sed viverra
                                   malesuada ornare tellus enim sollicitudin. Id
-                                  odio porttitor interdum nulla sit. Felis ut a
-                                  id malesuada. Etiam augue neque arcu
-                                  ultricies. Id nibh scelerisque et lacinia
-                                  aliquam eget nisi pellentesque. Commodo etiam
-                                  nisi interdum est volutpat odio consequat. Et
-                                  quisque blandit phasellus tellus tortor in
-                                  ipsum interdum consequat. Suspendisse morbi
-                                  nunc eu commodo. Maecenas turpis fermentum
-                                  tristique aliquam malesuada sed a elementum
-                                  felis. Dolor aenean lacus morbi metus vel leo.
-                                  Sit malesuada tellus lacus amet nulla
-                                  vestibulum luctus turpis.
+                                  odio porttitor interdum nulla. Lorem ipsum
+                                  dolor sit amet consectetur{" "}
+                                  <Button
+                                    className="hover:text-gray-700 font-semibold"
+                                    visual="gray"
+                                    variant="link"
+                                  >
+                                    ...Read More
+                                  </Button>
                                 </p>
 
                                 <div className="mt-3 flex items-center justify-between">
@@ -2583,10 +2669,6 @@ export const Default = () => {
                                     <Badge visual="gray">Sketch App</Badge>
                                     <Badge visual="gray">Sketch App</Badge>
                                   </div>
-
-                                  <Button visual="gray" variant="link">
-                                    Read More
-                                  </Button>
                                 </div>
                               </div>
                             </div>
@@ -2633,18 +2715,15 @@ export const Default = () => {
                                   leo lectus. Risus nunc sit urna neque volutpat
                                   at sed. Tortor integer faucibus sed viverra
                                   malesuada ornare tellus enim sollicitudin. Id
-                                  odio porttitor interdum nulla sit. Felis ut a
-                                  id malesuada. Etiam augue neque arcu
-                                  ultricies. Id nibh scelerisque et lacinia
-                                  aliquam eget nisi pellentesque. Commodo etiam
-                                  nisi interdum est volutpat odio consequat. Et
-                                  quisque blandit phasellus tellus tortor in
-                                  ipsum interdum consequat. Suspendisse morbi
-                                  nunc eu commodo. Maecenas turpis fermentum
-                                  tristique aliquam malesuada sed a elementum
-                                  felis. Dolor aenean lacus morbi metus vel leo.
-                                  Sit malesuada tellus lacus amet nulla
-                                  vestibulum luctus turpis.
+                                  odio porttitor interdum nulla. Lorem ipsum
+                                  dolor sit amet consectetur{" "}
+                                  <Button
+                                    className="hover:text-gray-700 font-semibold"
+                                    visual="gray"
+                                    variant="link"
+                                  >
+                                    ...Read More
+                                  </Button>
                                 </p>
 
                                 <div className="mt-3 flex items-center justify-between">
@@ -2655,10 +2734,6 @@ export const Default = () => {
                                     <Badge visual="gray">Sketch App</Badge>
                                     <Badge visual="gray">Sketch App</Badge>
                                   </div>
-
-                                  <Button visual="gray" variant="link">
-                                    Read More
-                                  </Button>
                                 </div>
                               </div>
 
@@ -2685,18 +2760,15 @@ export const Default = () => {
                                   leo lectus. Risus nunc sit urna neque volutpat
                                   at sed. Tortor integer faucibus sed viverra
                                   malesuada ornare tellus enim sollicitudin. Id
-                                  odio porttitor interdum nulla sit. Felis ut a
-                                  id malesuada. Etiam augue neque arcu
-                                  ultricies. Id nibh scelerisque et lacinia
-                                  aliquam eget nisi pellentesque. Commodo etiam
-                                  nisi interdum est volutpat odio consequat. Et
-                                  quisque blandit phasellus tellus tortor in
-                                  ipsum interdum consequat. Suspendisse morbi
-                                  nunc eu commodo. Maecenas turpis fermentum
-                                  tristique aliquam malesuada sed a elementum
-                                  felis. Dolor aenean lacus morbi metus vel leo.
-                                  Sit malesuada tellus lacus amet nulla
-                                  vestibulum luctus turpis.
+                                  odio porttitor interdum nulla. Lorem ipsum
+                                  dolor sit amet consectetur{" "}
+                                  <Button
+                                    className="hover:text-gray-700 font-semibold"
+                                    visual="gray"
+                                    variant="link"
+                                  >
+                                    ...Read More
+                                  </Button>
                                 </p>
 
                                 <div className="mt-3 flex items-center justify-between">
@@ -2707,10 +2779,6 @@ export const Default = () => {
                                     <Badge visual="gray">Sketch App</Badge>
                                     <Badge visual="gray">Sketch App</Badge>
                                   </div>
-
-                                  <Button visual="gray" variant="link">
-                                    Read More
-                                  </Button>
                                 </div>
                               </div>
                             </div>
@@ -2871,8 +2939,7 @@ export const Default = () => {
                         </CarouselContent>
 
                         <CarouselPreviousTrigger />
-
-                        <CarouselNext className="size-7 border-0 bg-black/80 hover:bg-black transition text-white duration-300 -right-4" />
+                        <CarouselNextTrigger />
                       </Carousel>
 
                       <div className="flex items-center justify-between mt-3">
@@ -2888,7 +2955,7 @@ export const Default = () => {
 
                     <div className="p-8 border-x gap-x-[50px] border-b flex items-start rounded-b-lg border-gray-200 bg-white shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
                       <div className="flex flex-col flex-1 gap-y-1.5 basis-[147px]">
-                        <h1 className="text-xl leading-none font-bold text-dark-blue-400">
+                        <h1 className="text-xl leading-none text-nowrap font-bold text-dark-blue-400">
                           Project History
                         </h1>
 
@@ -2906,78 +2973,101 @@ export const Default = () => {
                           </div>
                         </div>
 
-                        <p className="text-xs leading-6 underline text-dark-blue-400">
+                        <NextLink
+                          href="#"
+                          className="focus-visible:outline-none text-xs leading-6 transition duration-300 hover:underline text-dark-blue-400"
+                        >
                           23 ratings
-                        </p>
+                        </NextLink>
                       </div>
 
                       <div className="flex flex-col flex-1 gap-y-1 basis-[304px]">
                         <div className="flex items-center gap-x-2">
-                          <span className="text-xs font-semibold text-dark-blue-400">
+                          <NextLink
+                            href="#"
+                            className="hover:underline focus-visible:outline-none text-xs font-semibold text-dark-blue-400"
+                          >
                             5
-                          </span>
+                          </NextLink>
                           <Progress className="flex-auto" value={100} />
-                          <span className="text-xs font-semibold leading-[21px] inline-flex items-center gap-x-0.5">
+                          <NextLink
+                            href="#"
+                            className="hover:underline focus-visible:outline-none text-xs font-semibold leading-[21px] inline-flex items-center gap-x-1 text-dark-blue-400"
+                          >
                             100% <span className="font-extralight">(100)</span>
-                          </span>
+                          </NextLink>
                         </div>
                         <div className="flex items-center gap-x-2">
-                          <span className="text-xs font-semibold text-dark-blue-400">
+                          <NextLink
+                            href="#"
+                            className="hover:underline focus-visible:outline-none text-xs font-semibold text-dark-blue-400"
+                          >
                             4
-                          </span>
+                          </NextLink>
                           <Progress className="flex-auto" value={75} />
-                          <span className="text-xs font-semibold leading-[21px] inline-flex items-center gap-x-0.5">
+                          <NextLink
+                            href="#"
+                            className="hover:underline focus-visible:outline-none text-xs font-semibold leading-[21px] inline-flex items-center gap-x-1 text-dark-blue-400"
+                          >
                             75% <span className="font-extralight">(75)</span>
-                          </span>
+                          </NextLink>
                         </div>
                         <div className="flex items-center gap-x-2">
-                          <span className="text-xs font-semibold text-dark-blue-400">
+                          <NextLink
+                            href="#"
+                            className="hover:underline focus-visible:outline-none text-xs font-semibold text-dark-blue-400"
+                          >
                             3
-                          </span>
+                          </NextLink>
                           <Progress className="flex-auto" value={50} />
-                          <span className="text-xs font-semibold leading-[21px] inline-flex items-center gap-x-0.5">
+                          <NextLink
+                            href="#"
+                            className="hover:underline focus-visible:outline-none text-xs font-semibold leading-[21px] inline-flex items-center gap-x-1 text-dark-blue-400"
+                          >
                             50% <span className="font-extralight">(50)</span>
-                          </span>
+                          </NextLink>
                         </div>
                         <div className="flex items-center gap-x-2">
-                          <span className="text-xs font-semibold text-dark-blue-400">
+                          <NextLink
+                            href="#"
+                            className="hover:underline focus-visible:outline-none text-xs font-semibold text-dark-blue-400"
+                          >
                             2
-                          </span>
+                          </NextLink>
                           <Progress className="flex-auto" value={25} />
-                          <span className="text-xs font-semibold leading-[21px] inline-flex items-center gap-x-0.5">
+                          <NextLink
+                            href="#"
+                            className="hover:underline focus-visible:outline-none text-xs font-semibold leading-[21px] inline-flex items-center gap-x-1 text-dark-blue-400"
+                          >
                             25% <span className="font-extralight">(25)</span>
-                          </span>
+                          </NextLink>
                         </div>
                         <div className="flex items-center gap-x-2">
-                          <span className="text-xs font-semibold text-dark-blue-400">
+                          <NextLink
+                            href="#"
+                            className="hover:underline focus-visible:outline-none text-xs font-semibold text-dark-blue-400"
+                          >
                             1
-                          </span>
+                          </NextLink>
                           <Progress className="flex-auto" value={0} />
-                          <span className="text-xs font-semibold leading-[21px] inline-flex items-center gap-x-0.5">
+                          <NextLink
+                            href="#"
+                            className="hover:underline focus-visible:outline-none text-xs font-semibold leading-[21px] inline-flex items-center gap-x-1 text-dark-blue-400"
+                          >
                             0% <span className="font-extralight">(0)</span>
-                          </span>
+                          </NextLink>
                         </div>
                       </div>
 
-                      <div className="flex flex-1 flex-col gap-y-3 basis-[304px]">
-                        <Listbox>
-                          <ListboxButton placeholder="Filter" />
-                          <ListboxOptions>
-                            {["Option 1", "Option 2", "Option 3"].map(
-                              (option) => (
-                                <ListboxOption key={option} value={option}>
-                                  {option}
-                                </ListboxOption>
-                              )
-                            )}
-                          </ListboxOptions>
-                        </Listbox>
-
+                      <div className="flex flex-1 flex-col basis-[304px]">
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs leading-5 font-semibold underline text-gray-500">
+                            <NextLink
+                              href="#"
+                              className="focus-visible:outline-none text-xs leading-5 font-semibold underline text-gray-500 hover:text-gray-600"
+                            >
                               Communication Level
-                            </span>
+                            </NextLink>
 
                             <div className="flex items-center gap-x-1">
                               <Star className="size-3.5 text-primary-500 fill-primary-500" />
@@ -2988,9 +3078,12 @@ export const Default = () => {
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <span className="text-xs leading-5 font-semibold underline text-gray-500">
+                            <NextLink
+                              href="#"
+                              className="focus-visible:outline-none text-xs leading-5 font-semibold underline text-gray-500 hover:text-gray-600"
+                            >
                               Responsiveness
-                            </span>
+                            </NextLink>
 
                             <div className="flex items-center gap-x-1">
                               <Star className="size-3.5 text-primary-500 fill-primary-500" />
@@ -3001,9 +3094,12 @@ export const Default = () => {
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <span className="text-xs leading-5 font-semibold underline text-gray-500">
+                            <NextLink
+                              href="#"
+                              className="focus-visible:outline-none text-xs leading-5 font-semibold underline text-gray-500 hover:text-gray-600"
+                            >
                               Quality of Delivery
-                            </span>
+                            </NextLink>
 
                             <div className="flex items-center gap-x-1">
                               <Star className="size-3.5 text-primary-500 fill-primary-500" />
@@ -3014,9 +3110,12 @@ export const Default = () => {
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <span className="text-xs leading-5 font-semibold underline text-gray-500">
+                            <NextLink
+                              href="#"
+                              className="focus-visible:outline-none text-xs leading-5 font-semibold underline text-gray-500 hover:text-gray-600"
+                            >
                               Value of Delivery
-                            </span>
+                            </NextLink>
 
                             <div className="flex items-center gap-x-1">
                               <Star className="size-3.5 text-primary-500 fill-primary-500" />
@@ -3027,9 +3126,12 @@ export const Default = () => {
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <span className="text-xs leading-5 font-semibold underline text-gray-500">
+                            <NextLink
+                              href="#"
+                              className="focus-visible:outline-none text-xs leading-5 font-semibold underline text-gray-500 hover:text-gray-600"
+                            >
                               Value of Delivery
-                            </span>
+                            </NextLink>
 
                             <div className="flex items-center gap-x-1">
                               <Star className="size-3.5 text-primary-500 fill-primary-500" />
@@ -3069,7 +3171,7 @@ export const Default = () => {
                               className="peer pl-[34px]"
                               value={email}
                               onChange={(event) => setEmail(event.target.value)}
-                              placeholder="olivia@untitledui.com"
+                              placeholder="Search"
                             />
                             <InputLeftElement className="text-gray-400 peer-focus:text-primary-500">
                               <SearchMd className="size-4" />
@@ -3208,10 +3310,15 @@ export const Default = () => {
                         augue in integer lacus amet semper. Non dictum phasellus
                         elit turpis nisi vitae et. Tristique ultrices habitasse
                         tortor vehicula elementum. Nulla turpis rhoncus
-                        venenatis at. In porta viverra faucibus posuere. Felis
-                        diam non sit consequat quam suspendisse. Elit
-                        sollicitudin massa velit nibh. Amet tortor fermentum
-                        etiam semper. Vel amet et in ac vel enim velit.
+                        venenatis at. In porta viverra faucibus posuere{" "}
+                        <Button
+                          className="hover:text-gray-700 font-semibold"
+                          size="sm"
+                          variant="link"
+                          visual="gray"
+                        >
+                          ...Read More
+                        </Button>
                       </p>
 
                       <div className="mt-3 flex items-center justify-between">
@@ -3219,17 +3326,9 @@ export const Default = () => {
                           <span className="text-xs font-medium leading-none text-dark-blue-400">
                             Helpful
                           </span>
-                          <button className="focus-visible:outline-none inline-flex items-center gap-x-[1.94px] text-[13px] font-extralight text-dark-blue-400 leading-none">
-                            <ThumbsUp className="size-[18px]" /> (0)
-                          </button>
-                          <button className="focus-visible:outline-none inline-flex items-center gap-x-[1.94px] text-[13px] font-extralight text-dark-blue-400 leading-none">
-                            <ThumbsDown className="size-[18px]" />
-                          </button>
+                          <ThumbsUpToggle />
+                          <ThumbsDownToggle />
                         </div>
-
-                        <Button size="sm" variant="link" visual="gray">
-                          Read More
-                        </Button>
                       </div>
                     </div>
 
@@ -3388,10 +3487,15 @@ export const Default = () => {
                         augue in integer lacus amet semper. Non dictum phasellus
                         elit turpis nisi vitae et. Tristique ultrices habitasse
                         tortor vehicula elementum. Nulla turpis rhoncus
-                        venenatis at. In porta viverra faucibus posuere. Felis
-                        diam non sit consequat quam suspendisse. Elit
-                        sollicitudin massa velit nibh. Amet tortor fermentum
-                        etiam semper. Vel amet et in ac vel enim velit.
+                        venenatis at. In porta viverra faucibus posuere{" "}
+                        <Button
+                          className="hover:text-gray-700 font-semibold"
+                          size="sm"
+                          variant="link"
+                          visual="gray"
+                        >
+                          ...Read More
+                        </Button>
                       </p>
 
                       <div className="mt-3 flex items-center justify-between">
@@ -3399,17 +3503,10 @@ export const Default = () => {
                           <span className="text-xs font-medium leading-none text-dark-blue-400">
                             Helpful
                           </span>
-                          <button className="focus-visible:outline-none inline-flex items-center gap-x-[1.94px] text-[13px] font-extralight text-dark-blue-400 leading-none">
-                            <ThumbsUp className="size-[18px]" /> (0)
-                          </button>
-                          <button className="focus-visible:outline-none inline-flex items-center gap-x-[1.94px] text-[13px] font-extralight text-dark-blue-400 leading-none">
-                            <ThumbsDown className="size-[18px]" />
-                          </button>
-                        </div>
 
-                        <Button size="sm" variant="link" visual="gray">
-                          Read More
-                        </Button>
+                          <ThumbsUpToggle />
+                          <ThumbsDownToggle />
+                        </div>
                       </div>
                     </div>
 
@@ -3504,16 +3601,21 @@ export const Default = () => {
                         </div>
                       </div>
 
-                      <p className="text-sm font-extralight mt-3 line-clamp-2 leading-none text-gray-700">
+                      <p className="text-sm font-extralight mt-3 leading-none text-gray-700">
                         The company has a lot of resources and benefits but
                         it&apos;s also very demanding. It&apos;s not for
                         everyone but I enjoy working here. Thank you Sam, we had
                         a very productive collaboration. Looking forward to more
                         collaboration in the future. All the best! In porta
-                        viverra faucibus posuere. Felis diam non sit consequat
-                        quam suspendisse. Elit sollicitudin massa velit nibh.
-                        Amet tortor fermentum etiam semper. Vel amet et in ac
-                        vel
+                        viverra{" "}
+                        <Button
+                          className="hover:text-gray-700 font-semibold"
+                          size="sm"
+                          variant="link"
+                          visual="gray"
+                        >
+                          ...Read More
+                        </Button>
                       </p>
 
                       <div className="mt-3 flex items-center justify-between">
@@ -3521,81 +3623,85 @@ export const Default = () => {
                           <span className="text-xs font-medium leading-none text-dark-blue-400">
                             Helpful
                           </span>
-                          <button className="focus-visible:outline-none inline-flex items-center gap-x-[1.94px] text-[13px] font-extralight text-dark-blue-400 leading-none">
-                            <ThumbsUp className="size-[18px]" /> (0)
-                          </button>
-                          <button className="focus-visible:outline-none inline-flex items-center gap-x-[1.94px] text-[13px] font-extralight text-dark-blue-400 leading-none">
-                            <ThumbsDown className="size-[18px]" />
-                          </button>
+                          <ThumbsUpToggle />
+                          <ThumbsDownToggle />
                         </div>
-
-                        <Button size="sm" variant="link" visual="gray">
-                          Read More
-                        </Button>
                       </div>
                     </div>
+                  </div>
+
+                  <div className="flex items-center justify-end mt-6">
+                    <Button
+                      size="md"
+                      visual="gray"
+                      variant="outlined"
+                      className="bg-white"
+                    >
+                      Show More Feedback (6)
+                    </Button>
                   </div>
                 </div>
 
                 <div className="shrink-0 flex flex-col gap-y-6 w-[289px] isolate">
-                  <div className="space-y-6">
-                    <div
-                      className={cn(
-                        "top-[202px] sticky bg-white rounded-lg z-10 transition duration-300 before:content-[''] before:absolute before:w-full before:top-[-36px] before:h-[44px] before:bg-gray-50",
-                        isCardStuck &&
-                          "shadow-[0px_12px_16px_-4px_rgba(16,24,40,.08)]"
-                      )}
-                      ref={cardRef}
-                    >
-                      <div className="p-6 rounded-t-lg relative bg-white border border-gray-200">
-                        <div className="flex items-center gap-x-1 justify-center">
-                          <span className="inline-flex text-sm leading-none text-dark-blue-400 font-bold items-center gap-x-1">
-                            <span className="size-1 inline-block bg-gray-500 rounded-full" />{" "}
-                            Offline
-                          </span>
-                          <span className="font-extralight text-sm leading-none text-dark-blue-400">
-                            3:30 PM local time
-                          </span>
-                        </div>
-
-                        <div className="mt-2 flex items-center justify-center">
-                          <span className="text-sm leading-none font-extralight text-dark-blue-400">
-                            Average response time{" "}
-                            <span className="text-sm font-bold leading-none">
-                              1 hour
-                            </span>
-                          </span>
-                        </div>
-
-                        <button className="w-full mt-5 duration-300 transition focus-visible:outlin-none text-sm leading-5 font-semibold shrink-0 h-10 flex items-center justify-center gap-x-2 rounded-[5px] px-4 bg-white border-2 text-primary-500 hover:text-white hover:bg-primary-500 border-primary-500 shadow-[0px_1px_2px_0px_rgba(16,24,40,.05)]">
-                          <MessageSquare01 className="size-[15px]" /> Message Me
-                        </button>
+                  <div
+                    className={cn(
+                      "top-[197.5px] sticky bg-white rounded-lg z-10 transition duration-300 before:content-[''] before:absolute before:w-full before:top-[-32px] before:h-[40px] before:bg-gray-50",
+                      isCardStuck &&
+                        "shadow-[0px_12px_16px_-4px_rgba(16,24,40,.08)]"
+                    )}
+                    ref={cardRef}
+                  >
+                    <div className="p-6 rounded-t-lg relative bg-white border border-gray-200">
+                      <div className="flex items-center gap-x-1 justify-center">
+                        <span className="inline-flex text-sm leading-none text-dark-blue-400 font-bold items-center gap-x-1">
+                          <span className="size-1 inline-block bg-gray-500 rounded-full" />{" "}
+                          Offline
+                        </span>
+                        <span className="font-extralight text-sm leading-none text-dark-blue-400">
+                          3:30 PM local time
+                        </span>
                       </div>
 
-                      <div className="p-6 border-x rounded-b-lg border-b bg-white border-gray-200">
-                        <div className="flex items-center justify-between">
-                          <span className="flex items-center text-xs leading-none font-extralight text-dark-blue-400 gap-x-[5.85px]">
-                            <MessageTextSquare01 className="size-[15px]" />
-                            Language
+                      <div className="mt-2 flex items-center justify-center">
+                        <span className="text-sm leading-none font-extralight text-dark-blue-400">
+                          Average response time{" "}
+                          <span className="text-sm font-bold leading-none">
+                            1 hour
                           </span>
+                        </span>
+                      </div>
 
-                          <span className="text-xs leading-none font-bold text-dark-blue-400">
-                            English, Hindi
-                          </span>
-                        </div>
+                      <button className="w-full mt-5 duration-300 transition focus-visible:outlin-none text-sm leading-5 font-semibold shrink-0 h-10 flex items-center justify-center gap-x-2 rounded-[5px] px-4 bg-white border-2 text-primary-500 hover:text-white hover:bg-primary-500 border-primary-500 shadow-[0px_1px_2px_0px_rgba(16,24,40,.05)]">
+                        <MessageSquare01 className="size-[15px]" /> Message Me
+                      </button>
+                    </div>
 
-                        <div className="flex mt-5 items-center justify-between">
-                          <span className="flex items-center text-xs leading-none font-extralight text-dark-blue-400 gap-x-[5.85px]">
-                            <Clock className="size-[15px]" />
-                            Time Zone
-                          </span>
+                    <div className="p-6 border-x rounded-b-lg border-b bg-white border-gray-200">
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center text-xs leading-none font-extralight text-dark-blue-400 gap-x-[5.85px]">
+                          <MessageTextSquare01 className="size-[15px]" />
+                          Language
+                        </span>
 
-                          <span className="text-xs leading-none font-bold text-dark-blue-400">
-                            India (IST-3)
-                          </span>
-                        </div>
+                        <span className="text-xs leading-none font-bold text-dark-blue-400">
+                          English, Hindi
+                        </span>
+                      </div>
+
+                      <div className="flex mt-5 items-center justify-between">
+                        <span className="flex items-center text-xs leading-none font-extralight text-dark-blue-400 gap-x-[5.85px]">
+                          <Clock className="size-[15px]" />
+                          Time Zone
+                        </span>
+
+                        <span className="text-xs leading-none font-bold text-dark-blue-400">
+                          India (IST-3)
+                        </span>
                       </div>
                     </div>
+                  </div>
+
+                  <div className="space-y-6 mt-6">
                     <div className="rounded-lg border border-gray-200 bg-white">
                       <div className="p-6">
                         <h1 className="text-sm font-bold leading-none text-dark-blue-400">
@@ -3931,13 +4037,7 @@ export const Default = () => {
                   </div>
                 </div>
               </div>
-            </TabsContent>
-            <TabsContent value="Skills"></TabsContent>
-            <TabsContent value="Overview"></TabsContent>
-            <TabsContent value="Offers"></TabsContent>
-            <TabsContent value="Work Experience"></TabsContent>
-            <TabsContent value="Education"></TabsContent>
-            <TabsContent value="Project History"></TabsContent>
+            </div>
           </Tabs>
         </div>
       </Layout>
