@@ -1557,40 +1557,46 @@ export const Default = () => {
                       </Button>
                     </div>
 
-                    <RadixTabs.Tabs
+                    <Tabs
                       defaultValue="Featured Clients"
                       className="p-6 h-[134px] border-x border-b rounded-b-lg border-gray-200 bg-white"
                     >
                       <RadixTabs.List className="flex items-center gap-x-3">
-                        <RadixTabs.Trigger
+                        <TabsTrigger
+                          variant="unstyled"
+                          showUnderline={false}
                           value="Featured Clients"
                           className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
                         >
                           Featured Clients
-                        </RadixTabs.Trigger>
-                        <RadixTabs.Trigger
+                        </TabsTrigger>
+                        <TabsTrigger
+                          variant="unstyled"
+                          showUnderline={false}
                           value="Certifications"
                           className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
                         >
                           Certifications
-                        </RadixTabs.Trigger>
-                        <RadixTabs.Trigger
+                        </TabsTrigger>
+                        <TabsTrigger
+                          variant="unstyled"
+                          showUnderline={false}
                           value="Industry Expertise"
                           className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
                         >
                           Industry Expertise
-                        </RadixTabs.Trigger>
+                        </TabsTrigger>
                       </RadixTabs.List>
 
-                      <RadixTabs.Content value="Featured Clients">
+                      <TabsContent value="Featured Clients">
                         <div className="pt-6 flex items-center gap-x-6">
                           <Dropbox />
                           <Microsoft />
                           <Adobe />
                           <Nasdaq />
                         </div>
-                      </RadixTabs.Content>
-                      <RadixTabs.Content value="Certifications">
+                      </TabsContent>
+                      <TabsContent value="Certifications">
                         <div className="pt-6 flex items-center gap-x-6">
                           <div className="inline-flex text-sm leading-none font-medium text-dark-blue-400 items-center gap-x-1.5">
                             <AdobeBrand className="size-7" />
@@ -1605,8 +1611,8 @@ export const Default = () => {
                             Certified Wordpress Developer
                           </div>
                         </div>
-                      </RadixTabs.Content>
-                      <RadixTabs.Content value="Industry Expertise">
+                      </TabsContent>
+                      <TabsContent value="Industry Expertise">
                         <div className="pt-6 flex items-center gap-x-3">
                           <Badge size="lg" visual="gray">
                             Real Estate
@@ -1624,8 +1630,8 @@ export const Default = () => {
                             Music
                           </Badge>
                         </div>
-                      </RadixTabs.Content>
-                    </RadixTabs.Tabs>
+                      </TabsContent>
+                    </Tabs>
                   </div>
 
                   <div className="mt-6">
@@ -1633,21 +1639,25 @@ export const Default = () => {
                       My Offers
                     </h1>
 
-                    <RadixTabs.Tabs defaultValue="Projects" className="mt-6">
+                    <Tabs defaultValue="Projects" className="mt-6">
                       <div className="flex items-center justify-between">
                         <RadixTabs.List className="inline-flex items-center gap-x-3">
-                          <RadixTabs.Trigger
+                          <TabsTrigger
+                            variant="unstyled"
+                            showUnderline={false}
                             value="Projects"
                             className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
                           >
                             Projects
-                          </RadixTabs.Trigger>
-                          <RadixTabs.Trigger
+                          </TabsTrigger>
+                          <TabsTrigger
+                            variant="unstyled"
+                            showUnderline={false}
                             value="Services"
                             className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
                           >
                             Services
-                          </RadixTabs.Trigger>
+                          </TabsTrigger>
                         </RadixTabs.List>
 
                         <RadixTabs.Tabs
@@ -1681,7 +1691,7 @@ export const Default = () => {
                         </RadixTabs.Tabs>
                       </div>
 
-                      <RadixTabs.Content value="Projects">
+                      <TabsContent value="Projects">
                         <div className="pt-6 grid grid-cols-3 gap-x-5">
                           <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
                             <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative">
@@ -2524,8 +2534,8 @@ export const Default = () => {
                             </div>
                           </article>
                         </div>
-                      </RadixTabs.Content>
-                    </RadixTabs.Tabs>
+                      </TabsContent>
+                    </Tabs>
                   </div>
 
                   <div className="my-6">
@@ -2543,26 +2553,27 @@ export const Default = () => {
                       Background
                     </h1>
 
-                    <RadixTabs.Tabs
-                      defaultValue="Work Experience"
-                      className="mt-6"
-                    >
+                    <Tabs defaultValue="Work Experience" className="mt-6">
                       <RadixTabs.List className="inline-flex items-center gap-x-3">
-                        <RadixTabs.Trigger
+                        <TabsTrigger
+                          variant="unstyled"
+                          showUnderline={false}
                           value="Work Experience"
                           className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
                         >
                           Work Experience
-                        </RadixTabs.Trigger>
-                        <RadixTabs.Trigger
+                        </TabsTrigger>
+                        <TabsTrigger
+                          variant="unstyled"
+                          showUnderline={false}
                           value="Education"
                           className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
                         >
                           Education
-                        </RadixTabs.Trigger>
+                        </TabsTrigger>
                       </RadixTabs.List>
 
-                      <RadixTabs.Content value="Work Experience">
+                      <TabsContent value="Work Experience">
                         <div className="pt-6">
                           <div className="flex gap-x-6">
                             <div className="relative flex flex-col items-center">
@@ -2789,9 +2800,9 @@ export const Default = () => {
                             View More
                           </Button>
                         </div>
-                      </RadixTabs.Content>
+                      </TabsContent>
 
-                      <RadixTabs.Content value="Education">
+                      <TabsContent value="Education">
                         <div className="pt-6">
                           <div className="flex pb-5 items-start gap-x-6">
                             <div className="size-[55px] p-[5px] relative shrink-0 rounded-lg overflow-hidden border border-gray-200">
@@ -2913,8 +2924,8 @@ export const Default = () => {
                         <Button size="sm" variant="link" visual="gray">
                           2 More...
                         </Button>
-                      </RadixTabs.Content>
-                    </RadixTabs.Tabs>
+                      </TabsContent>
+                    </Tabs>
                   </div>
 
                   <div className="mt-6">
@@ -3871,7 +3882,7 @@ export const Default = () => {
                       </h1>
 
                       <div className="mt-3">
-                        <div className="py-3 flex items-start gap-x-2 border-b border-gray-200">
+                        <div className="py-3 flex items-center gap-x-2 border-b border-gray-200">
                           <Avatar
                             className="hover:ring-0 active:ring-primary-100"
                             size="md"
@@ -3881,9 +3892,12 @@ export const Default = () => {
                           </Avatar>
 
                           <div className="flex-1">
-                            <h1 className="text-sm leading-none text-dark-blue-400 font-bold">
+                            <NextLink
+                              href="#"
+                              className="focus-visible:outline-none hover:underline text-sm leading-none text-dark-blue-400 font-bold"
+                            >
                               Bitcoin Master Devs
-                            </h1>
+                            </NextLink>
 
                             <div className="mt-1.5 flex items-center justify-between">
                               <span className="inline-flex items-center gap-x-1 font-extralight">
@@ -3902,7 +3916,7 @@ export const Default = () => {
                             </div>
                           </div>
                         </div>
-                        <div className="py-3 flex items-start gap-x-2 border-b border-gray-200">
+                        <div className="py-3 flex items-center gap-x-2 border-b border-gray-200">
                           <Avatar
                             className="hover:ring-0 active:ring-primary-100"
                             size="md"
@@ -3912,9 +3926,12 @@ export const Default = () => {
                           </Avatar>
 
                           <div className="flex-1">
-                            <h1 className="text-sm leading-none text-dark-blue-400 font-bold">
+                            <NextLink
+                              href="#"
+                              className="focus-visible:outline-none hover:underline text-sm leading-none text-dark-blue-400 font-bold"
+                            >
                               Bitcoin Master Devs
-                            </h1>
+                            </NextLink>
 
                             <div className="mt-1.5 flex items-center justify-between">
                               <span className="inline-flex items-center gap-x-1 font-extralight">
@@ -3933,7 +3950,7 @@ export const Default = () => {
                             </div>
                           </div>
                         </div>
-                        <div className="py-3 flex items-start gap-x-2 border-b border-gray-200">
+                        <div className="py-3 flex items-center gap-x-2 border-b border-gray-200">
                           <Avatar
                             className="hover:ring-0 active:ring-primary-100"
                             size="md"
@@ -3943,9 +3960,12 @@ export const Default = () => {
                           </Avatar>
 
                           <div className="flex-1">
-                            <h1 className="text-sm leading-none text-dark-blue-400 font-bold">
+                            <NextLink
+                              href="#"
+                              className="focus-visible:outline-none hover:underline text-sm leading-none text-dark-blue-400 font-bold"
+                            >
                               Bitcoin Master Devs
-                            </h1>
+                            </NextLink>
 
                             <div className="mt-1.5 flex items-center justify-between">
                               <span className="inline-flex items-center gap-x-1 font-extralight">
@@ -3964,7 +3984,7 @@ export const Default = () => {
                             </div>
                           </div>
                         </div>
-                        <div className="py-3 flex items-start gap-x-2 border-b border-gray-200">
+                        <div className="py-3 flex items-center gap-x-2 border-b border-gray-200">
                           <Avatar
                             className="hover:ring-0 active:ring-primary-100"
                             size="md"
@@ -3974,9 +3994,12 @@ export const Default = () => {
                           </Avatar>
 
                           <div className="flex-1">
-                            <h1 className="text-sm leading-none text-dark-blue-400 font-bold">
+                            <NextLink
+                              href="#"
+                              className="focus-visible:outline-none hover:underline text-sm leading-none text-dark-blue-400 font-bold"
+                            >
                               Bitcoin Master Devs
-                            </h1>
+                            </NextLink>
 
                             <div className="mt-1.5 flex items-center justify-between">
                               <span className="inline-flex items-center gap-x-1 font-extralight">
@@ -3995,7 +4018,7 @@ export const Default = () => {
                             </div>
                           </div>
                         </div>
-                        <div className="py-3 flex items-start gap-x-2 border-b border-gray-200">
+                        <div className="py-3 flex items-center gap-x-2 border-b border-gray-200">
                           <Avatar
                             className="hover:ring-0 active:ring-primary-100"
                             size="md"
@@ -4005,9 +4028,12 @@ export const Default = () => {
                           </Avatar>
 
                           <div className="flex-1">
-                            <h1 className="text-sm leading-none text-dark-blue-400 font-bold">
+                            <NextLink
+                              href="#"
+                              className="focus-visible:outline-none hover:underline text-sm leading-none text-dark-blue-400 font-bold"
+                            >
                               Bitcoin Master Devs
-                            </h1>
+                            </NextLink>
 
                             <div className="mt-1.5 flex items-center justify-between">
                               <span className="inline-flex items-center gap-x-1 font-extralight">
@@ -4149,21 +4175,25 @@ export const Offers = () => {
               My Offers
             </h1>
 
-            <RadixTabs.Tabs defaultValue="Projects" className="mt-6">
+            <Tabs defaultValue="Projects" className="mt-6">
               <div className="flex items-center justify-between">
                 <RadixTabs.List className="inline-flex items-center gap-x-3">
-                  <RadixTabs.Trigger
+                  <TabsTrigger
+                    showUnderline={false}
+                    variant="unstyled"
                     value="Projects"
                     className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
                   >
                     Projects
-                  </RadixTabs.Trigger>
-                  <RadixTabs.Trigger
+                  </TabsTrigger>
+                  <TabsTrigger
+                    showUnderline={false}
+                    variant="unstyled"
                     value="Services"
                     className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
                   >
                     Services
-                  </RadixTabs.Trigger>
+                  </TabsTrigger>
                 </RadixTabs.List>
 
                 <RadixTabs.Tabs defaultValue="Front-end" className="contents">
@@ -4190,7 +4220,7 @@ export const Offers = () => {
                 </RadixTabs.Tabs>
               </div>
 
-              <RadixTabs.Content value="Projects">
+              <TabsContent value="Projects">
                 <div className="pt-6 grid grid-cols-4 gap-x-5 gap-y-6">
                   <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
                     <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative">
@@ -4961,8 +4991,9 @@ export const Offers = () => {
                     </div>
                   </article>
                 </div>
-              </RadixTabs.Content>
-            </RadixTabs.Tabs>
+              </TabsContent>
+              <TabsContent value="Services"></TabsContent>
+            </Tabs>
           </div>
 
           <div className="mt-[50px] flex items-center justify-center">

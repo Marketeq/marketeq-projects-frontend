@@ -94,9 +94,18 @@ const TabsList = React.forwardRef<
 ))
 TabsList.displayName = TabsPrimitive.List.displayName
 
-const tabsTriggerVariants = cva(
-  "group relative inline-flex items-center justify-center gap-2 whitespace-nowrap px-1 pb-2 pt-px text-sm font-semibold text-gray-500 transition-colors  data-[state=active]:text-primary-500 focus-visible:outline-none disabled:opacity-50 disabled:data-[state=active]:text-gray-500"
-)
+const tabsTriggerVariants = cva("group relative", {
+  variants: {
+    variant: {
+      default:
+        "inline-flex items-center justify-center gap-2 whitespace-nowrap px-1 pb-2 pt-px text-sm font-semibold text-gray-500 transition-colors  data-[state=active]:text-primary-500 focus-visible:outline-none disabled:opacity-50 disabled:data-[state=active]:text-gray-500",
+      unstyled: "",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+})
 
 const TabsTrigger = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Trigger>,
@@ -104,6 +113,7 @@ const TabsTrigger = React.forwardRef<
     VariantProps<typeof tabsTriggerVariants> & {
       underlineClassName?: string
       containerClassName?: string
+      showUnderline?: boolean
     }
 >(
   (
@@ -114,7 +124,8 @@ const TabsTrigger = React.forwardRef<
       children,
       underlineClassName,
       containerClassName,
-
+      variant,
+      showUnderline = true,
       ...props
     },
     ref
@@ -135,6 +146,7 @@ const TabsTrigger = React.forwardRef<
           className={cn(
             tabsTriggerVariants({
               className,
+              variant,
             })
           )}
           onClick={handleClick}
@@ -143,7 +155,7 @@ const TabsTrigger = React.forwardRef<
           {children}
         </TabsPrimitive.Trigger>
 
-        {active && (
+        {showUnderline && active ? (
           <motion.span
             className={cn(
               "inline-block absolute bottom-0 inset-x-0 bg-primary-500 h-0.5",
@@ -152,7 +164,7 @@ const TabsTrigger = React.forwardRef<
             )}
             layoutId={ctx.id}
           />
-        )}
+        ) : null}
       </div>
     )
   }
