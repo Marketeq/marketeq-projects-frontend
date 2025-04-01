@@ -11,8 +11,11 @@ import {
   CheckCircle,
   ChevronDown,
   ChevronRight,
+  ChevronUp,
   Clock,
   CoinStack,
+  File,
+  FileText,
   LifeBuoy,
   LogOut,
   MapPin,
@@ -45,6 +48,7 @@ import {
 import * as RadixTabs from "@radix-ui/react-tabs"
 import { TooltipArrow } from "@radix-ui/react-tooltip"
 import { Meta } from "@storybook/react"
+import { TbStar, TbStarHalfFilled } from "react-icons/tb"
 import { useToggle } from "react-use"
 import {
   Campaigns,
@@ -61,6 +65,7 @@ import { Nasdaq } from "@/components/icons/nasdaq"
 import { InviteWindowTrigger } from "@/components/invite-window"
 import NextImage from "@/components/next-image"
 import NextLink from "@/components/next-link"
+import { ShowMoreLess } from "@/components/show-more-less"
 import { ThreeHorizontalLines } from "@/components/three-horizontal-lines"
 import { ThumbsDownToggle } from "@/components/thumbs-down"
 import { ThumbsUpToggle } from "@/components/thumbs-up"
@@ -105,6 +110,13 @@ import {
   ListboxOption,
   ListboxOptions,
   Progress,
+  RatingGroupContext,
+  RatingGroupControl,
+  RatingGroupHiddenInput,
+  RatingGroupItem,
+  RatingGroupItemContext,
+  RatingGroupLabel,
+  RatingGroupRoot,
   ScaleOutIn,
   ScrollArea,
   Tabs,
@@ -972,14 +984,14 @@ const TopMostHeader = () => {
 const CarouselPreviousTrigger = () => {
   const { canScrollPrev } = useCarousel()
   return canScrollPrev ? (
-    <CarouselPrevious className="size-7 border-0 bg-black/80 hover:bg-black transition text-white duration-300 -left-4" />
+    <CarouselPrevious className="size-7 border border-white hover:ring-8 hover:ring-white hover:bg-black bg-black/80 transition text-white duration-300 -left-4" />
   ) : null
 }
 
 const CarouselNextTrigger = () => {
   const { canScrollNext } = useCarousel()
   return canScrollNext ? (
-    <CarouselNext className="size-7 border-0 bg-black/80 hover:bg-black transition text-white duration-300 -right-4" />
+    <CarouselNext className="size-7 border border-white hover:ring-8 hover:ring-white hover:border-black bg-black/80 hover:bg-black transition text-white duration-300 -right-4" />
   ) : null
 }
 
@@ -1053,6 +1065,7 @@ export const Default = () => {
   const toolbarRef = useRef<HTMLDivElement>(null)
   const [isCardStuck, setIsCardStuck] = useState<boolean>(false)
   const [isToolbarStuck, setIsToolbarStuck] = useState<boolean>(false)
+  const [showMore, toggleShowMore] = useToggle(false)
 
   useEffect(() => {
     const node = cardRef.current
@@ -1420,6 +1433,7 @@ export const Default = () => {
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
+                        sizes="33vw"
                       />
                       <div className="group inset-0 absolute flex items-center justify-center hover:bg-black/50 transition duration-300">
                         <Button className="group-hover:opacity-100 opacity-0 bg-white text-gray-700 transition duration-300 hover:bg-primary-500 hover:text-white">
@@ -1446,6 +1460,7 @@ export const Default = () => {
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
+                        sizes="33vw"
                       />
                       <div className="group inset-0 absolute flex items-center justify-center hover:bg-black/50 transition duration-300">
                         <Button className="group-hover:opacity-100 opacity-0 bg-white text-gray-700 transition duration-300 hover:bg-primary-500 hover:text-white">
@@ -1472,6 +1487,7 @@ export const Default = () => {
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
+                        sizes="33vw"
                       />
                       <div className="group inset-0 absolute flex items-center justify-center hover:bg-black/50 transition duration-300">
                         <Button className="group-hover:opacity-100 opacity-0 bg-white text-gray-700 transition duration-300 hover:bg-primary-500 hover:text-white">
@@ -1685,8 +1701,13 @@ export const Default = () => {
                             </RadixTabs.Trigger>
                           </RadixTabs.List>
 
-                          <Button variant="link" visual="gray">
-                            View All <ArrowRight className="size-[15px]" />
+                          <Button
+                            className="group"
+                            variant="link"
+                            visual="gray"
+                          >
+                            View All{" "}
+                            <ArrowRight className="size-[15px] transition duration-300 group-hover:translate-x-[4px]" />
                           </Button>
                         </RadixTabs.Tabs>
                       </div>
@@ -1700,6 +1721,7 @@ export const Default = () => {
                                 src="/dashboard.png"
                                 alt="Dashboard"
                                 fill
+                                sizes="33vw"
                               />
                             </div>
 
@@ -1980,6 +2002,7 @@ export const Default = () => {
                                 src="/dashboard.png"
                                 alt="Dashboard"
                                 fill
+                                sizes="33vw"
                               />
                             </div>
 
@@ -2260,6 +2283,7 @@ export const Default = () => {
                                 src="/dashboard.png"
                                 alt="Dashboard"
                                 fill
+                                sizes="33vw"
                               />
                             </div>
 
@@ -2811,6 +2835,7 @@ export const Default = () => {
                                 src="/university-of-florida.png"
                                 alt="University Of Florida"
                                 fill
+                                sizes="20vw"
                               />
                             </div>
 
@@ -2840,6 +2865,7 @@ export const Default = () => {
                                 src="/university-of-florida.png"
                                 alt="University Of Florida"
                                 fill
+                                sizes="20vw"
                               />
                             </div>
 
@@ -2869,6 +2895,7 @@ export const Default = () => {
                                 src="/university-of-florida.png"
                                 alt="University Of Florida"
                                 fill
+                                sizes="20vw"
                               />
                             </div>
 
@@ -2898,6 +2925,7 @@ export const Default = () => {
                                 src="/university-of-florida.png"
                                 alt="University Of Florida"
                                 fill
+                                sizes="20vw"
                               />
                             </div>
 
@@ -2970,19 +2998,31 @@ export const Default = () => {
                           Project History
                         </h1>
 
-                        <div className="mt-1.5 flex items-center gap-x-1.5">
-                          <span className="text-sm font-medium text-dark-blue-400 leading-none">
-                            4.9
-                          </span>
-
-                          <div className="inline-flex items-center gap-x-1.5">
-                            <Star className="size-[18px] text-primary-500 fill-primary-500 shrink-0" />
-                            <Star className="size-[18px] text-primary-500 fill-primary-500 shrink-0" />
-                            <Star className="size-[18px] text-primary-500 fill-primary-500 shrink-0" />
-                            <Star className="size-[18px] text-primary-500 fill-primary-500 shrink-0" />
-                            <Star className="size-[18px] text-primary-500 shrink-0" />
-                          </div>
-                        </div>
+                        <RatingGroupRoot
+                          className="flex-row gap-x-1.5 mt-1.5"
+                          allowHalf
+                          count={5}
+                          defaultValue={4}
+                          disabled
+                        >
+                          <RatingGroupLabel size="sm">4.9</RatingGroupLabel>
+                          <RatingGroupControl>
+                            <RatingGroupContext>
+                              {({ items }) =>
+                                items.map((item) => (
+                                  <RatingGroupItem key={item} index={item}>
+                                    <RatingGroupItemContext>
+                                      {({ half }) =>
+                                        half ? <TbStarHalfFilled /> : <TbStar />
+                                      }
+                                    </RatingGroupItemContext>
+                                  </RatingGroupItem>
+                                ))
+                              }
+                            </RatingGroupContext>
+                            <RatingGroupHiddenInput />
+                          </RatingGroupControl>
+                        </RatingGroupRoot>
 
                         <NextLink
                           href="#"
@@ -3157,21 +3197,25 @@ export const Default = () => {
                   </div>
 
                   <div className="mt-6">
-                    <RadixTabs.Tabs defaultValue="Completed">
+                    <Tabs defaultValue="Completed">
                       <RadixTabs.List className="flex items-center justify-between">
                         <div className="flex items-center gap-x-3">
-                          <RadixTabs.Trigger
+                          <TabsTrigger
+                            variant="unstyled"
+                            showUnderline={false}
                             value="Completed"
                             className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
                           >
                             Completed (24)
-                          </RadixTabs.Trigger>
-                          <RadixTabs.Trigger
+                          </TabsTrigger>
+                          <TabsTrigger
+                            variant="unstyled"
+                            showUnderline={false}
                             value="Ongoing"
                             className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
                           >
                             Ongoing (7)
-                          </RadixTabs.Trigger>
+                          </TabsTrigger>
                         </div>
 
                         <div className="inline-flex items-center gap-x-3">
@@ -3179,7 +3223,7 @@ export const Default = () => {
                             <Input
                               id="email"
                               type="email"
-                              className="peer pl-[34px]"
+                              className="peer text-sm leading-5 h-10 right-3 pl-[34px]"
                               value={email}
                               onChange={(event) => setEmail(event.target.value)}
                               placeholder="Search"
@@ -3201,10 +3245,10 @@ export const Default = () => {
 
                           <Listbox className="shrink-0 w-max">
                             <ListboxButton
-                              className="w-max"
+                              className="w-max text-sm h-10"
                               placeholder="Most Recent"
                             />
-                            <ListboxOptions>
+                            <ListboxOptions className="w-[177px] right-0">
                               {[
                                 "Most Recent",
                                 "Oldest",
@@ -3223,433 +3267,1110 @@ export const Default = () => {
                           </Listbox>
                         </div>
                       </RadixTabs.List>
-                    </RadixTabs.Tabs>
-                  </div>
-
-                  <div className="mt-6 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                    <div className="flex items-center pt-6 px-6">
-                      <div className="flex-1 w-[394px] space-y-3">
-                        <div className="flex items-start gap-x-3">
-                          <Avatar size="md">
-                            <AvatarImage src="/man.jpg" alt="Man" />
-                            <AvatarFallback>M</AvatarFallback>
-                          </Avatar>
-
-                          <div className="space-y-3">
-                            <div className="flex flex-col gap-y-1.5">
-                              <div className="inline-flex items-center gap-x-1">
-                                <span className="text-base leading-6 font-semibold text-dark-blue-400">
-                                  Emily
-                                </span>
-                                <span className="text-base leading-6 text-dark-blue-400">
-                                  @emily.j
-                                </span>
-                              </div>
-
-                              <div className="mt-1.5">
-                                <span className="text-[13px] leading-6 text-dark-blue-400">
-                                  Product Manager
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="inline-flex items-center gap-x-2">
-                              <span className="text-xs leading-none text-dark-blue-400">
-                                December 2020 - Present
-                              </span>
-                              <span className="shrink-0 size-1 rounded-full bg-gray-300 inline-block" />
-                              <span className="text-xs leading-none text-dark-blue-400">
-                                5 yrs 2 mos
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-x-2">
-                          <div className="inline-flex items-center gap-x-[2.35px]">
-                            <Favorite defaultPressed className="size-[15px]" />
-                            <Favorite defaultPressed className="size-[15px]" />
-                            <Favorite defaultPressed className="size-[15px]" />
-                            <Favorite defaultPressed className="size-[15px]" />
-                            <Favorite defaultPressed className="size-[15px]" />
-                          </div>
-
-                          <span className="text-base leading-[28.16px] font-bold text-dark-blue-400">
-                            4.8
-                          </span>
-
-                          <span className="text-[11px] leading-6 font-extralight text-dark-blue-400">
-                            Posted a week ago
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex-1 w-[477px] inline-grid grid-cols-2 gap-y-4 gap-x-[50px] pb-3">
-                        <div className="flex items-center gap-x-[6.4px]">
-                          <CheckCircle className="size-[18px] text-success-500" />
-                          <span className="text-sm text-dark-blue-400 leading-none font-medium">
-                            Would Recommend
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-x-[6.4px]">
-                          <CheckCircle className="size-[18px] text-success-500" />
-                          <span className="text-sm text-dark-blue-400 leading-none font-medium">
-                            Would Recommend
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-x-[6.4px]">
-                          <CheckCircle className="size-[18px] text-success-500" />
-                          <span className="text-sm text-dark-blue-400 leading-none font-medium">
-                            Would Recommend
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-x-[6.4px]">
-                          <CheckCircle className="size-[18px] text-success-500" />
-                          <span className="text-sm text-dark-blue-400 leading-none font-medium">
-                            Would Recommend
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-3 px-6">
-                      <h1 className="text-sm leading-6 font-semibold text-dark-blue-400">
-                        Best Experience with a Backend Engineer!!!!
-                      </h1>
-                      <p className="text-sm leading-none mt-1 text-gray-700 line-clamp-3 font-extralight">
-                        Lorem ipsum dolor sit amet consectetur. Mi eu ipsum
-                        augue in integer lacus amet semper. Non dictum phasellus
-                        elit turpis nisi vitae et. Tristique ultrices habitasse
-                        tortor vehicula elementum. Nulla turpis rhoncus
-                        venenatis at. In porta viverra faucibus posuere{" "}
-                        <Button
-                          className="hover:text-gray-700 font-semibold"
-                          size="sm"
-                          variant="link"
-                          visual="gray"
+                      <TabsContent value="Completed">
+                        <ShowMoreLess
+                          value={showMore}
+                          onValueChange={toggleShowMore}
                         >
-                          ...Read More
-                        </Button>
-                      </p>
+                          <div className="mt-6 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
+                            <div className="flex items-center pt-6 px-6">
+                              <div className="flex-1 w-[394px] space-y-3">
+                                <div className="flex items-start gap-x-3">
+                                  <Avatar size="md">
+                                    <AvatarImage src="/man.jpg" alt="Man" />
+                                    <AvatarFallback>M</AvatarFallback>
+                                  </Avatar>
 
-                      <div className="mt-3 flex items-center justify-between">
-                        <div className="items-center inline-flex gap-x-2.5">
-                          <span className="text-xs font-medium leading-none text-dark-blue-400">
-                            Helpful
-                          </span>
-                          <ThumbsUpToggle />
-                          <ThumbsDownToggle />
-                        </div>
-                      </div>
-                    </div>
+                                  <div className="space-y-3">
+                                    <div className="flex flex-col gap-y-1.5">
+                                      <div className="inline-flex items-center gap-x-1">
+                                        <span className="text-base leading-6 font-semibold text-dark-blue-400">
+                                          Emily
+                                        </span>
+                                        <span className="text-base leading-6 text-dark-blue-400">
+                                          @emily.j
+                                        </span>
+                                      </div>
 
-                    <div className="mt-6 flex items-center gap-x-3 px-6 pb-6">
-                      <div className="w-[153px] relative rounded-lg overflow-hidden h-[98px]">
-                        <NextImage
-                          className="object-cover"
-                          src="/dashboard.png"
-                          alt="Dashboard"
-                          fill
-                        />
-                      </div>
+                                      <div className="mt-1.5">
+                                        <span className="text-[13px] leading-6 text-dark-blue-400">
+                                          Product Manager
+                                        </span>
+                                      </div>
+                                    </div>
 
-                      <div className="flex-auto space-y-3">
-                        <h1 className="text-sm font-bold leading-6 text-dark-blue-400">
-                          Seniority Mobile App
-                        </h1>
+                                    <div className="inline-flex items-center gap-x-2">
+                                      <span className="text-xs leading-none text-dark-blue-400">
+                                        December 2020 - Present
+                                      </span>
+                                      <span className="shrink-0 size-1 rounded-full bg-gray-300 inline-block" />
+                                      <span className="text-xs leading-none text-dark-blue-400">
+                                        5 yrs 2 mos
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
 
-                        <div className="flex gap-x-8 items-center">
-                          <div className="inline-flex items-center gap-x-3">
-                            <span className="text-sm text-dark-blue-400 leading-6">
-                              Project Cost
-                            </span>
-                            <span className="text-sm font-bold text-dark-blue-400 leading-6">
-                              Project Cost
-                            </span>
-                          </div>
-                          <div className="inline-flex items-center gap-x-3">
-                            <span className="text-sm text-dark-blue-400 leading-6">
-                              Project Cost
-                            </span>
-                            <span className="text-sm font-bold text-dark-blue-400 leading-6">
-                              Project Cost
-                            </span>
-                          </div>
-                          <div className="inline-flex items-center gap-x-3">
-                            <span className="text-sm text-dark-blue-400 leading-6">
-                              Project Cost
-                            </span>
-                            <span className="text-sm font-bold text-dark-blue-400 leading-6">
-                              Project Cost
-                            </span>
-                          </div>
-                        </div>
+                                <div className="flex items-center gap-x-2">
+                                  <div className="inline-flex items-center gap-x-[2.35px]">
+                                    <Favorite
+                                      defaultPressed
+                                      className="size-[15px]"
+                                    />
+                                    <Favorite
+                                      defaultPressed
+                                      className="size-[15px]"
+                                    />
+                                    <Favorite
+                                      defaultPressed
+                                      className="size-[15px]"
+                                    />
+                                    <Favorite
+                                      defaultPressed
+                                      className="size-[15px]"
+                                    />
+                                    <Favorite
+                                      defaultPressed
+                                      className="size-[15px]"
+                                    />
+                                  </div>
 
-                        <div className="flex items-center gap-x-2">
-                          <Badge size="sm" visual="gray">
-                            Team player
-                          </Badge>
-                          <Badge size="sm" visual="gray">
-                            Team player
-                          </Badge>
-                          <Badge size="sm" visual="gray">
-                            Team player
-                          </Badge>
-                          <Badge size="sm" visual="gray">
-                            Team player
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                                  <span className="text-base leading-[28.16px] font-bold text-dark-blue-400">
+                                    4.8
+                                  </span>
 
-                  <div className="mt-6 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                    <div className="flex items-center pt-6 px-6">
-                      <div className="flex-1 w-[394px] space-y-3">
-                        <div className="flex items-start gap-x-3">
-                          <Avatar size="md">
-                            <AvatarImage src="/man.jpg" alt="Man" />
-                            <AvatarFallback>M</AvatarFallback>
-                          </Avatar>
-
-                          <div className="space-y-3">
-                            <div className="flex flex-col gap-y-1.5">
-                              <div className="inline-flex items-center gap-x-1">
-                                <span className="text-base leading-6 font-semibold text-dark-blue-400">
-                                  Emily
-                                </span>
-                                <span className="text-base leading-6 text-dark-blue-400">
-                                  @emily.j
-                                </span>
+                                  <span className="text-[11px] leading-6 font-extralight text-dark-blue-400">
+                                    Posted a week ago
+                                  </span>
+                                </div>
                               </div>
 
-                              <div className="mt-1.5">
-                                <span className="text-[13px] leading-6 text-dark-blue-400">
-                                  Product Manager
-                                </span>
+                              <div className="flex-1 w-[477px] inline-grid grid-cols-2 gap-y-4 gap-x-[50px] pb-3">
+                                <div className="flex items-center gap-x-[6.4px]">
+                                  <CheckCircle className="size-[18px] text-success-500" />
+                                  <span className="text-sm text-dark-blue-400 leading-none font-medium">
+                                    Would Recommend
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-x-[6.4px]">
+                                  <CheckCircle className="size-[18px] text-success-500" />
+                                  <span className="text-sm text-dark-blue-400 leading-none font-medium">
+                                    Would Recommend
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-x-[6.4px]">
+                                  <CheckCircle className="size-[18px] text-success-500" />
+                                  <span className="text-sm text-dark-blue-400 leading-none font-medium">
+                                    Would Recommend
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-x-[6.4px]">
+                                  <CheckCircle className="size-[18px] text-success-500" />
+                                  <span className="text-sm text-dark-blue-400 leading-none font-medium">
+                                    Would Recommend
+                                  </span>
+                                </div>
                               </div>
                             </div>
 
-                            <div className="inline-flex items-center gap-x-2">
-                              <span className="text-xs leading-none text-dark-blue-400">
-                                December 2020 - Present
-                              </span>
-                              <span className="shrink-0 size-1 rounded-full bg-gray-300 inline-block" />
-                              <span className="text-xs leading-none text-dark-blue-400">
-                                5 yrs 2 mos
-                              </span>
+                            <div className="mt-3 px-6">
+                              <h1 className="text-sm leading-6 font-semibold text-dark-blue-400">
+                                Best Experience with a Backend Engineer!!!!
+                              </h1>
+                              <p className="text-sm leading-none mt-1 text-gray-700 line-clamp-3 font-extralight">
+                                Lorem ipsum dolor sit amet consectetur. Mi eu
+                                ipsum augue in integer lacus amet semper. Non
+                                dictum phasellus elit turpis nisi vitae et.
+                                Tristique ultrices habitasse tortor vehicula
+                                elementum. Nulla turpis rhoncus venenatis at. In
+                                porta viverra faucibus posuere{" "}
+                                <Button
+                                  className="hover:text-gray-700 font-semibold"
+                                  size="sm"
+                                  variant="link"
+                                  visual="gray"
+                                >
+                                  ...Read More
+                                </Button>
+                              </p>
+
+                              <div className="mt-3 flex items-center justify-between">
+                                <div className="items-center inline-flex gap-x-2.5">
+                                  <span className="text-xs font-medium leading-none text-dark-blue-400">
+                                    Helpful
+                                  </span>
+                                  <ThumbsUpToggle />
+                                  <ThumbsDownToggle />
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="mt-6 flex items-center gap-x-3 px-6 pb-6">
+                              <div className="w-[153px] relative rounded-lg overflow-hidden h-[98px]">
+                                <NextImage
+                                  className="object-cover"
+                                  src="/dashboard.png"
+                                  alt="Dashboard"
+                                  fill
+                                  sizes="25vw"
+                                />
+                              </div>
+
+                              <div className="flex-auto space-y-3">
+                                <h1 className="text-sm font-bold leading-6 text-dark-blue-400">
+                                  Seniority Mobile App
+                                </h1>
+
+                                <div className="flex gap-x-8 items-center">
+                                  <div className="inline-flex items-center gap-x-3">
+                                    <span className="text-sm text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                    <span className="text-sm font-bold text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                  </div>
+                                  <div className="inline-flex items-center gap-x-3">
+                                    <span className="text-sm text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                    <span className="text-sm font-bold text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                  </div>
+                                  <div className="inline-flex items-center gap-x-3">
+                                    <span className="text-sm text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                    <span className="text-sm font-bold text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-x-2">
+                                  <Badge size="sm" visual="gray">
+                                    Team player
+                                  </Badge>
+                                  <Badge size="sm" visual="gray">
+                                    Team player
+                                  </Badge>
+                                  <Badge size="sm" visual="gray">
+                                    Team player
+                                  </Badge>
+                                  <Badge size="sm" visual="gray">
+                                    Team player
+                                  </Badge>
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        <div className="flex items-center gap-x-2">
-                          <div className="inline-flex items-center gap-x-[2.35px]">
-                            <Favorite defaultPressed className="size-[15px]" />
-                            <Favorite defaultPressed className="size-[15px]" />
-                            <Favorite defaultPressed className="size-[15px]" />
-                            <Favorite defaultPressed className="size-[15px]" />
-                            <Favorite defaultPressed className="size-[15px]" />
+                          <div className="mt-6 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
+                            <div className="flex items-center pt-6 px-6">
+                              <div className="flex-1 w-[394px] space-y-3">
+                                <div className="flex items-start gap-x-3">
+                                  <Avatar size="md">
+                                    <AvatarImage src="/man.jpg" alt="Man" />
+                                    <AvatarFallback>M</AvatarFallback>
+                                  </Avatar>
+
+                                  <div className="space-y-3">
+                                    <div className="flex flex-col gap-y-1.5">
+                                      <div className="inline-flex items-center gap-x-1">
+                                        <span className="text-base leading-6 font-semibold text-dark-blue-400">
+                                          Emily
+                                        </span>
+                                        <span className="text-base leading-6 text-dark-blue-400">
+                                          @emily.j
+                                        </span>
+                                      </div>
+
+                                      <div className="mt-1.5">
+                                        <span className="text-[13px] leading-6 text-dark-blue-400">
+                                          Product Manager
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    <div className="inline-flex items-center gap-x-2">
+                                      <span className="text-xs leading-none text-dark-blue-400">
+                                        December 2020 - Present
+                                      </span>
+                                      <span className="shrink-0 size-1 rounded-full bg-gray-300 inline-block" />
+                                      <span className="text-xs leading-none text-dark-blue-400">
+                                        5 yrs 2 mos
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-x-2">
+                                  <div className="inline-flex items-center gap-x-[2.35px]">
+                                    <Favorite
+                                      defaultPressed
+                                      className="size-[15px]"
+                                    />
+                                    <Favorite
+                                      defaultPressed
+                                      className="size-[15px]"
+                                    />
+                                    <Favorite
+                                      defaultPressed
+                                      className="size-[15px]"
+                                    />
+                                    <Favorite
+                                      defaultPressed
+                                      className="size-[15px]"
+                                    />
+                                    <Favorite
+                                      defaultPressed
+                                      className="size-[15px]"
+                                    />
+                                  </div>
+
+                                  <span className="text-base leading-[28.16px] font-bold text-dark-blue-400">
+                                    4.8
+                                  </span>
+
+                                  <span className="text-[11px] leading-6 font-extralight text-dark-blue-400">
+                                    Posted a week ago
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="flex-1 w-[477px] inline-grid grid-cols-2 gap-y-4 gap-x-[50px] pb-3">
+                                <div className="flex items-center gap-x-[6.4px]">
+                                  <CheckCircle className="size-[18px] text-success-500" />
+                                  <span className="text-sm text-dark-blue-400 leading-none font-medium">
+                                    Would Recommend
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-x-[6.4px]">
+                                  <CheckCircle className="size-[18px] text-success-500" />
+                                  <span className="text-sm text-dark-blue-400 leading-none font-medium">
+                                    Would Recommend
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-x-[6.4px]">
+                                  <CheckCircle className="size-[18px] text-success-500" />
+                                  <span className="text-sm text-dark-blue-400 leading-none font-medium">
+                                    Would Recommend
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-x-[6.4px]">
+                                  <CheckCircle className="size-[18px] text-success-500" />
+                                  <span className="text-sm text-dark-blue-400 leading-none font-medium">
+                                    Would Recommend
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="mt-3 px-6">
+                              <h1 className="text-sm leading-6 font-semibold text-dark-blue-400">
+                                Best Experience with a Backend Engineer!!!!
+                              </h1>
+                              <p className="text-sm leading-none mt-1 text-gray-700 line-clamp-3 font-extralight">
+                                Lorem ipsum dolor sit amet consectetur. Mi eu
+                                ipsum augue in integer lacus amet semper. Non
+                                dictum phasellus elit turpis nisi vitae et.
+                                Tristique ultrices habitasse tortor vehicula
+                                elementum. Nulla turpis rhoncus venenatis at. In
+                                porta viverra faucibus posuere{" "}
+                                <Button
+                                  className="hover:text-gray-700 font-semibold"
+                                  size="sm"
+                                  variant="link"
+                                  visual="gray"
+                                >
+                                  ...Read More
+                                </Button>
+                              </p>
+
+                              <div className="mt-3 flex items-center justify-between">
+                                <div className="items-center inline-flex gap-x-2.5">
+                                  <span className="text-xs font-medium leading-none text-dark-blue-400">
+                                    Helpful
+                                  </span>
+
+                                  <ThumbsUpToggle />
+                                  <ThumbsDownToggle />
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="mt-6 flex items-center gap-x-3 px-6 pb-6">
+                              <div className="w-[153px] relative rounded-lg overflow-hidden h-[98px]">
+                                <NextImage
+                                  className="object-cover"
+                                  src="/dashboard.png"
+                                  alt="Dashboard"
+                                  fill
+                                  sizes="25vw"
+                                />
+                              </div>
+
+                              <div className="flex-auto space-y-3">
+                                <h1 className="text-sm font-bold leading-6 text-dark-blue-400">
+                                  Seniority Mobile App
+                                </h1>
+
+                                <div className="flex gap-x-8 items-center">
+                                  <div className="inline-flex items-center gap-x-3">
+                                    <span className="text-sm text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                    <span className="text-sm font-bold text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                  </div>
+                                  <div className="inline-flex items-center gap-x-3">
+                                    <span className="text-sm text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                    <span className="text-sm font-bold text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                  </div>
+                                  <div className="inline-flex items-center gap-x-3">
+                                    <span className="text-sm text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                    <span className="text-sm font-bold text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-x-2">
+                                  <Badge size="sm" visual="gray">
+                                    Team player
+                                  </Badge>
+                                  <Badge size="sm" visual="gray">
+                                    Team player
+                                  </Badge>
+                                  <Badge size="sm" visual="gray">
+                                    Team player
+                                  </Badge>
+                                  <Badge size="sm" visual="gray">
+                                    Team player
+                                  </Badge>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="p-6 bg-white border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] border-t">
+                              <div className="flex items-center gap-x-3">
+                                <Avatar
+                                  className="hover:ring-0 active:ring-primary-100"
+                                  size="md"
+                                >
+                                  <AvatarImage src="/man.jpg" alt="Man" />
+                                  <AvatarFallbackIcon />
+                                </Avatar>
+
+                                <div className="flex flex-col flex-1">
+                                  <div className="inline-flex items-center gap-x-1">
+                                    <span className="text-sm leading-6 font-bold text-dark-blue-400">
+                                      Company Response
+                                    </span>
+                                    <span className="text-sm leading-6 text-dark-blue-400">
+                                      @Acme Inc.
+                                    </span>
+                                  </div>
+
+                                  <div className="inline-flex items-center gap-x-2">
+                                    <span className="text-xs leading-none text-dark-blue-400">
+                                      90 days project
+                                    </span>
+                                    <span className="shrink-0 size-1 rounded-full bg-gray-300 inline-block" />
+                                    <span className="text-xs leading-none text-dark-blue-400">
+                                      March 2023
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <p className="text-sm font-extralight mt-3 leading-none text-gray-700">
+                                Lorem ipsum dolor sit amet consectetur. Mi eu
+                                ipsum augue in integer lacus amet semper. Non
+                                dictum phasellus elit turpis nisi vitae et.
+                                Tristique ultrices habitasse tortor vehicula
+                                elementum. Nulla turpis rhoncus venenatis at. In
+                                porta viverra faucibus po{" "}
+                                <Button
+                                  className="hover:text-gray-700 font-semibold"
+                                  size="sm"
+                                  variant="link"
+                                  visual="gray"
+                                >
+                                  ...Read More
+                                </Button>
+                              </p>
+
+                              <div className="mt-3 flex items-center justify-between">
+                                <div className="items-center inline-flex gap-x-2.5">
+                                  <span className="text-xs font-medium leading-none text-dark-blue-400">
+                                    Helpful
+                                  </span>
+                                  <ThumbsUpToggle />
+                                  <ThumbsDownToggle />
+                                </div>
+                              </div>
+                            </div>
                           </div>
 
-                          <span className="text-base leading-[28.16px] font-bold text-dark-blue-400">
-                            4.8
-                          </span>
+                          <div className="mt-6 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
+                            <div className="flex items-center pt-6 px-6">
+                              <div className="flex-1 w-[394px] space-y-3">
+                                <div className="flex items-start gap-x-3">
+                                  <Avatar size="md">
+                                    <AvatarImage src="/man.jpg" alt="Man" />
+                                    <AvatarFallback>M</AvatarFallback>
+                                  </Avatar>
 
-                          <span className="text-[11px] leading-6 font-extralight text-dark-blue-400">
-                            Posted a week ago
-                          </span>
-                        </div>
-                      </div>
+                                  <div className="space-y-3">
+                                    <div className="flex flex-col gap-y-1.5">
+                                      <div className="inline-flex items-center gap-x-1">
+                                        <span className="text-base leading-6 font-semibold text-dark-blue-400">
+                                          Emily
+                                        </span>
+                                        <span className="text-base leading-6 text-dark-blue-400">
+                                          @emily.j
+                                        </span>
+                                      </div>
 
-                      <div className="flex-1 w-[477px] inline-grid grid-cols-2 gap-y-4 gap-x-[50px] pb-3">
-                        <div className="flex items-center gap-x-[6.4px]">
-                          <CheckCircle className="size-[18px] text-success-500" />
-                          <span className="text-sm text-dark-blue-400 leading-none font-medium">
-                            Would Recommend
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-x-[6.4px]">
-                          <CheckCircle className="size-[18px] text-success-500" />
-                          <span className="text-sm text-dark-blue-400 leading-none font-medium">
-                            Would Recommend
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-x-[6.4px]">
-                          <CheckCircle className="size-[18px] text-success-500" />
-                          <span className="text-sm text-dark-blue-400 leading-none font-medium">
-                            Would Recommend
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-x-[6.4px]">
-                          <CheckCircle className="size-[18px] text-success-500" />
-                          <span className="text-sm text-dark-blue-400 leading-none font-medium">
-                            Would Recommend
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                                      <div className="mt-1.5">
+                                        <span className="text-[13px] leading-6 text-dark-blue-400">
+                                          Product Manager
+                                        </span>
+                                      </div>
+                                    </div>
 
-                    <div className="mt-3 px-6">
-                      <h1 className="text-sm leading-6 font-semibold text-dark-blue-400">
-                        Best Experience with a Backend Engineer!!!!
-                      </h1>
-                      <p className="text-sm leading-none mt-1 text-gray-700 line-clamp-3 font-extralight">
-                        Lorem ipsum dolor sit amet consectetur. Mi eu ipsum
-                        augue in integer lacus amet semper. Non dictum phasellus
-                        elit turpis nisi vitae et. Tristique ultrices habitasse
-                        tortor vehicula elementum. Nulla turpis rhoncus
-                        venenatis at. In porta viverra faucibus posuere{" "}
-                        <Button
-                          className="hover:text-gray-700 font-semibold"
-                          size="sm"
-                          variant="link"
-                          visual="gray"
-                        >
-                          ...Read More
-                        </Button>
-                      </p>
+                                    <div className="inline-flex items-center gap-x-2">
+                                      <span className="text-xs leading-none text-dark-blue-400">
+                                        December 2020 - Present
+                                      </span>
+                                      <span className="shrink-0 size-1 rounded-full bg-gray-300 inline-block" />
+                                      <span className="text-xs leading-none text-dark-blue-400">
+                                        5 yrs 2 mos
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
 
-                      <div className="mt-3 flex items-center justify-between">
-                        <div className="items-center inline-flex gap-x-2.5">
-                          <span className="text-xs font-medium leading-none text-dark-blue-400">
-                            Helpful
-                          </span>
+                                <div className="flex items-center gap-x-2">
+                                  <div className="inline-flex items-center gap-x-[2.35px]">
+                                    <Favorite
+                                      defaultPressed
+                                      className="size-[15px]"
+                                    />
+                                    <Favorite
+                                      defaultPressed
+                                      className="size-[15px]"
+                                    />
+                                    <Favorite
+                                      defaultPressed
+                                      className="size-[15px]"
+                                    />
+                                    <Favorite
+                                      defaultPressed
+                                      className="size-[15px]"
+                                    />
+                                    <Favorite
+                                      defaultPressed
+                                      className="size-[15px]"
+                                    />
+                                  </div>
 
-                          <ThumbsUpToggle />
-                          <ThumbsDownToggle />
-                        </div>
-                      </div>
-                    </div>
+                                  <span className="text-base leading-[28.16px] font-bold text-dark-blue-400">
+                                    4.8
+                                  </span>
 
-                    <div className="mt-6 flex items-center gap-x-3 px-6 pb-6">
-                      <div className="w-[153px] relative rounded-lg overflow-hidden h-[98px]">
-                        <NextImage
-                          className="object-cover"
-                          src="/dashboard.png"
-                          alt="Dashboard"
-                          fill
-                        />
-                      </div>
+                                  <span className="text-[11px] leading-6 font-extralight text-dark-blue-400">
+                                    Posted a week ago
+                                  </span>
+                                </div>
+                              </div>
 
-                      <div className="flex-auto space-y-3">
-                        <h1 className="text-sm font-bold leading-6 text-dark-blue-400">
-                          Seniority Mobile App
-                        </h1>
+                              <div className="flex-1 w-[477px] inline-grid grid-cols-2 gap-y-4 gap-x-[50px] pb-3">
+                                <div className="flex items-center gap-x-[6.4px]">
+                                  <CheckCircle className="size-[18px] text-success-500" />
+                                  <span className="text-sm text-dark-blue-400 leading-none font-medium">
+                                    Would Recommend
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-x-[6.4px]">
+                                  <CheckCircle className="size-[18px] text-success-500" />
+                                  <span className="text-sm text-dark-blue-400 leading-none font-medium">
+                                    Would Recommend
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-x-[6.4px]">
+                                  <CheckCircle className="size-[18px] text-success-500" />
+                                  <span className="text-sm text-dark-blue-400 leading-none font-medium">
+                                    Would Recommend
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-x-[6.4px]">
+                                  <CheckCircle className="size-[18px] text-success-500" />
+                                  <span className="text-sm text-dark-blue-400 leading-none font-medium">
+                                    Would Recommend
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
 
-                        <div className="flex gap-x-8 items-center">
-                          <div className="inline-flex items-center gap-x-3">
-                            <span className="text-sm text-dark-blue-400 leading-6">
-                              Project Cost
-                            </span>
-                            <span className="text-sm font-bold text-dark-blue-400 leading-6">
-                              Project Cost
-                            </span>
+                            <div className="mt-3 px-6">
+                              <h1 className="text-sm leading-6 font-semibold text-dark-blue-400">
+                                Best Experience with a Backend Engineer!!!!
+                              </h1>
+                              <p className="text-sm leading-none mt-1 text-gray-700 line-clamp-3 font-extralight">
+                                Lorem ipsum dolor sit amet consectetur. Mi eu
+                                ipsum augue in integer lacus amet semper. Non
+                                dictum phasellus elit turpis nisi vitae et.
+                                Tristique ultrices habitasse tortor vehicula
+                                elementum. Nulla turpis rhoncus venenatis at. In
+                                porta viverra faucibus posuere{" "}
+                                <Button
+                                  className="hover:text-gray-700 font-semibold"
+                                  size="sm"
+                                  variant="link"
+                                  visual="gray"
+                                >
+                                  ...Read More
+                                </Button>
+                              </p>
+
+                              <div className="mt-3 flex items-center justify-between">
+                                <div className="items-center inline-flex gap-x-2.5">
+                                  <span className="text-xs font-medium leading-none text-dark-blue-400">
+                                    Helpful
+                                  </span>
+
+                                  <ThumbsUpToggle />
+                                  <ThumbsDownToggle />
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="mt-6 flex items-center gap-x-3 px-6 pb-6">
+                              <div className="w-[153px] relative rounded-lg overflow-hidden h-[98px]">
+                                <NextImage
+                                  className="object-cover"
+                                  src="/dashboard.png"
+                                  alt="Dashboard"
+                                  fill
+                                  sizes="25vw"
+                                />
+                              </div>
+
+                              <div className="flex-auto space-y-3">
+                                <h1 className="text-sm font-bold leading-6 text-dark-blue-400">
+                                  Seniority Mobile App
+                                </h1>
+
+                                <div className="flex gap-x-8 items-center">
+                                  <div className="inline-flex items-center gap-x-3">
+                                    <span className="text-sm text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                    <span className="text-sm font-bold text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                  </div>
+                                  <div className="inline-flex items-center gap-x-3">
+                                    <span className="text-sm text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                    <span className="text-sm font-bold text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                  </div>
+                                  <div className="inline-flex items-center gap-x-3">
+                                    <span className="text-sm text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                    <span className="text-sm font-bold text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-x-2">
+                                  <Badge size="sm" visual="gray">
+                                    Team player
+                                  </Badge>
+                                  <Badge size="sm" visual="gray">
+                                    Team player
+                                  </Badge>
+                                  <Badge size="sm" visual="gray">
+                                    Team player
+                                  </Badge>
+                                  <Badge size="sm" visual="gray">
+                                    Team player
+                                  </Badge>
+                                </div>
+                              </div>
+                            </div>
                           </div>
-                          <div className="inline-flex items-center gap-x-3">
-                            <span className="text-sm text-dark-blue-400 leading-6">
-                              Project Cost
-                            </span>
-                            <span className="text-sm font-bold text-dark-blue-400 leading-6">
-                              Project Cost
-                            </span>
+
+                          <div className="mt-6 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
+                            <div className="flex items-center pt-6 px-6">
+                              <div className="flex-1 w-[394px] space-y-3">
+                                <div className="flex items-start gap-x-3">
+                                  <Avatar size="md">
+                                    <AvatarImage src="/man.jpg" alt="Man" />
+                                    <AvatarFallback>M</AvatarFallback>
+                                  </Avatar>
+
+                                  <div className="space-y-3">
+                                    <div className="flex flex-col gap-y-1.5">
+                                      <div className="inline-flex items-center gap-x-1">
+                                        <span className="text-base leading-6 font-semibold text-dark-blue-400">
+                                          Emily
+                                        </span>
+                                        <span className="text-base leading-6 text-dark-blue-400">
+                                          @emily.j
+                                        </span>
+                                      </div>
+
+                                      <div className="mt-1.5">
+                                        <span className="text-[13px] leading-6 text-dark-blue-400">
+                                          Product Manager
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    <div className="inline-flex items-center gap-x-2">
+                                      <span className="text-xs leading-none text-dark-blue-400">
+                                        December 2020 - Present
+                                      </span>
+                                      <span className="shrink-0 size-1 rounded-full bg-gray-300 inline-block" />
+                                      <span className="text-xs leading-none text-dark-blue-400">
+                                        5 yrs 2 mos
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-x-2">
+                                  <div className="inline-flex items-center gap-x-[2.35px]">
+                                    <Favorite
+                                      defaultPressed
+                                      className="size-[15px]"
+                                    />
+                                    <Favorite
+                                      defaultPressed
+                                      className="size-[15px]"
+                                    />
+                                    <Favorite
+                                      defaultPressed
+                                      className="size-[15px]"
+                                    />
+                                    <Favorite
+                                      defaultPressed
+                                      className="size-[15px]"
+                                    />
+                                    <Favorite
+                                      defaultPressed
+                                      className="size-[15px]"
+                                    />
+                                  </div>
+
+                                  <span className="text-base leading-[28.16px] font-bold text-dark-blue-400">
+                                    4.8
+                                  </span>
+
+                                  <span className="text-[11px] leading-6 font-extralight text-dark-blue-400">
+                                    Posted a week ago
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="flex-1 w-[477px] inline-grid grid-cols-2 gap-y-4 gap-x-[50px] pb-3">
+                                <div className="flex items-center gap-x-[6.4px]">
+                                  <CheckCircle className="size-[18px] text-success-500" />
+                                  <span className="text-sm text-dark-blue-400 leading-none font-medium">
+                                    Would Recommend
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-x-[6.4px]">
+                                  <CheckCircle className="size-[18px] text-success-500" />
+                                  <span className="text-sm text-dark-blue-400 leading-none font-medium">
+                                    Would Recommend
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-x-[6.4px]">
+                                  <CheckCircle className="size-[18px] text-success-500" />
+                                  <span className="text-sm text-dark-blue-400 leading-none font-medium">
+                                    Would Recommend
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-x-[6.4px]">
+                                  <CheckCircle className="size-[18px] text-success-500" />
+                                  <span className="text-sm text-dark-blue-400 leading-none font-medium">
+                                    Would Recommend
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="mt-3 px-6">
+                              <h1 className="text-sm leading-6 font-semibold text-dark-blue-400">
+                                Best Experience with a Backend Engineer!!!!
+                              </h1>
+                              <p className="text-sm leading-none mt-1 text-gray-700 line-clamp-3 font-extralight">
+                                Lorem ipsum dolor sit amet consectetur. Mi eu
+                                ipsum augue in integer lacus amet semper. Non
+                                dictum phasellus elit turpis nisi vitae et.
+                                Tristique ultrices habitasse tortor vehicula
+                                elementum. Nulla turpis rhoncus venenatis at. In
+                                porta viverra faucibus posuere{" "}
+                                <Button
+                                  className="hover:text-gray-700 font-semibold"
+                                  size="sm"
+                                  variant="link"
+                                  visual="gray"
+                                >
+                                  ...Read More
+                                </Button>
+                              </p>
+
+                              <div className="mt-3 flex items-center justify-between">
+                                <div className="items-center inline-flex gap-x-2.5">
+                                  <span className="text-xs font-medium leading-none text-dark-blue-400">
+                                    Helpful
+                                  </span>
+
+                                  <ThumbsUpToggle />
+                                  <ThumbsDownToggle />
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="mt-6 flex items-center gap-x-3 px-6 pb-6">
+                              <div className="w-[153px] relative rounded-lg overflow-hidden h-[98px]">
+                                <NextImage
+                                  className="object-cover"
+                                  src="/dashboard.png"
+                                  alt="Dashboard"
+                                  fill
+                                  sizes="25vw"
+                                />
+                              </div>
+
+                              <div className="flex-auto space-y-3">
+                                <h1 className="text-sm font-bold leading-6 text-dark-blue-400">
+                                  Seniority Mobile App
+                                </h1>
+
+                                <div className="flex gap-x-8 items-center">
+                                  <div className="inline-flex items-center gap-x-3">
+                                    <span className="text-sm text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                    <span className="text-sm font-bold text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                  </div>
+                                  <div className="inline-flex items-center gap-x-3">
+                                    <span className="text-sm text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                    <span className="text-sm font-bold text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                  </div>
+                                  <div className="inline-flex items-center gap-x-3">
+                                    <span className="text-sm text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                    <span className="text-sm font-bold text-dark-blue-400 leading-6">
+                                      Project Cost
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-x-2">
+                                  <Badge size="sm" visual="gray">
+                                    Team player
+                                  </Badge>
+                                  <Badge size="sm" visual="gray">
+                                    Team player
+                                  </Badge>
+                                  <Badge size="sm" visual="gray">
+                                    Team player
+                                  </Badge>
+                                  <Badge size="sm" visual="gray">
+                                    Team player
+                                  </Badge>
+                                </div>
+                              </div>
+                            </div>
                           </div>
-                          <div className="inline-flex items-center gap-x-3">
-                            <span className="text-sm text-dark-blue-400 leading-6">
-                              Project Cost
-                            </span>
-                            <span className="text-sm font-bold text-dark-blue-400 leading-6">
-                              Project Cost
-                            </span>
-                          </div>
+                        </ShowMoreLess>
+
+                        <div className="flex items-center justify-end mt-6">
+                          <Button
+                            size="md"
+                            visual="gray"
+                            variant="outlined"
+                            className="bg-white"
+                            onClick={toggleShowMore}
+                          >
+                            {showMore ? (
+                              <>
+                                Show less <ChevronUp className="size-[15px]" />
+                              </>
+                            ) : (
+                              "Show More Feedback (1)"
+                            )}
+                          </Button>
                         </div>
+                      </TabsContent>
 
-                        <div className="flex items-center gap-x-2">
-                          <Badge size="sm" visual="gray">
-                            Team player
-                          </Badge>
-                          <Badge size="sm" visual="gray">
-                            Team player
-                          </Badge>
-                          <Badge size="sm" visual="gray">
-                            Team player
-                          </Badge>
-                          <Badge size="sm" visual="gray">
-                            Team player
-                          </Badge>
+                      <TabsContent value="Ongoing">
+                        <div className="mt-6 space-y-6">
+                          <article className="border p-6 rounded-lg bg-white border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
+                            <div className="flex items-start gap-x-4">
+                              <div className="relative overflow-hidden rounded-md shrink-0 w-[134px] h-[86px]">
+                                <NextImage
+                                  src="/dashboard.png"
+                                  alt="Dashboard"
+                                  fill
+                                  sizes="25vw"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-x-2">
+                                  <h1 className="text-sm font-bold text-dark-blue-400">
+                                    Seniority Mobile App
+                                  </h1>
+                                  <Badge
+                                    className="border rounded-[3.15px] bg-white border-gray-300"
+                                    visual="gray"
+                                    variant="rounded"
+                                  >
+                                    <FileText className="size-[9.46px] text-primary-500" />{" "}
+                                    Under NDA
+                                  </Badge>
+                                </div>
+
+                                <div className="mt-2 flex items-center gap-x-6">
+                                  <div className="flex gap-x-3">
+                                    <span className="text-xs leading-6 text-dark-blue-400">
+                                      Estimated Project Cost
+                                    </span>
+                                    <span className="font-bold text-sm leading-6 text-dark-blue-400">
+                                      $25,000
+                                    </span>
+                                  </div>
+                                  <div className="flex gap-x-3">
+                                    <span className="text-xs leading-6 text-dark-blue-400">
+                                      Project Type
+                                    </span>
+                                    <span className="font-bold text-sm leading-6 text-dark-blue-400">
+                                      Cloud Software
+                                    </span>
+                                  </div>
+                                  <div className="flex gap-x-3">
+                                    <span className="text-xs leading-6 text-dark-blue-400">
+                                      Current Phase
+                                    </span>
+                                    <span className="font-bold text-sm leading-6 text-dark-blue-400">
+                                      Development
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="mt-2 flex items-center gap-x-2">
+                                  <Badge>API-Driven</Badge>
+                                  <Badge>Agile Workflow</Badge>
+                                  <Badge>Cross-Platform</Badge>
+                                  <Badge>Cloud-Based</Badge>
+                                  <Badge>Mobile-Optimized</Badge>
+                                  <Badge>FinTech</Badge>
+                                  <Badge>SaaS</Badge>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-x-3 mt-3">
+                              <div className="flex items-center gap-x-4">
+                                <AvatarGroup
+                                  excessClassName="border-gray-300 text-gray-500"
+                                  excess
+                                >
+                                  <Avatar className="border-2 border-white hover:ring-0 active:ring-0">
+                                    <AvatarImage src="/woman.jpg" alt="Woman" />
+                                    <AvatarFallback>W</AvatarFallback>
+                                  </Avatar>
+                                  <Avatar className="border-2 border-white hover:ring-0 active:ring-0">
+                                    <AvatarImage src="/woman.jpg" alt="Woman" />
+                                    <AvatarFallback>W</AvatarFallback>
+                                  </Avatar>
+                                  <Avatar className="border-2 border-white hover:ring-0 active:ring-0">
+                                    <AvatarImage src="/woman.jpg" alt="Woman" />
+                                    <AvatarFallback>W</AvatarFallback>
+                                  </Avatar>
+                                  <Avatar className="border-2 border-white hover:ring-0 active:ring-0">
+                                    <AvatarImage src="/woman.jpg" alt="Woman" />
+                                    <AvatarFallback>W</AvatarFallback>
+                                  </Avatar>
+                                  <Avatar className="border-2 border-white hover:ring-0 active:ring-0">
+                                    <AvatarImage src="/woman.jpg" alt="Woman" />
+                                    <AvatarFallback>W</AvatarFallback>
+                                  </Avatar>
+                                  <Avatar className="border-2 border-white hover:ring-0 active:ring-0">
+                                    <AvatarImage src="/woman.jpg" alt="Woman" />
+                                    <AvatarFallback>W</AvatarFallback>
+                                  </Avatar>
+                                  <Avatar className="border-2 border-white hover:ring-0 active:ring-0">
+                                    <AvatarImage src="/woman.jpg" alt="Woman" />
+                                    <AvatarFallback>W</AvatarFallback>
+                                  </Avatar>
+                                  <Avatar className="border-2 border-white hover:ring-0 active:ring-0">
+                                    <AvatarImage src="/woman.jpg" alt="Woman" />
+                                    <AvatarFallback>W</AvatarFallback>
+                                  </Avatar>
+                                </AvatarGroup>
+
+                                <span className="text-xs text-dark-blue-400">
+                                  Senior Front-End Developer
+                                </span>
+                              </div>
+
+                              <span className="shrink-0 size-1 bg-gray-300 rounded-full" />
+
+                              <div className="flex items-center gap-x-2">
+                                <span className="text-xs text-dark-blue-400">
+                                  January 2025 - Present
+                                </span>
+
+                                <Badge
+                                  variant="rounded"
+                                  className="bg-primary-50 text-primary-500 px-1.5 rounded-[3.15px]"
+                                  visual="primary"
+                                >
+                                  2 Months
+                                </Badge>
+                              </div>
+                            </div>
+                          </article>
+
+                          <article className="border p-6 rounded-lg bg-white border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
+                            <div className="flex items-start gap-x-4">
+                              <div className="relative overflow-hidden rounded-md shrink-0 w-[134px] h-[86px]">
+                                <NextImage
+                                  src="/dashboard.png"
+                                  alt="Dashboard"
+                                  fill
+                                  sizes="25vw"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-x-2">
+                                  <h1 className="text-sm font-bold text-dark-blue-400">
+                                    Seniority Mobile App
+                                  </h1>
+                                  <Badge
+                                    className="border rounded-[3.15px] bg-white border-gray-300"
+                                    visual="gray"
+                                    variant="rounded"
+                                  >
+                                    <FileText className="size-[9.46px] text-primary-500" />{" "}
+                                    Under NDA
+                                  </Badge>
+                                </div>
+
+                                <div className="mt-2 flex items-center gap-x-6">
+                                  <div className="flex gap-x-3">
+                                    <span className="text-xs leading-6 text-dark-blue-400">
+                                      Estimated Project Cost
+                                    </span>
+                                    <span className="font-bold text-sm leading-6 text-dark-blue-400">
+                                      $25,000
+                                    </span>
+                                  </div>
+                                  <div className="flex gap-x-3">
+                                    <span className="text-xs leading-6 text-dark-blue-400">
+                                      Project Type
+                                    </span>
+                                    <span className="font-bold text-sm leading-6 text-dark-blue-400">
+                                      Cloud Software
+                                    </span>
+                                  </div>
+                                  <div className="flex gap-x-3">
+                                    <span className="text-xs leading-6 text-dark-blue-400">
+                                      Current Phase
+                                    </span>
+                                    <span className="font-bold text-sm leading-6 text-dark-blue-400">
+                                      Development
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="mt-2 flex items-center gap-x-2">
+                                  <Badge>API-Driven</Badge>
+                                  <Badge>Agile Workflow</Badge>
+                                  <Badge>Cross-Platform</Badge>
+                                  <Badge>Cloud-Based</Badge>
+                                  <Badge>Mobile-Optimized</Badge>
+                                  <Badge>FinTech</Badge>
+                                  <Badge>SaaS</Badge>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-x-3 mt-3">
+                              <div className="flex items-center gap-x-4">
+                                <AvatarGroup
+                                  excessClassName="border-gray-300 text-gray-500"
+                                  excess
+                                >
+                                  <Avatar className="border-2 border-white hover:ring-0 active:ring-0">
+                                    <AvatarImage src="/woman.jpg" alt="Woman" />
+                                    <AvatarFallback>W</AvatarFallback>
+                                  </Avatar>
+                                  <Avatar className="border-2 border-white hover:ring-0 active:ring-0">
+                                    <AvatarImage src="/woman.jpg" alt="Woman" />
+                                    <AvatarFallback>W</AvatarFallback>
+                                  </Avatar>
+                                  <Avatar className="border-2 border-white hover:ring-0 active:ring-0">
+                                    <AvatarImage src="/woman.jpg" alt="Woman" />
+                                    <AvatarFallback>W</AvatarFallback>
+                                  </Avatar>
+                                </AvatarGroup>
+
+                                <span className="text-xs text-dark-blue-400">
+                                  Senior Front-End Developer
+                                </span>
+                              </div>
+
+                              <span className="shrink-0 size-1 bg-gray-300 rounded-full" />
+
+                              <div className="flex items-center gap-x-2">
+                                <span className="text-xs text-dark-blue-400">
+                                  January 2025 - Present
+                                </span>
+
+                                <Badge
+                                  variant="rounded"
+                                  className="bg-primary-50 text-primary-500 px-1.5 rounded-[3.15px]"
+                                  visual="primary"
+                                >
+                                  2 Months
+                                </Badge>
+                              </div>
+                            </div>
+                          </article>
                         </div>
-                      </div>
-                    </div>
-
-                    <div className="p-6 bg-white border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] border-t">
-                      <div className="flex items-center gap-x-3">
-                        <Avatar
-                          className="hover:ring-0 active:ring-primary-100"
-                          size="md"
-                        >
-                          <AvatarImage src="/man.jpg" alt="Man" />
-                          <AvatarFallbackIcon />
-                        </Avatar>
-
-                        <div className="flex flex-col flex-1">
-                          <div className="inline-flex items-center gap-x-1">
-                            <span className="text-sm leading-6 font-bold text-dark-blue-400">
-                              Emily
-                            </span>
-                            <span className="text-sm leading-6 text-dark-blue-400">
-                              @emily.j
-                            </span>
-                          </div>
-
-                          <div className="inline-flex items-center gap-x-2">
-                            <span className="text-xs leading-none text-dark-blue-400">
-                              90 days project
-                            </span>
-                            <span className="shrink-0 size-1 rounded-full bg-gray-300 inline-block" />
-                            <span className="text-xs leading-none text-dark-blue-400">
-                              March 2023
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <p className="text-sm font-extralight mt-3 leading-none text-gray-700">
-                        The company has a lot of resources and benefits but
-                        it&apos;s also very demanding. It&apos;s not for
-                        everyone but I enjoy working here. Thank you Sam, we had
-                        a very productive collaboration. Looking forward to more
-                        collaboration in the future. All the best! In porta
-                        viverra{" "}
-                        <Button
-                          className="hover:text-gray-700 font-semibold"
-                          size="sm"
-                          variant="link"
-                          visual="gray"
-                        >
-                          ...Read More
-                        </Button>
-                      </p>
-
-                      <div className="mt-3 flex items-center justify-between">
-                        <div className="items-center inline-flex gap-x-2.5">
-                          <span className="text-xs font-medium leading-none text-dark-blue-400">
-                            Helpful
-                          </span>
-                          <ThumbsUpToggle />
-                          <ThumbsDownToggle />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-end mt-6">
-                    <Button
-                      size="md"
-                      visual="gray"
-                      variant="outlined"
-                      className="bg-white"
-                    >
-                      Show More Feedback (6)
-                    </Button>
+                      </TabsContent>
+                    </Tabs>
                   </div>
                 </div>
 
@@ -4229,6 +4950,7 @@ export const Offers = () => {
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
+                        sizes="33vw"
                       />
                     </div>
 
@@ -4325,6 +5047,7 @@ export const Offers = () => {
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
+                        sizes="33vw"
                       />
                     </div>
 
@@ -4421,6 +5144,7 @@ export const Offers = () => {
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
+                        sizes="33vw"
                       />
                     </div>
 
@@ -4517,6 +5241,7 @@ export const Offers = () => {
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
+                        sizes="33vw"
                       />
                     </div>
 
@@ -4613,6 +5338,7 @@ export const Offers = () => {
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
+                        sizes="33vw"
                       />
                     </div>
 
@@ -4709,6 +5435,7 @@ export const Offers = () => {
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
+                        sizes="33vw"
                       />
                     </div>
 
@@ -4805,6 +5532,7 @@ export const Offers = () => {
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
+                        sizes="33vw"
                       />
                     </div>
 
@@ -4901,6 +5629,7 @@ export const Offers = () => {
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
+                        sizes="33vw"
                       />
                     </div>
 
