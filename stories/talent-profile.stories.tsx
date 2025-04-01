@@ -65,6 +65,7 @@ import { Nasdaq } from "@/components/icons/nasdaq"
 import { InviteWindowTrigger } from "@/components/invite-window"
 import NextImage from "@/components/next-image"
 import NextLink from "@/components/next-link"
+import { ReadMoreLess } from "@/components/read-more-less"
 import { ShowMoreLess } from "@/components/show-more-less"
 import { ThreeHorizontalLines } from "@/components/three-horizontal-lines"
 import { ThumbsDownToggle } from "@/components/thumbs-down"
@@ -2633,7 +2634,7 @@ export const Default = () => {
                                     5 yrs 2 mos
                                   </span>
                                 </div>
-                                <p className="mt-3 text-sm leading-none font-extralight line-clamp-4 text-gray-700">
+                                <p className="mt-3 text-sm leading-none font-extralight   text-gray-700">
                                   Lorem ipsum dolor sit amet consectetur. Cursus
                                   vitae purus in convallis nulla arcu sed. Diam
                                   pellentesque ornare nec consectetur maecenas
@@ -2678,7 +2679,7 @@ export const Default = () => {
                                     5 yrs 2 mos
                                   </span>
                                 </div>
-                                <p className="mt-3 text-sm leading-none font-extralight line-clamp-4 text-gray-700">
+                                <p className="mt-3 text-sm leading-none font-extralight   text-gray-700">
                                   Lorem ipsum dolor sit amet consectetur. Cursus
                                   vitae purus in convallis nulla arcu sed. Diam
                                   pellentesque ornare nec consectetur maecenas
@@ -2743,7 +2744,7 @@ export const Default = () => {
                                     5 yrs 2 mos
                                   </span>
                                 </div>
-                                <p className="mt-3 text-sm leading-none font-extralight line-clamp-4 text-gray-700">
+                                <p className="mt-3 text-sm leading-none font-extralight   text-gray-700">
                                   Lorem ipsum dolor sit amet consectetur. Cursus
                                   vitae purus in convallis nulla arcu sed. Diam
                                   pellentesque ornare nec consectetur maecenas
@@ -2788,7 +2789,7 @@ export const Default = () => {
                                     5 yrs 2 mos
                                   </span>
                                 </div>
-                                <p className="mt-3 text-sm leading-none font-extralight line-clamp-4 text-gray-700">
+                                <p className="mt-3 text-sm leading-none font-extralight   text-gray-700">
                                   Lorem ipsum dolor sit amet consectetur. Cursus
                                   vitae purus in convallis nulla arcu sed. Diam
                                   pellentesque ornare nec consectetur maecenas
@@ -3377,22 +3378,26 @@ export const Default = () => {
                               <h1 className="text-sm leading-6 font-semibold text-dark-blue-400">
                                 Best Experience with a Backend Engineer!!!!
                               </h1>
-                              <p className="text-sm leading-none mt-1 text-gray-700 line-clamp-3 font-extralight">
-                                Lorem ipsum dolor sit amet consectetur. Mi eu
-                                ipsum augue in integer lacus amet semper. Non
-                                dictum phasellus elit turpis nisi vitae et.
-                                Tristique ultrices habitasse tortor vehicula
-                                elementum. Nulla turpis rhoncus venenatis at. In
-                                porta viverra faucibus posuere{" "}
-                                <Button
-                                  className="hover:text-gray-700 font-semibold"
-                                  size="sm"
-                                  variant="link"
-                                  visual="gray"
-                                >
-                                  ...Read More
-                                </Button>
-                              </p>
+                              <ReadMoreLess text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate doloremque impedit eveniet harum dolores modi dolor, aspernatur saepe incidunt consequuntur et voluptatem dolorem ea sequi officia distinctio perspiciatis labore fugit eligendi architecto similique esse assumenda fugiat? Aut tempora veritatis, similique exercitationem quos consequuntur repudiandae, quaerat nesciunt ducimus beatae tempore alias repellendus id quidem pariatur blanditiis architecto quasi aperiam fugiat maiores?">
+                                {({ readMore, text, toggle }) => (
+                                  <>
+                                    <p className="text-sm leading-none mt-1 text-gray-700 font-extralight">
+                                      {text}{" "}
+                                      <Button
+                                        className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
+                                        size="sm"
+                                        variant="link"
+                                        visual="gray"
+                                        onClick={toggle}
+                                      >
+                                        {readMore
+                                          ? "Read less"
+                                          : "...Read More"}
+                                      </Button>
+                                    </p>
+                                  </>
+                                )}
+                              </ReadMoreLess>
 
                               <div className="mt-3 flex items-center justify-between">
                                 <div className="items-center inline-flex gap-x-2.5">
@@ -3571,7 +3576,7 @@ export const Default = () => {
                               <h1 className="text-sm leading-6 font-semibold text-dark-blue-400">
                                 Best Experience with a Backend Engineer!!!!
                               </h1>
-                              <p className="text-sm leading-none mt-1 text-gray-700 line-clamp-3 font-extralight">
+                              <p className="text-sm leading-none mt-1 text-gray-700   font-extralight">
                                 Lorem ipsum dolor sit amet consectetur. Mi eu
                                 ipsum augue in integer lacus amet semper. Non
                                 dictum phasellus elit turpis nisi vitae et.
@@ -3826,7 +3831,7 @@ export const Default = () => {
                               <h1 className="text-sm leading-6 font-semibold text-dark-blue-400">
                                 Best Experience with a Backend Engineer!!!!
                               </h1>
-                              <p className="text-sm leading-none mt-1 text-gray-700 line-clamp-3 font-extralight">
+                              <p className="text-sm leading-none mt-1 text-gray-700   font-extralight">
                                 Lorem ipsum dolor sit amet consectetur. Mi eu
                                 ipsum augue in integer lacus amet semper. Non
                                 dictum phasellus elit turpis nisi vitae et.
@@ -4021,7 +4026,7 @@ export const Default = () => {
                               <h1 className="text-sm leading-6 font-semibold text-dark-blue-400">
                                 Best Experience with a Backend Engineer!!!!
                               </h1>
-                              <p className="text-sm leading-none mt-1 text-gray-700 line-clamp-3 font-extralight">
+                              <p className="text-sm leading-none mt-1 text-gray-700   font-extralight">
                                 Lorem ipsum dolor sit amet consectetur. Mi eu
                                 ipsum augue in integer lacus amet semper. Non
                                 dictum phasellus elit turpis nisi vitae et.

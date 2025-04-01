@@ -1,16 +1,14 @@
-import { useControllableState } from "@/utils/hooks"
-import { getValidChildren } from "@/utils/react-utils"
 import { useToggle } from "react-use"
 
 const rmWordsFromEndWithFullStop = (words: string[]) => {
   const lastWord = words[words.length - 1]
-  if (lastWord.endsWith(".")) {
+  if (lastWord.endsWith(".") || lastWord.endsWith("?")) {
     return rmWordsFromEndWithFullStop(words.slice(0, -1))
   }
   return words
 }
 
-export const ShowMoreLess = ({
+export const ReadMoreLess = ({
   text,
   max = 36,
   children,
@@ -18,22 +16,22 @@ export const ShowMoreLess = ({
   text: string
   max?: number
   children?: (options: {
-    showMore: boolean
+    readMore: boolean
     toggle: (...args: any[]) => any
     text: string
   }) => React.ReactNode
 }) => {
   const words = text.split(" ")
-  const truncatedTextWithEllipses = `${rmWordsFromEndWithFullStop(
+  const truncatedTextWithEllipses = rmWordsFromEndWithFullStop(
     words.splice(0, max)
-  )}...`
-  const [showMore, toggle] = useToggle(false)
+  ).join(" ")
+  const [readMore, toggle] = useToggle(false)
   return (
     <>
       {children?.({
-        showMore,
+        readMore,
         toggle,
-        text: showMore ? text : truncatedTextWithEllipses,
+        text: readMore ? text : truncatedTextWithEllipses,
       })}
     </>
   )
