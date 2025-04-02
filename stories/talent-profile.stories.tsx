@@ -63,6 +63,8 @@ import { Dropbox } from "@/components/icons/dropbox"
 import { Microsoft } from "@/components/icons/microsoft"
 import { Nasdaq } from "@/components/icons/nasdaq"
 import { InviteWindowTrigger } from "@/components/invite-window"
+import { LikeDislike } from "@/components/like-dislike"
+import { Money } from "@/components/money"
 import NextImage from "@/components/next-image"
 import NextLink from "@/components/next-link"
 import { ReadMoreLess } from "@/components/read-more-less"
@@ -1583,7 +1585,7 @@ export const Default = () => {
                           variant="unstyled"
                           showUnderline={false}
                           value="Featured Clients"
-                          className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
+                          className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium transition duration-300"
                         >
                           Featured Clients
                         </TabsTrigger>
@@ -1591,7 +1593,7 @@ export const Default = () => {
                           variant="unstyled"
                           showUnderline={false}
                           value="Certifications"
-                          className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
+                          className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium transition duration-300"
                         >
                           Certifications
                         </TabsTrigger>
@@ -1599,7 +1601,7 @@ export const Default = () => {
                           variant="unstyled"
                           showUnderline={false}
                           value="Industry Expertise"
-                          className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
+                          className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium transition duration-300"
                         >
                           Industry Expertise
                         </TabsTrigger>
@@ -1663,7 +1665,7 @@ export const Default = () => {
                             variant="unstyled"
                             showUnderline={false}
                             value="Projects"
-                            className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
+                            className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium transition duration-300"
                           >
                             Projects
                           </TabsTrigger>
@@ -1671,7 +1673,7 @@ export const Default = () => {
                             variant="unstyled"
                             showUnderline={false}
                             value="Services"
-                            className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
+                            className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium transition duration-300"
                           >
                             Services
                           </TabsTrigger>
@@ -1684,19 +1686,19 @@ export const Default = () => {
                           <RadixTabs.List className="inline-flex items-center gap-x-3">
                             <RadixTabs.Trigger
                               value="Front-end"
-                              className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
+                              className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium transition duration-300"
                             >
                               Font-end
                             </RadixTabs.Trigger>
                             <RadixTabs.Trigger
                               value="Back-End"
-                              className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
+                              className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium transition duration-300"
                             >
                               Back-End
                             </RadixTabs.Trigger>
                             <RadixTabs.Trigger
                               value="Database"
-                              className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
+                              className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium transition duration-300"
                             >
                               Database
                             </RadixTabs.Trigger>
@@ -1716,9 +1718,9 @@ export const Default = () => {
                       <TabsContent value="Projects">
                         <div className="pt-6 grid grid-cols-3 gap-x-5">
                           <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                            <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative">
+                            <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
                               <NextImage
-                                className="object-cover"
+                                className="object-cover group-hover:scale-105 transition duration-300"
                                 src="/dashboard.png"
                                 alt="Dashboard"
                                 fill
@@ -1737,7 +1739,8 @@ export const Default = () => {
                               <div className="inline-flex items-center gap-x-1">
                                 <Star className="size-[15px] text-primary-500 fill-primary-500" />
                                 <span className="inline-flex items-center gap-x-1 text-sm leading-none text-dark-blue-400 font-medium">
-                                  4.9 <span>(5)</span>
+                                  4.9{" "}
+                                  <span className="font-extralight">(5)</span>
                                 </span>
                               </div>
                             </div>
@@ -1758,7 +1761,7 @@ export const Default = () => {
                               </div>
 
                               <div className="flex items-center gap-x-[6.4px]">
-                                <Clock className="size-[18px] shrink-0 text-primary-500" />
+                                <Money className="size-[18px] shrink-0 text-primary-500" />
 
                                 <span className="font-medium text-sm leading-none text-dark-blue-400">
                                   $50,000 budget
@@ -1766,11 +1769,16 @@ export const Default = () => {
                               </div>
                             </div>
 
-                            <div className="mt-5 flex items-center justify-between">
+                            <div className="mt-5 flex items-end justify-between">
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <AvatarGroup max={5} size="sm" excess>
+                                    <AvatarGroup
+                                      max={5}
+                                      size="sm"
+                                      excess
+                                      excessClassName="border-gray-300 text-gray-500"
+                                    >
                                       <Avatar
                                         size="sm"
                                         className="border-2 border-white hover:ring-0 active:ring-0"
@@ -1997,9 +2005,9 @@ export const Default = () => {
                             </div>
                           </article>
                           <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                            <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative">
+                            <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
                               <NextImage
-                                className="object-cover"
+                                className="object-cover group-hover:scale-105 transition duration-300"
                                 src="/dashboard.png"
                                 alt="Dashboard"
                                 fill
@@ -2018,7 +2026,8 @@ export const Default = () => {
                               <div className="inline-flex items-center gap-x-1">
                                 <Star className="size-[15px] text-primary-500 fill-primary-500" />
                                 <span className="inline-flex items-center gap-x-1 text-sm leading-none text-dark-blue-400 font-medium">
-                                  4.9 <span>(5)</span>
+                                  4.9{" "}
+                                  <span className="font-extralight">(5)</span>
                                 </span>
                               </div>
                             </div>
@@ -2039,7 +2048,7 @@ export const Default = () => {
                               </div>
 
                               <div className="flex items-center gap-x-[6.4px]">
-                                <Clock className="size-[18px] shrink-0 text-primary-500" />
+                                <Money className="size-[18px] shrink-0 text-primary-500" />
 
                                 <span className="font-medium text-sm leading-none text-dark-blue-400">
                                   $50,000 budget
@@ -2047,11 +2056,16 @@ export const Default = () => {
                               </div>
                             </div>
 
-                            <div className="mt-5 flex items-center justify-between">
+                            <div className="mt-5 flex items-end justify-between">
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <AvatarGroup max={5} size="sm" excess>
+                                    <AvatarGroup
+                                      max={5}
+                                      size="sm"
+                                      excess
+                                      excessClassName="border-gray-300 text-gray-500"
+                                    >
                                       <Avatar
                                         size="sm"
                                         className="border-2 border-white hover:ring-0 active:ring-0"
@@ -2278,9 +2292,9 @@ export const Default = () => {
                             </div>
                           </article>
                           <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                            <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative">
+                            <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
                               <NextImage
-                                className="object-cover"
+                                className="object-cover group-hover:scale-105 transition duration-300"
                                 src="/dashboard.png"
                                 alt="Dashboard"
                                 fill
@@ -2299,7 +2313,8 @@ export const Default = () => {
                               <div className="inline-flex items-center gap-x-1">
                                 <Star className="size-[15px] text-primary-500 fill-primary-500" />
                                 <span className="inline-flex items-center gap-x-1 text-sm leading-none text-dark-blue-400 font-medium">
-                                  4.9 <span>(5)</span>
+                                  4.9{" "}
+                                  <span className="font-extralight">(5)</span>
                                 </span>
                               </div>
                             </div>
@@ -2320,7 +2335,7 @@ export const Default = () => {
                               </div>
 
                               <div className="flex items-center gap-x-[6.4px]">
-                                <Clock className="size-[18px] shrink-0 text-primary-500" />
+                                <Money className="size-[18px] shrink-0 text-primary-500" />
 
                                 <span className="font-medium text-sm leading-none text-dark-blue-400">
                                   $50,000 budget
@@ -2328,11 +2343,16 @@ export const Default = () => {
                               </div>
                             </div>
 
-                            <div className="mt-5 flex items-center justify-between">
+                            <div className="mt-5 flex items-end justify-between">
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <AvatarGroup max={5} size="sm" excess>
+                                    <AvatarGroup
+                                      max={5}
+                                      size="sm"
+                                      excess
+                                      excessClassName="border-gray-300 text-gray-500"
+                                    >
                                       <Avatar
                                         size="sm"
                                         className="border-2 border-white hover:ring-0 active:ring-0"
@@ -2584,7 +2604,7 @@ export const Default = () => {
                           variant="unstyled"
                           showUnderline={false}
                           value="Work Experience"
-                          className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
+                          className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium transition duration-300"
                         >
                           Work Experience
                         </TabsTrigger>
@@ -2592,7 +2612,7 @@ export const Default = () => {
                           variant="unstyled"
                           showUnderline={false}
                           value="Education"
-                          className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
+                          className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium transition duration-300"
                         >
                           Education
                         </TabsTrigger>
@@ -2634,23 +2654,28 @@ export const Default = () => {
                                     5 yrs 2 mos
                                   </span>
                                 </div>
-                                <p className="mt-3 text-sm leading-none font-extralight   text-gray-700">
-                                  Lorem ipsum dolor sit amet consectetur. Cursus
-                                  vitae purus in convallis nulla arcu sed. Diam
-                                  pellentesque ornare nec consectetur maecenas
-                                  leo lectus. Risus nunc sit urna neque volutpat
-                                  at sed. Tortor integer faucibus sed viverra
-                                  malesuada ornare tellus enim sollicitudin. Id
-                                  odio porttitor interdum nulla. Lorem ipsum
-                                  dolor sit amet consectetur{" "}
-                                  <Button
-                                    className="hover:text-gray-700 font-semibold"
-                                    visual="gray"
-                                    variant="link"
-                                  >
-                                    ...Read More
-                                  </Button>
-                                </p>
+
+                                <ReadMoreLess
+                                  max={52}
+                                  text="Lorem ipsum dolor sit amet consectetur. Cursus vitae purus in convallis nulla arcu sed. Diam pellentesque ornare nec consectetur maecenas leo lectus. Risus nunc sit urna neque volutpat at sed. Tortor integer faucibus sed viverra malesuada ornare tellus enim sollicitudin. Id odio porttitor interdum nulla. Lorem ipsum dolor sit amet consectetur. Risus nunc sit urna neque volutpat at sed. Tortor integer faucibus sed viverra malesuada ornare tellus enim sollicitudin. Id odio porttitor interdum nulla. Lorem ipsum dolor sit amet consectetur."
+                                >
+                                  {({ readMore, text, toggle }) => (
+                                    <>
+                                      <p className="mt-3 text-sm leading-none font-extralight   text-gray-700">
+                                        {text}{" "}
+                                        <Button
+                                          className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
+                                          size="sm"
+                                          variant="link"
+                                          visual="gray"
+                                          onClick={toggle}
+                                        >
+                                          {readMore ? null : "...Read More"}
+                                        </Button>
+                                      </p>
+                                    </>
+                                  )}
+                                </ReadMoreLess>
 
                                 <div className="mt-3 flex items-center justify-between">
                                   <div className="flex flex-auto items-center gap-x-3">
@@ -2679,23 +2704,27 @@ export const Default = () => {
                                     5 yrs 2 mos
                                   </span>
                                 </div>
-                                <p className="mt-3 text-sm leading-none font-extralight   text-gray-700">
-                                  Lorem ipsum dolor sit amet consectetur. Cursus
-                                  vitae purus in convallis nulla arcu sed. Diam
-                                  pellentesque ornare nec consectetur maecenas
-                                  leo lectus. Risus nunc sit urna neque volutpat
-                                  at sed. Tortor integer faucibus sed viverra
-                                  malesuada ornare tellus enim sollicitudin. Id
-                                  odio porttitor interdum nulla. Lorem ipsum
-                                  dolor sit amet consectetur{" "}
-                                  <Button
-                                    className="hover:text-gray-700 font-semibold"
-                                    visual="gray"
-                                    variant="link"
-                                  >
-                                    ...Read More
-                                  </Button>
-                                </p>
+                                <ReadMoreLess
+                                  max={52}
+                                  text="Lorem ipsum dolor sit amet consectetur. Cursus vitae purus in convallis nulla arcu sed. Diam pellentesque ornare nec consectetur maecenas leo lectus. Risus nunc sit urna neque volutpat at sed. Tortor integer faucibus sed viverra malesuada ornare tellus enim sollicitudin. Id odio porttitor interdum nulla. Lorem ipsum dolor sit amet consectetur. Risus nunc sit urna neque volutpat at sed. Tortor integer faucibus sed viverra malesuada ornare tellus enim sollicitudin. Id odio porttitor interdum nulla. Lorem ipsum dolor sit amet consectetur."
+                                >
+                                  {({ readMore, text, toggle }) => (
+                                    <>
+                                      <p className="mt-3 text-sm leading-none font-extralight   text-gray-700">
+                                        {text}{" "}
+                                        <Button
+                                          className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
+                                          size="sm"
+                                          variant="link"
+                                          visual="gray"
+                                          onClick={toggle}
+                                        >
+                                          {readMore ? null : "...Read More"}
+                                        </Button>
+                                      </p>
+                                    </>
+                                  )}
+                                </ReadMoreLess>
 
                                 <div className="mt-3 flex items-center justify-between">
                                   <div className="flex flex-auto items-center gap-x-3">
@@ -2744,23 +2773,27 @@ export const Default = () => {
                                     5 yrs 2 mos
                                   </span>
                                 </div>
-                                <p className="mt-3 text-sm leading-none font-extralight   text-gray-700">
-                                  Lorem ipsum dolor sit amet consectetur. Cursus
-                                  vitae purus in convallis nulla arcu sed. Diam
-                                  pellentesque ornare nec consectetur maecenas
-                                  leo lectus. Risus nunc sit urna neque volutpat
-                                  at sed. Tortor integer faucibus sed viverra
-                                  malesuada ornare tellus enim sollicitudin. Id
-                                  odio porttitor interdum nulla. Lorem ipsum
-                                  dolor sit amet consectetur{" "}
-                                  <Button
-                                    className="hover:text-gray-700 font-semibold"
-                                    visual="gray"
-                                    variant="link"
-                                  >
-                                    ...Read More
-                                  </Button>
-                                </p>
+                                <ReadMoreLess
+                                  max={52}
+                                  text="Lorem ipsum dolor sit amet consectetur. Cursus vitae purus in convallis nulla arcu sed. Diam pellentesque ornare nec consectetur maecenas leo lectus. Risus nunc sit urna neque volutpat at sed. Tortor integer faucibus sed viverra malesuada ornare tellus enim sollicitudin. Id odio porttitor interdum nulla. Lorem ipsum dolor sit amet consectetur. Risus nunc sit urna neque volutpat at sed. Tortor integer faucibus sed viverra malesuada ornare tellus enim sollicitudin. Id odio porttitor interdum nulla. Lorem ipsum dolor sit amet consectetur."
+                                >
+                                  {({ readMore, text, toggle }) => (
+                                    <>
+                                      <p className="mt-3 text-sm leading-none font-extralight   text-gray-700">
+                                        {text}{" "}
+                                        <Button
+                                          className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
+                                          size="sm"
+                                          variant="link"
+                                          visual="gray"
+                                          onClick={toggle}
+                                        >
+                                          {readMore ? null : "...Read More"}
+                                        </Button>
+                                      </p>
+                                    </>
+                                  )}
+                                </ReadMoreLess>
 
                                 <div className="mt-3 flex items-center justify-between">
                                   <div className="flex flex-auto items-center gap-x-3">
@@ -2789,23 +2822,27 @@ export const Default = () => {
                                     5 yrs 2 mos
                                   </span>
                                 </div>
-                                <p className="mt-3 text-sm leading-none font-extralight   text-gray-700">
-                                  Lorem ipsum dolor sit amet consectetur. Cursus
-                                  vitae purus in convallis nulla arcu sed. Diam
-                                  pellentesque ornare nec consectetur maecenas
-                                  leo lectus. Risus nunc sit urna neque volutpat
-                                  at sed. Tortor integer faucibus sed viverra
-                                  malesuada ornare tellus enim sollicitudin. Id
-                                  odio porttitor interdum nulla. Lorem ipsum
-                                  dolor sit amet consectetur{" "}
-                                  <Button
-                                    className="hover:text-gray-700 font-semibold"
-                                    visual="gray"
-                                    variant="link"
-                                  >
-                                    ...Read More
-                                  </Button>
-                                </p>
+                                <ReadMoreLess
+                                  max={52}
+                                  text="Lorem ipsum dolor sit amet consectetur. Cursus vitae purus in convallis nulla arcu sed. Diam pellentesque ornare nec consectetur maecenas leo lectus. Risus nunc sit urna neque volutpat at sed. Tortor integer faucibus sed viverra malesuada ornare tellus enim sollicitudin. Id odio porttitor interdum nulla. Lorem ipsum dolor sit amet consectetur. Risus nunc sit urna neque volutpat at sed. Tortor integer faucibus sed viverra malesuada ornare tellus enim sollicitudin. Id odio porttitor interdum nulla. Lorem ipsum dolor sit amet consectetur."
+                                >
+                                  {({ readMore, text, toggle }) => (
+                                    <>
+                                      <p className="mt-3 text-sm leading-none font-extralight   text-gray-700">
+                                        {text}{" "}
+                                        <Button
+                                          className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
+                                          size="sm"
+                                          variant="link"
+                                          visual="gray"
+                                          onClick={toggle}
+                                        >
+                                          {readMore ? null : "...Read More"}
+                                        </Button>
+                                      </p>
+                                    </>
+                                  )}
+                                </ReadMoreLess>
 
                                 <div className="mt-3 flex items-center justify-between">
                                   <div className="flex flex-auto items-center gap-x-3">
@@ -3205,7 +3242,7 @@ export const Default = () => {
                             variant="unstyled"
                             showUnderline={false}
                             value="Completed"
-                            className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
+                            className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium transition duration-300"
                           >
                             Completed (24)
                           </TabsTrigger>
@@ -3213,7 +3250,7 @@ export const Default = () => {
                             variant="unstyled"
                             showUnderline={false}
                             value="Ongoing"
-                            className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
+                            className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium transition duration-300"
                           >
                             Ongoing (7)
                           </TabsTrigger>
@@ -3378,7 +3415,10 @@ export const Default = () => {
                               <h1 className="text-sm leading-6 font-semibold text-dark-blue-400">
                                 Best Experience with a Backend Engineer!!!!
                               </h1>
-                              <ReadMoreLess text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate doloremque impedit eveniet harum dolores modi dolor, aspernatur saepe incidunt consequuntur et voluptatem dolorem ea sequi officia distinctio perspiciatis labore fugit eligendi architecto similique esse assumenda fugiat? Aut tempora veritatis, similique exercitationem quos consequuntur repudiandae, quaerat nesciunt ducimus beatae tempore alias repellendus id quidem pariatur blanditiis architecto quasi aperiam fugiat maiores?">
+                              <ReadMoreLess
+                                max={32}
+                                text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate doloremque impedit eveniet harum dolores modi dolor, aspernatur saepe incidunt consequuntur et voluptatem dolorem ea sequi officia distinctio perspiciatis labore fugit eligendi architecto similique esse assumenda fugiat? Aut tempora veritatis, similique exercitationem quos consequuntur repudiandae, quaerat nesciunt ducimus beatae tempore alias repellendus id quidem pariatur blanditiis architecto quasi aperiam fugiat maiores?"
+                              >
                                 {({ readMore, text, toggle }) => (
                                   <>
                                     <p className="text-sm leading-none mt-1 text-gray-700 font-extralight">
@@ -3390,9 +3430,7 @@ export const Default = () => {
                                         visual="gray"
                                         onClick={toggle}
                                       >
-                                        {readMore
-                                          ? "Read less"
-                                          : "...Read More"}
+                                        {readMore ? null : "...Read More"}
                                       </Button>
                                     </p>
                                   </>
@@ -3404,8 +3442,7 @@ export const Default = () => {
                                   <span className="text-xs font-medium leading-none text-dark-blue-400">
                                     Helpful
                                   </span>
-                                  <ThumbsUpToggle />
-                                  <ThumbsDownToggle />
+                                  <LikeDislike></LikeDislike>
                                 </div>
                               </div>
                             </div>
@@ -3576,22 +3613,27 @@ export const Default = () => {
                               <h1 className="text-sm leading-6 font-semibold text-dark-blue-400">
                                 Best Experience with a Backend Engineer!!!!
                               </h1>
-                              <p className="text-sm leading-none mt-1 text-gray-700   font-extralight">
-                                Lorem ipsum dolor sit amet consectetur. Mi eu
-                                ipsum augue in integer lacus amet semper. Non
-                                dictum phasellus elit turpis nisi vitae et.
-                                Tristique ultrices habitasse tortor vehicula
-                                elementum. Nulla turpis rhoncus venenatis at. In
-                                porta viverra faucibus posuere{" "}
-                                <Button
-                                  className="hover:text-gray-700 font-semibold"
-                                  size="sm"
-                                  variant="link"
-                                  visual="gray"
-                                >
-                                  ...Read More
-                                </Button>
-                              </p>
+                              <ReadMoreLess
+                                max={32}
+                                text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate doloremque impedit eveniet harum dolores modi dolor, aspernatur saepe incidunt consequuntur et voluptatem dolorem ea sequi officia distinctio perspiciatis labore fugit eligendi architecto similique esse assumenda fugiat? Aut tempora veritatis, similique exercitationem quos consequuntur repudiandae, quaerat nesciunt ducimus beatae tempore alias repellendus id quidem pariatur blanditiis architecto quasi aperiam fugiat maiores?"
+                              >
+                                {({ readMore, text, toggle }) => (
+                                  <>
+                                    <p className="text-sm leading-none mt-1 text-gray-700 font-extralight">
+                                      {text}{" "}
+                                      <Button
+                                        className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
+                                        size="sm"
+                                        variant="link"
+                                        visual="gray"
+                                        onClick={toggle}
+                                      >
+                                        {readMore ? null : "...Read More"}
+                                      </Button>
+                                    </p>
+                                  </>
+                                )}
+                              </ReadMoreLess>
 
                               <div className="mt-3 flex items-center justify-between">
                                 <div className="items-center inline-flex gap-x-2.5">
@@ -3599,8 +3641,7 @@ export const Default = () => {
                                     Helpful
                                   </span>
 
-                                  <ThumbsUpToggle />
-                                  <ThumbsDownToggle />
+                                  <LikeDislike></LikeDislike>
                                 </div>
                               </div>
                             </div>
@@ -3697,30 +3738,34 @@ export const Default = () => {
                                 </div>
                               </div>
 
-                              <p className="text-sm font-extralight mt-3 leading-none text-gray-700">
-                                Lorem ipsum dolor sit amet consectetur. Mi eu
-                                ipsum augue in integer lacus amet semper. Non
-                                dictum phasellus elit turpis nisi vitae et.
-                                Tristique ultrices habitasse tortor vehicula
-                                elementum. Nulla turpis rhoncus venenatis at. In
-                                porta viverra faucibus po{" "}
-                                <Button
-                                  className="hover:text-gray-700 font-semibold"
-                                  size="sm"
-                                  variant="link"
-                                  visual="gray"
-                                >
-                                  ...Read More
-                                </Button>
-                              </p>
+                              <ReadMoreLess
+                                max={32}
+                                text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate doloremque impedit eveniet harum dolores modi dolor, aspernatur saepe incidunt consequuntur et voluptatem dolorem ea sequi officia distinctio perspiciatis labore fugit eligendi architecto similique esse assumenda fugiat? Aut tempora veritatis, similique exercitationem quos consequuntur repudiandae, quaerat nesciunt ducimus beatae tempore alias repellendus id quidem pariatur blanditiis architecto quasi aperiam fugiat maiores?"
+                              >
+                                {({ readMore, text, toggle }) => (
+                                  <>
+                                    <p className="text-sm leading-none mt-1 text-gray-700 font-extralight">
+                                      {text}{" "}
+                                      <Button
+                                        className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
+                                        size="sm"
+                                        variant="link"
+                                        visual="gray"
+                                        onClick={toggle}
+                                      >
+                                        {readMore ? null : "...Read More"}
+                                      </Button>
+                                    </p>
+                                  </>
+                                )}
+                              </ReadMoreLess>
 
                               <div className="mt-3 flex items-center justify-between">
                                 <div className="items-center inline-flex gap-x-2.5">
                                   <span className="text-xs font-medium leading-none text-dark-blue-400">
                                     Helpful
                                   </span>
-                                  <ThumbsUpToggle />
-                                  <ThumbsDownToggle />
+                                  <LikeDislike></LikeDislike>
                                 </div>
                               </div>
                             </div>
@@ -3831,22 +3876,27 @@ export const Default = () => {
                               <h1 className="text-sm leading-6 font-semibold text-dark-blue-400">
                                 Best Experience with a Backend Engineer!!!!
                               </h1>
-                              <p className="text-sm leading-none mt-1 text-gray-700   font-extralight">
-                                Lorem ipsum dolor sit amet consectetur. Mi eu
-                                ipsum augue in integer lacus amet semper. Non
-                                dictum phasellus elit turpis nisi vitae et.
-                                Tristique ultrices habitasse tortor vehicula
-                                elementum. Nulla turpis rhoncus venenatis at. In
-                                porta viverra faucibus posuere{" "}
-                                <Button
-                                  className="hover:text-gray-700 font-semibold"
-                                  size="sm"
-                                  variant="link"
-                                  visual="gray"
-                                >
-                                  ...Read More
-                                </Button>
-                              </p>
+                              <ReadMoreLess
+                                max={32}
+                                text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate doloremque impedit eveniet harum dolores modi dolor, aspernatur saepe incidunt consequuntur et voluptatem dolorem ea sequi officia distinctio perspiciatis labore fugit eligendi architecto similique esse assumenda fugiat? Aut tempora veritatis, similique exercitationem quos consequuntur repudiandae, quaerat nesciunt ducimus beatae tempore alias repellendus id quidem pariatur blanditiis architecto quasi aperiam fugiat maiores?"
+                              >
+                                {({ readMore, text, toggle }) => (
+                                  <>
+                                    <p className="text-sm leading-none mt-1 text-gray-700 font-extralight">
+                                      {text}{" "}
+                                      <Button
+                                        className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
+                                        size="sm"
+                                        variant="link"
+                                        visual="gray"
+                                        onClick={toggle}
+                                      >
+                                        {readMore ? null : "...Read More"}
+                                      </Button>
+                                    </p>
+                                  </>
+                                )}
+                              </ReadMoreLess>
 
                               <div className="mt-3 flex items-center justify-between">
                                 <div className="items-center inline-flex gap-x-2.5">
@@ -3854,8 +3904,7 @@ export const Default = () => {
                                     Helpful
                                   </span>
 
-                                  <ThumbsUpToggle />
-                                  <ThumbsDownToggle />
+                                  <LikeDislike></LikeDislike>
                                 </div>
                               </div>
                             </div>
@@ -4026,22 +4075,27 @@ export const Default = () => {
                               <h1 className="text-sm leading-6 font-semibold text-dark-blue-400">
                                 Best Experience with a Backend Engineer!!!!
                               </h1>
-                              <p className="text-sm leading-none mt-1 text-gray-700   font-extralight">
-                                Lorem ipsum dolor sit amet consectetur. Mi eu
-                                ipsum augue in integer lacus amet semper. Non
-                                dictum phasellus elit turpis nisi vitae et.
-                                Tristique ultrices habitasse tortor vehicula
-                                elementum. Nulla turpis rhoncus venenatis at. In
-                                porta viverra faucibus posuere{" "}
-                                <Button
-                                  className="hover:text-gray-700 font-semibold"
-                                  size="sm"
-                                  variant="link"
-                                  visual="gray"
-                                >
-                                  ...Read More
-                                </Button>
-                              </p>
+                              <ReadMoreLess
+                                max={32}
+                                text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate doloremque impedit eveniet harum dolores modi dolor, aspernatur saepe incidunt consequuntur et voluptatem dolorem ea sequi officia distinctio perspiciatis labore fugit eligendi architecto similique esse assumenda fugiat? Aut tempora veritatis, similique exercitationem quos consequuntur repudiandae, quaerat nesciunt ducimus beatae tempore alias repellendus id quidem pariatur blanditiis architecto quasi aperiam fugiat maiores?"
+                              >
+                                {({ readMore, text, toggle }) => (
+                                  <>
+                                    <p className="text-sm leading-none mt-1 text-gray-700 font-extralight">
+                                      {text}{" "}
+                                      <Button
+                                        className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
+                                        size="sm"
+                                        variant="link"
+                                        visual="gray"
+                                        onClick={toggle}
+                                      >
+                                        {readMore ? null : "...Read More"}
+                                      </Button>
+                                    </p>
+                                  </>
+                                )}
+                              </ReadMoreLess>
 
                               <div className="mt-3 flex items-center justify-between">
                                 <div className="items-center inline-flex gap-x-2.5">
@@ -4049,8 +4103,7 @@ export const Default = () => {
                                     Helpful
                                   </span>
 
-                                  <ThumbsUpToggle />
-                                  <ThumbsDownToggle />
+                                  <LikeDislike></LikeDislike>
                                 </div>
                               </div>
                             </div>
@@ -4127,7 +4180,7 @@ export const Default = () => {
                           >
                             {showMore ? (
                               <>
-                                Show less <ChevronUp className="size-[15px]" />
+                                View Less <ChevronUp className="size-[15px]" />
                               </>
                             ) : (
                               "Show More Feedback (1)"
@@ -4908,7 +4961,7 @@ export const Offers = () => {
                     showUnderline={false}
                     variant="unstyled"
                     value="Projects"
-                    className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
+                    className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium transition duration-300"
                   >
                     Projects
                   </TabsTrigger>
@@ -4916,7 +4969,7 @@ export const Offers = () => {
                     showUnderline={false}
                     variant="unstyled"
                     value="Services"
-                    className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
+                    className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium transition duration-300"
                   >
                     Services
                   </TabsTrigger>
@@ -4926,19 +4979,19 @@ export const Offers = () => {
                   <RadixTabs.List className="inline-flex items-center gap-x-3">
                     <RadixTabs.Trigger
                       value="Front-end"
-                      className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
+                      className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium transition duration-300"
                     >
                       Font-end
                     </RadixTabs.Trigger>
                     <RadixTabs.Trigger
                       value="Back-End"
-                      className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
+                      className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium transition duration-300"
                     >
                       Back-End
                     </RadixTabs.Trigger>
                     <RadixTabs.Trigger
                       value="Database"
-                      className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium"
+                      className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium transition duration-300"
                     >
                       Database
                     </RadixTabs.Trigger>
@@ -4949,9 +5002,9 @@ export const Offers = () => {
               <TabsContent value="Projects">
                 <div className="pt-6 grid grid-cols-4 gap-x-5 gap-y-6">
                   <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative">
+                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
                       <NextImage
-                        className="object-cover"
+                        className="object-cover group-hover:scale-105 transition duration-300"
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
@@ -4988,7 +5041,7 @@ export const Offers = () => {
                       </div>
 
                       <div className="flex items-center gap-x-[6.4px]">
-                        <Clock className="size-[18px] shrink-0 text-primary-500" />
+                        <Money className="size-[18px] shrink-0 text-primary-500" />
 
                         <span className="font-medium text-sm leading-none text-dark-blue-400">
                           $50,000 budget
@@ -4996,8 +5049,13 @@ export const Offers = () => {
                       </div>
                     </div>
 
-                    <div className="mt-5 flex items-center justify-between">
-                      <AvatarGroup max={5} size="sm" excess>
+                    <div className="mt-5 flex items-end justify-between">
+                      <AvatarGroup
+                        max={5}
+                        size="sm"
+                        excess
+                        excessClassName="border-gray-300 text-gray-500"
+                      >
                         <Avatar
                           size="sm"
                           className="border-2 border-white hover:ring-0 active:ring-0"
@@ -5046,9 +5104,9 @@ export const Offers = () => {
                     </div>
                   </article>
                   <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative">
+                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
                       <NextImage
-                        className="object-cover"
+                        className="object-cover group-hover:scale-105 transition duration-300"
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
@@ -5085,7 +5143,7 @@ export const Offers = () => {
                       </div>
 
                       <div className="flex items-center gap-x-[6.4px]">
-                        <Clock className="size-[18px] shrink-0 text-primary-500" />
+                        <Money className="size-[18px] shrink-0 text-primary-500" />
 
                         <span className="font-medium text-sm leading-none text-dark-blue-400">
                           $50,000 budget
@@ -5093,8 +5151,13 @@ export const Offers = () => {
                       </div>
                     </div>
 
-                    <div className="mt-5 flex items-center justify-between">
-                      <AvatarGroup max={5} size="sm" excess>
+                    <div className="mt-5 flex items-end justify-between">
+                      <AvatarGroup
+                        max={5}
+                        size="sm"
+                        excess
+                        excessClassName="border-gray-300 text-gray-500"
+                      >
                         <Avatar
                           size="sm"
                           className="border-2 border-white hover:ring-0 active:ring-0"
@@ -5143,9 +5206,9 @@ export const Offers = () => {
                     </div>
                   </article>
                   <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative">
+                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
                       <NextImage
-                        className="object-cover"
+                        className="object-cover group-hover:scale-105 transition duration-300"
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
@@ -5182,7 +5245,7 @@ export const Offers = () => {
                       </div>
 
                       <div className="flex items-center gap-x-[6.4px]">
-                        <Clock className="size-[18px] shrink-0 text-primary-500" />
+                        <Money className="size-[18px] shrink-0 text-primary-500" />
 
                         <span className="font-medium text-sm leading-none text-dark-blue-400">
                           $50,000 budget
@@ -5190,8 +5253,13 @@ export const Offers = () => {
                       </div>
                     </div>
 
-                    <div className="mt-5 flex items-center justify-between">
-                      <AvatarGroup max={5} size="sm" excess>
+                    <div className="mt-5 flex items-end justify-between">
+                      <AvatarGroup
+                        max={5}
+                        size="sm"
+                        excess
+                        excessClassName="border-gray-300 text-gray-500"
+                      >
                         <Avatar
                           size="sm"
                           className="border-2 border-white hover:ring-0 active:ring-0"
@@ -5240,9 +5308,9 @@ export const Offers = () => {
                     </div>
                   </article>
                   <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative">
+                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
                       <NextImage
-                        className="object-cover"
+                        className="object-cover group-hover:scale-105 transition duration-300"
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
@@ -5279,7 +5347,7 @@ export const Offers = () => {
                       </div>
 
                       <div className="flex items-center gap-x-[6.4px]">
-                        <Clock className="size-[18px] shrink-0 text-primary-500" />
+                        <Money className="size-[18px] shrink-0 text-primary-500" />
 
                         <span className="font-medium text-sm leading-none text-dark-blue-400">
                           $50,000 budget
@@ -5287,8 +5355,13 @@ export const Offers = () => {
                       </div>
                     </div>
 
-                    <div className="mt-5 flex items-center justify-between">
-                      <AvatarGroup max={5} size="sm" excess>
+                    <div className="mt-5 flex items-end justify-between">
+                      <AvatarGroup
+                        max={5}
+                        size="sm"
+                        excess
+                        excessClassName="border-gray-300 text-gray-500"
+                      >
                         <Avatar
                           size="sm"
                           className="border-2 border-white hover:ring-0 active:ring-0"
@@ -5337,9 +5410,9 @@ export const Offers = () => {
                     </div>
                   </article>
                   <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative">
+                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
                       <NextImage
-                        className="object-cover"
+                        className="object-cover group-hover:scale-105 transition duration-300"
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
@@ -5376,7 +5449,7 @@ export const Offers = () => {
                       </div>
 
                       <div className="flex items-center gap-x-[6.4px]">
-                        <Clock className="size-[18px] shrink-0 text-primary-500" />
+                        <Money className="size-[18px] shrink-0 text-primary-500" />
 
                         <span className="font-medium text-sm leading-none text-dark-blue-400">
                           $50,000 budget
@@ -5384,8 +5457,13 @@ export const Offers = () => {
                       </div>
                     </div>
 
-                    <div className="mt-5 flex items-center justify-between">
-                      <AvatarGroup max={5} size="sm" excess>
+                    <div className="mt-5 flex items-end justify-between">
+                      <AvatarGroup
+                        max={5}
+                        size="sm"
+                        excess
+                        excessClassName="border-gray-300 text-gray-500"
+                      >
                         <Avatar
                           size="sm"
                           className="border-2 border-white hover:ring-0 active:ring-0"
@@ -5434,9 +5512,9 @@ export const Offers = () => {
                     </div>
                   </article>
                   <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative">
+                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
                       <NextImage
-                        className="object-cover"
+                        className="object-cover group-hover:scale-105 transition duration-300"
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
@@ -5473,7 +5551,7 @@ export const Offers = () => {
                       </div>
 
                       <div className="flex items-center gap-x-[6.4px]">
-                        <Clock className="size-[18px] shrink-0 text-primary-500" />
+                        <Money className="size-[18px] shrink-0 text-primary-500" />
 
                         <span className="font-medium text-sm leading-none text-dark-blue-400">
                           $50,000 budget
@@ -5481,8 +5559,13 @@ export const Offers = () => {
                       </div>
                     </div>
 
-                    <div className="mt-5 flex items-center justify-between">
-                      <AvatarGroup max={5} size="sm" excess>
+                    <div className="mt-5 flex items-end justify-between">
+                      <AvatarGroup
+                        max={5}
+                        size="sm"
+                        excess
+                        excessClassName="border-gray-300 text-gray-500"
+                      >
                         <Avatar
                           size="sm"
                           className="border-2 border-white hover:ring-0 active:ring-0"
@@ -5531,9 +5614,9 @@ export const Offers = () => {
                     </div>
                   </article>
                   <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative">
+                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
                       <NextImage
-                        className="object-cover"
+                        className="object-cover group-hover:scale-105 transition duration-300"
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
@@ -5570,7 +5653,7 @@ export const Offers = () => {
                       </div>
 
                       <div className="flex items-center gap-x-[6.4px]">
-                        <Clock className="size-[18px] shrink-0 text-primary-500" />
+                        <Money className="size-[18px] shrink-0 text-primary-500" />
 
                         <span className="font-medium text-sm leading-none text-dark-blue-400">
                           $50,000 budget
@@ -5578,8 +5661,13 @@ export const Offers = () => {
                       </div>
                     </div>
 
-                    <div className="mt-5 flex items-center justify-between">
-                      <AvatarGroup max={5} size="sm" excess>
+                    <div className="mt-5 flex items-end justify-between">
+                      <AvatarGroup
+                        max={5}
+                        size="sm"
+                        excess
+                        excessClassName="border-gray-300 text-gray-500"
+                      >
                         <Avatar
                           size="sm"
                           className="border-2 border-white hover:ring-0 active:ring-0"
@@ -5628,9 +5716,9 @@ export const Offers = () => {
                     </div>
                   </article>
                   <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative">
+                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
                       <NextImage
-                        className="object-cover"
+                        className="object-cover group-hover:scale-105 transition duration-300"
                         src="/dashboard.png"
                         alt="Dashboard"
                         fill
@@ -5667,7 +5755,7 @@ export const Offers = () => {
                       </div>
 
                       <div className="flex items-center gap-x-[6.4px]">
-                        <Clock className="size-[18px] shrink-0 text-primary-500" />
+                        <Money className="size-[18px] shrink-0 text-primary-500" />
 
                         <span className="font-medium text-sm leading-none text-dark-blue-400">
                           $50,000 budget
@@ -5675,8 +5763,13 @@ export const Offers = () => {
                       </div>
                     </div>
 
-                    <div className="mt-5 flex items-center justify-between">
-                      <AvatarGroup max={5} size="sm" excess>
+                    <div className="mt-5 flex items-end justify-between">
+                      <AvatarGroup
+                        max={5}
+                        size="sm"
+                        excess
+                        excessClassName="border-gray-300 text-gray-500"
+                      >
                         <Avatar
                           size="sm"
                           className="border-2 border-white hover:ring-0 active:ring-0"

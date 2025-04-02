@@ -6,11 +6,19 @@ import { Toggle } from "./ui"
 const ThumbsDownToggle = ({
   className,
   indicatorClassName,
+  pressed,
+  onPressedChange,
   ...props
-}: SVGProps<SVGSVGElement> & { indicatorClassName?: string }) => (
+}: SVGProps<SVGSVGElement> & {
+  indicatorClassName?: string
+  pressed?: boolean
+  onPressedChange?: (open: boolean) => void
+}) => (
   <Toggle
+    pressed={pressed}
+    onPressedChange={onPressedChange}
     className={cn(
-      "group focus-visible:outline-none transition duration-300 [--path-color:theme(colors.dark-blue.400)]",
+      "group focus-visible:outline-none transition duration-300 shrink-0 [--path-color:theme(colors.dark-blue.400)]",
       className
     )}
   >
