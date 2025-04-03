@@ -22,9 +22,13 @@ export const ShowMoreLess = ({
     defaultValue,
   })
 
-  return extra
-    ? state
-      ? validChildren
-      : validChildren.slice(0, max)
-    : validChildren
+  return (
+    <>
+      {extra
+        ? state
+          ? validChildren
+          : validChildren.slice(0, max)
+        : validChildren}
+    </>
+  )
 }
