@@ -1,3 +1,4 @@
+import { motion } from "framer-motion"
 import { useToggle } from "react-use"
 
 const rmWordsFromEndWithFullStop = (words: string[]) => {
@@ -27,12 +28,12 @@ export const ReadMoreLess = ({
   ).join(" ")
   const [readMore, toggle] = useToggle(false)
   return (
-    <>
+    <motion.div layout transition={{ ease: "easeInOut", duration: 0.3 }}>
       {children?.({
         readMore,
         toggle,
         text: readMore ? text : truncatedTextWithEllipses,
       })}
-    </>
+    </motion.div>
   )
 }

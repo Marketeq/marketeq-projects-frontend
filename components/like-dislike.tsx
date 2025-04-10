@@ -1,41 +1,33 @@
 import { useState } from "react"
 import { useUncontrolledState } from "@/utils/hooks"
+import { useToggle } from "react-use"
 import { ThumbsDownToggle } from "./thumbs-down"
 import { ThumbsUpToggle } from "./thumbs-up"
 
 export const LikeDislike = ({
   defaultLikes = 0,
-  defaultState,
+  defaultState = null,
 }: {
   defaultLikes?: number
-  defaultState?: "liked" | "disliked"
+  defaultState?: boolean | null
 }) => {
-  const [state, setState] = useUncontrolledState<"liked" | "disliked" | null>({
-    defaultValue: defaultState ?? null,
-    onChange: (value) => {
-      if (value === "liked") {
-        setLikes((prev) => prev + 1)
-      } else if (value === "disliked") {
-        setLikes((prev) => Math.max(prev - 1, 0))
-      }
-    },
-  })
-  const [likes, setLikes] = useState(defaultLikes)
+  const [state, setState] = useState(defaultState)
+  const likes = Math.max(defaultLikes + (state ? 1 : -1), 0)
 
   return (
     <div className="inline-flex items-center gap-x-2.5">
       <div className="inline-flex items-center gap-x-0.5">
         <ThumbsUpToggle
-          pressed={state === "liked"}
-          onPressedChange={(open) => setState(open ? "liked" : null)}
+          pressed={typeof state === "boolean" && state}
+          onPressedChange={(pressed) => setState(pressed ? pressed : null)}
         />
         <span className="text-[13px] font-light text-dark-blue-400">
           ({likes})
         </span>
       </div>
       <ThumbsDownToggle
-        pressed={state === "disliked"}
-        onPressedChange={(open) => setState(open ? "disliked" : null)}
+        pressed={typeof state === "boolean" && !state}
+        onPressedChange={(pressed) => setState(pressed ? !pressed : null)}
       />
     </div>
   )

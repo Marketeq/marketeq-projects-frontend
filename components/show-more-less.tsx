@@ -1,31 +1,58 @@
+import { Dispatch, SetStateAction, useMemo } from "react"
 import { useControllableState } from "@/utils/hooks"
-import { getValidChildren } from "@/utils/react-utils"
+import { createContext, getValidChildren } from "@/utils/react-utils"
+
+interface ShowMoreLessRootContextState {
+  isShowing: boolean
+  setIsShowing: Dispatch<SetStateAction<boolean>>
+}
+
+const [ShowMoreLessRootProvider, useShowMoreLessRootContext] =
+  createContext<ShowMoreLessRootContextState>({
+    displayName: "ShowMoreLessContext",
+    errorMessage:
+      "useShowMoreLessRootContext return undefined. Seems you forgot to wrap your component in `<ShowMoreLessRoot />`",
+  })
+
+export const ShowMoreLessRoot = ({
+  children,
+  ...props
+}: {
+  value?: boolean
+  onValueChange?: (value: boolean) => void
+  children?: (options: ShowMoreLessRootContextState) => React.ReactNode
+}) => {
+  const [state, setState] = useControllableState({
+    value: props.value,
+    onChange: props.onValueChange,
+    defaultValue: false,
+  })
+  const value = useMemo(
+    () => ({ isShowing: state, setIsShowing: setState }),
+    [state, setState]
+  )
+  return (
+    <ShowMoreLessRootProvider value={value}>
+      {children?.(value)}
+    </ShowMoreLessRootProvider>
+  )
+}
 
 export const ShowMoreLess = ({
   children,
   max = 3,
-  value,
-  onValueChange,
-  defaultValue = false,
 }: {
   children?: React.ReactNode
   max?: number
-  value?: boolean
-  onValueChange?: (value: boolean) => void
-  defaultValue?: boolean
 }) => {
   const validChildren = getValidChildren(children)
   const extra = validChildren.length > max
-  const [state] = useControllableState({
-    value,
-    onChange: onValueChange,
-    defaultValue,
-  })
+  const { isShowing } = useShowMoreLessRootContext()
 
   return (
     <>
       {extra
-        ? state
+        ? isShowing
           ? validChildren
           : validChildren.slice(0, max)
         : validChildren}

@@ -134,7 +134,7 @@ export const ListboxButton = ({
               )}
           <ChevronDown
             className={cn(
-              "ml-auto h-5 w-5 flex-none text-gray-500",
+              "ml-auto h-5 w-5 shrink-0 flex-none text-gray-500",
               iconClassName
             )}
           />
