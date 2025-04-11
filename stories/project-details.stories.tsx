@@ -1,4 +1,5 @@
 import {
+  ArrowLeft,
   ArrowRight,
   ChartBreakoutCircle,
   Check,
@@ -11,23 +12,32 @@ import {
   HelpCircle,
   Home03,
   Info,
+  MapPin,
   MessageTextCircle01,
+  MessageTextSquare01,
   Rocket02,
   Share06,
   ShieldDollar,
   ShieldZap,
   ShoppingCart,
   Star,
+  Stars02,
   Users03,
 } from "@blend-metrics/icons"
 import * as RadixTabs from "@radix-ui/react-tabs"
 import { Meta } from "@storybook/react"
 import { AnimatePresence, motion } from "framer-motion"
+import { TbStar, TbStarHalfFilled } from "react-icons/tb"
 import { LikeDislike } from "@/components/like-dislike"
 import NextImage from "@/components/next-image"
+import NextLink from "@/components/next-link"
 import { ReadMoreLess } from "@/components/read-more-less"
 import { ShowMoreLess, ShowMoreLessRoot } from "@/components/show-more-less"
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
   Avatar,
   AvatarFallback,
   AvatarFallbackIcon,
@@ -35,11 +45,22 @@ import {
   AvatarImage,
   Badge,
   Button,
+  DisclosureContent,
   Favorite,
+  Input,
+  Label,
   Listbox,
   ListboxButton,
   ListboxOption,
   ListboxOptions,
+  Progress,
+  RatingGroupContext,
+  RatingGroupControl,
+  RatingGroupHiddenInput,
+  RatingGroupItem,
+  RatingGroupItemContext,
+  RatingGroupLabel,
+  RatingGroupRoot,
   ScrollArea,
   ScrollBar,
   Tabs,
@@ -72,7 +93,7 @@ export const Default = () => {
       <TopMostHeader />
       <Layout>
         <div className="bg-gray-50 border-b border-gray-200 pt-6 px-[100px] pb-[50px]">
-          <div className="max-w-[1440px] mx-auto flex items-start">
+          <div className="max-w-[1440px] mx-auto flex items-start gap-x-8">
             <div className="flex-auto">
               <div className="flex items-center gap-x-2">
                 <Home03 className="size-[18px] text-gray-500/50 hover:text-gray-500" />
@@ -201,7 +222,7 @@ export const Default = () => {
                       </div>
 
                       <div className="ml-1.5">
-                        <Listbox>
+                        <Listbox defaultValue="Week">
                           <ListboxButton
                             className="text-sm py-[5px] px-[7px] h-max w-auto"
                             iconClassName="ml-1"
@@ -442,7 +463,7 @@ export const Default = () => {
 
                     <Button
                       size="lg"
-                      className="mt-6 w-full border-2 border-primary-500 text-primary-500"
+                      className="mt-6 w-full border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white"
                       variant="outlined"
                     >
                       Start Project
@@ -542,8 +563,9 @@ export const Default = () => {
             <div>
               <div className="flex-auto max-w-[818px]">
                 <div className="h-12 flex items-center justify-between border-b border-gray-200">
-                  <Button variant="link" visual="gray">
-                    <ArrowRight className="size-[15px]" /> Back To Search
+                  <Button className="group" variant="link" visual="gray">
+                    <ArrowLeft className="size-[15px] transition duration-300 group-hover:-translate-x-[4px]" />{" "}
+                    Back To Search
                   </Button>
 
                   <Button variant="link">
@@ -552,7 +574,7 @@ export const Default = () => {
                   </Button>
 
                   <Button variant="link" visual="gray">
-                    view project scope
+                    View Project Scope
                     <ChevronDown className="size-[15px]" />
                   </Button>
                 </div>
@@ -898,6 +920,1022 @@ export const Default = () => {
                             <Button visual="gray" variant="link">
                               View More
                             </Button>
+                          </div>
+                        </div>
+
+                        <div className="mt-6 border gap-x-[50px] rounded-lg border-gray-200 bg-white shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
+                          <div className="p-6 border-b border-gray-200">
+                            <h2 className="text-xl leading-none font-bold text-dark-blue-400">
+                              Project Details
+                            </h2>
+
+                            <div className="mt-6">
+                              <div className="grid gap-x-6 grid-cols-2">
+                                <div className="space-y-3">
+                                  <h3 className="text-sm leading-none font-medium text-dark-blue-400">
+                                    Programming Languages
+                                  </h3>
+
+                                  <div className="flex items-center flex-wrap gap-1">
+                                    <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                      Python,
+                                    </span>
+                                    <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                      React.js,
+                                    </span>
+                                    <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                      Node.js,
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-3">
+                                  <h3 className="text-sm leading-none font-medium text-dark-blue-400">
+                                    Development Tech
+                                  </h3>
+
+                                  <div className="flex items-center flex-wrap gap-1">
+                                    <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                      Flutter,
+                                    </span>
+                                    <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                      React,
+                                    </span>
+                                    <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                      Native OS,
+                                    </span>
+                                    <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                      Ionic,
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="grid gap-x-6 grid-cols-2 mt-10">
+                                <div className="space-y-3">
+                                  <h3 className="text-sm leading-none font-medium text-dark-blue-400">
+                                    Subcategories
+                                  </h3>
+
+                                  <div className="gap-2 flex items-center flex-wrap">
+                                    <Badge visual="gray" size="md">
+                                      iOS
+                                    </Badge>
+                                    <Badge visual="gray" size="md">
+                                      E-commerce
+                                    </Badge>
+                                    <Badge visual="gray" size="md">
+                                      Mobile Application
+                                    </Badge>
+                                    <Badge visual="gray" size="md">
+                                      Small Business
+                                    </Badge>
+                                    <Badge visual="gray" size="md">
+                                      Software Development
+                                    </Badge>
+
+                                    <Button
+                                      variant="link"
+                                      visual="gray"
+                                      className="text-gray-700 hover:text-gray-900 font-medium"
+                                    >
+                                      +10 more
+                                    </Button>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-3">
+                                  <h3 className="text-sm leading-none font-medium text-dark-blue-400">
+                                    Tags
+                                  </h3>
+
+                                  <div className="gap-2 flex items-center flex-wrap">
+                                    <Badge visual="gray" size="md">
+                                      B2C
+                                    </Badge>
+                                    <Badge visual="gray" size="md">
+                                      Marketplace
+                                    </Badge>
+                                    <Badge visual="gray" size="md">
+                                      Small Business
+                                    </Badge>
+                                    <Badge visual="gray" size="md">
+                                      Custom
+                                    </Badge>
+                                    <Badge visual="gray" size="md">
+                                      Native Application
+                                    </Badge>
+
+                                    <Button
+                                      variant="link"
+                                      visual="gray"
+                                      className="text-gray-700 hover:text-gray-900 font-medium"
+                                    >
+                                      +5 more
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="mt-10">
+                                <h3 className="text-sm leading-none font-medium text-dark-blue-400">
+                                  Date Published
+                                </h3>
+                                <p className="mt-3 text-base leading-none text-gray-500">
+                                  Feb 20, 2025
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="p-6">
+                            <h3 className="text-base leading-none font-semibold text-dark-blue-400">
+                              About the Team
+                            </h3>
+
+                            <div className="grid grid-cols-2 gap-x-6 mt-6">
+                              <div className="flex items-start gap-x-3">
+                                <Avatar size="lg">
+                                  <AvatarImage src="/man.jpg" alt="Man" />
+                                  <AvatarFallback>M</AvatarFallback>
+                                </Avatar>
+
+                                <div className="space-y-1.5">
+                                  <Badge
+                                    className="rounded-[4px] bg-primary-50"
+                                    visual="primary"
+                                  >
+                                    Project Lead
+                                  </Badge>
+
+                                  <div className="flex flex-col gap-y-0.5">
+                                    <span className="block text-sm leading-none text-gray-500 font-extralight">
+                                      <span className="text-base font-bold text-dark-blue-400 ">
+                                        Chris
+                                      </span>{" "}
+                                      @ux23isee
+                                    </span>
+
+                                    <span className="text-sm leading-none font-extralight text-dark-blue-400">
+                                      Full Stack Designer
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="space-y-3">
+                                <h3 className="flex items-center gap-x-[5.85px] text-sm leading-none font-extralight text-dark-blue-400">
+                                  <MapPin className="size-[18px]" /> Locations
+                                </h3>
+
+                                <div className="gap-1 flex items-center flex-wrap">
+                                  <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    USA,
+                                  </span>
+                                  <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    UK,
+                                  </span>
+                                  <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    Brazil,
+                                  </span>
+                                  <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    and 1 more...
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="mt-6 grid grid-cols-2 gap-x-6">
+                              <div className="space-y-3">
+                                <h3 className="flex items-center gap-x-[5.85px] text-sm leading-none font-extralight text-dark-blue-400">
+                                  <MessageTextSquare01 className="size-[18px]" />{" "}
+                                  Languages
+                                </h3>
+
+                                <div className="gap-1 flex items-center flex-wrap">
+                                  <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    English,
+                                  </span>
+                                  <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    Spanish,
+                                  </span>
+                                  <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    French
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="space-y-3">
+                                <h3 className="flex items-center gap-x-[5.85px] text-sm leading-none font-extralight text-dark-blue-400">
+                                  <Stars02 className="size-[18px]" /> Skills &
+                                  Expertise
+                                </h3>
+
+                                <div className="gap-1 flex items-center flex-wrap">
+                                  <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    Performance,
+                                  </span>
+                                  <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    Security,
+                                  </span>
+                                  <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    Operating Systems,
+                                  </span>
+                                  <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    Design,
+                                  </span>
+                                  <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    Databases,
+                                  </span>
+                                  <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    and 1 more...
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="relative border mt-6 border-gray-200 bg-white rounded-lg p-6 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
+                          <h3 className="text-center text-xs leading-none text-dark-blue-400 font-semibold">
+                            How It Works
+                          </h3>
+
+                          <h1 className="mt-3 text-center text-2xl leading-none text-dark-blue-400 font-semibold">
+                            Unlock your project vision, your way
+                          </h1>
+
+                          <div className="mt-8 grid grid-cols-3 gap-x-[47px] px-6">
+                            <article>
+                              <div className="size-[77px] bg-gray-100 rounded-lg" />
+
+                              <div className="flex items-center gap-x-3 mt-3">
+                                <h1 className="text-[32px] font-bold leading-none text-dark-blue-400">
+                                  1
+                                </h1>
+
+                                <h3 className="text-base leading-none font-semibold text-dark-blue-400">
+                                  Customize Your Scope
+                                </h3>
+                              </div>
+
+                              <div className="pl-[28px]">
+                                <p className="text-xs text-dark-blue-400 leading-none">
+                                  Lorem ipsum odor amet, consectetuer adipiscing
+                                  elit.
+                                </p>
+                              </div>
+                            </article>
+                            <article>
+                              <div className="size-[77px] bg-gray-100 rounded-lg" />
+
+                              <div className="flex items-center gap-x-3 mt-3">
+                                <h1 className="text-[32px] font-bold leading-none text-dark-blue-400">
+                                  1
+                                </h1>
+
+                                <h3 className="text-base leading-none font-semibold text-dark-blue-400">
+                                  Customize Your Scope
+                                </h3>
+                              </div>
+
+                              <div className="pl-[28px]">
+                                <p className="text-xs text-dark-blue-400 leading-none">
+                                  Lorem ipsum odor amet, consectetuer adipiscing
+                                  elit.
+                                </p>
+                              </div>
+                            </article>
+                            <article>
+                              <div className="size-[77px] bg-gray-100 rounded-lg" />
+
+                              <div className="flex items-center gap-x-3 mt-3">
+                                <h1 className="text-[32px] font-bold leading-none text-dark-blue-400">
+                                  1
+                                </h1>
+
+                                <h3 className="text-base leading-none font-semibold text-dark-blue-400">
+                                  Customize Your Scope
+                                </h3>
+                              </div>
+
+                              <div className="pl-[28px]">
+                                <p className="text-xs text-dark-blue-400 leading-none">
+                                  Lorem ipsum odor amet, consectetuer adipiscing
+                                  elit.
+                                </p>
+                              </div>
+                            </article>
+                          </div>
+
+                          <div className="mt-8  flex items-center justify-center">
+                            <Button visual="gray" variant="outlined">
+                              Learn More
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="p-6 mt-6 border gap-x-[50px] rounded-lg border-gray-200 bg-white shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
+                          <h1 className="text-xl font-bold leading-none text-dark-blue-400">
+                            Questions
+                          </h1>
+
+                          <div className="mt-6 p-6 rounded-lg border border-gray-200 bg-gray-50">
+                            <Label
+                              className="font-semibold inline-flex items-center gap-x-2"
+                              size="md"
+                            >
+                              <HelpCircle className="size-[18px] text-primary-500" />
+                              Have a specific question in mind?
+                            </Label>
+
+                            <div className="mt-3 flex gap-x-2 items-center">
+                              <Input
+                                className="flex-auto"
+                                placeholder="Type your question..."
+                              />
+                              <Button
+                                className="text-xs leading-none"
+                                size="lg"
+                              >
+                                Ask Question
+                              </Button>
+                            </div>
+
+                            <div className="mt-2 flex items-center justify-between">
+                              <span className="text-xs text-dark-blue-400 leading-none">
+                                A team member will reach out to you as soon as
+                                possible.
+                              </span>
+
+                              <span className="text-xs text-dark-blue-400 leading-none">
+                                Avg. response time: 20 mins
+                              </span>
+                            </div>
+
+                            <div className="mt-6 flex items-center gap-3 flex-wrap">
+                              <Badge
+                                className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400"
+                                size="lg"
+                                visual="gray"
+                              >
+                                Can I see your portfolio?
+                              </Badge>
+                              <Badge
+                                className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400"
+                                size="lg"
+                                visual="gray"
+                              >
+                                Can I see your work?
+                              </Badge>
+                              <Badge
+                                className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400"
+                                size="lg"
+                                visual="gray"
+                              >
+                                Can I see your work?
+                              </Badge>
+                              <Badge
+                                className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400"
+                                size="lg"
+                                visual="gray"
+                              >
+                                Can I see your work?
+                              </Badge>
+                              <Badge
+                                className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400"
+                                size="lg"
+                                visual="gray"
+                              >
+                                Can I see your work?
+                              </Badge>
+                              <Badge
+                                className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400"
+                                size="lg"
+                                visual="gray"
+                              >
+                                Can I see your work?
+                              </Badge>
+                              <Badge
+                                className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400"
+                                size="lg"
+                                visual="gray"
+                              >
+                                Can I see your work?
+                              </Badge>
+                              <Badge
+                                className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400"
+                                size="lg"
+                                visual="gray"
+                              >
+                                Can I see your work?
+                              </Badge>
+                              <Badge
+                                className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400"
+                                size="lg"
+                                visual="gray"
+                              >
+                                Can I see your work?
+                              </Badge>
+                              <Badge
+                                className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400"
+                                size="lg"
+                                visual="gray"
+                              >
+                                Can I see your work?
+                              </Badge>
+                            </div>
+                          </div>
+
+                          <div className="mt-8">
+                            <Tabs defaultValue="FAQs">
+                              <RadixTabs.List className="flex items-center justify-between">
+                                <div className="flex items-center gap-x-3">
+                                  <TabsTrigger
+                                    variant="unstyled"
+                                    showUnderline={false}
+                                    value="FAQs"
+                                    className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium transition duration-300"
+                                  >
+                                    FAQ&apos;s
+                                  </TabsTrigger>
+                                  <TabsTrigger
+                                    variant="unstyled"
+                                    showUnderline={false}
+                                    value="Recently Asked Questions"
+                                    className="focus-visible:outline-none py-[7px] bg-white hover:bg-gray-50 hover:border-gray-400 px-3.5 border-2 border-gray-300 data-[state=active]:text-dark-blue-400 data-[state=active]:bg-white hover:data-[state=active]:bg-white data-[state=active]:border-dark-blue-400 hover:data-[state=active]:text-dark-blue-400 hover:data-[state=active]:border-dark-blue-400  text-gray-500 hover:text-gray-600 rounded-full text-sm leading-5 font-medium transition duration-300"
+                                  >
+                                    Recently Asked Questions
+                                  </TabsTrigger>
+                                </div>
+                              </RadixTabs.List>
+
+                              <TabsContent value="FAQs">
+                                <Accordion
+                                  type="single"
+                                  className="pt-6 space-y-[15px]"
+                                  defaultValue="item-1"
+                                >
+                                  <AccordionItem
+                                    className="rounded-lg bg-white border border-gray-300"
+                                    value="item-1"
+                                  >
+                                    <AccordionTrigger className="w-full px-5 py-3 flex items-center gap-x-2 text-base leading-[1.3] font-semibold flex-auto text-dark-blue-400">
+                                      <span className="flex-auto text-left inline-block">
+                                        How will you ensure we&apos;re aligned
+                                        on progress and feedback throughout each
+                                        stage?
+                                      </span>
+                                      <ChevronDown className="size-6 shrink-0 group-data-[state=open]/item:-rotate-180 transition duration-300" />
+                                    </AccordionTrigger>
+
+                                    <DisclosureContent className="text-base px-5 pb-5 leading-[1.5] text-dark-blue-400 font-light">
+                                      We offer a comprehensive range of IT
+                                      consulting services, including IT strategy
+                                      development, software development, network
+                                      infrastructure design and implementation,
+                                      cybersecurity assessment and solutions,
+                                      cloud computing solutions, and IT project
+                                      management.
+                                    </DisclosureContent>
+                                  </AccordionItem>
+                                  <AccordionItem
+                                    className="rounded-lg bg-white border border-gray-300"
+                                    value="item-2"
+                                  >
+                                    <AccordionTrigger className="w-full px-5 py-3 flex items-center gap-x-2 text-base leading-[1.3] font-semibold flex-auto text-dark-blue-400">
+                                      <span className="flex-auto text-left inline-block">
+                                        How will you ensure we&apos;re aligned
+                                        on progress and feedback throughout each
+                                        stage?
+                                      </span>
+                                      <ChevronDown className="size-6 shrink-0 group-data-[state=open]/item:-rotate-180 transition duration-300" />
+                                    </AccordionTrigger>
+
+                                    <DisclosureContent className="text-base px-5 pb-5 leading-[1.5] text-dark-blue-400 font-light">
+                                      We offer a comprehensive range of IT
+                                      consulting services, including IT strategy
+                                      development, software development, network
+                                      infrastructure design and implementation,
+                                      cybersecurity assessment and solutions,
+                                      cloud computing solutions, and IT project
+                                      management.
+                                    </DisclosureContent>
+                                  </AccordionItem>
+                                  <AccordionItem
+                                    className="rounded-lg bg-white border border-gray-300"
+                                    value="item-3"
+                                  >
+                                    <AccordionTrigger className="w-full px-5 py-3 flex items-center gap-x-2 text-base leading-[1.3] font-semibold flex-auto text-dark-blue-400">
+                                      <span className="flex-auto text-left inline-block">
+                                        How will you ensure we&apos;re aligned
+                                        on progress and feedback throughout each
+                                        stage?
+                                      </span>
+                                      <ChevronDown className="size-6 shrink-0 group-data-[state=open]/item:-rotate-180 transition duration-300" />
+                                    </AccordionTrigger>
+
+                                    <DisclosureContent className="text-base px-5 pb-5 leading-[1.5] text-dark-blue-400 font-light">
+                                      We offer a comprehensive range of IT
+                                      consulting services, including IT strategy
+                                      development, software development, network
+                                      infrastructure design and implementation,
+                                      cybersecurity assessment and solutions,
+                                      cloud computing solutions, and IT project
+                                      management.
+                                    </DisclosureContent>
+                                  </AccordionItem>
+                                  <AccordionItem
+                                    className="rounded-lg bg-white border border-gray-300"
+                                    value="item-4"
+                                  >
+                                    <AccordionTrigger className="w-full px-5 py-3 flex items-center gap-x-2 text-base leading-[1.3] font-semibold flex-auto text-dark-blue-400">
+                                      <span className="flex-auto text-left inline-block">
+                                        How will you ensure we&apos;re aligned
+                                        on progress and feedback throughout each
+                                        stage?
+                                      </span>
+                                      <ChevronDown className="size-6 shrink-0 group-data-[state=open]/item:-rotate-180 transition duration-300" />
+                                    </AccordionTrigger>
+
+                                    <DisclosureContent className="text-base px-5 pb-5 leading-[1.5] text-dark-blue-400 font-light">
+                                      We offer a comprehensive range of IT
+                                      consulting services, including IT strategy
+                                      development, software development, network
+                                      infrastructure design and implementation,
+                                      cybersecurity assessment and solutions,
+                                      cloud computing solutions, and IT project
+                                      management.
+                                    </DisclosureContent>
+                                  </AccordionItem>
+                                  <AccordionItem
+                                    className="rounded-lg bg-white border border-gray-300"
+                                    value="item-5"
+                                  >
+                                    <AccordionTrigger className="w-full px-5 py-3 flex items-center gap-x-2 text-base leading-[1.3] font-semibold flex-auto text-dark-blue-400">
+                                      <span className="flex-auto text-left inline-block">
+                                        How will you ensure we&apos;re aligned
+                                        on progress and feedback throughout each
+                                        stage?
+                                      </span>
+                                      <ChevronDown className="size-6 shrink-0 group-data-[state=open]/item:-rotate-180 transition duration-300" />
+                                    </AccordionTrigger>
+
+                                    <DisclosureContent className="text-base px-5 pb-5 leading-[1.5] text-dark-blue-400 font-light">
+                                      We offer a comprehensive range of IT
+                                      consulting services, including IT strategy
+                                      development, software development, network
+                                      infrastructure design and implementation,
+                                      cybersecurity assessment and solutions,
+                                      cloud computing solutions, and IT project
+                                      management.
+                                    </DisclosureContent>
+                                  </AccordionItem>
+                                </Accordion>
+                              </TabsContent>
+
+                              <TabsContent value="Recently Asked Questions">
+                                <Accordion
+                                  type="single"
+                                  className="pt-6 space-y-[15px]"
+                                  defaultValue="item-1"
+                                >
+                                  <AccordionItem
+                                    className="rounded-lg bg-white border border-gray-300"
+                                    value="item-1"
+                                  >
+                                    <AccordionTrigger className="w-full px-5 py-3 flex flex-col gap-y-1">
+                                      <span className="flex items-center justify-between gap-x-2 text-base leading-[1.3] font-semibold flex-auto text-dark-blue-400">
+                                        <span className="flex-auto text-left inline-block">
+                                          How will you ensure we&apos;re aligned
+                                          on progress and feedback throughout
+                                          each stage?
+                                        </span>
+                                        <ChevronDown className="size-6 shrink-0 group-data-[state=open]/item:-rotate-180 transition duration-300" />
+                                      </span>
+
+                                      <span className="text-xs text-left leading-none font-medium text-dark-blue-400">
+                                        Asked by Kevin{" "}
+                                        <span className="font-extralight">
+                                          @usernamehere
+                                        </span>{" "}
+                                        on Jan 25, 2023
+                                      </span>
+                                    </AccordionTrigger>
+
+                                    <DisclosureContent className="px-5 pb-5">
+                                      <div className="flex gap-x-3 items-center">
+                                        <Avatar>
+                                          <AvatarImage
+                                            src="/man.jpg"
+                                            alt="Man"
+                                          />
+                                          <AvatarFallback>M</AvatarFallback>
+                                        </Avatar>
+
+                                        <div className="flex items-center gap-x-1.5">
+                                          <Badge
+                                            className="rounded-[4px] bg-primary-50"
+                                            visual="primary"
+                                          >
+                                            Project Lead
+                                          </Badge>
+
+                                          <span className="text-sm leading-none font-bold text-dark-blue-400">
+                                            Chris{" "}
+                                            <span className="text-xs font-extralight text-gray-500">
+                                              @ux23isee
+                                            </span>
+                                          </span>
+                                        </div>
+                                      </div>
+
+                                      <div className="mt-2">
+                                        <span className="leading-[1.5] text-dark-blue-400 font-light text-base">
+                                          We offer a comprehensive range of IT
+                                          consulting services, including IT
+                                          strategy development, software
+                                          development, network infrastructure
+                                          design and implementation,
+                                          cybersecurity assessment and
+                                          solutions, cloud computing solutions,
+                                          and IT project management.
+                                        </span>
+                                      </div>
+
+                                      <div className="mt-5">
+                                        <Button
+                                          className="text-xs leading-5"
+                                          variant="link"
+                                          visual="gray"
+                                        >
+                                          Report Answer
+                                        </Button>
+                                      </div>
+                                    </DisclosureContent>
+                                  </AccordionItem>
+                                  <AccordionItem
+                                    className="rounded-lg bg-white border border-gray-300"
+                                    value="item-2"
+                                  >
+                                    <AccordionTrigger className="w-full px-5 py-3 flex flex-col gap-y-1">
+                                      <span className="flex items-center justify-between gap-x-2 text-base leading-[1.3] font-semibold flex-auto text-dark-blue-400">
+                                        <span className="flex-auto text-left inline-block">
+                                          How will you ensure we&apos;re aligned
+                                          on progress and feedback throughout
+                                          each stage?
+                                        </span>
+                                        <ChevronDown className="size-6 shrink-0 group-data-[state=open]/item:-rotate-180 transition duration-300" />
+                                      </span>
+
+                                      <span className="text-xs text-left leading-none font-medium text-dark-blue-400">
+                                        Asked by Kevin{" "}
+                                        <span className="font-extralight">
+                                          @usernamehere
+                                        </span>{" "}
+                                        on Jan 25, 2023
+                                      </span>
+                                    </AccordionTrigger>
+
+                                    <DisclosureContent className="px-5 pb-5">
+                                      <div className="flex gap-x-3 items-center">
+                                        <Avatar>
+                                          <AvatarImage
+                                            src="/man.jpg"
+                                            alt="Man"
+                                          />
+                                          <AvatarFallback>M</AvatarFallback>
+                                        </Avatar>
+
+                                        <div className="flex items-center gap-x-1.5">
+                                          <Badge
+                                            className="rounded-[4px] bg-primary-50"
+                                            visual="primary"
+                                          >
+                                            Project Lead
+                                          </Badge>
+
+                                          <span className="text-sm leading-none font-bold text-dark-blue-400">
+                                            Chris{" "}
+                                            <span className="text-xs font-extralight text-gray-500">
+                                              @ux23isee
+                                            </span>
+                                          </span>
+                                        </div>
+                                      </div>
+
+                                      <div className="mt-2">
+                                        <span className="leading-[1.5] text-dark-blue-400 font-light text-base">
+                                          We offer a comprehensive range of IT
+                                          consulting services, including IT
+                                          strategy development, software
+                                          development, network infrastructure
+                                          design and implementation,
+                                          cybersecurity assessment and
+                                          solutions, cloud computing solutions,
+                                          and IT project management.
+                                        </span>
+                                      </div>
+
+                                      <div className="mt-5">
+                                        <Button
+                                          className="text-xs leading-5"
+                                          variant="link"
+                                          visual="gray"
+                                        >
+                                          Report Answer
+                                        </Button>
+                                      </div>
+                                    </DisclosureContent>
+                                  </AccordionItem>
+                                  <AccordionItem
+                                    className="rounded-lg bg-white border border-gray-300"
+                                    value="item-3"
+                                  >
+                                    <AccordionTrigger className="w-full px-5 py-3 flex flex-col gap-y-1">
+                                      <span className="flex items-center justify-between gap-x-2 text-base leading-[1.3] font-semibold flex-auto text-dark-blue-400">
+                                        <span className="flex-auto text-left inline-block">
+                                          How will you ensure we&apos;re aligned
+                                          on progress and feedback throughout
+                                          each stage?
+                                        </span>
+                                        <ChevronDown className="size-6 shrink-0 group-data-[state=open]/item:-rotate-180 transition duration-300" />
+                                      </span>
+
+                                      <span className="text-xs text-left leading-none font-medium text-dark-blue-400">
+                                        Asked by Kevin{" "}
+                                        <span className="font-extralight">
+                                          @usernamehere
+                                        </span>{" "}
+                                        on Jan 25, 2023
+                                      </span>
+                                    </AccordionTrigger>
+
+                                    <DisclosureContent className="px-5 pb-5">
+                                      <div className="flex gap-x-3 items-center">
+                                        <Avatar>
+                                          <AvatarImage
+                                            src="/man.jpg"
+                                            alt="Man"
+                                          />
+                                          <AvatarFallback>M</AvatarFallback>
+                                        </Avatar>
+
+                                        <div className="flex items-center gap-x-1.5">
+                                          <Badge
+                                            className="rounded-[4px] bg-primary-50"
+                                            visual="primary"
+                                          >
+                                            Project Lead
+                                          </Badge>
+
+                                          <span className="text-sm leading-none font-bold text-dark-blue-400">
+                                            Chris{" "}
+                                            <span className="text-xs font-extralight text-gray-500">
+                                              @ux23isee
+                                            </span>
+                                          </span>
+                                        </div>
+                                      </div>
+
+                                      <div className="mt-2">
+                                        <span className="leading-[1.5] text-dark-blue-400 font-light text-base">
+                                          We offer a comprehensive range of IT
+                                          consulting services, including IT
+                                          strategy development, software
+                                          development, network infrastructure
+                                          design and implementation,
+                                          cybersecurity assessment and
+                                          solutions, cloud computing solutions,
+                                          and IT project management.
+                                        </span>
+                                      </div>
+
+                                      <div className="mt-5">
+                                        <Button
+                                          className="text-xs leading-5"
+                                          variant="link"
+                                          visual="gray"
+                                        >
+                                          Report Answer
+                                        </Button>
+                                      </div>
+                                    </DisclosureContent>
+                                  </AccordionItem>
+                                </Accordion>
+                              </TabsContent>
+                            </Tabs>
+                          </div>
+                        </div>
+
+                        <div className="p-6 mt-6 border gap-x-[50px] flex items-start rounded-lg border-gray-200 bg-white shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
+                          <div className="flex flex-col flex-1 gap-y-1.5 basis-[147px]">
+                            <h1 className="text-xl leading-none text-nowrap font-bold text-dark-blue-400">
+                              Project History
+                            </h1>
+
+                            <RatingGroupRoot
+                              className="flex-row gap-x-1.5 mt-1.5"
+                              allowHalf
+                              count={5}
+                              defaultValue={4}
+                              disabled
+                            >
+                              <RatingGroupLabel size="sm">4.9</RatingGroupLabel>
+                              <RatingGroupControl>
+                                <RatingGroupContext>
+                                  {({ items }) =>
+                                    items.map((item) => (
+                                      <RatingGroupItem key={item} index={item}>
+                                        <RatingGroupItemContext>
+                                          {({ half }) =>
+                                            half ? (
+                                              <TbStarHalfFilled />
+                                            ) : (
+                                              <TbStar />
+                                            )
+                                          }
+                                        </RatingGroupItemContext>
+                                      </RatingGroupItem>
+                                    ))
+                                  }
+                                </RatingGroupContext>
+                                <RatingGroupHiddenInput />
+                              </RatingGroupControl>
+                            </RatingGroupRoot>
+
+                            <NextLink
+                              href="#"
+                              className="focus-visible:outline-none text-xs leading-6 transition duration-300 hover:underline text-dark-blue-400"
+                            >
+                              23 ratings
+                            </NextLink>
+                          </div>
+
+                          <div className="flex flex-col flex-1 gap-y-1 basis-[304px]">
+                            <div className="flex items-center gap-x-2">
+                              <NextLink
+                                href="#"
+                                className="hover:underline focus-visible:outline-none text-xs font-semibold text-dark-blue-400"
+                              >
+                                5
+                              </NextLink>
+                              <Progress className="flex-auto" value={100} />
+                              <NextLink
+                                href="#"
+                                className="hover:underline focus-visible:outline-none text-xs font-semibold leading-[21px] inline-flex items-center gap-x-1 text-dark-blue-400"
+                              >
+                                100%{" "}
+                                <span className="font-extralight">(100)</span>
+                              </NextLink>
+                            </div>
+                            <div className="flex items-center gap-x-2">
+                              <NextLink
+                                href="#"
+                                className="hover:underline focus-visible:outline-none text-xs font-semibold text-dark-blue-400"
+                              >
+                                4
+                              </NextLink>
+                              <Progress className="flex-auto" value={75} />
+                              <NextLink
+                                href="#"
+                                className="hover:underline focus-visible:outline-none text-xs font-semibold leading-[21px] inline-flex items-center gap-x-1 text-dark-blue-400"
+                              >
+                                75%{" "}
+                                <span className="font-extralight">(75)</span>
+                              </NextLink>
+                            </div>
+                            <div className="flex items-center gap-x-2">
+                              <NextLink
+                                href="#"
+                                className="hover:underline focus-visible:outline-none text-xs font-semibold text-dark-blue-400"
+                              >
+                                3
+                              </NextLink>
+                              <Progress className="flex-auto" value={50} />
+                              <NextLink
+                                href="#"
+                                className="hover:underline focus-visible:outline-none text-xs font-semibold leading-[21px] inline-flex items-center gap-x-1 text-dark-blue-400"
+                              >
+                                50%{" "}
+                                <span className="font-extralight">(50)</span>
+                              </NextLink>
+                            </div>
+                            <div className="flex items-center gap-x-2">
+                              <NextLink
+                                href="#"
+                                className="hover:underline focus-visible:outline-none text-xs font-semibold text-dark-blue-400"
+                              >
+                                2
+                              </NextLink>
+                              <Progress className="flex-auto" value={25} />
+                              <NextLink
+                                href="#"
+                                className="hover:underline focus-visible:outline-none text-xs font-semibold leading-[21px] inline-flex items-center gap-x-1 text-dark-blue-400"
+                              >
+                                25%{" "}
+                                <span className="font-extralight">(25)</span>
+                              </NextLink>
+                            </div>
+                            <div className="flex items-center gap-x-2">
+                              <NextLink
+                                href="#"
+                                className="hover:underline focus-visible:outline-none text-xs font-semibold text-dark-blue-400"
+                              >
+                                1
+                              </NextLink>
+                              <Progress className="flex-auto" value={0} />
+                              <NextLink
+                                href="#"
+                                className="hover:underline focus-visible:outline-none text-xs font-semibold leading-[21px] inline-flex items-center gap-x-1 text-dark-blue-400"
+                              >
+                                0% <span className="font-extralight">(0)</span>
+                              </NextLink>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-1 flex-col basis-[304px]">
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <NextLink
+                                  href="#"
+                                  className="focus-visible:outline-none text-xs leading-5 font-semibold underline text-gray-500 hover:text-gray-600"
+                                >
+                                  Communication Level
+                                </NextLink>
+
+                                <div className="flex items-center gap-x-1">
+                                  <Star className="size-3.5 text-primary-500 fill-primary-500" />
+                                  <span className="text-[13px] leading-none font-medium">
+                                    4.3
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center justify-between">
+                                <NextLink
+                                  href="#"
+                                  className="focus-visible:outline-none text-xs leading-5 font-semibold underline text-gray-500 hover:text-gray-600"
+                                >
+                                  Responsiveness
+                                </NextLink>
+
+                                <div className="flex items-center gap-x-1">
+                                  <Star className="size-3.5 text-primary-500 fill-primary-500" />
+                                  <span className="text-[13px] leading-none font-medium">
+                                    4.3
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center justify-between">
+                                <NextLink
+                                  href="#"
+                                  className="focus-visible:outline-none text-xs leading-5 font-semibold underline text-gray-500 hover:text-gray-600"
+                                >
+                                  Quality of Delivery
+                                </NextLink>
+
+                                <div className="flex items-center gap-x-1">
+                                  <Star className="size-3.5 text-primary-500 fill-primary-500" />
+                                  <span className="text-[13px] leading-none font-medium">
+                                    4.3
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center justify-between">
+                                <NextLink
+                                  href="#"
+                                  className="focus-visible:outline-none text-xs leading-5 font-semibold underline text-gray-500 hover:text-gray-600"
+                                >
+                                  Value of Delivery
+                                </NextLink>
+
+                                <div className="flex items-center gap-x-1">
+                                  <Star className="size-3.5 text-primary-500 fill-primary-500" />
+                                  <span className="text-[13px] leading-none font-medium">
+                                    4.3
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center justify-between">
+                                <NextLink
+                                  href="#"
+                                  className="focus-visible:outline-none text-xs leading-5 font-semibold underline text-gray-500 hover:text-gray-600"
+                                >
+                                  Value of Delivery
+                                </NextLink>
+
+                                <div className="flex items-center gap-x-1">
+                                  <Star className="size-3.5 text-primary-500 fill-primary-500" />
+                                  <span className="text-[13px] leading-none font-medium">
+                                    4.9
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
 
@@ -1845,8 +2883,8 @@ export const Default = () => {
                                         setIsShowing((prev) => !prev)
                                       }
                                     >
-                                      {isShowing ? "View Less" : "View More"}{" "}
-                                      <ChevronUp className="size-[15px]" />
+                                      {isShowing ? "View Less" : "View More"}
+                                      <ChevronDown className="size-[15px]" />
                                     </Button>
                                   </div>
                                 </div>
@@ -2127,85 +3165,6 @@ export const Default = () => {
                             </div>
                           </TabsContent>
                         </Tabs>
-
-                        <div className="relative border mt-6 border-gray-200 bg-white rounded-lg p-6 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                          <h3 className="text-center text-xs leading-none text-dark-blue-400 font-semibold">
-                            How It Works
-                          </h3>
-
-                          <h1 className="mt-3 text-center text-2xl leading-none text-dark-blue-400 font-semibold">
-                            Unlock your project vision, your way
-                          </h1>
-
-                          <div className="mt-8 grid grid-cols-3 gap-x-[47px] px-6">
-                            <article>
-                              <div className="size-[77px] bg-gray-100 rounded-lg" />
-
-                              <div className="flex items-center gap-x-3 mt-3">
-                                <h1 className="text-[32px] font-bold leading-none text-dark-blue-400">
-                                  1
-                                </h1>
-
-                                <h3 className="text-base leading-none font-semibold text-dark-blue-400">
-                                  Customize Your Scope
-                                </h3>
-                              </div>
-
-                              <div className="pl-[28px]">
-                                <p className="text-xs text-dark-blue-400 leading-none">
-                                  Lorem ipsum odor amet, consectetuer adipiscing
-                                  elit.
-                                </p>
-                              </div>
-                            </article>
-                            <article>
-                              <div className="size-[77px] bg-gray-100 rounded-lg" />
-
-                              <div className="flex items-center gap-x-3 mt-3">
-                                <h1 className="text-[32px] font-bold leading-none text-dark-blue-400">
-                                  1
-                                </h1>
-
-                                <h3 className="text-base leading-none font-semibold text-dark-blue-400">
-                                  Customize Your Scope
-                                </h3>
-                              </div>
-
-                              <div className="pl-[28px]">
-                                <p className="text-xs text-dark-blue-400 leading-none">
-                                  Lorem ipsum odor amet, consectetuer adipiscing
-                                  elit.
-                                </p>
-                              </div>
-                            </article>
-                            <article>
-                              <div className="size-[77px] bg-gray-100 rounded-lg" />
-
-                              <div className="flex items-center gap-x-3 mt-3">
-                                <h1 className="text-[32px] font-bold leading-none text-dark-blue-400">
-                                  1
-                                </h1>
-
-                                <h3 className="text-base leading-none font-semibold text-dark-blue-400">
-                                  Customize Your Scope
-                                </h3>
-                              </div>
-
-                              <div className="pl-[28px]">
-                                <p className="text-xs text-dark-blue-400 leading-none">
-                                  Lorem ipsum odor amet, consectetuer adipiscing
-                                  elit.
-                                </p>
-                              </div>
-                            </article>
-                          </div>
-
-                          <div className="mt-8  flex items-center justify-center">
-                            <Button visual="gray" variant="outlined">
-                              Learn More
-                            </Button>
-                          </div>
-                        </div>
                       </div>
                     </TabsContent>
                   </Tabs>
