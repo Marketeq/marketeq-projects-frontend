@@ -1235,10 +1235,33 @@ export const Default = () => {
                           </div>
                         </div>
 
-                        <div className="p-6 mt-6 border gap-x-[50px] rounded-lg border-gray-200 bg-white shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
+                        <div className="relative p-6 mt-6 border gap-x-[50px] rounded-lg border-gray-200 bg-white shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
                           <h1 className="text-xl font-bold leading-none text-dark-blue-400">
                             Questions
                           </h1>
+
+                          <div className="absolute right-12 top-11 pr-5 p-3 rounded-lg flex items-start gap-x-2 bg-white border border-gray-200 shadow-[0px_12px_16px_-4px_rgba(16,24,40,.08)]">
+                            <Avatar size="md">
+                              <AvatarImage src="/man.jpg" alt="Man" />
+                              <AvatarFallback>M</AvatarFallback>
+                            </Avatar>
+                            <div className="flex flex-col gap-y-0.5">
+                              <div className="flex items-center gap-x-0.5">
+                                <span className="text-[13px] leading-none font-semibold text-dark-blue-400">
+                                  Kevin{" "}
+                                  <span className="text-xs leading-none text-extralight text-gray-500">
+                                    @username
+                                  </span>
+                                </span>
+                              </div>
+                              <div className="flex mt-0.5 items-center gap-x-1">
+                                <span className="size-[10.52px] rounded-full shrink-0 bg-[#19BD1F]" />
+                                <span className="text-xs leading-none text-dark-blue-400">
+                                  Online
+                                </span>
+                              </div>
+                            </div>
+                          </div>
 
                           <div className="mt-6 p-6 rounded-lg border border-gray-200 bg-gray-50">
                             <Label
@@ -1492,6 +1515,18 @@ export const Default = () => {
                                     </DisclosureContent>
                                   </AccordionItem>
                                 </Accordion>
+
+                                <div className="flex items-center justify-end mt-6">
+                                  <Button
+                                    size="md"
+                                    visual="gray"
+                                    variant="outlined"
+                                    className="bg-white"
+                                  >
+                                    View Less
+                                    <ChevronDown className="size-[15px]" />
+                                  </Button>
+                                </div>
                               </TabsContent>
 
                               <TabsContent value="Recently Asked Questions">
@@ -1725,6 +1760,18 @@ export const Default = () => {
                                 </Accordion>
                               </TabsContent>
                             </Tabs>
+
+                            <div className="py-8 px-6 bg-gray-50 border mt-8 border-gray-200 rounded-lg">
+                              <h1 className="text-base font-semibold text-dark-blue-400 text-center">
+                                Can’t find what you’re looking for?
+                              </h1>
+
+                              <div className="flex items-center justify-center mt-5">
+                                <Button variant="outlined" visual="gray">
+                                  Ask a question
+                                </Button>
+                              </div>
+                            </div>
                           </div>
                         </div>
 
