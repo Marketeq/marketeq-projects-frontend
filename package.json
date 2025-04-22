@@ -79,6 +79,7 @@
     "react-international-phone": "^4.5.0",
     "react-player": "^2.16.0",
     "react-use": "^17.4.2",
+    "react-use-measure": "^2.1.7",
     "swiper": "^11.0.5",
     "tailwind-merge": "^2.1.0",
     "zod": "^3.22.4",

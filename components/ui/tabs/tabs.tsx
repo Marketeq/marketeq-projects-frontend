@@ -107,6 +107,29 @@ const tabsTriggerVariants = cva("group relative", {
   },
 })
 
+const DisclosureTrigger = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
+>(({ className, value, onClick, ...props }, ref) => {
+  const ctx = useTabsContext()
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    onClick?.(event)
+    ctx.onValueChange(value)
+  }
+  const active = ctx.value === value
+
+  return (
+    <TabsPrimitive.TabsTrigger
+      data-state={active ? "active" : "inactive"}
+      value={value}
+      onClick={handleClick}
+      ref={ref}
+      {...props}
+    />
+  )
+})
+DisclosureTrigger.displayName = TabsPrimitive.Trigger.displayName
+
 const TabsTrigger = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> &
@@ -207,4 +230,4 @@ const TabsContent = React.forwardRef<
 )
 TabsContent.displayName = TabsPrimitive.Content.displayName
 
-export { Tabs, TabsList, TabsTrigger, TabsContent }
+export { Tabs, TabsList, TabsTrigger, TabsContent, DisclosureTrigger }

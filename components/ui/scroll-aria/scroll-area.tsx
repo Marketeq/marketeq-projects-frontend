@@ -18,6 +18,7 @@ const ScrollArea = React.forwardRef<
       scrollBar = <ScrollBar />,
       type = "scroll",
       viewportClassName,
+
       ...props
     },
     ref
