@@ -1,15 +1,9 @@
-import { Eye } from "@blend-metrics/icons"
-import { GoogleDefault, LinkedInDefault } from "@blend-metrics/icons/social"
 import { Meta } from "@storybook/react"
 import {
   Button,
-  Checkbox,
   Dialog,
   DialogContent,
   DialogTrigger,
-  Input,
-  InputGroup,
-  InputRightElement,
   Label,
   Listbox,
   ListboxButton,
@@ -33,17 +27,17 @@ export const SignUp = () => {
 
       <DialogContent className="max-w-[408px]">
         <h1 className="text-lg leading-9 font-semibold text-dark-blue-400">
-          Create your free account
+          Ask Question
         </h1>
 
-        <form>
-          <div className="space-y-1.5 mt-5">
-            <Label size="sm">Description</Label>
+        <form className="mt-5">
+          <div className="space-y-1.5">
+            <Label size="sm">Type your question</Label>
             <Textarea placeholder="Enter a description..." />
           </div>
 
           <div className="space-y-1.5 mt-5">
-            <Label size="sm">Description</Label>
+            <Label size="sm">Choose category</Label>
             <Listbox>
               <ListboxButton placeholder="Select question category" />
               <ListboxOptions>
@@ -69,7 +63,7 @@ export const SignUp = () => {
             <Button className="w-full" variant="outlined" visual="gray">
               Cancel
             </Button>
-            <Button className="w-full">Create my account</Button>
+            <Button className="w-full">Submit Question</Button>
           </div>
         </form>
       </DialogContent>

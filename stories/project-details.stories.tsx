@@ -63,6 +63,11 @@ import {
   AvatarImage,
   Badge,
   Button,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
   CircularProgressDropzone,
   CircularProgressDropzoneState,
   Dialog,
@@ -76,6 +81,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   Favorite,
+  FavoriteRoot,
   IconButton,
   Input,
   InputGroup,
@@ -429,35 +435,63 @@ export const Default = () => {
       <div className="absolute top-[150px] py-[32px] w-[390px] right-[max(100px,calc(theme(size.1/2)-38.75rem))]">
         <div className="bg-white shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] rounded-lg border border-gray-200">
           <div className="relative border-b p-6 border-gray-200">
-            <div className="flex items-center">
-              <Badge visual="gray">Starting At</Badge>
-              <div className="inline-flex items-center gap-x-1.5 ml-2">
-                <span className="text-2xl leading-none font-bold text-dark-blue-400">
-                  $5,000
-                </span>
-                <span className="text-sm font-medium leading-none text-dark-blue-400">
-                  per
-                </span>
+            <div className="flex items-start justify-between">
+              <div className="flex items-center">
+                <Badge className="rounded-[5px]" visual="gray">
+                  Starting At
+                </Badge>
+                <div className="inline-flex items-center gap-x-1.5 ml-2">
+                  <span className="text-2xl leading-none font-bold text-dark-blue-400">
+                    $5,000
+                  </span>
+                  <span className="text-sm font-medium leading-none text-dark-blue-400">
+                    per
+                  </span>
+                </div>
+
+                <div className="ml-1.5">
+                  <Listbox defaultValue="Week">
+                    <ListboxButton
+                      className="text-sm lowercase py-[5px] px-[7px] h-max w-auto"
+                      iconClassName="ml-1"
+                      placeholder="Select"
+                    />
+                    <ListboxOptions className="w-[153px]">
+                      {["Week", "2-week", "Month", "Quarter", "Year"].map(
+                        (timeline) => (
+                          <ListboxOption key={timeline} value={timeline}>
+                            {timeline}
+                          </ListboxOption>
+                        )
+                      )}
+                    </ListboxOptions>
+                  </Listbox>
+                </div>
               </div>
 
-              <div className="ml-1.5">
-                <Listbox defaultValue="Week">
-                  <ListboxButton
-                    className="text-sm py-[5px] px-[7px] h-max w-auto"
-                    iconClassName="ml-1"
-                    placeholder="Select"
-                  />
-                  <ListboxOptions className="w-[153px]">
-                    {["Week", "2-week", "Month", "Quarter", "Year"].map(
-                      (timeline) => (
-                        <ListboxOption key={timeline} value={timeline}>
-                          {timeline}
-                        </ListboxOption>
-                      )
-                    )}
-                  </ListboxOptions>
-                </Listbox>
-              </div>
+              <FavoriteRoot>
+                {({ pressed }) => (
+                  <TooltipProvider delayDuration={75}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="inline-block">
+                          <Favorite />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {pressed ? (
+                          <span className="inline-flex items-center gap-x-1">
+                            <Check className="size-[15px] shrink-0 text-green-500" />
+                            Saved
+                          </span>
+                        ) : (
+                          "Save to favorites"
+                        )}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </FavoriteRoot>
             </div>
 
             <div className="mt-3">
@@ -680,30 +714,41 @@ export const Default = () => {
               <span className="text-sm font-medium leading-none text-dark-blue-400">
                 Additional payment plans available with
               </span>
-              <Info className="size-[17px] text-gray-500" />
-            </div>
 
-            <Favorite className="absolute top-5 right-5 size-[30px]" />
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger className="focus-visible:outline-none text-gray-500">
+                    <Info className="size-[17px]" />
+                  </TooltipTrigger>
+
+                  <TooltipContent visual="gray">
+                    Select Klarna at checkout to split your purchase into
+                    smaller payments over time. Klarna makes it easy to buy now
+                    and pay later, with no impact on your credit score.
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           </div>
 
           <div className="h-[50px] rounded-b-lg bg-gray-50 flex items-center justify-evenly">
             <div className="inline-flex items-center gap-x-2">
               <Flag className="size-[15px] text-gray-500" />
-              <span className="text-sm font-extralight leading-5 text-gray-500">
+              <span className="text-sm font-extralight leading-5 text-gray-500 hover:underline cursor-pointer">
                 Report
               </span>
             </div>
 
             <div className="inline-flex items-center gap-x-2">
               <HelpCircle className="size-[15px] text-gray-500" />
-              <span className="text-sm font-extralight leading-5 text-gray-500">
+              <span className="text-sm font-extralight leading-5 text-gray-500 hover:underline cursor-pointer">
                 Help
               </span>
             </div>
 
             <div className="inline-flex items-center gap-x-2">
               <Share06 className="size-[15px] text-gray-500" />
-              <span className="text-sm font-extralight leading-5 text-gray-500">
+              <span className="text-sm font-extralight leading-5 text-gray-500 hover:underline cursor-pointer">
                 Share
               </span>
             </div>
@@ -753,10 +798,12 @@ export const Default = () => {
           </article>
 
           <div className="mt-3">
-            <span className="text-xs leading-none text-dark-blue-400">
+            <span className="text-xs text-dark-blue-400">
               We securely process payments and release upon rating. We securely
               process payments{" "}
-              <Button variant="link">See Policy Details.</Button>
+              <Button className="text-xs" variant="link">
+                See Policy Details.
+              </Button>
             </span>
           </div>
         </div>
@@ -770,28 +817,28 @@ export const Default = () => {
                 <Home03 className="size-[18px] text-gray-500/50 hover:text-gray-500" />
 
                 <div className="inline-flex items-center gap-x-2">
-                  <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold">
+                  <span className="text-xs leading-6 text-gray-500/50 font-semibold">
                     /
                   </span>
-                  <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold">
+                  <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold hover:underline cursor-pointer">
                     Software Development
                   </span>
                 </div>
 
                 <div className="inline-flex items-center gap-x-2">
-                  <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold">
+                  <span className="text-xs leading-6 text-gray-500/50 font-semibold">
                     /
                   </span>
-                  <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold">
+                  <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold hover:underline cursor-pointer">
                     Mobile Applications
                   </span>
                 </div>
 
                 <div className="inline-flex items-center gap-x-2">
-                  <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold">
+                  <span className="text-xs leading-6 text-gray-500/50 font-semibold">
                     /
                   </span>
-                  <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold">
+                  <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold hover:underline cursor-pointer">
                     iOS Development
                   </span>
                 </div>
@@ -808,7 +855,9 @@ export const Default = () => {
                 </div>
 
                 <div className="flex flex-col items-start gap-y-3">
-                  <Badge visual="gray">Mobile Application</Badge>
+                  <Badge className="rounded-[5px]" visual="gray">
+                    Mobile Application
+                  </Badge>
                   <h1 className="text-[28px] leading-none font-bold text-dark-blue-400">
                     The Ultimate Mobile App Experience
                   </h1>
@@ -930,7 +979,28 @@ export const Default = () => {
                   </Inbox>
                 </TabsContent>
 
-                <TabsContent value="Details">
+                <TabsContent className="pt-6" value="Details">
+                  <Carousel className="max-w-[818px] w-full">
+                    <CarouselContent className="-ml-3">
+                      {Array.from({ length: 5 }).map((_, index) => (
+                        <CarouselItem key={index} className="group basis-1/3">
+                          <div className="relative border border-gray-200 h-[150.6px] overflow-hidden rounded-lg">
+                            <NextImage
+                              className="object-cover"
+                              src="/waves.png"
+                              alt="Waves"
+                              sizes="25vw"
+                              fill
+                            />
+                            <div className="absolute inset-0 transition duration-300 group-hover:bg-black/40" />
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+
+                    <CarouselPrevious className="border-gray-300 bg-white shadow-[0px_1px_4px_0px_rgba(0,0,0,.03)] size-8 hover:ring-1 hover:ring-dark-blue-400 hover:text-dark-blue-400 text-gray-500 disabled:opacity-50 transition duration-300 -left-[17px]" />
+                    <CarouselNext className="border-gray-300 bg-white shadow-[0px_1px_4px_0px_rgba(0,0,0,.03)] size-8 hover:ring-1 hover:ring-dark-blue-400 hover:text-dark-blue-400 text-gray-500 disabled:opacity-50 transition duration-300 -right-[17px]" />
+                  </Carousel>
                   <div className="mt-6">
                     <Tabs defaultValue="Description">
                       <TabsList className="w-full justify-start">
@@ -950,336 +1020,468 @@ export const Default = () => {
                       </TabsList>
                       <TabsContent value="Description">
                         <div className="pt-6">
-                          <div className="relative border border-gray-200 bg-white rounded-lg p-6 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                            <h1 className="text-2xl leading-none font-semibold text-dark-blue-400">
-                              Section H1 Title
-                            </h1>
+                          <ShowMoreLessRoot>
+                            {({ isShowing, setIsShowing }) => (
+                              <div
+                                className={cn(
+                                  "relative border border-gray-200 bg-white rounded-lg p-6 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] h-[506px] transition-[height] duration-300 overflow-hidden [interpolate-size:allow-keywords]",
+                                  isShowing && "h-auto"
+                                )}
+                              >
+                                <h1 className="text-2xl leading-none font-semibold text-dark-blue-400">
+                                  Section H1 Title
+                                </h1>
 
-                            <div className="mt-6 border-t pt-6 border-gray-200">
-                              <h2 className="text-xl leading-none text-dark-blue-400 font-semibold">
-                                H2 Title
-                              </h2>
+                                <div className="mt-6 border-t pt-6 border-gray-200">
+                                  <h2 className="text-xl leading-none text-dark-blue-400 font-semibold">
+                                    H2 Title
+                                  </h2>
 
-                              <h3 className="mt-6 text-base font-semibold text-dark-blue-400 leading-none">
-                                H3 Title
-                              </h3>
+                                  <h3 className="mt-6 text-base font-semibold text-dark-blue-400 leading-none">
+                                    H3 Title
+                                  </h3>
 
-                              <p className="mt-6 text-base font-extralight leading-none text-dark-blue-400">
-                                Lorem ipsum dolor sit amet, consectetur
-                                adipiscing elit, sed do eiusmod tempor
-                                incididunt ut labore et dolore magna aliqua. Ut
-                                enim ad minim veniam, quis nostrud exercitation
-                                ullamco laboris nisi ut aliquip ex ea commodo
-                                consequat. Duis aute irure dolor in
-                                reprehenderit in voluptate velit esse cillum
-                                dolore eu fugiat nulla pariatur.
-                              </p>
+                                  <p className="mt-6 text-base font-extralight leading-none text-dark-blue-400">
+                                    Lorem ipsum dolor sit amet, consectetur
+                                    adipiscing elit, sed do eiusmod tempor
+                                    incididunt ut labore et dolore magna aliqua.
+                                    Ut enim ad minim veniam, quis nostrud
+                                    exercitation ullamco laboris nisi ut aliquip
+                                    ex ea commodo consequat. Duis aute irure
+                                    dolor in reprehenderit in voluptate velit
+                                    esse cillum dolore eu fugiat nulla pariatur.
+                                  </p>
 
-                              <h1 className="mt-6 text-2xl leading-none font-semibold text-dark-blue-400">
-                                Section H1 Title
-                              </h1>
-                            </div>
+                                  <h1 className="mt-6 text-2xl leading-none font-semibold text-dark-blue-400">
+                                    Section H1 Title
+                                  </h1>
+                                </div>
 
-                            <div className="mt-6 border-t pb-6 border-gray-200">
-                              <p className="mt-6 text-base font-extralight leading-none text-dark-blue-400">
-                                Ut enim ad minim veniam, quis nostrud
-                                exercitation ullamco laboris nisi ut aliquip ex
-                                ea commodo consequat. Duis aute irure dolor in
-                                reprehenderit in voluptate velit esse cillum
-                                dolore eu fugiat nulla pariatur. Excepteur sint
-                                occaecat cupidatat non proident, sunt in culpa
-                                qui officia deserunt mollit anim id est laborum.
-                                <ul className="mt-5">
-                                  <li className="text-base font-extralight leading-none text-dark-blue-400">
+                                <div className="mt-6 border-t pb-6 border-gray-200">
+                                  <p className="mt-6 text-base font-extralight leading-none text-dark-blue-400">
+                                    Ut enim ad minim veniam, quis nostrud
+                                    exercitation ullamco laboris nisi ut aliquip
+                                    ex ea commodo consequat. Duis aute irure
+                                    dolor in reprehenderit in voluptate velit
+                                    esse cillum dolore eu fugiat nulla pariatur.
+                                    Excepteur sint occaecat cupidatat non
+                                    proident, sunt in culpa qui officia deserunt
+                                    mollit anim id est laborum.
+                                    <ul className="mt-5">
+                                      <li className="text-base font-extralight leading-none text-dark-blue-400">
+                                        <span className="font-semibold">
+                                          Main Bullet Point 1:
+                                        </span>{" "}
+                                        Sed ut perspiciatis unde omnis iste
+                                        natus Main Bullet Point 2: error sit
+                                        voluptatem accusantium doloremque
+                                        laudantium, totam rem aperiam Main
+                                        Bullet Point 3: eaque ipsa quae ab illo
+                                        inventore veritatis et quasi architecto
+                                        beatae vitae dicta sunt explicabo.
+                                      </li>
+                                    </ul>
+                                  </p>
+                                </div>
+
+                                <div className="mt-6 border-t pb-6 border-gray-200">
+                                  <p className="mt-6 text-base font-extralight leading-none text-dark-blue-400">
+                                    Ut enim ad minim veniam, quis nostrud
+                                    exercitation ullamco laboris nisi ut aliquip
+                                    ex ea commodo consequat. Duis aute irure
+                                    dolor in reprehenderit in voluptate velit
+                                    esse cillum dolore eu fugiat nulla pariatur.
+                                    Excepteur sint occaecat cupidatat non
+                                    proident, sunt in culpa qui officia deserunt
+                                    mollit anim id est laborum.
+                                    <ul className="mt-5">
+                                      <li className="text-base font-extralight leading-none text-dark-blue-400">
+                                        <span className="font-semibold">
+                                          Main Bullet Point 1:
+                                        </span>{" "}
+                                        Sed ut perspiciatis unde omnis iste
+                                        natus Main Bullet Point 2: error sit
+                                        voluptatem accusantium doloremque
+                                        laudantium, totam rem aperiam Main
+                                        Bullet Point 3: eaque ipsa quae ab illo
+                                        inventore veritatis et quasi architecto
+                                        beatae vitae dicta sunt explicabo.
+                                      </li>
+                                    </ul>
+                                  </p>
+                                </div>
+
+                                {!isShowing ? (
+                                  <div className="rounded-b-lg absolute inset-x-0 bottom-0 h-[136px] bg-[linear-gradient(174.9deg,theme(colors.white/0)_7.46%,theme(colors.white)_62.15%)] pb-[26px] flex justify-center items-end">
+                                    <Button
+                                      visual="gray"
+                                      variant="link"
+                                      onClick={() => setIsShowing(true)}
+                                    >
+                                      View More
+                                    </Button>
+                                  </div>
+                                ) : null}
+                              </div>
+                            )}
+                          </ShowMoreLessRoot>
+
+                          <ShowMoreLessRoot>
+                            {({ isShowing, setIsShowing }) => (
+                              <div
+                                className={cn(
+                                  "relative border border-gray-200 bg-white rounded-lg p-6 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] mt-6 h-[456px] transition-[height] duration-300 overflow-hidden [interpolate-size:allow-keywords]",
+                                  isShowing && "h-auto"
+                                )}
+                              >
+                                <h2 className="text-xl leading-none text-dark-blue-400 font-semibold">
+                                  Deliverables
+                                </h2>
+
+                                <div className="mt-6">
+                                  <span className="block text-sm font-extralight text-dark-blue-400">
+                                    Phase One{" "}
                                     <span className="font-semibold">
-                                      Main Bullet Point 1:
-                                    </span>{" "}
-                                    Sed ut perspiciatis unde omnis iste natus
-                                    Main Bullet Point 2: error sit voluptatem
-                                    accusantium doloremque laudantium, totam rem
-                                    aperiam Main Bullet Point 3: eaque ipsa quae
-                                    ab illo inventore veritatis et quasi
-                                    architecto beatae vitae dicta sunt
-                                    explicabo.
-                                  </li>
-                                </ul>
-                              </p>
-                            </div>
-
-                            <div className="absolute inset-x-0 bottom-0 h-[136px] bg-[linear-gradient(174.9deg,theme(colors.white/0)_7.46%,theme(colors.white)_62.15%)] pb-[26px] flex justify-center items-end">
-                              <Button visual="gray" variant="link">
-                                View More
-                              </Button>
-                            </div>
-                          </div>
-
-                          <div className="relative border border-gray-200 bg-white rounded-lg p-6 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] mt-6">
-                            <h2 className="text-xl leading-none text-dark-blue-400 font-semibold">
-                              Deliverables
-                            </h2>
-
-                            <div className="mt-6">
-                              <span className="block text-sm font-extralight text-dark-blue-400">
-                                Phase One{" "}
-                                <span className="font-semibold">Research</span>
-                              </span>
-
-                              <div className="mt-3 grid grid-cols-3 gap-y-3">
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
+                                      Research
+                                    </span>
                                   </span>
 
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
+                                  <div className="mt-3 grid grid-cols-3 gap-y-3">
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                  </div>
                                 </div>
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
+
+                                <div className="mt-5 border-t border-gray-200 pt-5">
+                                  <span className="block text-sm font-extralight text-dark-blue-400">
+                                    Phase One{" "}
+                                    <span className="font-semibold">
+                                      Research
+                                    </span>
                                   </span>
 
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
+                                  <div className="mt-3 grid grid-cols-3 gap-y-3">
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                  </div>
                                 </div>
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
+
+                                <div className="mt-5 border-t border-gray-200 pt-5">
+                                  <span className="block text-sm font-extralight text-dark-blue-400">
+                                    Phase One{" "}
+                                    <span className="font-semibold">
+                                      Research
+                                    </span>
                                   </span>
 
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
+                                  <div className="mt-3 grid grid-cols-3 gap-y-3">
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                  </div>
                                 </div>
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
+
+                                <div className="mt-5 border-t border-gray-200 pt-5">
+                                  <span className="block text-sm font-extralight text-dark-blue-400">
+                                    Phase One{" "}
+                                    <span className="font-semibold">
+                                      Research
+                                    </span>
                                   </span>
 
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
+                                  <div className="mt-3 grid grid-cols-3 gap-y-3">
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                  </div>
                                 </div>
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
+
+                                <div className="mt-5 border-t border-gray-200 pt-5">
+                                  <span className="block text-sm font-extralight text-dark-blue-400">
+                                    Phase One{" "}
+                                    <span className="font-semibold">
+                                      Research
+                                    </span>
                                   </span>
 
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
-                                  </span>
+                                  <div className="mt-3 grid grid-cols-3 gap-y-3">
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
 
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-x-3">
+                                      <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
+                                        <Check className="size-2" />
+                                      </span>
+
+                                      <p className="text-sm font-extralight leading-none text-dark-blue-400">
+                                        Market Analysis Report
+                                      </p>
+                                    </div>
+                                  </div>
                                 </div>
+
+                                {!isShowing ? (
+                                  <div className="rounded-b-lg absolute inset-x-0 bottom-0 h-[136px] bg-[linear-gradient(174.9deg,theme(colors.white/0)_7.46%,theme(colors.white)_62.15%)] pb-[26px] flex justify-center items-end">
+                                    <Button
+                                      visual="gray"
+                                      variant="link"
+                                      onClick={() => setIsShowing(true)}
+                                    >
+                                      View More
+                                    </Button>
+                                  </div>
+                                ) : null}
                               </div>
-                            </div>
-
-                            <div className="mt-5 border-t border-gray-200 pt-5">
-                              <span className="block text-sm font-extralight text-dark-blue-400">
-                                Phase One{" "}
-                                <span className="font-semibold">Research</span>
-                              </span>
-
-                              <div className="mt-3 grid grid-cols-3 gap-y-3">
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
-                                  </span>
-
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
-                                  </span>
-
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
-                                  </span>
-
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
-                                  </span>
-
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
-                                  </span>
-
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
-                                  </span>
-
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="mt-5 border-t border-gray-200 pt-5">
-                              <span className="block text-sm font-extralight text-dark-blue-400">
-                                Phase One{" "}
-                                <span className="font-semibold">Research</span>
-                              </span>
-
-                              <div className="mt-3 grid grid-cols-3 gap-y-3">
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
-                                  </span>
-
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
-                                  </span>
-
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
-                                  </span>
-
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
-                                  </span>
-
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
-                                  </span>
-
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
-                                  </span>
-
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="mt-5 border-t border-gray-200 pt-5">
-                              <span className="block text-sm font-extralight text-dark-blue-400">
-                                Phase One{" "}
-                                <span className="font-semibold">Research</span>
-                              </span>
-
-                              <div className="mt-3 grid grid-cols-3 gap-y-3">
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
-                                  </span>
-
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
-                                  </span>
-
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
-                                  </span>
-
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
-                                  </span>
-
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
-                                  </span>
-
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-x-3">
-                                  <span className="inline-flex size-3 items-center justify-center shrink-0 rounded-full bg-primary-500 text-white">
-                                    <Check className="size-2" />
-                                  </span>
-
-                                  <p className="text-sm font-extralight leading-none text-dark-blue-400">
-                                    Market Analysis Report
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="absolute inset-x-0 bottom-0 h-[136px] bg-[linear-gradient(174.9deg,theme(colors.white/0)_7.46%,theme(colors.white)_62.15%)] pb-[26px] flex justify-center items-end">
-                              <Button visual="gray" variant="link">
-                                View More
-                              </Button>
-                            </div>
-                          </div>
+                            )}
+                          </ShowMoreLessRoot>
 
                           <div className="mt-6 border gap-x-[50px] rounded-lg border-gray-200 bg-white shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
                             <div className="p-6 border-b border-gray-200">
@@ -1336,29 +1538,48 @@ export const Default = () => {
                                     </h3>
 
                                     <div className="gap-2 flex items-center flex-wrap">
-                                      <Badge visual="gray" size="md">
-                                        iOS
-                                      </Badge>
-                                      <Badge visual="gray" size="md">
-                                        E-commerce
-                                      </Badge>
-                                      <Badge visual="gray" size="md">
-                                        Mobile Application
-                                      </Badge>
-                                      <Badge visual="gray" size="md">
-                                        Small Business
-                                      </Badge>
-                                      <Badge visual="gray" size="md">
-                                        Software Development
-                                      </Badge>
+                                      <ShowMoreLessRoot>
+                                        {({ isShowing, setIsShowing }) => (
+                                          <>
+                                            <ShowMoreLess max={5}>
+                                              <Badge visual="gray" size="md">
+                                                iOS
+                                              </Badge>
+                                              <Badge visual="gray" size="md">
+                                                E-commerce
+                                              </Badge>
+                                              <Badge visual="gray" size="md">
+                                                Mobile Application
+                                              </Badge>
+                                              <Badge visual="gray" size="md">
+                                                Small Business
+                                              </Badge>
+                                              <Badge visual="gray" size="md">
+                                                Software Development
+                                              </Badge>
+                                              <Badge visual="gray" size="md">
+                                                Small Business
+                                              </Badge>
+                                              <Badge visual="gray" size="md">
+                                                Software Development
+                                              </Badge>
+                                            </ShowMoreLess>
 
-                                      <Button
-                                        variant="link"
-                                        visual="gray"
-                                        className="text-gray-700 hover:text-gray-900 font-medium"
-                                      >
-                                        +10 more
-                                      </Button>
+                                            {!isShowing ? (
+                                              <Button
+                                                onClick={() =>
+                                                  setIsShowing(true)
+                                                }
+                                                variant="link"
+                                                visual="gray"
+                                                className="text-gray-700 hover:text-gray-900 font-medium"
+                                              >
+                                                +2 more
+                                              </Button>
+                                            ) : null}
+                                          </>
+                                        )}
+                                      </ShowMoreLessRoot>
                                     </div>
                                   </div>
 
@@ -1368,29 +1589,48 @@ export const Default = () => {
                                     </h3>
 
                                     <div className="gap-2 flex items-center flex-wrap">
-                                      <Badge visual="gray" size="md">
-                                        B2C
-                                      </Badge>
-                                      <Badge visual="gray" size="md">
-                                        Marketplace
-                                      </Badge>
-                                      <Badge visual="gray" size="md">
-                                        Small Business
-                                      </Badge>
-                                      <Badge visual="gray" size="md">
-                                        Custom
-                                      </Badge>
-                                      <Badge visual="gray" size="md">
-                                        Native Application
-                                      </Badge>
+                                      <ShowMoreLessRoot>
+                                        {({ isShowing, setIsShowing }) => (
+                                          <>
+                                            <ShowMoreLess max={5}>
+                                              <Badge visual="gray" size="md">
+                                                B2C
+                                              </Badge>
+                                              <Badge visual="gray" size="md">
+                                                Marketplace
+                                              </Badge>
+                                              <Badge visual="gray" size="md">
+                                                Small Business
+                                              </Badge>
+                                              <Badge visual="gray" size="md">
+                                                Custom
+                                              </Badge>
+                                              <Badge visual="gray" size="md">
+                                                Native Application
+                                              </Badge>
+                                              <Badge visual="gray" size="md">
+                                                Native Application
+                                              </Badge>
+                                              <Badge visual="gray" size="md">
+                                                Native Application
+                                              </Badge>
+                                            </ShowMoreLess>
 
-                                      <Button
-                                        variant="link"
-                                        visual="gray"
-                                        className="text-gray-700 hover:text-gray-900 font-medium"
-                                      >
-                                        +5 more
-                                      </Button>
+                                            {!isShowing ? (
+                                              <Button
+                                                onClick={() =>
+                                                  setIsShowing(true)
+                                                }
+                                                variant="link"
+                                                visual="gray"
+                                                className="text-gray-700 hover:text-gray-900 font-medium"
+                                              >
+                                                +2 more
+                                              </Button>
+                                            ) : null}
+                                          </>
+                                        )}
+                                      </ShowMoreLessRoot>
                                     </div>
                                   </div>
                                 </div>
