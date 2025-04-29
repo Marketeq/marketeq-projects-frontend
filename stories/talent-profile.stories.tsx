@@ -986,14 +986,14 @@ export const TopMostHeader = () => {
 const CarouselPreviousTrigger = () => {
   const { canScrollPrev } = useCarousel()
   return canScrollPrev ? (
-    <CarouselPrevious className="size-7 border border-white hover:ring-8 hover:ring-white hover:bg-black bg-black/80 transition text-white duration-300 -left-4" />
+    <CarouselPrevious className="size-7 border border-white hover:ring-8 hover:ring-white hover:bg-black bg-black/80 transition text-white duration-300 -left-3" />
   ) : null
 }
 
 const CarouselNextTrigger = () => {
   const { canScrollNext } = useCarousel()
   return canScrollNext ? (
-    <CarouselNext className="size-7 border border-white hover:ring-8 hover:ring-white hover:border-black bg-black/80 hover:bg-black transition text-white duration-300 -right-4" />
+    <CarouselNext className="size-7 border border-white hover:ring-8 hover:ring-white hover:border-black bg-black/80 hover:bg-black transition text-white duration-300 -right-3" />
   ) : null
 }
 
@@ -7811,7 +7811,7 @@ export const Default = () => {
                 <div className="shrink-0 flex flex-col gap-y-6 w-[289px] isolate">
                   <div
                     className={cn(
-                      "top-[197.5px] sticky bg-white rounded-lg z-10 transition duration-300 before:content-[''] before:absolute before:w-full before:top-[-32px] before:h-[40px] before:bg-gray-50",
+                      "top-[145px] sticky bg-white rounded-lg z-10 transition duration-300 before:content-[''] before:absolute before:w-full before:top-[-32px] before:h-[40px] before:bg-gray-50",
                       isCardStuck &&
                         "shadow-[0px_12px_16px_-4px_rgba(16,24,40,0.08)]"
                     )}
