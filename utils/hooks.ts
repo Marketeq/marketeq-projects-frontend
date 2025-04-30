@@ -280,13 +280,15 @@ export const useRouterChangeComplete = ({
   }, [onComplete, pathname, searchParams])
 }
 
-export function useFirstMountState(): boolean {
+export function useFirstMountState({
+  shouldUpdate,
+}: {
+  shouldUpdate?: (value: boolean) => boolean
+}): boolean {
   const isFirst = useRef(true)
 
-  if (isFirst.current) {
+  if (isFirst.current && shouldUpdate?.(isFirst.current)) {
     isFirst.current = false
-
-    return true
   }
 
   return isFirst.current

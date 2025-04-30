@@ -1,15 +1,21 @@
-import { Dispatch, SetStateAction, useMemo, useState } from "react"
-import { useControllableState } from "@/utils/hooks"
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
+import { useControllableState, useFirstMountState } from "@/utils/hooks"
 import { createContext, getValidChildren } from "@/utils/react-utils"
-import { useFirstMountState, useIsomorphicLayoutEffect } from "react-use"
 import useMeasure from "react-use-measure"
 
 interface ShowMoreLessRootContextState {
   isShowing: boolean
   setIsShowing: Dispatch<SetStateAction<boolean>>
   height: number
-  contentRef: (...args: any[]) => any
-  initialHeight: number
+  ref: (element: HTMLElement | SVGElement | null) => void
+  scrollHeight: number
 }
 
 const [ShowMoreLessRootProvider, useShowMoreLessRootContext] =
@@ -27,30 +33,31 @@ export const ShowMoreLessRoot = ({
   onValueChange?: (value: boolean) => void
   children?: (options: ShowMoreLessRootContextState) => React.ReactNode
 }) => {
+  const [ref, { height }] = useMeasure()
   const [state, setState] = useControllableState({
     value: props.value,
     onChange: props.onValueChange,
     defaultValue: false,
   })
-  const [contentRef, { height }] = useMeasure()
-  const [initialHeight, setInitialHeight] = useState(height)
+  const scrollHeightRef = useRef(0)
+  const isFirst = useFirstMountState({
+    shouldUpdate: () => state,
+  })
+
+  if (isFirst) {
+    scrollHeightRef.current = height
+  }
 
   const value = useMemo(
     () => ({
       isShowing: state,
       setIsShowing: setState,
       height,
-      contentRef,
-      initialHeight,
+      ref,
+      scrollHeight: scrollHeightRef.current,
     }),
-    [state, setState, height, contentRef, initialHeight]
+    [state, setState, height, ref, scrollHeightRef]
   )
-
-  useIsomorphicLayoutEffect(() => {
-    if (!state) {
-      setInitialHeight(height)
-    }
-  }, [state, height])
 
   return (
     <ShowMoreLessRootProvider value={value}>
@@ -91,16 +98,14 @@ export const ShowMoreLessComp = ({
   const validChildren = getValidChildren(children)
   const extra = validChildren.length > max
   const { isShowing } = useShowMoreLessRootContext()
-  let isFirstMount = true
-
-  if (isShowing && isFirstMount) {
-    isFirstMount = false
-  }
+  const isFirst = useFirstMountState({
+    shouldUpdate: () => isShowing,
+  })
 
   return (
     <>
       {extra
-        ? isFirstMount
+        ? isFirst
           ? validChildren.slice(0, max)
           : validChildren
         : validChildren}
