@@ -443,395 +443,19 @@ export const Default = () => {
 
   return (
     <div className="min-h-screen relative flex flex-col bg-gray-50">
-      <div className="absolute top-[150px] py-[32px] w-[390px] right-[max(100px,calc(theme(size.1/2)-38.75rem))]">
-        <div className="bg-white shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] rounded-lg border border-gray-200">
-          <div className="relative border-b p-6 border-gray-200">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center">
-                <Badge className="rounded-[5px]" visual="gray">
-                  Starting At
-                </Badge>
-                <div className="inline-flex items-center gap-x-1.5 ml-2">
-                  <span className="text-2xl leading-none font-bold text-dark-blue-400">
-                    $5,000
-                  </span>
-                  <span className="text-sm font-medium leading-none text-dark-blue-400">
-                    per
-                  </span>
-                </div>
-
-                <div className="ml-1.5">
-                  <Listbox defaultValue="Week">
-                    <ListboxButton
-                      className="text-sm lowercase py-[5px] px-[7px] h-max w-auto"
-                      iconClassName="ml-1"
-                      placeholder="Select"
-                    />
-                    <ListboxOptions className="w-[153px]">
-                      {["Week", "2-week", "Month", "Quarter", "Year"].map(
-                        (timeline) => (
-                          <ListboxOption key={timeline} value={timeline}>
-                            {timeline}
-                          </ListboxOption>
-                        )
-                      )}
-                    </ListboxOptions>
-                  </Listbox>
-                </div>
-              </div>
-
-              <FavoriteRoot>
-                {({ pressed }) => (
-                  <TooltipProvider delayDuration={75}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="inline-block">
-                          <Favorite />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        {pressed ? (
-                          <span className="inline-flex items-center gap-x-1">
-                            <Check className="size-[15px] shrink-0 text-green-500" />
-                            Saved
-                          </span>
-                        ) : (
-                          "Save to favorites"
-                        )}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
-              </FavoriteRoot>
-            </div>
-
-            <div className="mt-3">
-              <span className="inline-block text-sm leading-none font-medium text-dark-blue-400">
-                with an initial payment of $833 to kickoff
-              </span>
-            </div>
-
-            <div className="flex flex-col items-start gap-y-3 mt-6">
-              <span className="inline-block text-xs font-medium text-dark-blue-400">
-                Current Team
-              </span>
-
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <AvatarGroup size="sm" excess>
-                      <Avatar
-                        className="border-2 border-white hover:ring-0 active:ring-0"
-                        size="sm"
-                      >
-                        <AvatarImage src="/woman.jpg" alt="Woman" />
-                        <AvatarFallback>W</AvatarFallback>
-                      </Avatar>
-                      <Avatar
-                        className="border-2 border-white hover:ring-0 active:ring-0"
-                        size="sm"
-                      >
-                        <AvatarImage src="/woman.jpg" alt="Woman" />
-                        <AvatarFallback>W</AvatarFallback>
-                      </Avatar>
-                      <Avatar
-                        className="border-2 border-white hover:ring-0 active:ring-0"
-                        size="sm"
-                      >
-                        <AvatarImage src="/woman.jpg" alt="Woman" />
-                        <AvatarFallback>W</AvatarFallback>
-                      </Avatar>
-                      <Avatar
-                        className="border-2 border-white hover:ring-0 active:ring-0"
-                        size="sm"
-                      >
-                        <AvatarImage src="/woman.jpg" alt="Woman" />
-                        <AvatarFallback>W</AvatarFallback>
-                      </Avatar>
-                      <Avatar
-                        className="border-2 border-white hover:ring-0 active:ring-0"
-                        size="sm"
-                      >
-                        <AvatarImage src="/woman.jpg" alt="Woman" />
-                        <AvatarFallback>W</AvatarFallback>
-                      </Avatar>
-                      <Avatar
-                        className="border-2 border-white hover:ring-0 active:ring-0"
-                        size="sm"
-                      >
-                        <AvatarImage src="/woman.jpg" alt="Woman" />
-                        <AvatarFallback>W</AvatarFallback>
-                      </Avatar>
-                    </AvatarGroup>
-                  </TooltipTrigger>
-                  <TooltipContent className="p-0" size="md">
-                    <ScrollArea
-                      className="h-[192px] p-3 pr-4"
-                      scrollBar={
-                        <ScrollBar
-                          className="w-4 p-1"
-                          thumbClassName="bg-white/20"
-                        />
-                      }
-                    >
-                      <div className="space-y-3 pr-5">
-                        <div className="flex items-center gap-x-[18px]">
-                          <div className="flex items-center gap-x-2 flex-auto">
-                            <Avatar>
-                              <AvatarImage src="/woman.jpg" alt="Woman" />
-                              <AvatarFallback>W</AvatarFallback>
-                            </Avatar>
-
-                            <div className="flex flex-col flex-auto">
-                              <div className="flex items-center gap-x-0.5">
-                                <span className="text-xs leading-5 font-semibold text-white">
-                                  Sevil
-                                </span>
-                                <span className="text-[10px] leading-none font-light text-white">
-                                  @designsuperstar23
-                                </span>
-                              </div>
-                              <span className="text-[10px] font-light text-white">
-                                Full-stack Developer
-                              </span>
-                            </div>
-                          </div>
-
-                          <span className="text-sm font-semibold text-white leading-5">
-                            $75{" "}
-                            <span className="text-[10px] font-light leading-5">
-                              /hr
-                            </span>
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-x-[18px]">
-                          <div className="flex items-center gap-x-2 flex-auto">
-                            <Avatar>
-                              <AvatarImage src="/woman.jpg" alt="Woman" />
-                              <AvatarFallback>W</AvatarFallback>
-                            </Avatar>
-
-                            <div className="flex flex-col flex-auto">
-                              <div className="flex items-center gap-x-0.5">
-                                <span className="text-xs leading-5 font-semibold text-white">
-                                  Sevil
-                                </span>
-                                <span className="text-[10px] leading-none font-light text-white">
-                                  @designsuperstar23
-                                </span>
-                              </div>
-                              <span className="text-[10px] font-light text-white">
-                                Full-stack Developer
-                              </span>
-                            </div>
-                          </div>
-
-                          <span className="text-sm font-semibold text-white leading-5">
-                            $75{" "}
-                            <span className="text-[10px] font-light leading-5">
-                              /hr
-                            </span>
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-x-[18px]">
-                          <div className="flex items-center gap-x-2 flex-auto">
-                            <Avatar>
-                              <AvatarImage src="/woman.jpg" alt="Woman" />
-                              <AvatarFallback>W</AvatarFallback>
-                            </Avatar>
-
-                            <div className="flex flex-col flex-auto">
-                              <div className="flex items-center gap-x-0.5">
-                                <span className="text-xs leading-5 font-semibold text-white">
-                                  Sevil
-                                </span>
-                                <span className="text-[10px] leading-none font-light text-white">
-                                  @designsuperstar23
-                                </span>
-                              </div>
-                              <span className="text-[10px] font-light text-white">
-                                Full-stack Developer
-                              </span>
-                            </div>
-                          </div>
-
-                          <span className="text-sm font-semibold text-white leading-5">
-                            $75{" "}
-                            <span className="text-[10px] font-light leading-5">
-                              /hr
-                            </span>
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-x-[18px]">
-                          <div className="flex items-center gap-x-2 flex-auto">
-                            <Avatar>
-                              <AvatarImage src="/woman.jpg" alt="Woman" />
-                              <AvatarFallback>W</AvatarFallback>
-                            </Avatar>
-
-                            <div className="flex flex-col flex-auto">
-                              <div className="flex items-center gap-x-0.5">
-                                <span className="text-xs leading-5 font-semibold text-white">
-                                  Sevil
-                                </span>
-                                <span className="text-[10px] leading-none font-light text-white">
-                                  @designsuperstar23
-                                </span>
-                              </div>
-                              <span className="text-[10px] font-light text-white">
-                                Full-stack Developer
-                              </span>
-                            </div>
-                          </div>
-
-                          <span className="text-sm font-semibold text-white leading-5">
-                            $75{" "}
-                            <span className="text-[10px] font-light leading-5">
-                              /hr
-                            </span>
-                          </span>
-                        </div>
-                      </div>
-                    </ScrollArea>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-
-            <div className="mt-6 space-y-3">
-              <div className="flex items-center gap-x-[6.4px]">
-                <Clock className="size-[18px] text-primary-500" />
-                <span className="text-sm leading-none font-medium text-dark-blue-400">
-                  Starting from a 6 month duration
-                </span>
-              </div>
-              <div className="flex items-center gap-x-[6.4px]">
-                <Users03 className="size-[18px] text-primary-500" />
-                <span className="text-sm leading-none font-medium text-dark-blue-400">
-                  Minimum 4 team members
-                </span>
-              </div>
-            </div>
-
-            <Button
-              size="lg"
-              className="mt-6 w-full border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white"
-              variant="outlined"
-            >
-              Start Project
-            </Button>
-
-            <div className="flex items-center gap-x-1 mt-6">
-              <span className="text-sm font-medium leading-none text-dark-blue-400">
-                Additional payment plans available with
-              </span>
-
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger className="focus-visible:outline-none text-gray-500">
-                    <Info className="size-[17px]" />
-                  </TooltipTrigger>
-
-                  <TooltipContent visual="gray">
-                    Select Klarna at checkout to split your purchase into
-                    smaller payments over time. Klarna makes it easy to buy now
-                    and pay later, with no impact on your credit score.
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-          </div>
-
-          <div className="h-[50px] rounded-b-lg bg-gray-50 flex items-center justify-evenly">
-            <div className="inline-flex items-center gap-x-2">
-              <Flag className="size-[15px] text-gray-500" />
-              <span className="text-sm font-extralight leading-5 text-gray-500 hover:underline cursor-pointer">
-                Report
-              </span>
-            </div>
-
-            <div className="inline-flex items-center gap-x-2">
-              <HelpCircle className="size-[15px] text-gray-500" />
-              <span className="text-sm font-extralight leading-5 text-gray-500 hover:underline cursor-pointer">
-                Help
-              </span>
-            </div>
-
-            <div className="inline-flex items-center gap-x-2">
-              <Share06 className="size-[15px] text-gray-500" />
-              <span className="text-sm font-extralight leading-5 text-gray-500 hover:underline cursor-pointer">
-                Share
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-3 p-6">
-          <h1 className="text-base leading-none font-semibold text-dark-blue-400">
-            Peace of Mind Guarantee
-          </h1>
-
-          <div className="mt-5 space-y-5">
-            <article className="flex items-start gap-x-2">
-              <Rocket02 className="size-[18px] text-dark-blue-400" />
-              <div className="flex-auto space-y-1">
-                <h1 className="text-xs leading-none font-semibold text-dark-blue-400">
-                  Peace of Mind Guarantee
-                </h1>
-                <p className="text-xs leading-none font-extralight text-dark-blue-400">
-                  If the project falls short, you can initiate a dispute for a
-                  full refund.
-                </p>
-              </div>
-            </article>
-            <article className="flex items-start gap-x-2">
-              <ShieldZap className="size-[18px] text-dark-blue-400" />
-              <div className="flex-auto space-y-1">
-                <h1 className="text-xs leading-none font-semibold text-dark-blue-400">
-                  Peace of Mind Guarantee
-                </h1>
-                <p className="text-xs leading-none font-extralight text-dark-blue-400">
-                  If the project falls short, you can initiate a dispute for a
-                  full refund.
-                </p>
-              </div>
-            </article>
-          </div>
-
-          <article className="flex items-start gap-x-2 p-3 mt-3 rounded-lg bg-primary-50">
-            <ShieldDollar className="size-[18px] text-primary-500" />
-            <div className="flex-auto">
-              <p className="text-xs leading-none font-extralight text-dark-blue-400">
-                If the project falls short, you can initiate a dispute for a
-                full refund.
-              </p>
-            </div>
-          </article>
-
-          <div className="mt-3">
-            <span className="text-xs text-dark-blue-400">
-              We securely process payments and release upon rating. We securely
-              process payments{" "}
-              <Button className="text-xs" variant="link">
-                See Policy Details.
-              </Button>
-            </span>
-          </div>
-        </div>
-      </div>
       <TopMostHeader />
       <Layout>
         <div className="bg-gray-50 border-b border-gray-200 pt-6 px-[100px] pb-[50px]">
           <div className="max-w-[1240px] mx-auto flex items-start gap-x-8">
             <div className="flex-auto">
               <div className="flex items-center gap-x-2">
-                <Home03 className="size-[18px] text-gray-500/50 hover:text-gray-500" />
+                <Home03 className="size-[18px] text-gray-500/50 cursor-pointer hover:text-gray-500" />
 
                 <div className="inline-flex items-center gap-x-2">
                   <span className="text-xs leading-6 text-gray-500/50 font-semibold">
                     /
                   </span>
-                  <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold hover:underline cursor-pointer">
+                  <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold hover:underline cursor-pointer transition duration-300">
                     Software Development
                   </span>
                 </div>
@@ -840,7 +464,7 @@ export const Default = () => {
                   <span className="text-xs leading-6 text-gray-500/50 font-semibold">
                     /
                   </span>
-                  <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold hover:underline cursor-pointer">
+                  <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold hover:underline cursor-pointer transition duration-300">
                     Mobile Applications
                   </span>
                 </div>
@@ -849,7 +473,7 @@ export const Default = () => {
                   <span className="text-xs leading-6 text-gray-500/50 font-semibold">
                     /
                   </span>
-                  <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold hover:underline cursor-pointer">
+                  <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold hover:underline cursor-pointer transition duration-300">
                     iOS Development
                   </span>
                 </div>
@@ -943,7 +567,7 @@ export const Default = () => {
 
         <div className="bg-white">
           <div className="max-w-[1240px] mx-auto">
-            <div>
+            <div className="flex items-start gap-x-8">
               <Tabs
                 className="flex-auto max-w-[818px] isolate"
                 value={selected}
@@ -1016,8 +640,14 @@ export const Default = () => {
                       ))}
                     </CarouselContent>
 
-                    <CarouselPrevious className="border-gray-300 bg-white shadow-[0px_1px_4px_0px_rgba(0,0,0,.03)] size-8 hover:ring-1 hover:ring-dark-blue-400 hover:text-dark-blue-400 text-gray-500 disabled:opacity-50 transition duration-300 -left-[17px]" />
-                    <CarouselNext className="border-gray-300 bg-white shadow-[0px_1px_4px_0px_rgba(0,0,0,.03)] size-8 hover:ring-1 hover:ring-dark-blue-400 hover:text-dark-blue-400 text-gray-500 disabled:opacity-50 transition duration-300 -right-[17px]" />
+                    <CarouselPrevious
+                      className="border-gray-300 bg-white shadow-[0px_1px_4px_0px_rgba(0,0,0,.03)] size-8 hover:ring-1 hover:ring-dark-blue-400 hover:text-dark-blue-400 text-gray-500 disabled:opacity-50 transition duration-300 -left-[13.75px]"
+                      indicatorClassName="size-5"
+                    />
+                    <CarouselNext
+                      className="border-gray-300 bg-white shadow-[0px_1px_4px_0px_rgba(0,0,0,.03)] size-8 hover:ring-1 hover:ring-dark-blue-400 hover:text-dark-blue-400 text-gray-500 disabled:opacity-50 transition duration-300 -right-[13.75px]"
+                      indicatorClassName="size-5"
+                    />
                   </Carousel>
                   <div className="mt-6">
                     <Tabs defaultValue="Description">
@@ -1549,15 +1179,24 @@ export const Default = () => {
                                     </h3>
 
                                     <div className="flex items-center flex-wrap gap-1">
-                                      <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                      <NextLink
+                                        href="#"
+                                        className="focus-visibile:outline-none hover:underline transition duration-300 inline-block text-sm leading-6 font-semibold text-dark-blue-400"
+                                      >
                                         Python,
-                                      </span>
-                                      <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                      </NextLink>
+                                      <NextLink
+                                        href="#"
+                                        className="focus-visibile:outline-none hover:underline transition duration-300 inline-block text-sm leading-6 font-semibold text-dark-blue-400"
+                                      >
                                         React.js,
-                                      </span>
-                                      <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
-                                        Node.js,
-                                      </span>
+                                      </NextLink>
+                                      <NextLink
+                                        href="#"
+                                        className="focus-visibile:outline-none hover:underline transition duration-300 inline-block text-sm leading-6 font-semibold text-dark-blue-400"
+                                      >
+                                        Node.js
+                                      </NextLink>
                                     </div>
                                   </div>
 
@@ -1567,18 +1206,30 @@ export const Default = () => {
                                     </h3>
 
                                     <div className="flex items-center flex-wrap gap-1">
-                                      <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                      <NextLink
+                                        href="#"
+                                        className="focus-visible:outline-none hover:underline transition duration-300 inline-block text-sm leading-6 font-semibold text-dark-blue-400"
+                                      >
                                         Flutter,
-                                      </span>
-                                      <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                      </NextLink>
+                                      <NextLink
+                                        href="#"
+                                        className="focus-visible:outline-none hover:underline transition duration-300 inline-block text-sm leading-6 font-semibold text-dark-blue-400"
+                                      >
                                         React,
-                                      </span>
-                                      <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                      </NextLink>
+                                      <NextLink
+                                        href="#"
+                                        className="focus-visible:outline-none hover:underline transition duration-300 inline-block text-sm leading-6 font-semibold text-dark-blue-400"
+                                      >
                                         Native OS,
-                                      </span>
-                                      <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
-                                        Ionic,
-                                      </span>
+                                      </NextLink>
+                                      <NextLink
+                                        href="#"
+                                        className="focus-visible:outline-none hover:underline transition duration-300 inline-block text-sm leading-6 font-semibold text-dark-blue-400"
+                                      >
+                                        Ionic
+                                      </NextLink>
                                     </div>
                                   </div>
                                 </div>
@@ -1631,18 +1282,7 @@ export const Default = () => {
                                             </Badge>
                                           </ShowMoreLess>
 
-                                          {isShowing ? (
-                                            <Button
-                                              onClick={() =>
-                                                setIsShowing(false)
-                                              }
-                                              variant="link"
-                                              visual="gray"
-                                              className="text-gray-700 hover:text-gray-900 font-medium"
-                                            >
-                                              Show less
-                                            </Button>
-                                          ) : (
+                                          {!isShowing ? (
                                             <Button
                                               onClick={() => setIsShowing(true)}
                                               variant="link"
@@ -1651,7 +1291,7 @@ export const Default = () => {
                                             >
                                               +2 more
                                             </Button>
-                                          )}
+                                          ) : null}
                                         </div>
                                       )}
                                     </ShowMoreLessRoot>
@@ -1705,18 +1345,7 @@ export const Default = () => {
                                               </Badge>
                                             </ShowMoreLess>
 
-                                            {isShowing ? (
-                                              <Button
-                                                onClick={() =>
-                                                  setIsShowing(false)
-                                                }
-                                                variant="link"
-                                                visual="gray"
-                                                className="text-gray-700 hover:text-gray-900 font-medium"
-                                              >
-                                                Show less
-                                              </Button>
-                                            ) : (
+                                            {!isShowing ? (
                                               <Button
                                                 onClick={() =>
                                                   setIsShowing(true)
@@ -1727,7 +1356,7 @@ export const Default = () => {
                                               >
                                                 +2 more
                                               </Button>
-                                            )}
+                                            ) : null}
                                           </div>
                                         )}
                                       </ShowMoreLessRoot>
@@ -1787,18 +1416,30 @@ export const Default = () => {
                                   </h3>
 
                                   <div className="gap-1 flex items-center flex-wrap">
-                                    <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    <NextLink
+                                      href="#"
+                                      className="focus-visible:outline-none duration-300 transition hover:underline inline-block text-sm leading-6 font-semibold text-dark-blue-400"
+                                    >
                                       USA,
-                                    </span>
-                                    <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    </NextLink>
+                                    <NextLink
+                                      href="#"
+                                      className="focus-visible:outline-none duration-300 transition hover:underline inline-block text-sm leading-6 font-semibold text-dark-blue-400"
+                                    >
                                       UK,
-                                    </span>
-                                    <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    </NextLink>
+                                    <NextLink
+                                      href="#"
+                                      className="focus-visible:outline-none duration-300 transition hover:underline inline-block text-sm leading-6 font-semibold text-dark-blue-400"
+                                    >
                                       Brazil,
-                                    </span>
-                                    <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    </NextLink>
+                                    <NextLink
+                                      href="#"
+                                      className="focus-visible:outline-none duration-300 transition hover:underline inline-block text-sm leading-6 font-semibold text-dark-blue-400"
+                                    >
                                       and 1 more...
-                                    </span>
+                                    </NextLink>
                                   </div>
                                 </div>
                               </div>
@@ -1811,15 +1452,24 @@ export const Default = () => {
                                   </h3>
 
                                   <div className="gap-1 flex items-center flex-wrap">
-                                    <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    <NextLink
+                                      href="#"
+                                      className="focus-visible:outline-none duration-300 transition hover:underline inline-block text-sm leading-6 font-semibold text-dark-blue-400"
+                                    >
                                       English,
-                                    </span>
-                                    <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    </NextLink>
+                                    <NextLink
+                                      href="#"
+                                      className="focus-visible:outline-none duration-300 transition hover:underline inline-block text-sm leading-6 font-semibold text-dark-blue-400"
+                                    >
                                       Spanish,
-                                    </span>
-                                    <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    </NextLink>
+                                    <NextLink
+                                      href="#"
+                                      className="focus-visible:outline-none duration-300 transition hover:underline inline-block text-sm leading-6 font-semibold text-dark-blue-400"
+                                    >
                                       French
-                                    </span>
+                                    </NextLink>
                                   </div>
                                 </div>
 
@@ -1830,24 +1480,42 @@ export const Default = () => {
                                   </h3>
 
                                   <div className="gap-1 flex items-center flex-wrap">
-                                    <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    <NextLink
+                                      href="#"
+                                      className="focus-visible:outline-none hover:underline transition duration-300 inline-block text-sm leading-6 font-semibold text-dark-blue-400"
+                                    >
                                       Performance,
-                                    </span>
-                                    <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    </NextLink>
+                                    <NextLink
+                                      href="#"
+                                      className="focus-visible:outline-none hover:underline transition duration-300 inline-block text-sm leading-6 font-semibold text-dark-blue-400"
+                                    >
                                       Security,
-                                    </span>
-                                    <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    </NextLink>
+                                    <NextLink
+                                      href="#"
+                                      className="focus-visible:outline-none hover:underline transition duration-300 inline-block text-sm leading-6 font-semibold text-dark-blue-400"
+                                    >
                                       Operating Systems,
-                                    </span>
-                                    <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    </NextLink>
+                                    <NextLink
+                                      href="#"
+                                      className="focus-visible:outline-none hover:underline transition duration-300 inline-block text-sm leading-6 font-semibold text-dark-blue-400"
+                                    >
                                       Design,
-                                    </span>
-                                    <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    </NextLink>
+                                    <NextLink
+                                      href="#"
+                                      className="focus-visible:outline-none hover:underline transition duration-300 inline-block text-sm leading-6 font-semibold text-dark-blue-400"
+                                    >
                                       Databases,
-                                    </span>
-                                    <span className="inline-block text-sm leading-6 font-semibold text-dark-blue-400">
+                                    </NextLink>
+                                    <NextLink
+                                      href="#"
+                                      className="focus-visible:outline-none hover:underline transition duration-300 inline-block text-sm leading-6 font-semibold text-dark-blue-400"
+                                    >
                                       and 1 more...
-                                    </span>
+                                    </NextLink>
                                   </div>
                                 </div>
                               </div>
@@ -1996,70 +1664,70 @@ export const Default = () => {
 
                               <div className="mt-6 flex items-center gap-3 flex-wrap">
                                 <Badge
-                                  className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400 cursor-pointer"
+                                  className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400 cursor-pointer hover:ring-1 hover:ring-dark-blue-400"
                                   size="lg"
                                   visual="gray"
                                 >
                                   Can I see your portfolio?
                                 </Badge>
                                 <Badge
-                                  className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400 cursor-pointer"
+                                  className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400 cursor-pointer hover:ring-1 hover:ring-dark-blue-400"
                                   size="lg"
                                   visual="gray"
                                 >
                                   Can I see your work?
                                 </Badge>
                                 <Badge
-                                  className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400 cursor-pointer"
+                                  className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400 cursor-pointer hover:ring-1 hover:ring-dark-blue-400"
                                   size="lg"
                                   visual="gray"
                                 >
                                   Can I see your work?
                                 </Badge>
                                 <Badge
-                                  className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400 cursor-pointer"
+                                  className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400 cursor-pointer hover:ring-1 hover:ring-dark-blue-400"
                                   size="lg"
                                   visual="gray"
                                 >
                                   Can I see your work?
                                 </Badge>
                                 <Badge
-                                  className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400 cursor-pointer"
+                                  className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400 cursor-pointer hover:ring-1 hover:ring-dark-blue-400"
                                   size="lg"
                                   visual="gray"
                                 >
                                   Can I see your work?
                                 </Badge>
                                 <Badge
-                                  className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400 cursor-pointer"
+                                  className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400 cursor-pointer hover:ring-1 hover:ring-dark-blue-400"
                                   size="lg"
                                   visual="gray"
                                 >
                                   Can I see your work?
                                 </Badge>
                                 <Badge
-                                  className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400 cursor-pointer"
+                                  className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400 cursor-pointer hover:ring-1 hover:ring-dark-blue-400"
                                   size="lg"
                                   visual="gray"
                                 >
                                   Can I see your work?
                                 </Badge>
                                 <Badge
-                                  className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400 cursor-pointer"
+                                  className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400 cursor-pointer hover:ring-1 hover:ring-dark-blue-400"
                                   size="lg"
                                   visual="gray"
                                 >
                                   Can I see your work?
                                 </Badge>
                                 <Badge
-                                  className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400 cursor-pointer"
+                                  className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400 cursor-pointer hover:ring-1 hover:ring-dark-blue-400"
                                   size="lg"
                                   visual="gray"
                                 >
                                   Can I see your work?
                                 </Badge>
                                 <Badge
-                                  className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400 cursor-pointer"
+                                  className="transition duration-300 bg-white border-[1.5px] border-gray-300 hover:border-dark-blue-400 hover:text-dark-blue-400 cursor-pointer hover:ring-1 hover:ring-dark-blue-400"
                                   size="lg"
                                   visual="gray"
                                 >
@@ -2991,7 +2659,7 @@ export const Default = () => {
                                           </div>
 
                                           <div className="mt-6 flex items-center gap-x-3 px-6 pb-6">
-                                            <div className="w-[153px] relative rounded-lg overflow-hidden h-[98px]">
+                                            <div className="border border-black/10 w-[153px] relative rounded-lg overflow-hidden h-[98px]">
                                               <NextImage
                                                 className="object-cover"
                                                 src="/dashboard.png"
@@ -3198,7 +2866,7 @@ export const Default = () => {
                                           </div>
 
                                           <div className="mt-6 flex items-center gap-x-3 px-6 pb-6">
-                                            <div className="w-[153px] relative rounded-lg overflow-hidden h-[98px]">
+                                            <div className="border border-black/10 w-[153px] relative rounded-lg overflow-hidden h-[98px]">
                                               <NextImage
                                                 className="object-cover"
                                                 src="/dashboard.png"
@@ -3474,7 +3142,7 @@ export const Default = () => {
                                           </div>
 
                                           <div className="mt-6 flex items-center gap-x-3 px-6 pb-6">
-                                            <div className="w-[153px] relative rounded-lg overflow-hidden h-[98px]">
+                                            <div className="border border-black/10 w-[153px] relative rounded-lg overflow-hidden h-[98px]">
                                               <NextImage
                                                 className="object-cover"
                                                 src="/dashboard.png"
@@ -3681,7 +3349,7 @@ export const Default = () => {
                                           </div>
 
                                           <div className="mt-6 flex items-center gap-x-3 px-6 pb-6">
-                                            <div className="w-[153px] relative rounded-lg overflow-hidden h-[98px]">
+                                            <div className="border border-black/10 w-[153px] relative rounded-lg overflow-hidden h-[98px]">
                                               <NextImage
                                                 className="object-cover"
                                                 src="/dashboard.png"
@@ -3756,7 +3424,9 @@ export const Default = () => {
                                           isShowing ? "active" : "inactive"
                                         }
                                       >
-                                        {isShowing ? "View Less" : "View More"}
+                                        {isShowing
+                                          ? "View Less"
+                                          : "Show More Feedback (6)"}
                                         <ChevronDown className="size-[15px] transition duration-300 group-data-[state=active]:-rotate-180" />
                                       </Button>
                                     </div>
@@ -4047,8 +3717,8 @@ export const Default = () => {
                 <TabsContent value="View Project Scope">
                   <div className="mt-6">
                     <Accordion
-                      type="multiple"
-                      defaultValue={["item-1"]}
+                      type="single"
+                      defaultValue="item-1"
                       className="flex-auto space-y-3"
                     >
                       <AccordionItem
@@ -4619,6 +4289,408 @@ export const Default = () => {
                   </div>
                 </TabsContent>
               </Tabs>
+
+              <div className="w-[390px] shrink-0 sticky top-[19px] -translate-y-[349.5px]">
+                <div className="py-[32px] w-[390px]">
+                  <div className="bg-white shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] rounded-lg border border-gray-200">
+                    <div className="relative border-b p-6 border-gray-200">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center">
+                          <Badge className="rounded-[5px]" visual="gray">
+                            Starting At
+                          </Badge>
+                          <div className="inline-flex items-center gap-x-1.5 ml-2">
+                            <span className="text-2xl leading-none font-bold text-dark-blue-400">
+                              $5,000
+                            </span>
+                            <span className="text-sm font-medium leading-none text-dark-blue-400">
+                              per
+                            </span>
+                          </div>
+
+                          <div className="ml-1.5">
+                            <Listbox defaultValue="Week">
+                              <ListboxButton
+                                className="text-sm lowercase py-[5px] px-[7px] h-max w-auto"
+                                iconClassName="ml-1"
+                                placeholder="Select"
+                              />
+                              <ListboxOptions className="w-[153px]">
+                                {[
+                                  "Week",
+                                  "2-week",
+                                  "Month",
+                                  "Quarter",
+                                  "Year",
+                                ].map((timeline) => (
+                                  <ListboxOption
+                                    key={timeline}
+                                    value={timeline}
+                                  >
+                                    {timeline}
+                                  </ListboxOption>
+                                ))}
+                              </ListboxOptions>
+                            </Listbox>
+                          </div>
+                        </div>
+
+                        <FavoriteRoot>
+                          {({ pressed }) => (
+                            <TooltipProvider delayDuration={75}>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span className="inline-block">
+                                    <Favorite />
+                                  </span>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  {pressed ? (
+                                    <span className="inline-flex items-center gap-x-1">
+                                      <Check className="size-[15px] shrink-0 text-green-500" />
+                                      Saved
+                                    </span>
+                                  ) : (
+                                    "Save to favorites"
+                                  )}
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
+                        </FavoriteRoot>
+                      </div>
+
+                      <div className="mt-3">
+                        <span className="inline-block text-sm leading-none font-medium text-dark-blue-400">
+                          with an initial payment of $833 to kickoff
+                        </span>
+                      </div>
+
+                      <div className="flex flex-col items-start gap-y-3 mt-6">
+                        <span className="inline-block text-xs font-medium text-dark-blue-400">
+                          Current Team
+                        </span>
+
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <AvatarGroup size="sm" excess>
+                                <Avatar
+                                  className="border-2 border-white hover:ring-0 active:ring-0"
+                                  size="sm"
+                                >
+                                  <AvatarImage src="/woman.jpg" alt="Woman" />
+                                  <AvatarFallback>W</AvatarFallback>
+                                </Avatar>
+                                <Avatar
+                                  className="border-2 border-white hover:ring-0 active:ring-0"
+                                  size="sm"
+                                >
+                                  <AvatarImage src="/woman.jpg" alt="Woman" />
+                                  <AvatarFallback>W</AvatarFallback>
+                                </Avatar>
+                                <Avatar
+                                  className="border-2 border-white hover:ring-0 active:ring-0"
+                                  size="sm"
+                                >
+                                  <AvatarImage src="/woman.jpg" alt="Woman" />
+                                  <AvatarFallback>W</AvatarFallback>
+                                </Avatar>
+                                <Avatar
+                                  className="border-2 border-white hover:ring-0 active:ring-0"
+                                  size="sm"
+                                >
+                                  <AvatarImage src="/woman.jpg" alt="Woman" />
+                                  <AvatarFallback>W</AvatarFallback>
+                                </Avatar>
+                                <Avatar
+                                  className="border-2 border-white hover:ring-0 active:ring-0"
+                                  size="sm"
+                                >
+                                  <AvatarImage src="/woman.jpg" alt="Woman" />
+                                  <AvatarFallback>W</AvatarFallback>
+                                </Avatar>
+                                <Avatar
+                                  className="border-2 border-white hover:ring-0 active:ring-0"
+                                  size="sm"
+                                >
+                                  <AvatarImage src="/woman.jpg" alt="Woman" />
+                                  <AvatarFallback>W</AvatarFallback>
+                                </Avatar>
+                              </AvatarGroup>
+                            </TooltipTrigger>
+                            <TooltipContent className="p-0" size="md">
+                              <ScrollArea
+                                className="h-[192px] p-3 pr-4"
+                                scrollBar={
+                                  <ScrollBar
+                                    className="w-4 p-1"
+                                    thumbClassName="bg-white/20"
+                                  />
+                                }
+                              >
+                                <div className="space-y-3 pr-5">
+                                  <div className="flex items-center gap-x-[18px]">
+                                    <div className="flex items-center gap-x-2 flex-auto">
+                                      <Avatar>
+                                        <AvatarImage
+                                          src="/woman.jpg"
+                                          alt="Woman"
+                                        />
+                                        <AvatarFallback>W</AvatarFallback>
+                                      </Avatar>
+
+                                      <div className="flex flex-col flex-auto">
+                                        <div className="flex items-center gap-x-0.5">
+                                          <span className="text-xs leading-5 font-semibold text-white">
+                                            Sevil
+                                          </span>
+                                          <span className="text-[10px] leading-none font-light text-white">
+                                            @designsuperstar23
+                                          </span>
+                                        </div>
+                                        <span className="text-[10px] font-light text-white">
+                                          Full-stack Developer
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    <span className="text-sm font-semibold text-white leading-5">
+                                      $75{" "}
+                                      <span className="text-[10px] font-light leading-5">
+                                        /hr
+                                      </span>
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-x-[18px]">
+                                    <div className="flex items-center gap-x-2 flex-auto">
+                                      <Avatar>
+                                        <AvatarImage
+                                          src="/woman.jpg"
+                                          alt="Woman"
+                                        />
+                                        <AvatarFallback>W</AvatarFallback>
+                                      </Avatar>
+
+                                      <div className="flex flex-col flex-auto">
+                                        <div className="flex items-center gap-x-0.5">
+                                          <span className="text-xs leading-5 font-semibold text-white">
+                                            Sevil
+                                          </span>
+                                          <span className="text-[10px] leading-none font-light text-white">
+                                            @designsuperstar23
+                                          </span>
+                                        </div>
+                                        <span className="text-[10px] font-light text-white">
+                                          Full-stack Developer
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    <span className="text-sm font-semibold text-white leading-5">
+                                      $75{" "}
+                                      <span className="text-[10px] font-light leading-5">
+                                        /hr
+                                      </span>
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-x-[18px]">
+                                    <div className="flex items-center gap-x-2 flex-auto">
+                                      <Avatar>
+                                        <AvatarImage
+                                          src="/woman.jpg"
+                                          alt="Woman"
+                                        />
+                                        <AvatarFallback>W</AvatarFallback>
+                                      </Avatar>
+
+                                      <div className="flex flex-col flex-auto">
+                                        <div className="flex items-center gap-x-0.5">
+                                          <span className="text-xs leading-5 font-semibold text-white">
+                                            Sevil
+                                          </span>
+                                          <span className="text-[10px] leading-none font-light text-white">
+                                            @designsuperstar23
+                                          </span>
+                                        </div>
+                                        <span className="text-[10px] font-light text-white">
+                                          Full-stack Developer
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    <span className="text-sm font-semibold text-white leading-5">
+                                      $75{" "}
+                                      <span className="text-[10px] font-light leading-5">
+                                        /hr
+                                      </span>
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-x-[18px]">
+                                    <div className="flex items-center gap-x-2 flex-auto">
+                                      <Avatar>
+                                        <AvatarImage
+                                          src="/woman.jpg"
+                                          alt="Woman"
+                                        />
+                                        <AvatarFallback>W</AvatarFallback>
+                                      </Avatar>
+
+                                      <div className="flex flex-col flex-auto">
+                                        <div className="flex items-center gap-x-0.5">
+                                          <span className="text-xs leading-5 font-semibold text-white">
+                                            Sevil
+                                          </span>
+                                          <span className="text-[10px] leading-none font-light text-white">
+                                            @designsuperstar23
+                                          </span>
+                                        </div>
+                                        <span className="text-[10px] font-light text-white">
+                                          Full-stack Developer
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    <span className="text-sm font-semibold text-white leading-5">
+                                      $75{" "}
+                                      <span className="text-[10px] font-light leading-5">
+                                        /hr
+                                      </span>
+                                    </span>
+                                  </div>
+                                </div>
+                              </ScrollArea>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+
+                      <div className="mt-6 space-y-3">
+                        <div className="flex items-center gap-x-[6.4px]">
+                          <Clock className="size-[18px] text-primary-500" />
+                          <span className="text-sm leading-none font-medium text-dark-blue-400">
+                            Starting from a 6 month duration
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-x-[6.4px]">
+                          <Users03 className="size-[18px] text-primary-500" />
+                          <span className="text-sm leading-none font-medium text-dark-blue-400">
+                            Minimum 4 team members
+                          </span>
+                        </div>
+                      </div>
+
+                      <Button
+                        size="lg"
+                        className="mt-6 w-full border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white"
+                        variant="outlined"
+                      >
+                        Start Project
+                      </Button>
+
+                      <div className="flex items-center gap-x-1 mt-6">
+                        <span className="text-sm font-medium leading-none text-dark-blue-400">
+                          Additional payment plans available with
+                        </span>
+
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="focus-visible:outline-none text-gray-500">
+                              <Info className="size-[17px]" />
+                            </TooltipTrigger>
+
+                            <TooltipContent
+                              className="max-w-[286px]"
+                              visual="gray"
+                            >
+                              Select Klarna at checkout to split your purchase
+                              into smaller payments over time. Klarna makes it
+                              easy to buy now and pay later, with no impact on
+                              your credit score.
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </div>
+
+                    <div className="h-[50px] rounded-b-lg bg-gray-50 flex items-center justify-evenly">
+                      <div className="inline-flex items-center gap-x-2">
+                        <Flag className="size-[15px] text-gray-500" />
+                        <span className="text-sm font-extralight leading-5 text-gray-500 hover:underline cursor-pointer">
+                          Report
+                        </span>
+                      </div>
+
+                      <div className="inline-flex items-center gap-x-2">
+                        <HelpCircle className="size-[15px] text-gray-500" />
+                        <span className="text-sm font-extralight leading-5 text-gray-500 hover:underline cursor-pointer">
+                          Help
+                        </span>
+                      </div>
+
+                      <div className="inline-flex items-center gap-x-2">
+                        <Share06 className="size-[15px] text-gray-500" />
+                        <span className="text-sm font-extralight leading-5 text-gray-500 hover:underline cursor-pointer">
+                          Share
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 p-6">
+                    <h1 className="text-base leading-none font-semibold text-dark-blue-400">
+                      Peace of Mind Guarantee
+                    </h1>
+
+                    <div className="mt-5 space-y-5">
+                      <article className="flex items-start gap-x-2">
+                        <Rocket02 className="size-[18px] text-dark-blue-400" />
+                        <div className="flex-auto space-y-1">
+                          <h1 className="text-xs leading-none font-semibold text-dark-blue-400">
+                            Peace of Mind Guarantee
+                          </h1>
+                          <p className="text-xs leading-none font-extralight text-dark-blue-400">
+                            If the project falls short, you can initiate a
+                            dispute for a full refund.
+                          </p>
+                        </div>
+                      </article>
+                      <article className="flex items-start gap-x-2">
+                        <ShieldZap className="size-[18px] text-dark-blue-400" />
+                        <div className="flex-auto space-y-1">
+                          <h1 className="text-xs leading-none font-semibold text-dark-blue-400">
+                            Peace of Mind Guarantee
+                          </h1>
+                          <p className="text-xs leading-none font-extralight text-dark-blue-400">
+                            If the project falls short, you can initiate a
+                            dispute for a full refund.
+                          </p>
+                        </div>
+                      </article>
+                    </div>
+
+                    <article className="flex items-start gap-x-2 p-3 mt-3 rounded-lg bg-primary-50">
+                      <ShieldDollar className="size-[18px] text-primary-500" />
+                      <div className="flex-auto">
+                        <p className="text-xs leading-none font-extralight text-dark-blue-400">
+                          If the project falls short, you can initiate a dispute
+                          for a full refund.
+                        </p>
+                      </div>
+                    </article>
+
+                    <div className="mt-3">
+                      <span className="text-xs text-dark-blue-400">
+                        We securely process payments and release upon rating. We
+                        securely process payments{" "}
+                        <Button className="text-xs" variant="link">
+                          See Policy Details.
+                        </Button>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
