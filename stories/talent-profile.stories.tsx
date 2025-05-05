@@ -1001,7 +1001,7 @@ const CarouselNextTrigger = () => {
   ) : null
 }
 
-const SaveButton = () => {
+export const SaveButton = () => {
   const [isOpen, toggleIsOpen] = useToggle(false)
   const [value, setValue] = React.useState("")
 
@@ -1604,21 +1604,47 @@ export const Default = () => {
                                 fill
                                 sizes="33vw"
                               />
-                              <div className="group inset-0 absolute flex items-center justify-center hover:bg-black/50 transition duration-300">
-                                <Button className="group-hover:opacity-100 opacity-0 bg-white text-gray-700 transition duration-300 hover:bg-primary-500 hover:text-white">
-                                  View Project
-                                </Button>
-                              </div>
-                              <div className="absolute group-hover:hidden flex flex-col justify-end gap-y-2 p-[15px] inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_50.12%,rgba(0,0,0,.5)_82.64%)]">
-                                <h1 className="text-sm text-white leading-none font-medium">
-                                  React.js Front End Ecommerce Store
+                              <div className="p-[15px] group-hover:opacity-100 opacity-0 inset-0 absolute flex justify-end items-start flex-col hover:bg-black/50 transition duration-300">
+                                <h1 className="text-sm leading-none font-medium text-white">
+                                  Mobile Finance Application
                                 </h1>
-                                <div className="flex items-center gap-x-[6.79px]">
-                                  <Badge className="bg-white/20 text-white">
-                                    UX/UI Design
+
+                                <div className="mt-2 flex flex-wrap gap-[6.79px]">
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
                                   </Badge>
-                                  <Badge className="bg-white/20 text-white">
-                                    Visual Design
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
                                   </Badge>
                                 </div>
                               </div>
@@ -1631,21 +1657,47 @@ export const Default = () => {
                                 fill
                                 sizes="33vw"
                               />
-                              <div className="group inset-0 absolute flex items-center justify-center hover:bg-black/50 transition duration-300">
-                                <Button className="group-hover:opacity-100 opacity-0 bg-white text-gray-700 transition duration-300 hover:bg-primary-500 hover:text-white">
-                                  View Project
-                                </Button>
-                              </div>
-                              <div className="absolute group-hover:hidden flex flex-col justify-end gap-y-2 p-[15px] inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_50.12%,rgba(0,0,0,.5)_82.64%)]">
-                                <h1 className="text-sm text-white leading-none font-medium">
-                                  React.js Front End Ecommerce Store
+                              <div className="p-[15px] group-hover:opacity-100 opacity-0 inset-0 absolute flex justify-end items-start flex-col hover:bg-black/50 transition duration-300">
+                                <h1 className="text-sm leading-none font-medium text-white">
+                                  Mobile Finance Application
                                 </h1>
-                                <div className="flex items-center gap-x-[6.79px]">
-                                  <Badge className="bg-white/20 text-white">
-                                    UX/UI Design
+
+                                <div className="mt-2 flex flex-wrap gap-[6.79px]">
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
                                   </Badge>
-                                  <Badge className="bg-white/20 text-white">
-                                    Visual Design
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
                                   </Badge>
                                 </div>
                               </div>
@@ -1658,21 +1710,47 @@ export const Default = () => {
                                 fill
                                 sizes="33vw"
                               />
-                              <div className="group inset-0 absolute flex items-center justify-center hover:bg-black/50 transition duration-300">
-                                <Button className="group-hover:opacity-100 opacity-0 bg-white text-gray-700 transition duration-300 hover:bg-primary-500 hover:text-white">
-                                  View Project
-                                </Button>
-                              </div>
-                              <div className="group-hover:hidden absolute flex flex-col justify-end gap-y-2 p-[15px] inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_50.12%,rgba(0,0,0,.5)_82.64%)]">
-                                <h1 className="text-sm text-white leading-none font-medium">
-                                  React.js Front End Ecommerce Store
+                              <div className="p-[15px] group-hover:opacity-100 opacity-0 inset-0 absolute flex justify-end items-start flex-col hover:bg-black/50 transition duration-300">
+                                <h1 className="text-sm leading-none font-medium text-white">
+                                  Mobile Finance Application
                                 </h1>
-                                <div className="flex items-center gap-x-[6.79px]">
-                                  <Badge className="bg-white/20 text-white">
-                                    UX/UI Design
+
+                                <div className="mt-2 flex flex-wrap gap-[6.79px]">
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
                                   </Badge>
-                                  <Badge className="bg-white/20 text-white">
-                                    Visual Design
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
                                   </Badge>
                                 </div>
                               </div>
@@ -1685,21 +1763,47 @@ export const Default = () => {
                                 fill
                                 sizes="33vw"
                               />
-                              <div className="group inset-0 absolute flex items-center justify-center hover:bg-black/50 transition duration-300">
-                                <Button className="group-hover:opacity-100 opacity-0 bg-white text-gray-700 transition duration-300 hover:bg-primary-500 hover:text-white">
-                                  View Project
-                                </Button>
-                              </div>
-                              <div className="group-hover:hidden absolute flex flex-col justify-end gap-y-2 p-[15px] inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_50.12%,rgba(0,0,0,.5)_82.64%)]">
-                                <h1 className="text-sm text-white leading-none font-medium">
-                                  React.js Front End Ecommerce Store
+                              <div className="p-[15px] group-hover:opacity-100 opacity-0 inset-0 absolute flex justify-end items-start flex-col hover:bg-black/50 transition duration-300">
+                                <h1 className="text-sm leading-none font-medium text-white">
+                                  Mobile Finance Application
                                 </h1>
-                                <div className="flex items-center gap-x-[6.79px]">
-                                  <Badge className="bg-white/20 text-white">
-                                    UX/UI Design
+
+                                <div className="mt-2 flex flex-wrap gap-[6.79px]">
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
                                   </Badge>
-                                  <Badge className="bg-white/20 text-white">
-                                    Visual Design
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
                                   </Badge>
                                 </div>
                               </div>
@@ -1712,21 +1816,47 @@ export const Default = () => {
                                 fill
                                 sizes="33vw"
                               />
-                              <div className="group inset-0 absolute flex items-center justify-center hover:bg-black/50 transition duration-300">
-                                <Button className="group-hover:opacity-100 opacity-0 bg-white text-gray-700 transition duration-300 hover:bg-primary-500 hover:text-white">
-                                  View Project
-                                </Button>
-                              </div>
-                              <div className="group-hover:hidden absolute flex flex-col justify-end gap-y-2 p-[15px] inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_50.12%,rgba(0,0,0,.5)_82.64%)]">
-                                <h1 className="text-sm text-white leading-none font-medium">
-                                  React.js Front End Ecommerce Store
+                              <div className="p-[15px] group-hover:opacity-100 opacity-0 inset-0 absolute flex justify-end items-start flex-col hover:bg-black/50 transition duration-300">
+                                <h1 className="text-sm leading-none font-medium text-white">
+                                  Mobile Finance Application
                                 </h1>
-                                <div className="flex items-center gap-x-[6.79px]">
-                                  <Badge className="bg-white/20 text-white">
-                                    UX/UI Design
+
+                                <div className="mt-2 flex flex-wrap gap-[6.79px]">
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
                                   </Badge>
-                                  <Badge className="bg-white/20 text-white">
-                                    Visual Design
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
                                   </Badge>
                                 </div>
                               </div>
@@ -1739,21 +1869,47 @@ export const Default = () => {
                                 fill
                                 sizes="33vw"
                               />
-                              <div className="group inset-0 absolute flex items-center justify-center hover:bg-black/50 transition duration-300">
-                                <Button className="group-hover:opacity-100 opacity-0 bg-white text-gray-700 transition duration-300 hover:bg-primary-500 hover:text-white">
-                                  View Project
-                                </Button>
-                              </div>
-                              <div className="group-hover:hidden absolute flex flex-col justify-end gap-y-2 p-[15px] inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_50.12%,rgba(0,0,0,.5)_82.64%)]">
-                                <h1 className="text-sm text-white leading-none font-medium">
-                                  React.js Front End Ecommerce Store
+                              <div className="p-[15px] group-hover:opacity-100 opacity-0 inset-0 absolute flex justify-end items-start flex-col hover:bg-black/50 transition duration-300">
+                                <h1 className="text-sm leading-none font-medium text-white">
+                                  Mobile Finance Application
                                 </h1>
-                                <div className="flex items-center gap-x-[6.79px]">
-                                  <Badge className="bg-white/20 text-white">
-                                    UX/UI Design
+
+                                <div className="mt-2 flex flex-wrap gap-[6.79px]">
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
                                   </Badge>
-                                  <Badge className="bg-white/20 text-white">
-                                    Visual Design
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
                                   </Badge>
                                 </div>
                               </div>
@@ -1766,21 +1922,47 @@ export const Default = () => {
                                 fill
                                 sizes="33vw"
                               />
-                              <div className="group inset-0 absolute flex items-center justify-center hover:bg-black/50 transition duration-300">
-                                <Button className="group-hover:opacity-100 opacity-0 bg-white text-gray-700 transition duration-300 hover:bg-primary-500 hover:text-white">
-                                  View Project
-                                </Button>
-                              </div>
-                              <div className="group-hover:hidden absolute flex flex-col justify-end gap-y-2 p-[15px] inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_50.12%,rgba(0,0,0,.5)_82.64%)]">
-                                <h1 className="text-sm text-white leading-none font-medium">
-                                  React.js Front End Ecommerce Store
+                              <div className="p-[15px] group-hover:opacity-100 opacity-0 inset-0 absolute flex justify-end items-start flex-col hover:bg-black/50 transition duration-300">
+                                <h1 className="text-sm leading-none font-medium text-white">
+                                  Mobile Finance Application
                                 </h1>
-                                <div className="flex items-center gap-x-[6.79px]">
-                                  <Badge className="bg-white/20 text-white">
-                                    UX/UI Design
+
+                                <div className="mt-2 flex flex-wrap gap-[6.79px]">
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
                                   </Badge>
-                                  <Badge className="bg-white/20 text-white">
-                                    Visual Design
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
                                   </Badge>
                                 </div>
                               </div>
@@ -1793,21 +1975,47 @@ export const Default = () => {
                                 fill
                                 sizes="33vw"
                               />
-                              <div className="group inset-0 absolute flex items-center justify-center hover:bg-black/50 transition duration-300">
-                                <Button className="group-hover:opacity-100 opacity-0 bg-white text-gray-700 transition duration-300 hover:bg-primary-500 hover:text-white">
-                                  View Project
-                                </Button>
-                              </div>
-                              <div className="group-hover:hidden absolute flex flex-col justify-end gap-y-2 p-[15px] inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_50.12%,rgba(0,0,0,.5)_82.64%)]">
-                                <h1 className="text-sm text-white leading-none font-medium">
-                                  React.js Front End Ecommerce Store
+                              <div className="p-[15px] group-hover:opacity-100 opacity-0 inset-0 absolute flex justify-end items-start flex-col hover:bg-black/50 transition duration-300">
+                                <h1 className="text-sm leading-none font-medium text-white">
+                                  Mobile Finance Application
                                 </h1>
-                                <div className="flex items-center gap-x-[6.79px]">
-                                  <Badge className="bg-white/20 text-white">
-                                    UX/UI Design
+
+                                <div className="mt-2 flex flex-wrap gap-[6.79px]">
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
                                   </Badge>
-                                  <Badge className="bg-white/20 text-white">
-                                    Visual Design
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
+                                  </Badge>
+                                  <Badge
+                                    className="text-white bg-white/20"
+                                    visual="gray"
+                                  >
+                                    UI/UX design
                                   </Badge>
                                 </div>
                               </div>
@@ -2371,9 +2579,9 @@ export const Default = () => {
                               >
                                 <ShowMoreLessComp max={3}>
                                   <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                                       <NextImage
-                                        className="object-cover group-hover:scale-105 transition duration-300"
+                                        className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                                         src="/dashboard.png"
                                         alt="Dashboard"
                                         fill
@@ -2692,9 +2900,9 @@ export const Default = () => {
                                     </div>
                                   </article>
                                   <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                                       <NextImage
-                                        className="object-cover group-hover:scale-105 transition duration-300"
+                                        className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                                         src="/dashboard.png"
                                         alt="Dashboard"
                                         fill
@@ -3013,9 +3221,9 @@ export const Default = () => {
                                     </div>
                                   </article>
                                   <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                                       <NextImage
-                                        className="object-cover group-hover:scale-105 transition duration-300"
+                                        className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                                         src="/dashboard.png"
                                         alt="Dashboard"
                                         fill
@@ -3334,9 +3542,9 @@ export const Default = () => {
                                     </div>
                                   </article>
                                   <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                                       <NextImage
-                                        className="object-cover group-hover:scale-105 transition duration-300"
+                                        className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                                         src="/dashboard.png"
                                         alt="Dashboard"
                                         fill
@@ -3655,9 +3863,9 @@ export const Default = () => {
                                     </div>
                                   </article>
                                   <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                                       <NextImage
-                                        className="object-cover group-hover:scale-105 transition duration-300"
+                                        className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                                         src="/dashboard.png"
                                         alt="Dashboard"
                                         fill
@@ -4015,9 +4223,9 @@ export const Default = () => {
                               >
                                 <ShowMoreLessComp max={3}>
                                   <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                                       <NextImage
-                                        className="object-cover group-hover:scale-105 transition duration-300"
+                                        className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                                         src="/dashboard.png"
                                         alt="Dashboard"
                                         fill
@@ -4335,9 +4543,9 @@ export const Default = () => {
                                   </article>
 
                                   <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                                       <NextImage
-                                        className="object-cover group-hover:scale-105 transition duration-300"
+                                        className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                                         src="/dashboard.png"
                                         alt="Dashboard"
                                         fill
@@ -4655,9 +4863,9 @@ export const Default = () => {
                                   </article>
 
                                   <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                                       <NextImage
-                                        className="object-cover group-hover:scale-105 transition duration-300"
+                                        className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                                         src="/dashboard.png"
                                         alt="Dashboard"
                                         fill
@@ -4975,9 +5183,9 @@ export const Default = () => {
                                   </article>
 
                                   <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                                       <NextImage
-                                        className="object-cover group-hover:scale-105 transition duration-300"
+                                        className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                                         src="/dashboard.png"
                                         alt="Dashboard"
                                         fill
@@ -5295,9 +5503,9 @@ export const Default = () => {
                                   </article>
 
                                   <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                                    <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                                       <NextImage
-                                        className="object-cover group-hover:scale-105 transition duration-300"
+                                        className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                                         src="/dashboard.png"
                                         alt="Dashboard"
                                         fill
@@ -5711,7 +5919,7 @@ export const Default = () => {
                                           <span className="text-xs leading-none text-dark-blue-400">
                                             December 2020 - Present
                                           </span>
-                                          <span className="shrink-0 size-1 rounded-full inline-block" />
+                                          <span className="shrink-0 bg-gray-300 size-1 rounded-full inline-block" />
                                           <span className="text-xs leading-none font-semibold text-dark-blue-400">
                                             5 yrs 2 mos
                                           </span>
@@ -5773,149 +5981,7 @@ export const Default = () => {
                                           <span className="text-xs leading-none text-dark-blue-400">
                                             December 2020 - Present
                                           </span>
-                                          <span className="shrink-0 size-1 rounded-full inline-block" />
-                                          <span className="text-xs leading-none font-semibold text-dark-blue-400">
-                                            5 yrs 2 mos
-                                          </span>
-                                        </div>
-                                        <ReadMoreLess
-                                          max={52}
-                                          text="Lorem ipsum dolor sit amet consectetur. Cursus vitae purus in convallis nulla arcu sed. Diam pellentesque ornare nec consectetur maecenas leo lectus. Risus nunc sit urna neque volutpat at sed. Tortor integer faucibus sed viverra malesuada ornare tellus enim sollicitudin. Id odio porttitor interdum nulla. Lorem ipsum dolor sit amet consectetur. Risus nunc sit urna neque volutpat at sed. Tortor integer faucibus sed viverra malesuada ornare tellus enim sollicitudin. Id odio porttitor interdum nulla. Lorem ipsum dolor sit amet consectetur."
-                                        >
-                                          {({ readMore, text, toggle }) => (
-                                            <>
-                                              <p className="mt-3 text-sm leading-none font-extralight   text-gray-700">
-                                                {text}{" "}
-                                                <Button
-                                                  className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
-                                                  size="sm"
-                                                  variant="link"
-                                                  visual="gray"
-                                                  onClick={toggle}
-                                                >
-                                                  {readMore
-                                                    ? null
-                                                    : "...Read More"}
-                                                </Button>
-                                              </p>
-                                            </>
-                                          )}
-                                        </ReadMoreLess>
-
-                                        <div className="mt-3 flex items-center justify-between">
-                                          <div className="flex flex-auto items-center gap-x-3">
-                                            <Badge visual="gray">
-                                              Sketch App
-                                            </Badge>
-                                            <Badge visual="gray">
-                                              Sketch App
-                                            </Badge>
-                                            <Badge visual="gray">
-                                              Sketch App
-                                            </Badge>
-                                            <Badge visual="gray">
-                                              Sketch App
-                                            </Badge>
-                                            <Badge visual="gray">
-                                              Sketch App
-                                            </Badge>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  <div className="flex gap-x-6">
-                                    <div className="relative flex flex-col items-center">
-                                      <div className="size-[55px] border border-gray-300 rounded-lg inline-flex shrink-0 justify-center items-center shadow-[0px_1px_4px_0px_rgba(0,0,0,.03)]">
-                                        <NextImage
-                                          className="object-contain"
-                                          src="/android.png"
-                                          alt="Android"
-                                          height={45}
-                                          width={45}
-                                        />
-                                      </div>
-
-                                      <div className="absolute flex py-1.5 justify-center top-[55px] inset-x-0 bottom-0">
-                                        <span className="inline-block border-dashed border-[1.5px] border-gray-200" />
-                                      </div>
-                                    </div>
-
-                                    <div className="flex-auto">
-                                      <div className="pb-8">
-                                        <h1 className="text-base font-bold text-dark-blue-400 leading-none">
-                                          Lead Front-End Developer
-                                        </h1>
-                                        <p className="text-[13px] mt-1.5 leading-none text-dark-blue-400">
-                                          Android
-                                        </p>
-                                        <div className="mt-1.5 inline-flex items-center gap-x-2">
-                                          <span className="text-xs leading-none text-dark-blue-400">
-                                            December 2020 - Present
-                                          </span>
-                                          <span className="shrink-0 size-1 rounded-full inline-block" />
-                                          <span className="text-xs leading-none font-semibold text-dark-blue-400">
-                                            5 yrs 2 mos
-                                          </span>
-                                        </div>
-                                        <ReadMoreLess
-                                          max={52}
-                                          text="Lorem ipsum dolor sit amet consectetur. Cursus vitae purus in convallis nulla arcu sed. Diam pellentesque ornare nec consectetur maecenas leo lectus. Risus nunc sit urna neque volutpat at sed. Tortor integer faucibus sed viverra malesuada ornare tellus enim sollicitudin. Id odio porttitor interdum nulla. Lorem ipsum dolor sit amet consectetur. Risus nunc sit urna neque volutpat at sed. Tortor integer faucibus sed viverra malesuada ornare tellus enim sollicitudin. Id odio porttitor interdum nulla. Lorem ipsum dolor sit amet consectetur."
-                                        >
-                                          {({ readMore, text, toggle }) => (
-                                            <>
-                                              <p className="mt-3 text-sm leading-none font-extralight   text-gray-700">
-                                                {text}{" "}
-                                                <Button
-                                                  className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
-                                                  size="sm"
-                                                  variant="link"
-                                                  visual="gray"
-                                                  onClick={toggle}
-                                                >
-                                                  {readMore
-                                                    ? null
-                                                    : "...Read More"}
-                                                </Button>
-                                              </p>
-                                            </>
-                                          )}
-                                        </ReadMoreLess>
-
-                                        <div className="mt-3 flex items-center justify-between">
-                                          <div className="flex flex-auto items-center gap-x-3">
-                                            <Badge visual="gray">
-                                              Sketch App
-                                            </Badge>
-                                            <Badge visual="gray">
-                                              Sketch App
-                                            </Badge>
-                                            <Badge visual="gray">
-                                              Sketch App
-                                            </Badge>
-                                            <Badge visual="gray">
-                                              Sketch App
-                                            </Badge>
-                                            <Badge visual="gray">
-                                              Sketch App
-                                            </Badge>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      <div className="pb-8">
-                                        <h1 className="text-base font-bold text-dark-blue-400 leading-none">
-                                          Lead Front-End Developer
-                                        </h1>
-                                        <p className="text-[13px] mt-1.5 leading-none text-dark-blue-400">
-                                          Android
-                                        </p>
-                                        <div className="mt-1.5 inline-flex items-center gap-x-2">
-                                          <span className="text-xs leading-none text-dark-blue-400">
-                                            December 2020 - Present
-                                          </span>
-                                          <span className="shrink-0 size-1 rounded-full inline-block" />
+                                          <span className="shrink-0 bg-gray-300 size-1 rounded-full inline-block" />
                                           <span className="text-xs leading-none font-semibold text-dark-blue-400">
                                             5 yrs 2 mos
                                           </span>
@@ -5996,7 +6062,7 @@ export const Default = () => {
                                           <span className="text-xs leading-none text-dark-blue-400">
                                             December 2020 - Present
                                           </span>
-                                          <span className="shrink-0 size-1 rounded-full inline-block" />
+                                          <span className="shrink-0 bg-gray-300 size-1 rounded-full inline-block" />
                                           <span className="text-xs leading-none font-semibold text-dark-blue-400">
                                             5 yrs 2 mos
                                           </span>
@@ -6057,7 +6123,7 @@ export const Default = () => {
                                           <span className="text-xs leading-none text-dark-blue-400">
                                             December 2020 - Present
                                           </span>
-                                          <span className="shrink-0 size-1 rounded-full inline-block" />
+                                          <span className="shrink-0 bg-gray-300 size-1 rounded-full inline-block" />
                                           <span className="text-xs leading-none font-semibold text-dark-blue-400">
                                             5 yrs 2 mos
                                           </span>
@@ -6138,7 +6204,7 @@ export const Default = () => {
                                           <span className="text-xs leading-none text-dark-blue-400">
                                             December 2020 - Present
                                           </span>
-                                          <span className="shrink-0 size-1 rounded-full inline-block" />
+                                          <span className="shrink-0 bg-gray-300 size-1 rounded-full inline-block" />
                                           <span className="text-xs leading-none font-semibold text-dark-blue-400">
                                             5 yrs 2 mos
                                           </span>
@@ -6199,7 +6265,149 @@ export const Default = () => {
                                           <span className="text-xs leading-none text-dark-blue-400">
                                             December 2020 - Present
                                           </span>
-                                          <span className="shrink-0 size-1 rounded-full inline-block" />
+                                          <span className="shrink-0 bg-gray-300 size-1 rounded-full inline-block" />
+                                          <span className="text-xs leading-none font-semibold text-dark-blue-400">
+                                            5 yrs 2 mos
+                                          </span>
+                                        </div>
+                                        <ReadMoreLess
+                                          max={52}
+                                          text="Lorem ipsum dolor sit amet consectetur. Cursus vitae purus in convallis nulla arcu sed. Diam pellentesque ornare nec consectetur maecenas leo lectus. Risus nunc sit urna neque volutpat at sed. Tortor integer faucibus sed viverra malesuada ornare tellus enim sollicitudin. Id odio porttitor interdum nulla. Lorem ipsum dolor sit amet consectetur. Risus nunc sit urna neque volutpat at sed. Tortor integer faucibus sed viverra malesuada ornare tellus enim sollicitudin. Id odio porttitor interdum nulla. Lorem ipsum dolor sit amet consectetur."
+                                        >
+                                          {({ readMore, text, toggle }) => (
+                                            <>
+                                              <p className="mt-3 text-sm leading-none font-extralight   text-gray-700">
+                                                {text}{" "}
+                                                <Button
+                                                  className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
+                                                  size="sm"
+                                                  variant="link"
+                                                  visual="gray"
+                                                  onClick={toggle}
+                                                >
+                                                  {readMore
+                                                    ? null
+                                                    : "...Read More"}
+                                                </Button>
+                                              </p>
+                                            </>
+                                          )}
+                                        </ReadMoreLess>
+
+                                        <div className="mt-3 flex items-center justify-between">
+                                          <div className="flex flex-auto items-center gap-x-3">
+                                            <Badge visual="gray">
+                                              Sketch App
+                                            </Badge>
+                                            <Badge visual="gray">
+                                              Sketch App
+                                            </Badge>
+                                            <Badge visual="gray">
+                                              Sketch App
+                                            </Badge>
+                                            <Badge visual="gray">
+                                              Sketch App
+                                            </Badge>
+                                            <Badge visual="gray">
+                                              Sketch App
+                                            </Badge>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="flex gap-x-6">
+                                    <div className="relative flex flex-col items-center">
+                                      <div className="size-[55px] border border-gray-300 rounded-lg inline-flex shrink-0 justify-center items-center shadow-[0px_1px_4px_0px_rgba(0,0,0,.03)]">
+                                        <NextImage
+                                          className="object-contain"
+                                          src="/android.png"
+                                          alt="Android"
+                                          height={45}
+                                          width={45}
+                                        />
+                                      </div>
+
+                                      <div className="absolute flex py-1.5 justify-center top-[55px] inset-x-0 bottom-0">
+                                        <span className="inline-block border-dashed border-[1.5px] border-gray-200" />
+                                      </div>
+                                    </div>
+
+                                    <div className="flex-auto">
+                                      <div className="pb-8">
+                                        <h1 className="text-base font-bold text-dark-blue-400 leading-none">
+                                          Lead Front-End Developer
+                                        </h1>
+                                        <p className="text-[13px] mt-1.5 leading-none text-dark-blue-400">
+                                          Android
+                                        </p>
+                                        <div className="mt-1.5 inline-flex items-center gap-x-2">
+                                          <span className="text-xs leading-none text-dark-blue-400">
+                                            December 2020 - Present
+                                          </span>
+                                          <span className="shrink-0 bg-gray-300 size-1 rounded-full inline-block" />
+                                          <span className="text-xs leading-none font-semibold text-dark-blue-400">
+                                            5 yrs 2 mos
+                                          </span>
+                                        </div>
+                                        <ReadMoreLess
+                                          max={52}
+                                          text="Lorem ipsum dolor sit amet consectetur. Cursus vitae purus in convallis nulla arcu sed. Diam pellentesque ornare nec consectetur maecenas leo lectus. Risus nunc sit urna neque volutpat at sed. Tortor integer faucibus sed viverra malesuada ornare tellus enim sollicitudin. Id odio porttitor interdum nulla. Lorem ipsum dolor sit amet consectetur. Risus nunc sit urna neque volutpat at sed. Tortor integer faucibus sed viverra malesuada ornare tellus enim sollicitudin. Id odio porttitor interdum nulla. Lorem ipsum dolor sit amet consectetur."
+                                        >
+                                          {({ readMore, text, toggle }) => (
+                                            <>
+                                              <p className="mt-3 text-sm leading-none font-extralight   text-gray-700">
+                                                {text}{" "}
+                                                <Button
+                                                  className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
+                                                  size="sm"
+                                                  variant="link"
+                                                  visual="gray"
+                                                  onClick={toggle}
+                                                >
+                                                  {readMore
+                                                    ? null
+                                                    : "...Read More"}
+                                                </Button>
+                                              </p>
+                                            </>
+                                          )}
+                                        </ReadMoreLess>
+
+                                        <div className="mt-3 flex items-center justify-between">
+                                          <div className="flex flex-auto items-center gap-x-3">
+                                            <Badge visual="gray">
+                                              Sketch App
+                                            </Badge>
+                                            <Badge visual="gray">
+                                              Sketch App
+                                            </Badge>
+                                            <Badge visual="gray">
+                                              Sketch App
+                                            </Badge>
+                                            <Badge visual="gray">
+                                              Sketch App
+                                            </Badge>
+                                            <Badge visual="gray">
+                                              Sketch App
+                                            </Badge>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <div className="pb-8">
+                                        <h1 className="text-base font-bold text-dark-blue-400 leading-none">
+                                          Lead Front-End Developer
+                                        </h1>
+                                        <p className="text-[13px] mt-1.5 leading-none text-dark-blue-400">
+                                          Android
+                                        </p>
+                                        <div className="mt-1.5 inline-flex items-center gap-x-2">
+                                          <span className="text-xs leading-none text-dark-blue-400">
+                                            December 2020 - Present
+                                          </span>
+                                          <span className="shrink-0 bg-gray-300 size-1 rounded-full inline-block" />
                                           <span className="text-xs leading-none font-semibold text-dark-blue-400">
                                             5 yrs 2 mos
                                           </span>
@@ -6302,6 +6510,7 @@ export const Default = () => {
                                         <span className="text-dark-blue-400 text-xs leading-none">
                                           Master of Science
                                         </span>
+                                        <span className="shrink-0 bg-gray-300 size-1 rounded-full inline-block" />
                                         <span className="text-dark-blue-400 font-semibold text-xs leading-none">
                                           Computer Science
                                         </span>
@@ -6332,6 +6541,7 @@ export const Default = () => {
                                         <span className="text-dark-blue-400 text-xs leading-none">
                                           Master of Science
                                         </span>
+                                        <span className="shrink-0 bg-gray-300 size-1 rounded-full inline-block" />
                                         <span className="text-dark-blue-400 font-semibold text-xs leading-none">
                                           Computer Science
                                         </span>
@@ -6362,6 +6572,7 @@ export const Default = () => {
                                         <span className="text-dark-blue-400 text-xs leading-none">
                                           Master of Science
                                         </span>
+                                        <span className="shrink-0 bg-gray-300 size-1 rounded-full inline-block" />
                                         <span className="text-dark-blue-400 font-semibold text-xs leading-none">
                                           Computer Science
                                         </span>
@@ -6392,6 +6603,7 @@ export const Default = () => {
                                         <span className="text-dark-blue-400 text-xs leading-none">
                                           Master of Science
                                         </span>
+                                        <span className="shrink-0 bg-gray-300 size-1 rounded-full inline-block" />
                                         <span className="text-dark-blue-400 font-semibold text-xs leading-none">
                                           Computer Science
                                         </span>
@@ -6422,6 +6634,7 @@ export const Default = () => {
                                         <span className="text-dark-blue-400 text-xs leading-none">
                                           Master of Science
                                         </span>
+                                        <span className="shrink-0 bg-gray-300 size-1 rounded-full inline-block" />
                                         <span className="text-dark-blue-400 font-semibold text-xs leading-none">
                                           Computer Science
                                         </span>
@@ -6779,7 +6992,7 @@ export const Default = () => {
                                           </Avatar>
 
                                           <div className="space-y-3">
-                                            <div className="flex flex-col gap-y-1.5">
+                                            <div className="flex flex-col">
                                               <div className="inline-flex items-center gap-x-1">
                                                 <span className="text-base leading-6 font-semibold text-dark-blue-400">
                                                   Emily
@@ -6789,11 +7002,9 @@ export const Default = () => {
                                                 </span>
                                               </div>
 
-                                              <div className="mt-1.5">
-                                                <span className="text-[13px] leading-6 text-dark-blue-400">
-                                                  Product Manager
-                                                </span>
-                                              </div>
+                                              <span className="text-[13px] leading-6 text-dark-blue-400">
+                                                Product Manager
+                                              </span>
                                             </div>
 
                                             <div className="inline-flex items-center gap-x-2">
@@ -6910,7 +7121,7 @@ export const Default = () => {
                                     </div>
 
                                     <div className="mt-6 flex items-center gap-x-3 px-6 pb-6">
-                                      <div className="w-[153px] relative rounded-lg overflow-hidden h-[98px]">
+                                      <div className="border border-black/10 w-[153px] relative rounded-lg overflow-hidden h-[98px]">
                                         <NextImage
                                           className="object-cover"
                                           src="/dashboard.png"
@@ -6983,7 +7194,7 @@ export const Default = () => {
                                           </Avatar>
 
                                           <div className="space-y-3">
-                                            <div className="flex flex-col gap-y-1.5">
+                                            <div className="flex flex-col">
                                               <div className="inline-flex items-center gap-x-1">
                                                 <span className="text-base leading-6 font-semibold text-dark-blue-400">
                                                   Emily
@@ -6993,11 +7204,9 @@ export const Default = () => {
                                                 </span>
                                               </div>
 
-                                              <div className="mt-1.5">
-                                                <span className="text-[13px] leading-6 text-dark-blue-400">
-                                                  Product Manager
-                                                </span>
-                                              </div>
+                                              <span className="text-[13px] leading-6 text-dark-blue-400">
+                                                Product Manager
+                                              </span>
                                             </div>
 
                                             <div className="inline-flex items-center gap-x-2">
@@ -7109,13 +7318,13 @@ export const Default = () => {
                                             Helpful
                                           </span>
 
-                                          <LikeDislike></LikeDislike>
+                                          <LikeDislike />
                                         </div>
                                       </div>
                                     </div>
 
                                     <div className="mt-6 flex items-center gap-x-3 px-6 pb-6">
-                                      <div className="w-[153px] relative rounded-lg overflow-hidden h-[98px]">
+                                      <div className="border border-black/10 w-[153px] relative rounded-lg overflow-hidden h-[98px]">
                                         <NextImage
                                           className="object-cover"
                                           src="/dashboard.png"
@@ -7197,7 +7406,7 @@ export const Default = () => {
                                             </span>
                                           </div>
 
-                                          <div className="inline-flex items-center gap-x-2">
+                                          <div className="inline-flex items-center mt-[1.5px] gap-x-2">
                                             <span className="text-xs leading-none text-dark-blue-400">
                                               90 days project
                                             </span>
@@ -7215,7 +7424,7 @@ export const Default = () => {
                                       >
                                         {({ readMore, text, toggle }) => (
                                           <>
-                                            <p className="text-sm leading-none mt-1 text-gray-700 font-extralight">
+                                            <p className="text-sm leading-none mt-3 text-gray-700 font-extralight">
                                               {text}{" "}
                                               <Button
                                                 className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
@@ -7257,7 +7466,7 @@ export const Default = () => {
                                           </Avatar>
 
                                           <div className="space-y-3">
-                                            <div className="flex flex-col gap-y-1.5">
+                                            <div className="flex flex-col">
                                               <div className="inline-flex items-center gap-x-1">
                                                 <span className="text-base leading-6 font-semibold text-dark-blue-400">
                                                   Emily
@@ -7267,11 +7476,9 @@ export const Default = () => {
                                                 </span>
                                               </div>
 
-                                              <div className="mt-1.5">
-                                                <span className="text-[13px] leading-6 text-dark-blue-400">
-                                                  Product Manager
-                                                </span>
-                                              </div>
+                                              <span className="text-[13px] leading-6 text-dark-blue-400">
+                                                Product Manager
+                                              </span>
                                             </div>
 
                                             <div className="inline-flex items-center gap-x-2">
@@ -7389,7 +7596,7 @@ export const Default = () => {
                                     </div>
 
                                     <div className="mt-6 flex items-center gap-x-3 px-6 pb-6">
-                                      <div className="w-[153px] relative rounded-lg overflow-hidden h-[98px]">
+                                      <div className="border border-black/10 w-[153px] relative rounded-lg overflow-hidden h-[98px]">
                                         <NextImage
                                           className="object-cover"
                                           src="/dashboard.png"
@@ -7462,7 +7669,7 @@ export const Default = () => {
                                           </Avatar>
 
                                           <div className="space-y-3">
-                                            <div className="flex flex-col gap-y-1.5">
+                                            <div className="flex flex-col">
                                               <div className="inline-flex items-center gap-x-1">
                                                 <span className="text-base leading-6 font-semibold text-dark-blue-400">
                                                   Emily
@@ -7472,11 +7679,9 @@ export const Default = () => {
                                                 </span>
                                               </div>
 
-                                              <div className="mt-1.5">
-                                                <span className="text-[13px] leading-6 text-dark-blue-400">
-                                                  Product Manager
-                                                </span>
-                                              </div>
+                                              <span className="text-[13px] leading-6 text-dark-blue-400">
+                                                Product Manager
+                                              </span>
                                             </div>
 
                                             <div className="inline-flex items-center gap-x-2">
@@ -7594,7 +7799,7 @@ export const Default = () => {
                                     </div>
 
                                     <div className="mt-6 flex items-center gap-x-3 px-6 pb-6">
-                                      <div className="w-[153px] relative rounded-lg overflow-hidden h-[98px]">
+                                      <div className="border border-black/10 w-[153px] relative rounded-lg overflow-hidden h-[98px]">
                                         <NextImage
                                           className="object-cover"
                                           src="/dashboard.png"
@@ -7934,7 +8139,7 @@ export const Default = () => {
                     <div className="p-6 rounded-t-lg relative bg-white border border-gray-200">
                       <div className="flex items-center gap-x-1 justify-center">
                         <span className="inline-flex text-sm leading-none text-dark-blue-400 font-bold items-center gap-x-1">
-                          <span className="size-1 inline-block bg-gray-500 rounded-full" />{" "}
+                          <span className="size-2 inline-block bg-gray-500 rounded-full" />{" "}
                           Offline
                         </span>
                         <span className="font-extralight text-sm leading-none text-dark-blue-400">
@@ -8491,9 +8696,9 @@ export const Offers = () => {
                     <div className="pt-6 grid grid-cols-4 gap-x-5 gap-y-6">
                       <ShowMoreLess max={12}>
                         <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                             <NextImage
-                              className="object-cover group-hover:scale-105 transition duration-300"
+                              className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                               src="/dashboard.png"
                               alt="Dashboard"
                               fill
@@ -8788,9 +8993,9 @@ export const Offers = () => {
                           </div>
                         </article>
                         <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                             <NextImage
-                              className="object-cover group-hover:scale-105 transition duration-300"
+                              className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                               src="/dashboard.png"
                               alt="Dashboard"
                               fill
@@ -9085,9 +9290,9 @@ export const Offers = () => {
                           </div>
                         </article>
                         <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                             <NextImage
-                              className="object-cover group-hover:scale-105 transition duration-300"
+                              className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                               src="/dashboard.png"
                               alt="Dashboard"
                               fill
@@ -9382,9 +9587,9 @@ export const Offers = () => {
                           </div>
                         </article>
                         <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                             <NextImage
-                              className="object-cover group-hover:scale-105 transition duration-300"
+                              className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                               src="/dashboard.png"
                               alt="Dashboard"
                               fill
@@ -9679,9 +9884,9 @@ export const Offers = () => {
                           </div>
                         </article>
                         <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                             <NextImage
-                              className="object-cover group-hover:scale-105 transition duration-300"
+                              className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                               src="/dashboard.png"
                               alt="Dashboard"
                               fill
@@ -9976,9 +10181,9 @@ export const Offers = () => {
                           </div>
                         </article>
                         <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                             <NextImage
-                              className="object-cover group-hover:scale-105 transition duration-300"
+                              className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                               src="/dashboard.png"
                               alt="Dashboard"
                               fill
@@ -10273,9 +10478,9 @@ export const Offers = () => {
                           </div>
                         </article>
                         <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                             <NextImage
-                              className="object-cover group-hover:scale-105 transition duration-300"
+                              className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                               src="/dashboard.png"
                               alt="Dashboard"
                               fill
@@ -10570,9 +10775,9 @@ export const Offers = () => {
                           </div>
                         </article>
                         <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                             <NextImage
-                              className="object-cover group-hover:scale-105 transition duration-300"
+                              className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                               src="/dashboard.png"
                               alt="Dashboard"
                               fill
@@ -10867,9 +11072,9 @@ export const Offers = () => {
                           </div>
                         </article>
                         <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                             <NextImage
-                              className="object-cover group-hover:scale-105 transition duration-300"
+                              className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                               src="/dashboard.png"
                               alt="Dashboard"
                               fill
@@ -11164,9 +11369,9 @@ export const Offers = () => {
                           </div>
                         </article>
                         <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                             <NextImage
-                              className="object-cover group-hover:scale-105 transition duration-300"
+                              className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                               src="/dashboard.png"
                               alt="Dashboard"
                               fill
@@ -11461,9 +11666,9 @@ export const Offers = () => {
                           </div>
                         </article>
                         <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                             <NextImage
-                              className="object-cover group-hover:scale-105 transition duration-300"
+                              className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                               src="/dashboard.png"
                               alt="Dashboard"
                               fill
@@ -11758,9 +11963,9 @@ export const Offers = () => {
                           </div>
                         </article>
                         <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                             <NextImage
-                              className="object-cover group-hover:scale-105 transition duration-300"
+                              className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                               src="/dashboard.png"
                               alt="Dashboard"
                               fill
@@ -12055,9 +12260,9 @@ export const Offers = () => {
                           </div>
                         </article>
                         <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                             <NextImage
-                              className="object-cover group-hover:scale-105 transition duration-300"
+                              className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                               src="/dashboard.png"
                               alt="Dashboard"
                               fill
@@ -12352,9 +12557,9 @@ export const Offers = () => {
                           </div>
                         </article>
                         <article className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group">
+                          <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                             <NextImage
-                              className="object-cover group-hover:scale-105 transition duration-300"
+                              className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
                               src="/dashboard.png"
                               alt="Dashboard"
                               fill

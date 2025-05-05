@@ -793,3 +793,35 @@ export const useDeferredValue = <TValue>(value: TValue, delay = 1_000) => {
 
   return state
 }
+
+export const useMakeFixedBehaveSticky = <
+  T extends HTMLElement | SVGElement = HTMLElement | SVGAElement,
+>(
+  top = 0
+) => {
+  const ref = React.useRef<T>(null)
+  const [isSticky, setIsSticky] = React.useState(false)
+
+  React.useEffect(() => {
+    const element = ref.current
+    if (element) {
+      const handleScroll = () => {
+        const scrollPosition =
+          window.scrollY || document.documentElement.scrollTop
+        const rect = element.getBoundingClientRect()
+        const originalTop = rect.top + window.scrollY
+
+        if (scrollPosition > originalTop - top) setIsSticky(true)
+        else setIsSticky(false)
+      }
+
+      window.addEventListener("scroll", handleScroll)
+
+      return () => {
+        window.removeEventListener("scroll", handleScroll)
+      }
+    }
+  }, [top])
+
+  return [ref, isSticky] as const
+}
