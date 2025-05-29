@@ -261,6 +261,20 @@ const CarouselNext = React.forwardRef<
 )
 CarouselNext.displayName = "CarouselNext"
 
+const CarouselPreviousTrigger = () => {
+  const { canScrollPrev } = useCarousel()
+  return canScrollPrev ? (
+    <CarouselPrevious className="size-7 border border-white hover:ring-8 hover:ring-white hover:bg-black bg-black/80 transition text-white duration-300 -left-3" />
+  ) : null
+}
+
+const CarouselNextTrigger = () => {
+  const { canScrollNext } = useCarousel()
+  return canScrollNext ? (
+    <CarouselNext className="size-7 border border-white hover:ring-8 hover:ring-white hover:border-black bg-black/80 hover:bg-black transition text-white duration-300 -right-3" />
+  ) : null
+}
+
 export {
   type CarouselApi,
   Carousel,
@@ -269,4 +283,6 @@ export {
   CarouselPrevious,
   CarouselNext,
   useCarousel,
+  CarouselNextTrigger,
+  CarouselPreviousTrigger,
 }

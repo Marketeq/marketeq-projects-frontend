@@ -54,21 +54,47 @@ const iconVariants = cva("fill-current shrink-0 text-current", {
 const RadioGroupItemSelector = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Item>,
   React.ComponentPropsWithRef<typeof RadioGroupPrimitive.Item> &
-    VariantProps<typeof radioGroupItemSelectorVariants>
->(({ className, children, size, ...props }, ref) => (
-  <RadioGroupPrimitive.Item
-    className={cn(radioGroupItemSelectorVariants({ size, className }))}
-    {...props}
-    ref={ref}
-  >
-    <span className={radioGroupItemVariants({ size, className })}>
-      <RadioGroupPrimitive.Indicator className="flex shrink-0 items-center justify-center">
-        <Circle className={iconVariants({ size })} />
-      </RadioGroupPrimitive.Indicator>
-    </span>
-    <span className="block">{children}</span>
-  </RadioGroupPrimitive.Item>
-))
+    VariantProps<typeof radioGroupItemSelectorVariants> & {
+      containerClassName?: string
+      indicatorClassName?: string
+    }
+>(
+  (
+    {
+      className,
+      containerClassName,
+      indicatorClassName,
+      children,
+      size,
+      ...props
+    },
+    ref
+  ) => (
+    <RadioGroupPrimitive.Item
+      className={cn(radioGroupItemSelectorVariants({ size, className }))}
+      {...props}
+      ref={ref}
+    >
+      <span
+        className={cn(
+          radioGroupItemVariants({
+            size,
+            className: containerClassName,
+          })
+        )}
+      >
+        <RadioGroupPrimitive.Indicator className="flex shrink-0 items-center justify-center">
+          <Circle
+            className={cn(
+              iconVariants({ size, className: indicatorClassName })
+            )}
+          />
+        </RadioGroupPrimitive.Indicator>
+      </span>
+      <span className="block">{children}</span>
+    </RadioGroupPrimitive.Item>
+  )
+)
 
 RadioGroupItemSelector.displayName = "RadioGroupItemSelector"
 

@@ -1,11 +1,4 @@
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from "react"
+import { Dispatch, SetStateAction, useMemo, useRef } from "react"
 import { useControllableState, useFirstMountState } from "@/utils/hooks"
 import { createContext, getValidChildren } from "@/utils/react-utils"
 import useMeasure from "react-use-measure"
@@ -18,7 +11,7 @@ interface ShowMoreLessRootContextState {
   scrollHeight: number
 }
 
-const [ShowMoreLessRootProvider, useShowMoreLessRootContext] =
+export const [ShowMoreLessRootProvider, useShowMoreLessRootContext] =
   createContext<ShowMoreLessRootContextState>({
     displayName: "ShowMoreLessContext",
     errorMessage:
@@ -31,7 +24,9 @@ export const ShowMoreLessRoot = ({
 }: {
   value?: boolean
   onValueChange?: (value: boolean) => void
-  children?: (options: ShowMoreLessRootContextState) => React.ReactNode
+  children?:
+    | ((options: ShowMoreLessRootContextState) => React.ReactNode)
+    | React.ReactNode
 }) => {
   const [ref, { height }] = useMeasure()
   const [state, setState] = useControllableState({
@@ -61,7 +56,7 @@ export const ShowMoreLessRoot = ({
 
   return (
     <ShowMoreLessRootProvider value={value}>
-      {children?.(value)}
+      {typeof children === "function" ? children?.(value) : children}
     </ShowMoreLessRootProvider>
   )
 }
