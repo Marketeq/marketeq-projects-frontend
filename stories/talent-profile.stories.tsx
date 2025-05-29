@@ -105,10 +105,15 @@ export const Default = () => {
     const element = cardRef.current
 
     if (element) {
+      const topValue = getComputedStyle(element)["top"]
+
+      const top = (topValue || "").endsWith("px")
+        ? parseFloat(topValue.slice(0, -2))
+        : 0
+
       const handleScroll = () => {
-        const TOP = 145
         const rect = element.getBoundingClientRect()
-        const isStuck = Math.ceil(TOP) === Math.ceil(rect.y)
+        const isStuck = Math.ceil(top) === Math.ceil(rect.y)
         setIsCardStuck(isStuck)
       }
 

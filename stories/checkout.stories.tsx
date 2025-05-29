@@ -20,6 +20,7 @@ import {
   Globe,
   HelpCircle,
   LinkExternal01,
+  LinkExternal02,
   Lock,
   MoreHorizontal,
   Plus,
@@ -93,6 +94,8 @@ import {
   Label,
   Listbox,
   ListboxButton,
+  ListboxContent,
+  ListboxLabel,
   ListboxOption,
   ListboxOptions,
   RadioGroup,
@@ -2477,12 +2480,14 @@ export const AvailableBalance = () => {
                           Remark:
                         </TableCell>
                         <TableCell className="font-semibold py-4 px-6 whitespace-nowrap text-gray-950">
-                          #22602731500102292{" "}
-                          <div className="inline-flex items-center gap-x-2">
-                            <ArrowLeft className="size-4 text-gray-500" />
-                            <span className="text-sm  whitespace-nowrap text-gray-500">
-                              Please attach this order number
-                            </span>
+                          <div className="flex items-center gap-x-6">
+                            #22602731500102292
+                            <div className="inline-flex flex-auto items-center gap-x-2">
+                              <ArrowLeft className="size-4 text-gray-500" />
+                              <span className="text-sm font-normal whitespace-nowrap text-gray-500">
+                                Please attach this order number
+                              </span>
+                            </div>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -2604,6 +2609,138 @@ export const AvailableBalance = () => {
               </div>
             )}
 
+            {paymentMethod === "item-3" && (
+              <div className="mt-6 shadow-[0px_1px_4px_0px_rgba(0,0,0,.03)] border border-gray-300 bg-white p-[25px] rounded-lg">
+                <div className="flex items-center gap-x-3">
+                  <GPay className="w-[56.67px] h-10 shrink-0" />
+                  <span className="text-base font-medium text-gray-950">
+                    Google Pay selected for checkout
+                  </span>
+                </div>
+
+                <div className="mt-6 border-t flex items-center gap-x-2 border-gray-200 pt-6">
+                  <div className="size-[66px] relative shrink-0">
+                    <NextImage
+                      className="object-contain"
+                      sizes="10vw"
+                      src="/apple-tab.png"
+                      alt="Apple Tab"
+                      fill
+                    />
+                  </div>
+                  <div className="flex-auto">
+                    <span className="text-xs inline-block leading-none text-gray-950">
+                      After submitting your order you will be redirected to
+                      Google Pay Window. Follow the instruction in google pay
+                      window to complete your payment.
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-3">
+                  <Button
+                    className="bg-black hover:bg-black/70 text-white"
+                    size="md"
+                  >
+                    Continue with Google Pay{" "}
+                    <LinkExternal02 className="size-[15px]" />
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {paymentMethod === "item-4" && (
+              <div className="mt-6 shadow-[0px_1px_4px_0px_rgba(0,0,0,.03)] border border-gray-300 bg-white p-[25px] rounded-lg">
+                <div className="flex items-center gap-x-3">
+                  <ApplePay className="w-[56.67px] h-10 shrink-0" />
+                  <span className="text-base font-medium text-gray-950">
+                    Apple Pay selected for checkout
+                  </span>
+                </div>
+
+                <div className="mt-6 border-t flex items-center gap-x-2 border-gray-200 pt-6">
+                  <div className="size-[66px] relative shrink-0">
+                    <NextImage
+                      className="object-contain"
+                      sizes="10vw"
+                      src="/apple-tab.png"
+                      alt="Apple Tab"
+                      fill
+                    />
+                  </div>
+                  <div className="flex-auto">
+                    <span className="text-xs inline-block leading-none text-gray-950">
+                      After submitting your order you will be redirected to
+                      Apple Pay Window. Follow the instruction in google pay
+                      window to complete your payment.
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-3">
+                  <Button
+                    className="bg-black hover:bg-black/70 text-white"
+                    size="md"
+                  >
+                    Continue with Apple Pay{" "}
+                    <LinkExternal02 className="size-[15px]" />
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {paymentMethod === "item-5" && (
+              <div className="mt-6 shadow-[0px_1px_4px_0px_rgba(0,0,0,.03)] border border-gray-300 bg-white p-[25px] rounded-lg">
+                <div className="flex items-center gap-x-3">
+                  <Klarna className="w-[56.67px] h-10 shrink-0" />
+                  <div className="flex-auto flex flex-col">
+                    <span className="text-base font-medium text-gray-950">
+                      Pay over time with Klarna
+                    </span>
+                    <span className="text-xs inline-block text-gray-500">
+                      4 interest-free payments of $24,000.{" "}
+                      <Button
+                        className="text-xs underline"
+                        variant="link"
+                        visual="gray"
+                      >
+                        Learn More
+                      </Button>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-6 border-t flex items-center gap-x-2 border-gray-200 pt-6">
+                  <div className="size-[66px] relative shrink-0">
+                    <NextImage
+                      className="object-contain"
+                      sizes="10vw"
+                      src="/apple-tab.png"
+                      alt="Apple Tab"
+                      fill
+                    />
+                  </div>
+                  <div className="flex-auto">
+                    <span className="text-xs inline-block leading-none text-gray-950">
+                      After submitting your order you will be redirected to
+                      Klarna. Follow the instruction in google pay window to
+                      complete your payment.
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-3">
+                  <Button
+                    className="bg-black hover:bg-black/70 text-white"
+                    size="md"
+                  >
+                    Continue with Klarna{" "}
+                    <LinkExternal02 className="size-[15px]" />
+                  </Button>
+                </div>
+              </div>
+            )}
+
             {paymentMethod === "item-1" && (
               <div className="mt-[50px]">
                 <div className="px-[55.25px] flex items-end pb-5 gap-x-[22.55px]">
@@ -2650,7 +2787,7 @@ export const AvailableBalance = () => {
                     </div>
                   </div>
                   <div className="space-y-5">
-                    <Button className="h-[56.24px] bg-black border-[0.75px] gap-x-3 border-gray-300 px-8 text-[17.62px] leading-[20.88px] font-semibold">
+                    <Button className="h-[56.24px] bg-black gap-x-3 hover:bg-black/70 px-8 text-[17.62px] leading-[20.88px] font-semibold">
                       Connect my account{" "}
                       <LinkExternal01 className="size-[18px]" />
                     </Button>
@@ -2684,17 +2821,23 @@ export const AvailableBalance = () => {
                 </h1>
 
                 <div className="mt-6 space-y-3">
-                  <div className="space-y-1.5">
-                    <Label size="sm" htmlFor="account-type">
+                  <Listbox className="space-y-1.5">
+                    <ListboxLabel size="sm" htmlFor="account-type">
                       Account Type
-                    </Label>
-
-                    <Input
-                      id="account-type"
-                      type="Select"
-                      placeholder="0000-0000-0000-0000"
-                    />
-                  </div>
+                    </ListboxLabel>
+                    <ListboxContent>
+                      <ListboxButton placeholder="Select" />
+                      <ListboxOptions>
+                        {["Option 1", "Option 2", "Option 3", "Option 4"].map(
+                          (option) => (
+                            <ListboxOption key={option} value={option}>
+                              {option}
+                            </ListboxOption>
+                          )
+                        )}
+                      </ListboxOptions>
+                    </ListboxContent>
+                  </Listbox>
 
                   <div className="space-y-1.5">
                     <Label size="sm" htmlFor="account-holder-name">

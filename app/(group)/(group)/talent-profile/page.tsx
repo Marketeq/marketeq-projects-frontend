@@ -6,60 +6,35 @@ import { cn, toPxIfNumber } from "@/utils/functions"
 import { useClickOutside } from "@/utils/hooks"
 import {
   ArrowRight,
-  ArrowUp,
-  BarChart2,
-  Bell,
   Check,
   CheckCircle,
   ChevronDown,
-  ChevronRight,
   ChevronUp,
   Clock,
-  CoinStack,
   FileText,
-  LifeBuoy,
-  LogOut,
   MapPin,
   MarkerPin02,
   MessageSquare01,
   MessageTextSquare01,
-  Monitor,
   Plus,
   Plus2,
   RefreshCw,
-  Repeat,
   SearchMd,
-  Settings,
   Share,
   Star,
-  Users,
-  X,
   XCircle,
 } from "@blend-metrics/icons"
 import { AdobeBrand, WordpressBrand } from "@blend-metrics/icons/brands"
 import { GoogleDefault } from "@blend-metrics/icons/social"
-import {
-  FacebookSolid,
-  InstagramSolid,
-  TwitterSolid,
-} from "@blend-metrics/icons/social-solid"
 import * as RadixTabs from "@radix-ui/react-tabs"
 import { TooltipArrow } from "@radix-ui/react-tooltip"
 import { Variants, motion } from "framer-motion"
 import { TbStar, TbStarHalfFilled } from "react-icons/tb"
 import { useToggle } from "react-use"
-import {
-  Campaigns,
-  LinkedinSolid,
-  Logo3,
-  Project,
-  Talent,
-} from "@/components/icons"
 import { Adobe } from "@/components/icons/adobe"
 import { Dropbox } from "@/components/icons/dropbox"
 import { Microsoft } from "@/components/icons/microsoft"
 import { Nasdaq } from "@/components/icons/nasdaq"
-import { InviteWindowTrigger } from "@/components/invite-window"
 import { LikeDislike } from "@/components/like-dislike"
 import { Money } from "@/components/money"
 import NextImage from "@/components/next-image"
@@ -70,7 +45,6 @@ import {
   ShowMoreLessComp,
   ShowMoreLessRoot,
 } from "@/components/show-more-less"
-import { ThreeHorizontalLines } from "@/components/three-horizontal-lines"
 import {
   Avatar,
   AvatarFallback,
@@ -84,19 +58,11 @@ import {
   CarouselItem,
   CarouselNextTrigger,
   CarouselPreviousTrigger,
-  Combobox,
-  ComboboxInput,
-  ComboboxOption,
-  ComboboxOptions,
-  ComboboxTrigger,
   Dialog,
-  DialogClose,
   DialogContent,
-  DialogTrigger,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioTrigger,
   DropdownMenuSeparator,
@@ -120,7 +86,6 @@ import {
   RatingGroupItemContext,
   RatingGroupLabel,
   RatingGroupRoot,
-  ScaleOutIn,
   ScrollArea,
   Tabs,
   TabsContent,
