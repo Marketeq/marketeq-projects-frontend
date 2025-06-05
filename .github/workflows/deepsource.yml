@@ -11,14 +11,18 @@ on:
 jobs:
   deepsource:
     runs-on: ubuntu-latest
+    env:
+      PR_URL: ${{ github.event.pull_request.html_url || '' }}
+      DEEPSOURCE_DSN: ${{ secrets.DEEPSOURCE_DSN }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: DeepSource Analysis
-        uses: deepsource/action@v0.1
-        with:
-          token: ${{ secrets.DEEPSOURCE_TOKEN }}
+      - name: Install DeepSource CLI
+        run: curl https://deepsource.io/cli | sh
+
+      - name: Run DeepSource Analysis
+        run: ./bin/deepsource report --analyzer javascript
 
       - name: Install GitHub CLI
         run: |
@@ -35,6 +39,3 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
-
-    env:
-      PR_URL: ${{ github.event.pull_request.html_url || '' }}
