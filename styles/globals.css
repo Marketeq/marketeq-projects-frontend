@@ -44,7 +44,7 @@
 
 .react-international-phone-input-container
   .react-international-phone-country-selector-button {
-  @apply border-r-0;
+  @apply border-r-0 rounded-l-[5px];
 }
 
 .react-international-phone-country-selector-button__dropdown-arrow {
@@ -52,7 +52,7 @@
 }
 
 .react-international-phone-input-container .react-international-phone-input {
-  @apply px-3.5 py-2.5;
+  @apply px-3.5 py-2.5 rounded-r-[5px];
 }
 
 .react-international-phone-country-selector-dropdown {
@@ -73,6 +73,10 @@
 
 .react-international-phone-country-selector-dropdown__list-item-dial-code {
   @apply leading-5;
+}
+
+.react-international-phone-country-selector-dropdown {
+  @apply rounded-md;
 }
 
 /* Avatars Carousel */

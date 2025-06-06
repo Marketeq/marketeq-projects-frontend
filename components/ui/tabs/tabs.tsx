@@ -123,6 +123,7 @@ const DisclosureTrigger = React.forwardRef<
       data-state={active ? "active" : "inactive"}
       value={value}
       onClick={handleClick}
+      className={className}
       ref={ref}
       {...props}
     />

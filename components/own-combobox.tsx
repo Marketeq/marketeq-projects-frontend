@@ -245,10 +245,14 @@ export const CountriesCombobox = ({
   value,
   onValueChange,
   placeholder,
+  triggerClassName,
+  defaultValue,
 }: {
   value?: string
   onValueChange?: (country: string) => void
   placeholder?: string
+  triggerClassName?: string
+  defaultValue?: string
 }) => {
   const data = useAsync(async () => {
     return await getCountries<Country[]>("/all?fields=id,name,flags")
@@ -258,6 +262,7 @@ export const CountriesCombobox = ({
   const [state, setState] = useControllableState({
     value,
     onChange: onValueChange,
+    defaultValue,
   })
 
   const selectedCountry = data.value?.find(
@@ -267,7 +272,12 @@ export const CountriesCombobox = ({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="bg-gray-100 focus-visible:outline-none pr-2 p-[5px] border border-gray-300 border-dashed rounded-[5px] inline-flex items-center gap-x-1.5">
+        <button
+          className={cn(
+            "bg-gray-100 focus-visible:outline-none pr-2 p-[5px] border border-gray-300 border-dashed rounded-[5px] inline-flex items-center gap-x-1.5",
+            triggerClassName
+          )}
+        >
           {selectedCountry ? (
             <span className="inline-flex items-center justify-center size-[18px] shrink-0 rounded-full overflow-hidden">
               <img
@@ -278,11 +288,11 @@ export const CountriesCombobox = ({
             </span>
           ) : null}
 
-          <span className="text-xs leading-[18px] font-medium text-gray-700">
+          <span className="text-xs inline-block truncate leading-[18px] font-medium text-gray-700">
             {selectedCountry ? selectedCountry.name.common : placeholder}
           </span>
 
-          <ChevronDown className="size-[18px] shrink-0 text-gray-500" />
+          <ChevronDown className="group-data-[state=open]:inline-block hidden size-[18px] shrink-0 text-gray-500" />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-[202px] pb-2 px-0 pt-0 z-50 bg-white border-gray-100 rounded-lg border shadow-[0px_12px_16px_-4px_rgba(16,24,40,.08)]">

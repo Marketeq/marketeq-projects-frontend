@@ -52,7 +52,7 @@ import { ChatsContextProvider } from "@/components/chat"
 import { LikeDislike } from "@/components/like-dislike"
 import NextImage from "@/components/next-image"
 import NextLink from "@/components/next-link"
-import { ReadMoreLess } from "@/components/read-more-less"
+import { ReadMoreLessComp, ReadMoreLessRoot } from "@/components/read-more-less"
 import {
   ShowMoreLess,
   ShowMoreLessComp,
@@ -141,7 +141,7 @@ import {
   SaveButton,
   SectionSearchBar,
   TopMostHeader,
-} from "./talent-profile.stories"
+} from "./talent-profile-comps.stories"
 
 const meta: Meta = {
   title: "Project Details",
@@ -471,534 +471,130 @@ export const Default = () => {
     <div className="min-h-screen relative flex flex-col bg-gray-50">
       <TopMostHeader />
       <Layout>
-        <div className="bg-gray-50 border-b border-gray-200 pt-6 px-[100px] pb-[50px]">
-          <div className="max-w-[1240px] mx-auto flex items-start gap-x-8">
-            <div className="flex-auto">
-              <div className="flex items-center gap-x-2">
-                <Home03 className="size-[18px] text-gray-500/50 cursor-pointer hover:text-gray-500" />
+        <div className="px-[100px] relative bg-white">
+          <div className="max-w-[1240px] flex items-start gap-x-8">
+            <div className="max-w-[818px] flex-auto">
+              <div className="after:content-[''] after:absolute after:inset-x-0 after:border-b after:border-gray-200">
+                <div className="relative pt-6 pb-[50px]">
+                  <div className="absolute w-screen -translate-x-[100px] top-0 bottom-px bg-gray-50" />
 
-                <div className="inline-flex items-center gap-x-2">
-                  <span className="text-xs leading-6 text-gray-500/50 font-semibold">
-                    /
-                  </span>
-                  <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold hover:underline cursor-pointer transition duration-300">
-                    Software Development
-                  </span>
-                </div>
+                  <div className="flex items-center gap-x-2 relative">
+                    <Home03 className="size-[18px] text-gray-500/50 cursor-pointer hover:text-gray-500" />
 
-                <div className="inline-flex items-center gap-x-2">
-                  <span className="text-xs leading-6 text-gray-500/50 font-semibold">
-                    /
-                  </span>
-                  <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold hover:underline cursor-pointer transition duration-300">
-                    Mobile Applications
-                  </span>
-                </div>
-
-                <div className="inline-flex items-center gap-x-2">
-                  <span className="text-xs leading-6 text-gray-500/50 font-semibold">
-                    /
-                  </span>
-                  <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold hover:underline cursor-pointer transition duration-300">
-                    iOS Development
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex gap-x-[13px] items-start mt-8">
-                <div className="w-[189px] h-[126px] relative overflow-hidden rounded-lg">
-                  <NextImage
-                    src="/dashboard.png"
-                    alt="Dashboard"
-                    sizes="25vw"
-                    fill
-                  />
-                </div>
-
-                <div className="flex flex-col items-start gap-y-3">
-                  <Badge className="rounded-[5px]" visual="gray">
-                    Mobile Application
-                  </Badge>
-                  <h1 className="text-[28px] leading-none font-bold text-dark-blue-400">
-                    The Ultimate Mobile App Experience
-                  </h1>
-
-                  <div className="flex items-center gap-x-2">
-                    <div className="inline-flex items-center gap-x-1.5">
-                      <div className="inline-flex items-center gap-x-0.5">
-                        <Star className="shrink-0 size-4 text-primary-500 fill-primary-500" />
-                        <Star className="shrink-0 size-4 text-primary-500 fill-primary-500" />
-                        <Star className="shrink-0 size-4 text-primary-500 fill-primary-500" />
-                        <Star className="shrink-0 size-4 text-primary-500 fill-primary-500" />
-                        <Star className="shrink-0 size-4 text-primary-500" />
-                      </div>
-                      <span className="text-sm leading-none font-semibold text-dark-blue-400">
-                        4.9 <span className="font-medium">(14 ratings)</span>
+                    <div className="inline-flex items-center gap-x-2">
+                      <span className="text-xs leading-6 text-gray-500/50 font-semibold">
+                        /
+                      </span>
+                      <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold hover:underline cursor-pointer transition duration-300">
+                        Software Development
                       </span>
                     </div>
 
-                    <span className="size-1 shrink-0 rounded-full bg-dark-blue-400" />
-
-                    <div className="inline-flex items-center gap-x-1.5">
-                      <ShoppingCart className="size-[18px] shrink-0" />
-                      <span className="text-sm leading-none font-semibold text-dark-blue-400">
-                        31 sales
+                    <div className="inline-flex items-center gap-x-2">
+                      <span className="text-xs leading-6 text-gray-500/50 font-semibold">
+                        /
+                      </span>
+                      <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold hover:underline cursor-pointer transition duration-300">
+                        Mobile Applications
                       </span>
                     </div>
 
-                    <span className="size-1 shrink-0 rounded-full bg-dark-blue-400" />
-
-                    <div className="inline-flex items-center gap-x-1.5">
-                      <ChartBreakoutCircle className="size-[18px] shrink-0" />
-                      <span className="text-sm leading-none font-semibold text-dark-blue-400">
-                        Top Rated
+                    <div className="inline-flex items-center gap-x-2">
+                      <span className="text-xs leading-6 text-gray-500/50 font-semibold">
+                        /
+                      </span>
+                      <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold hover:underline cursor-pointer transition duration-300">
+                        iOS Development
                       </span>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-x-3">
-                    <Button variant="link" visual="gray">
-                      Software Development
-                    </Button>
-                    <Button variant="link" visual="gray">
-                      Mobile Applications
-                    </Button>
-                    <Button variant="link" visual="gray">
-                      IOS Development
-                    </Button>
-                  </div>
-                </div>
-              </div>
+                  <div className="flex gap-x-[13px] items-start mt-8 relative">
+                    <div className="w-[189px] h-[126px] relative overflow-hidden rounded-lg">
+                      <NextImage
+                        src="/dashboard.png"
+                        alt="Dashboard"
+                        sizes="25vw"
+                        fill
+                      />
+                    </div>
 
-              <div className="mt-3">
-                <p className="text-sm font-extralight text-dark-blue-400">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                  laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-                  irure dolor in reprehenderit in voluptate velit esse cillum
-                  dolore eu fugiat nulla pariatur. Ut enim ad minim veniam, quis
-                  nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                  commodo consequat. Duis aute irure dolor in reprehenderit in
-                  voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                  Excepteur sint occaecat cupidatat non proident, sunt in culpa
-                  qui officia deserunt mollit anim id est laborum.{" "}
-                </p>
-              </div>
-            </div>
+                    <div className="flex flex-col items-start gap-y-3">
+                      <Badge className="rounded-[5px]" visual="gray">
+                        Mobile Application
+                      </Badge>
+                      <h1 className="text-[28px] leading-none font-bold text-dark-blue-400">
+                        The Ultimate Mobile App Experience
+                      </h1>
 
-            <div
-              className="group w-[390px] shrink-0 relative"
-              ref={containerRef}
-            >
-              <div className="pt-14 pb-8 w-[390px] absolute -top-6 group-data-[position=sticky]:fixed group-data-[position=sticky]:top-[65px]">
-                <div className="bg-white shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] rounded-lg border border-gray-200">
-                  <div className="relative border-b p-6 border-gray-200">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center">
-                        <Badge className="rounded-[5px]" visual="gray">
-                          Starting At
-                        </Badge>
-                        <div className="inline-flex items-center gap-x-1.5 ml-2">
-                          <span className="text-2xl leading-none font-bold text-dark-blue-400">
-                            $5,000
-                          </span>
-                          <span className="text-sm font-medium leading-none text-dark-blue-400">
-                            per
+                      <div className="flex items-center gap-x-2">
+                        <div className="inline-flex items-center gap-x-1.5">
+                          <div className="inline-flex items-center gap-x-0.5">
+                            <Star className="shrink-0 size-4 text-primary-500 fill-primary-500" />
+                            <Star className="shrink-0 size-4 text-primary-500 fill-primary-500" />
+                            <Star className="shrink-0 size-4 text-primary-500 fill-primary-500" />
+                            <Star className="shrink-0 size-4 text-primary-500 fill-primary-500" />
+                            <Star className="shrink-0 size-4 text-primary-500" />
+                          </div>
+                          <span className="text-sm leading-none font-semibold text-dark-blue-400">
+                            4.9{" "}
+                            <span className="font-medium">(14 ratings)</span>
                           </span>
                         </div>
 
-                        <div className="ml-1.5">
-                          <Listbox defaultValue="Week">
-                            <ListboxButton
-                              className="text-sm lowercase py-[5px] px-[7px] h-max w-auto"
-                              iconClassName="ml-1"
-                              placeholder="Select"
-                            />
-                            <ListboxOptions className="w-[153px]">
-                              {[
-                                "Week",
-                                "2-week",
-                                "Month",
-                                "Quarter",
-                                "Year",
-                              ].map((timeline) => (
-                                <ListboxOption key={timeline} value={timeline}>
-                                  {timeline}
-                                </ListboxOption>
-                              ))}
-                            </ListboxOptions>
-                          </Listbox>
+                        <span className="size-1 shrink-0 rounded-full bg-dark-blue-400" />
+
+                        <div className="inline-flex items-center gap-x-1.5">
+                          <ShoppingCart className="size-[18px] shrink-0" />
+                          <span className="text-sm leading-none font-semibold text-dark-blue-400">
+                            31 sales
+                          </span>
+                        </div>
+
+                        <span className="size-1 shrink-0 rounded-full bg-dark-blue-400" />
+
+                        <div className="inline-flex items-center gap-x-1.5">
+                          <ChartBreakoutCircle className="size-[18px] shrink-0" />
+                          <span className="text-sm leading-none font-semibold text-dark-blue-400">
+                            Top Rated
+                          </span>
                         </div>
                       </div>
 
-                      <FavoriteRoot>
-                        {({ pressed }) => (
-                          <TooltipProvider delayDuration={75}>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className="inline-block">
-                                  <Favorite />
-                                </span>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                {pressed ? (
-                                  <span className="inline-flex items-center gap-x-1">
-                                    <Check className="size-[15px] shrink-0 text-green-500" />
-                                    Saved
-                                  </span>
-                                ) : (
-                                  "Save to favorites"
-                                )}
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        )}
-                      </FavoriteRoot>
-                    </div>
-
-                    <div className="mt-3">
-                      <span className="inline-block text-sm leading-none font-medium text-dark-blue-400">
-                        with an initial payment of $833 to kickoff
-                      </span>
-                    </div>
-
-                    <div className="flex flex-col items-start gap-y-3 mt-6">
-                      <span className="inline-block text-xs font-medium text-dark-blue-400">
-                        Current Team
-                      </span>
-
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <AvatarGroup size="sm" excess>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                              <Avatar
-                                className="border-2 border-white hover:ring-0 active:ring-0"
-                                size="sm"
-                              >
-                                <AvatarImage src="/woman.jpg" alt="Woman" />
-                                <AvatarFallback>W</AvatarFallback>
-                              </Avatar>
-                            </AvatarGroup>
-                          </TooltipTrigger>
-                          <TooltipContent className="p-0" size="md">
-                            <ScrollArea
-                              className="h-[192px] p-3 pr-4"
-                              scrollBar={
-                                <ScrollBar
-                                  className="w-4 p-1"
-                                  thumbClassName="bg-white/20"
-                                />
-                              }
-                            >
-                              <div className="space-y-3 pr-5">
-                                <div className="flex items-center gap-x-[18px]">
-                                  <div className="flex items-center gap-x-2 flex-auto">
-                                    <Avatar>
-                                      <AvatarImage
-                                        src="/woman.jpg"
-                                        alt="Woman"
-                                      />
-                                      <AvatarFallback>W</AvatarFallback>
-                                    </Avatar>
-
-                                    <div className="flex flex-col flex-auto">
-                                      <div className="flex items-center gap-x-0.5">
-                                        <span className="text-xs leading-5 font-semibold text-white">
-                                          Sevil
-                                        </span>
-                                        <span className="text-[10px] leading-none font-light text-white">
-                                          @designsuperstar23
-                                        </span>
-                                      </div>
-                                      <span className="text-[10px] font-light text-white">
-                                        Full-stack Developer
-                                      </span>
-                                    </div>
-                                  </div>
-
-                                  <span className="text-sm font-semibold text-white leading-5">
-                                    $75{" "}
-                                    <span className="text-[10px] font-light leading-5">
-                                      /hr
-                                    </span>
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-x-[18px]">
-                                  <div className="flex items-center gap-x-2 flex-auto">
-                                    <Avatar>
-                                      <AvatarImage
-                                        src="/woman.jpg"
-                                        alt="Woman"
-                                      />
-                                      <AvatarFallback>W</AvatarFallback>
-                                    </Avatar>
-
-                                    <div className="flex flex-col flex-auto">
-                                      <div className="flex items-center gap-x-0.5">
-                                        <span className="text-xs leading-5 font-semibold text-white">
-                                          Sevil
-                                        </span>
-                                        <span className="text-[10px] leading-none font-light text-white">
-                                          @designsuperstar23
-                                        </span>
-                                      </div>
-                                      <span className="text-[10px] font-light text-white">
-                                        Full-stack Developer
-                                      </span>
-                                    </div>
-                                  </div>
-
-                                  <span className="text-sm font-semibold text-white leading-5">
-                                    $75{" "}
-                                    <span className="text-[10px] font-light leading-5">
-                                      /hr
-                                    </span>
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-x-[18px]">
-                                  <div className="flex items-center gap-x-2 flex-auto">
-                                    <Avatar>
-                                      <AvatarImage
-                                        src="/woman.jpg"
-                                        alt="Woman"
-                                      />
-                                      <AvatarFallback>W</AvatarFallback>
-                                    </Avatar>
-
-                                    <div className="flex flex-col flex-auto">
-                                      <div className="flex items-center gap-x-0.5">
-                                        <span className="text-xs leading-5 font-semibold text-white">
-                                          Sevil
-                                        </span>
-                                        <span className="text-[10px] leading-none font-light text-white">
-                                          @designsuperstar23
-                                        </span>
-                                      </div>
-                                      <span className="text-[10px] font-light text-white">
-                                        Full-stack Developer
-                                      </span>
-                                    </div>
-                                  </div>
-
-                                  <span className="text-sm font-semibold text-white leading-5">
-                                    $75{" "}
-                                    <span className="text-[10px] font-light leading-5">
-                                      /hr
-                                    </span>
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-x-[18px]">
-                                  <div className="flex items-center gap-x-2 flex-auto">
-                                    <Avatar>
-                                      <AvatarImage
-                                        src="/woman.jpg"
-                                        alt="Woman"
-                                      />
-                                      <AvatarFallback>W</AvatarFallback>
-                                    </Avatar>
-
-                                    <div className="flex flex-col flex-auto">
-                                      <div className="flex items-center gap-x-0.5">
-                                        <span className="text-xs leading-5 font-semibold text-white">
-                                          Sevil
-                                        </span>
-                                        <span className="text-[10px] leading-none font-light text-white">
-                                          @designsuperstar23
-                                        </span>
-                                      </div>
-                                      <span className="text-[10px] font-light text-white">
-                                        Full-stack Developer
-                                      </span>
-                                    </div>
-                                  </div>
-
-                                  <span className="text-sm font-semibold text-white leading-5">
-                                    $75{" "}
-                                    <span className="text-[10px] font-light leading-5">
-                                      /hr
-                                    </span>
-                                  </span>
-                                </div>
-                              </div>
-                            </ScrollArea>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-
-                    <div className="mt-6 space-y-3">
-                      <div className="flex items-center gap-x-[6.4px]">
-                        <Clock className="size-[18px] text-primary-500" />
-                        <span className="text-sm leading-none font-medium text-dark-blue-400">
-                          Starting from a 6 month duration
-                        </span>
+                      <div className="flex items-center gap-x-3">
+                        <Button variant="link" visual="gray">
+                          Software Development
+                        </Button>
+                        <Button variant="link" visual="gray">
+                          Mobile Applications
+                        </Button>
+                        <Button variant="link" visual="gray">
+                          IOS Development
+                        </Button>
                       </div>
-                      <div className="flex items-center gap-x-[6.4px]">
-                        <Users03 className="size-[18px] text-primary-500" />
-                        <span className="text-sm leading-none font-medium text-dark-blue-400">
-                          Minimum 4 team members
-                        </span>
-                      </div>
-                    </div>
-
-                    <Button
-                      size="lg"
-                      className="mt-6 w-full border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white"
-                      variant="outlined"
-                    >
-                      Start Project
-                    </Button>
-
-                    <div className="flex items-center gap-x-1 mt-6">
-                      <span className="text-sm font-medium leading-none text-dark-blue-400">
-                        Additional payment plans available with
-                      </span>
-
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger className="focus-visible:outline-none text-gray-500">
-                            <Info className="size-[17px]" />
-                          </TooltipTrigger>
-
-                          <TooltipContent
-                            className="max-w-[286px]"
-                            visual="gray"
-                          >
-                            Select Klarna at checkout to split your purchase
-                            into smaller payments over time. Klarna makes it
-                            easy to buy now and pay later, with no impact on
-                            your credit score.
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
                     </div>
                   </div>
 
-                  <div className="h-[50px] rounded-b-lg bg-gray-50 flex items-center justify-evenly">
-                    <div className="inline-flex items-center gap-x-2">
-                      <Flag className="size-[15px] text-gray-500" />
-                      <span className="text-sm font-extralight leading-5 text-gray-500 hover:underline cursor-pointer">
-                        Report
-                      </span>
-                    </div>
-
-                    <div className="inline-flex items-center gap-x-2">
-                      <HelpCircle className="size-[15px] text-gray-500" />
-                      <span className="text-sm font-extralight leading-5 text-gray-500 hover:underline cursor-pointer">
-                        Help
-                      </span>
-                    </div>
-
-                    <div className="inline-flex items-center gap-x-2">
-                      <Share06 className="size-[15px] text-gray-500" />
-                      <span className="text-sm font-extralight leading-5 text-gray-500 hover:underline cursor-pointer">
-                        Share
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-3 p-6">
-                  <h1 className="text-base leading-none font-semibold text-dark-blue-400">
-                    Peace of Mind Guarantee
-                  </h1>
-
-                  <div className="mt-5 space-y-5">
-                    <article className="flex items-start gap-x-2">
-                      <Rocket02 className="size-[18px] text-dark-blue-400" />
-                      <div className="flex-auto space-y-1">
-                        <h1 className="text-xs leading-none font-semibold text-dark-blue-400">
-                          Peace of Mind Guarantee
-                        </h1>
-                        <p className="text-xs leading-none font-extralight text-dark-blue-400">
-                          If the project falls short, you can initiate a dispute
-                          for a full refund.
-                        </p>
-                      </div>
-                    </article>
-                    <article className="flex items-start gap-x-2">
-                      <ShieldZap className="size-[18px] text-dark-blue-400" />
-                      <div className="flex-auto space-y-1">
-                        <h1 className="text-xs leading-none font-semibold text-dark-blue-400">
-                          Peace of Mind Guarantee
-                        </h1>
-                        <p className="text-xs leading-none font-extralight text-dark-blue-400">
-                          If the project falls short, you can initiate a dispute
-                          for a full refund.
-                        </p>
-                      </div>
-                    </article>
-                  </div>
-
-                  <article className="flex items-start gap-x-2 p-3 mt-3 rounded-lg bg-primary-50">
-                    <ShieldDollar className="size-[18px] text-primary-500" />
-                    <div className="flex-auto">
-                      <p className="text-xs leading-none font-extralight text-dark-blue-400">
-                        If the project falls short, you can initiate a dispute
-                        for a full refund.
-                      </p>
-                    </div>
-                  </article>
-
-                  <div className="mt-3">
-                    <span className="text-xs text-dark-blue-400">
-                      We securely process payments and release upon rating. We
-                      securely process payments{" "}
-                      <Button className="text-xs" variant="link">
-                        See Policy Details.
-                      </Button>
-                    </span>
+                  <div className="mt-3 relative">
+                    <p className="text-sm font-extralight text-dark-blue-400">
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                      sed do eiusmod tempor incididunt ut labore et dolore magna
+                      aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                      ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                      Duis aute irure dolor in reprehenderit in voluptate velit
+                      esse cillum dolore eu fugiat nulla pariatur. Ut enim ad
+                      minim veniam, quis nostrud exercitation ullamco laboris
+                      nisi ut aliquip ex ea commodo consequat. Duis aute irure
+                      dolor in reprehenderit in voluptate velit esse cillum
+                      dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                      cupidatat non proident, sunt in culpa qui officia deserunt
+                      mollit anim id est laborum.{" "}
+                    </p>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
 
-        <div className="bg-white">
-          <div className="max-w-[1240px] mx-auto">
-            <div className="flex items-start gap-x-8">
-              <Tabs
-                className="flex-auto max-w-[818px]"
-                value={selected}
-                onValueChange={setSelected}
-              >
+              <Tabs value={selected} onValueChange={setSelected}>
                 <RadixTabs.TabsList
                   className={cn(
                     "h-12 flex items-center justify-between border-b border-gray-200 bg-white",
@@ -3092,29 +2688,35 @@ export const Default = () => {
                                               Best Experience with a Backend
                                               Engineer!!!!
                                             </h1>
-                                            <ReadMoreLess
-                                              max={32}
-                                              text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate doloremque impedit eveniet harum dolores modi dolor, aspernatur saepe incidunt consequuntur et voluptatem dolorem ea sequi officia distinctio perspiciatis labore fugit eligendi architecto similique esse assumenda fugiat? Aut tempora veritatis, similique exercitationem quos consequuntur repudiandae, quaerat nesciunt ducimus beatae tempore alias repellendus id quidem pariatur blanditiis architecto quasi aperiam fugiat maiores?"
-                                            >
-                                              {({ readMore, text, toggle }) => (
-                                                <>
-                                                  <p className="text-sm leading-none mt-1 text-gray-700 font-extralight">
-                                                    {text}{" "}
-                                                    <Button
-                                                      className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
-                                                      size="sm"
-                                                      variant="link"
-                                                      visual="gray"
-                                                      onClick={toggle}
-                                                    >
-                                                      {readMore
-                                                        ? null
-                                                        : "...Read More"}
-                                                    </Button>
-                                                  </p>
-                                                </>
-                                              )}
-                                            </ReadMoreLess>
+                                            <ReadMoreLessRoot>
+                                              <ReadMoreLessComp
+                                                max={32}
+                                                text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate doloremque impedit eveniet harum dolores modi dolor, aspernatur saepe incidunt consequuntur et voluptatem dolorem ea sequi officia distinctio perspiciatis labore fugit eligendi architecto similique esse assumenda fugiat? Aut tempora veritatis, similique exercitationem quos consequuntur repudiandae, quaerat nesciunt ducimus beatae tempore alias repellendus id quidem pariatur blanditiis architecto quasi aperiam fugiat maiores?"
+                                              >
+                                                {({
+                                                  readMore,
+                                                  text,
+                                                  toggle,
+                                                }) => (
+                                                  <>
+                                                    <p className="text-sm leading-none mt-1 text-gray-700 font-extralight">
+                                                      {text}{" "}
+                                                      <Button
+                                                        className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
+                                                        size="sm"
+                                                        variant="link"
+                                                        visual="gray"
+                                                        onClick={toggle}
+                                                      >
+                                                        {readMore
+                                                          ? null
+                                                          : "...Read More"}
+                                                      </Button>
+                                                    </p>
+                                                  </>
+                                                )}
+                                              </ReadMoreLessComp>
+                                            </ReadMoreLessRoot>
 
                                             <div className="mt-3 flex items-center justify-between">
                                               <div className="items-center inline-flex gap-x-2.5">
@@ -3298,29 +2900,35 @@ export const Default = () => {
                                               Best Experience with a Backend
                                               Engineer!!!!
                                             </h1>
-                                            <ReadMoreLess
-                                              max={32}
-                                              text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate doloremque impedit eveniet harum dolores modi dolor, aspernatur saepe incidunt consequuntur et voluptatem dolorem ea sequi officia distinctio perspiciatis labore fugit eligendi architecto similique esse assumenda fugiat? Aut tempora veritatis, similique exercitationem quos consequuntur repudiandae, quaerat nesciunt ducimus beatae tempore alias repellendus id quidem pariatur blanditiis architecto quasi aperiam fugiat maiores?"
-                                            >
-                                              {({ readMore, text, toggle }) => (
-                                                <>
-                                                  <p className="text-sm leading-none mt-1 text-gray-700 font-extralight">
-                                                    {text}{" "}
-                                                    <Button
-                                                      className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
-                                                      size="sm"
-                                                      variant="link"
-                                                      visual="gray"
-                                                      onClick={toggle}
-                                                    >
-                                                      {readMore
-                                                        ? null
-                                                        : "...Read More"}
-                                                    </Button>
-                                                  </p>
-                                                </>
-                                              )}
-                                            </ReadMoreLess>
+                                            <ReadMoreLessRoot>
+                                              <ReadMoreLessComp
+                                                max={32}
+                                                text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate doloremque impedit eveniet harum dolores modi dolor, aspernatur saepe incidunt consequuntur et voluptatem dolorem ea sequi officia distinctio perspiciatis labore fugit eligendi architecto similique esse assumenda fugiat? Aut tempora veritatis, similique exercitationem quos consequuntur repudiandae, quaerat nesciunt ducimus beatae tempore alias repellendus id quidem pariatur blanditiis architecto quasi aperiam fugiat maiores?"
+                                              >
+                                                {({
+                                                  readMore,
+                                                  text,
+                                                  toggle,
+                                                }) => (
+                                                  <>
+                                                    <p className="text-sm leading-none mt-1 text-gray-700 font-extralight">
+                                                      {text}{" "}
+                                                      <Button
+                                                        className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
+                                                        size="sm"
+                                                        variant="link"
+                                                        visual="gray"
+                                                        onClick={toggle}
+                                                      >
+                                                        {readMore
+                                                          ? null
+                                                          : "...Read More"}
+                                                      </Button>
+                                                    </p>
+                                                  </>
+                                                )}
+                                              </ReadMoreLessComp>
+                                            </ReadMoreLessRoot>
 
                                             <div className="mt-3 flex items-center justify-between">
                                               <div className="items-center inline-flex gap-x-2.5">
@@ -3428,29 +3036,35 @@ export const Default = () => {
                                               </div>
                                             </div>
 
-                                            <ReadMoreLess
-                                              max={32}
-                                              text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate doloremque impedit eveniet harum dolores modi dolor, aspernatur saepe incidunt consequuntur et voluptatem dolorem ea sequi officia distinctio perspiciatis labore fugit eligendi architecto similique esse assumenda fugiat? Aut tempora veritatis, similique exercitationem quos consequuntur repudiandae, quaerat nesciunt ducimus beatae tempore alias repellendus id quidem pariatur blanditiis architecto quasi aperiam fugiat maiores?"
-                                            >
-                                              {({ readMore, text, toggle }) => (
-                                                <>
-                                                  <p className="text-sm leading-none mt-1 text-gray-700 font-extralight">
-                                                    {text}{" "}
-                                                    <Button
-                                                      className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
-                                                      size="sm"
-                                                      variant="link"
-                                                      visual="gray"
-                                                      onClick={toggle}
-                                                    >
-                                                      {readMore
-                                                        ? null
-                                                        : "...Read More"}
-                                                    </Button>
-                                                  </p>
-                                                </>
-                                              )}
-                                            </ReadMoreLess>
+                                            <ReadMoreLessRoot>
+                                              <ReadMoreLessComp
+                                                max={32}
+                                                text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate doloremque impedit eveniet harum dolores modi dolor, aspernatur saepe incidunt consequuntur et voluptatem dolorem ea sequi officia distinctio perspiciatis labore fugit eligendi architecto similique esse assumenda fugiat? Aut tempora veritatis, similique exercitationem quos consequuntur repudiandae, quaerat nesciunt ducimus beatae tempore alias repellendus id quidem pariatur blanditiis architecto quasi aperiam fugiat maiores?"
+                                              >
+                                                {({
+                                                  readMore,
+                                                  text,
+                                                  toggle,
+                                                }) => (
+                                                  <>
+                                                    <p className="text-sm leading-none mt-1 text-gray-700 font-extralight">
+                                                      {text}{" "}
+                                                      <Button
+                                                        className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
+                                                        size="sm"
+                                                        variant="link"
+                                                        visual="gray"
+                                                        onClick={toggle}
+                                                      >
+                                                        {readMore
+                                                          ? null
+                                                          : "...Read More"}
+                                                      </Button>
+                                                    </p>
+                                                  </>
+                                                )}
+                                              </ReadMoreLessComp>
+                                            </ReadMoreLessRoot>
 
                                             <div className="mt-3 flex items-center justify-between">
                                               <div className="items-center inline-flex gap-x-2.5">
@@ -3574,29 +3188,35 @@ export const Default = () => {
                                               Best Experience with a Backend
                                               Engineer!!!!
                                             </h1>
-                                            <ReadMoreLess
-                                              max={32}
-                                              text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate doloremque impedit eveniet harum dolores modi dolor, aspernatur saepe incidunt consequuntur et voluptatem dolorem ea sequi officia distinctio perspiciatis labore fugit eligendi architecto similique esse assumenda fugiat? Aut tempora veritatis, similique exercitationem quos consequuntur repudiandae, quaerat nesciunt ducimus beatae tempore alias repellendus id quidem pariatur blanditiis architecto quasi aperiam fugiat maiores?"
-                                            >
-                                              {({ readMore, text, toggle }) => (
-                                                <>
-                                                  <p className="text-sm leading-none mt-1 text-gray-700 font-extralight">
-                                                    {text}{" "}
-                                                    <Button
-                                                      className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
-                                                      size="sm"
-                                                      variant="link"
-                                                      visual="gray"
-                                                      onClick={toggle}
-                                                    >
-                                                      {readMore
-                                                        ? null
-                                                        : "...Read More"}
-                                                    </Button>
-                                                  </p>
-                                                </>
-                                              )}
-                                            </ReadMoreLess>
+                                            <ReadMoreLessRoot>
+                                              <ReadMoreLessComp
+                                                max={32}
+                                                text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate doloremque impedit eveniet harum dolores modi dolor, aspernatur saepe incidunt consequuntur et voluptatem dolorem ea sequi officia distinctio perspiciatis labore fugit eligendi architecto similique esse assumenda fugiat? Aut tempora veritatis, similique exercitationem quos consequuntur repudiandae, quaerat nesciunt ducimus beatae tempore alias repellendus id quidem pariatur blanditiis architecto quasi aperiam fugiat maiores?"
+                                              >
+                                                {({
+                                                  readMore,
+                                                  text,
+                                                  toggle,
+                                                }) => (
+                                                  <>
+                                                    <p className="text-sm leading-none mt-1 text-gray-700 font-extralight">
+                                                      {text}{" "}
+                                                      <Button
+                                                        className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
+                                                        size="sm"
+                                                        variant="link"
+                                                        visual="gray"
+                                                        onClick={toggle}
+                                                      >
+                                                        {readMore
+                                                          ? null
+                                                          : "...Read More"}
+                                                      </Button>
+                                                    </p>
+                                                  </>
+                                                )}
+                                              </ReadMoreLessComp>
+                                            </ReadMoreLessRoot>
 
                                             <div className="mt-3 flex items-center justify-between">
                                               <div className="items-center inline-flex gap-x-2.5">
@@ -3781,29 +3401,35 @@ export const Default = () => {
                                               Best Experience with a Backend
                                               Engineer!!!!
                                             </h1>
-                                            <ReadMoreLess
-                                              max={32}
-                                              text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate doloremque impedit eveniet harum dolores modi dolor, aspernatur saepe incidunt consequuntur et voluptatem dolorem ea sequi officia distinctio perspiciatis labore fugit eligendi architecto similique esse assumenda fugiat? Aut tempora veritatis, similique exercitationem quos consequuntur repudiandae, quaerat nesciunt ducimus beatae tempore alias repellendus id quidem pariatur blanditiis architecto quasi aperiam fugiat maiores?"
-                                            >
-                                              {({ readMore, text, toggle }) => (
-                                                <>
-                                                  <p className="text-sm leading-none mt-1 text-gray-700 font-extralight">
-                                                    {text}{" "}
-                                                    <Button
-                                                      className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
-                                                      size="sm"
-                                                      variant="link"
-                                                      visual="gray"
-                                                      onClick={toggle}
-                                                    >
-                                                      {readMore
-                                                        ? null
-                                                        : "...Read More"}
-                                                    </Button>
-                                                  </p>
-                                                </>
-                                              )}
-                                            </ReadMoreLess>
+                                            <ReadMoreLessRoot>
+                                              <ReadMoreLessComp
+                                                max={32}
+                                                text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate doloremque impedit eveniet harum dolores modi dolor, aspernatur saepe incidunt consequuntur et voluptatem dolorem ea sequi officia distinctio perspiciatis labore fugit eligendi architecto similique esse assumenda fugiat? Aut tempora veritatis, similique exercitationem quos consequuntur repudiandae, quaerat nesciunt ducimus beatae tempore alias repellendus id quidem pariatur blanditiis architecto quasi aperiam fugiat maiores?"
+                                              >
+                                                {({
+                                                  readMore,
+                                                  text,
+                                                  toggle,
+                                                }) => (
+                                                  <>
+                                                    <p className="text-sm leading-none mt-1 text-gray-700 font-extralight">
+                                                      {text}{" "}
+                                                      <Button
+                                                        className="text-gray-700 hover:no-underline hover:text-gray-900 font-semibold"
+                                                        size="sm"
+                                                        variant="link"
+                                                        visual="gray"
+                                                        onClick={toggle}
+                                                      >
+                                                        {readMore
+                                                          ? null
+                                                          : "...Read More"}
+                                                      </Button>
+                                                    </p>
+                                                  </>
+                                                )}
+                                              </ReadMoreLessComp>
+                                            </ReadMoreLessRoot>
 
                                             <div className="mt-3 flex items-center justify-between">
                                               <div className="items-center inline-flex gap-x-2.5">
@@ -4757,8 +4383,384 @@ export const Default = () => {
                   </div>
                 </TabsContent>
               </Tabs>
+            </div>
 
-              <div className="w-[390px] shrink-0" />
+            <div className="pt-[51px] sticky top-[65px] pb-8 w-[390px] shrink-0 z-10">
+              <div className="bg-white shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] rounded-lg border border-gray-200">
+                <div className="relative border-b p-6 border-gray-200">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center">
+                      <Badge className="rounded-[5px]" visual="gray">
+                        Starting At
+                      </Badge>
+                      <div className="inline-flex items-center gap-x-1.5 ml-2">
+                        <span className="text-2xl leading-none font-bold text-dark-blue-400">
+                          $5,000
+                        </span>
+                        <span className="text-sm font-medium leading-none text-dark-blue-400">
+                          per
+                        </span>
+                      </div>
+
+                      <div className="ml-1.5">
+                        <Listbox defaultValue="Week">
+                          <ListboxButton
+                            className="text-sm lowercase py-[5px] px-[7px] h-max w-auto"
+                            iconClassName="ml-1"
+                            placeholder="Select"
+                          />
+                          <ListboxOptions className="w-[153px]">
+                            {["Week", "2-week", "Month", "Quarter", "Year"].map(
+                              (timeline) => (
+                                <ListboxOption key={timeline} value={timeline}>
+                                  {timeline}
+                                </ListboxOption>
+                              )
+                            )}
+                          </ListboxOptions>
+                        </Listbox>
+                      </div>
+                    </div>
+
+                    <FavoriteRoot>
+                      {({ pressed }) => (
+                        <TooltipProvider delayDuration={75}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="inline-block">
+                                <Favorite />
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              {pressed ? (
+                                <span className="inline-flex items-center gap-x-1">
+                                  <Check className="size-[15px] shrink-0 text-green-500" />
+                                  Saved
+                                </span>
+                              ) : (
+                                "Save to favorites"
+                              )}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                    </FavoriteRoot>
+                  </div>
+
+                  <div className="mt-3">
+                    <span className="inline-block text-sm leading-none font-medium text-dark-blue-400">
+                      with an initial payment of $833 to kickoff
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col items-start gap-y-3 mt-6">
+                    <span className="inline-block text-xs font-medium text-dark-blue-400">
+                      Current Team
+                    </span>
+
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <AvatarGroup size="sm" excess>
+                            <Avatar
+                              className="border-2 border-white hover:ring-0 active:ring-0"
+                              size="sm"
+                            >
+                              <AvatarImage src="/woman.jpg" alt="Woman" />
+                              <AvatarFallback>W</AvatarFallback>
+                            </Avatar>
+                            <Avatar
+                              className="border-2 border-white hover:ring-0 active:ring-0"
+                              size="sm"
+                            >
+                              <AvatarImage src="/woman.jpg" alt="Woman" />
+                              <AvatarFallback>W</AvatarFallback>
+                            </Avatar>
+                            <Avatar
+                              className="border-2 border-white hover:ring-0 active:ring-0"
+                              size="sm"
+                            >
+                              <AvatarImage src="/woman.jpg" alt="Woman" />
+                              <AvatarFallback>W</AvatarFallback>
+                            </Avatar>
+                            <Avatar
+                              className="border-2 border-white hover:ring-0 active:ring-0"
+                              size="sm"
+                            >
+                              <AvatarImage src="/woman.jpg" alt="Woman" />
+                              <AvatarFallback>W</AvatarFallback>
+                            </Avatar>
+                            <Avatar
+                              className="border-2 border-white hover:ring-0 active:ring-0"
+                              size="sm"
+                            >
+                              <AvatarImage src="/woman.jpg" alt="Woman" />
+                              <AvatarFallback>W</AvatarFallback>
+                            </Avatar>
+                            <Avatar
+                              className="border-2 border-white hover:ring-0 active:ring-0"
+                              size="sm"
+                            >
+                              <AvatarImage src="/woman.jpg" alt="Woman" />
+                              <AvatarFallback>W</AvatarFallback>
+                            </Avatar>
+                          </AvatarGroup>
+                        </TooltipTrigger>
+                        <TooltipContent className="p-0" size="md">
+                          <ScrollArea
+                            className="h-[192px] p-3 pr-4"
+                            scrollBar={
+                              <ScrollBar
+                                className="w-4 p-1"
+                                thumbClassName="bg-white/20"
+                              />
+                            }
+                          >
+                            <div className="space-y-3 pr-5">
+                              <div className="flex items-center gap-x-[18px]">
+                                <div className="flex items-center gap-x-2 flex-auto">
+                                  <Avatar>
+                                    <AvatarImage src="/woman.jpg" alt="Woman" />
+                                    <AvatarFallback>W</AvatarFallback>
+                                  </Avatar>
+
+                                  <div className="flex flex-col flex-auto">
+                                    <div className="flex items-center gap-x-0.5">
+                                      <span className="text-xs leading-5 font-semibold text-white">
+                                        Sevil
+                                      </span>
+                                      <span className="text-[10px] leading-none font-light text-white">
+                                        @designsuperstar23
+                                      </span>
+                                    </div>
+                                    <span className="text-[10px] font-light text-white">
+                                      Full-stack Developer
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <span className="text-sm font-semibold text-white leading-5">
+                                  $75{" "}
+                                  <span className="text-[10px] font-light leading-5">
+                                    /hr
+                                  </span>
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-x-[18px]">
+                                <div className="flex items-center gap-x-2 flex-auto">
+                                  <Avatar>
+                                    <AvatarImage src="/woman.jpg" alt="Woman" />
+                                    <AvatarFallback>W</AvatarFallback>
+                                  </Avatar>
+
+                                  <div className="flex flex-col flex-auto">
+                                    <div className="flex items-center gap-x-0.5">
+                                      <span className="text-xs leading-5 font-semibold text-white">
+                                        Sevil
+                                      </span>
+                                      <span className="text-[10px] leading-none font-light text-white">
+                                        @designsuperstar23
+                                      </span>
+                                    </div>
+                                    <span className="text-[10px] font-light text-white">
+                                      Full-stack Developer
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <span className="text-sm font-semibold text-white leading-5">
+                                  $75{" "}
+                                  <span className="text-[10px] font-light leading-5">
+                                    /hr
+                                  </span>
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-x-[18px]">
+                                <div className="flex items-center gap-x-2 flex-auto">
+                                  <Avatar>
+                                    <AvatarImage src="/woman.jpg" alt="Woman" />
+                                    <AvatarFallback>W</AvatarFallback>
+                                  </Avatar>
+
+                                  <div className="flex flex-col flex-auto">
+                                    <div className="flex items-center gap-x-0.5">
+                                      <span className="text-xs leading-5 font-semibold text-white">
+                                        Sevil
+                                      </span>
+                                      <span className="text-[10px] leading-none font-light text-white">
+                                        @designsuperstar23
+                                      </span>
+                                    </div>
+                                    <span className="text-[10px] font-light text-white">
+                                      Full-stack Developer
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <span className="text-sm font-semibold text-white leading-5">
+                                  $75{" "}
+                                  <span className="text-[10px] font-light leading-5">
+                                    /hr
+                                  </span>
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-x-[18px]">
+                                <div className="flex items-center gap-x-2 flex-auto">
+                                  <Avatar>
+                                    <AvatarImage src="/woman.jpg" alt="Woman" />
+                                    <AvatarFallback>W</AvatarFallback>
+                                  </Avatar>
+
+                                  <div className="flex flex-col flex-auto">
+                                    <div className="flex items-center gap-x-0.5">
+                                      <span className="text-xs leading-5 font-semibold text-white">
+                                        Sevil
+                                      </span>
+                                      <span className="text-[10px] leading-none font-light text-white">
+                                        @designsuperstar23
+                                      </span>
+                                    </div>
+                                    <span className="text-[10px] font-light text-white">
+                                      Full-stack Developer
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <span className="text-sm font-semibold text-white leading-5">
+                                  $75{" "}
+                                  <span className="text-[10px] font-light leading-5">
+                                    /hr
+                                  </span>
+                                </span>
+                              </div>
+                            </div>
+                          </ScrollArea>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+
+                  <div className="mt-6 space-y-3">
+                    <div className="flex items-center gap-x-[6.4px]">
+                      <Clock className="size-[18px] text-primary-500" />
+                      <span className="text-sm leading-none font-medium text-dark-blue-400">
+                        Starting from a 6 month duration
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-x-[6.4px]">
+                      <Users03 className="size-[18px] text-primary-500" />
+                      <span className="text-sm leading-none font-medium text-dark-blue-400">
+                        Minimum 4 team members
+                      </span>
+                    </div>
+                  </div>
+
+                  <Button
+                    size="lg"
+                    className="mt-6 w-full border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white"
+                    variant="outlined"
+                  >
+                    Start Project
+                  </Button>
+
+                  <div className="flex items-center gap-x-1 mt-6">
+                    <span className="text-sm font-medium leading-none text-dark-blue-400">
+                      Additional payment plans available with
+                    </span>
+
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger className="focus-visible:outline-none text-gray-500">
+                          <Info className="size-[17px]" />
+                        </TooltipTrigger>
+
+                        <TooltipContent className="max-w-[286px]" visual="gray">
+                          Select Klarna at checkout to split your purchase into
+                          smaller payments over time. Klarna makes it easy to
+                          buy now and pay later, with no impact on your credit
+                          score.
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                </div>
+
+                <div className="h-[50px] rounded-b-lg bg-gray-50 flex items-center justify-evenly">
+                  <div className="inline-flex items-center gap-x-2">
+                    <Flag className="size-[15px] text-gray-500" />
+                    <span className="text-sm font-extralight leading-5 text-gray-500 hover:underline cursor-pointer">
+                      Report
+                    </span>
+                  </div>
+
+                  <div className="inline-flex items-center gap-x-2">
+                    <HelpCircle className="size-[15px] text-gray-500" />
+                    <span className="text-sm font-extralight leading-5 text-gray-500 hover:underline cursor-pointer">
+                      Help
+                    </span>
+                  </div>
+
+                  <div className="inline-flex items-center gap-x-2">
+                    <Share06 className="size-[15px] text-gray-500" />
+                    <span className="text-sm font-extralight leading-5 text-gray-500 hover:underline cursor-pointer">
+                      Share
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-3 p-6">
+                <h1 className="text-base leading-none font-semibold text-dark-blue-400">
+                  Peace of Mind Guarantee
+                </h1>
+
+                <div className="mt-5 space-y-5">
+                  <article className="flex items-start gap-x-2">
+                    <Rocket02 className="size-[18px] text-dark-blue-400" />
+                    <div className="flex-auto space-y-1">
+                      <h1 className="text-xs leading-none font-semibold text-dark-blue-400">
+                        Peace of Mind Guarantee
+                      </h1>
+                      <p className="text-xs leading-none font-extralight text-dark-blue-400">
+                        If the project falls short, you can initiate a dispute
+                        for a full refund.
+                      </p>
+                    </div>
+                  </article>
+                  <article className="flex items-start gap-x-2">
+                    <ShieldZap className="size-[18px] text-dark-blue-400" />
+                    <div className="flex-auto space-y-1">
+                      <h1 className="text-xs leading-none font-semibold text-dark-blue-400">
+                        Peace of Mind Guarantee
+                      </h1>
+                      <p className="text-xs leading-none font-extralight text-dark-blue-400">
+                        If the project falls short, you can initiate a dispute
+                        for a full refund.
+                      </p>
+                    </div>
+                  </article>
+                </div>
+
+                <article className="flex items-start gap-x-2 p-3 mt-3 rounded-lg bg-primary-50">
+                  <ShieldDollar className="size-[18px] text-primary-500" />
+                  <div className="flex-auto">
+                    <p className="text-xs leading-none font-extralight text-dark-blue-400">
+                      If the project falls short, you can initiate a dispute for
+                      a full refund.
+                    </p>
+                  </div>
+                </article>
+
+                <div className="mt-3">
+                  <span className="text-xs text-dark-blue-400">
+                    We securely process payments and release upon rating. We
+                    securely process payments{" "}
+                    <Button className="text-xs" variant="link">
+                      See Policy Details.
+                    </Button>
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

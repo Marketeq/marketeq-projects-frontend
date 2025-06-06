@@ -18,12 +18,12 @@ interface PhoneNumberInputProps<TFormValues extends FieldValues = FieldValues>
   onChange?: (value: string) => void
 }
 
-const phoneUtil = PhoneNumberUtil.getInstance()
+export const phoneUtil = PhoneNumberUtil.getInstance()
 
 export const isPhoneValid = (value: string) => {
   try {
     return phoneUtil.isValidNumber(phoneUtil.parseAndKeepRawInput(value))
-  } catch (error) {
+  } catch {
     return false
   }
 }
