@@ -30,7 +30,7 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
       - name: Auto-merge if DeepSource passes
-        if: success()
+        if: github.event_name == 'pull_request' && success()
         run: |
           gh pr merge "${{ github.event.pull_request.html_url || '' }}" --merge --auto
         env:
