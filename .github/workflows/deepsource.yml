@@ -1,4 +1,4 @@
-name: DeepSource Analysis
+name: DeepSource Test Coverage
 
 on:
   push:
@@ -13,30 +13,28 @@ permissions:
   pull-requests: write
 
 jobs:
-  deepsource:
+  report-coverage:
     runs-on: ubuntu-latest
+    env:
+      DEEPSOURCE_DSN: ${{ secrets.DEEPSOURCE_DSN }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Run DeepSource Analysis
-        uses: deepsource/action@v0.1
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          token: ${{ secrets.DEEPSOURCE_TOKEN }}
+          node-version: 18
 
-      - name: Install GitHub CLI
-        run: |
-          sudo apt update
-          sudo apt install gh -y
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Authenticate GitHub CLI
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+      - name: Run tests with coverage
+        run: npm run test -- --coverage --coverageReporters=lcov
 
-      - name: Auto-merge if DeepSource passes
-        if: success()
-        run: |
-          gh pr merge "${{ github.event.pull_request.html_url || '' }}" --merge --auto
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
+      - name: Install DeepSource CLI
+        run: curl https://deepsource.io/cli | sh
+
+      - name: Report test coverage
+        run: ./bin/deepsource report --analyzer test-coverage --key javascript --value-file coverage/lcov.info
