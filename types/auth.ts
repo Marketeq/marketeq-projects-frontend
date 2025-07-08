@@ -20,3 +20,7 @@ export type LinkedInLoginParams = {
 export type CheckUsernameParams = {
   username: string
 }
+
+export type CreatePasswordParams = {
+  password: string
+}

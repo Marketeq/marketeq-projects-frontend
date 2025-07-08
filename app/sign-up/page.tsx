@@ -17,6 +17,7 @@ import GoogleLoginButton from "@/components/auth/GoogleLoginButton"
 import LinkedInLoginButton from "@/components/auth/LinkedInLoginButton"
 import { Logo } from "@/components/icons"
 import { MarketeqIcon1 } from "@/components/marketeq-icon-1"
+import NextLink from "@/components/next-link"
 import {
   Button,
   Checkbox,
@@ -263,21 +264,20 @@ export default function SignUp() {
                     strokeWidth={2}
                   />
                 ) : (
-                  "Login to my account"
+                  "Create my account"
                 )}
               </Button>
 
               <div className="flex gap-x-1 mt-10 md:mt-[50px] items-center">
                 <span className="text-sm leading-6 text-[#68707B]">
-                  Don’t have an account?
+                  Already have an account?
                 </span>
-                <Button
-                  className="underline font-normal"
-                  variant="link"
-                  size="sm"
+                <NextLink
+                  href="/sign-in"
+                  className="underline font-normal text-blue-500 text-sm leading-6"
                 >
-                  Sign up?
-                </Button>
+                  Sign in?
+                </NextLink>
               </div>
             </form>
           </div>
