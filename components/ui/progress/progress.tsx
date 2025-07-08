@@ -142,11 +142,11 @@ const CircularProgress = React.forwardRef<
             strokeDashoffset={offset}
           />
         </svg>
-        {show && (
+        {/* {show && (
           <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             {value}%
           </span>
-        )}
+        )} */}
       </div>
     )
   }
