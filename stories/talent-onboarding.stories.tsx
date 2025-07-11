@@ -1,7 +1,20 @@
+import jobTitles from "@/public/mock/job_titles.json"
+import languages from "@/public/mock/languages.json";
+import projects from "@/public/mock/projectsnew.json";
+import industries from "@/public/mock/industries.json";
 import React, { useEffect, useState } from "react"
+import Fuse from 'fuse.js'
+import { LocationAutocomplete } from '@/components/ui/autcomplete/location-autocomplete';
 import { HOT_KEYS } from "@/utils/constants"
 import { getIsNotEmpty, hookFormHasError } from "@/utils/functions"
 import { useControllableState, useUncontrolledState } from "@/utils/hooks"
+import {
+  spellCheck,
+  profanityCheck,
+  formatCheck,
+  categoryCheck,
+  submitTextToModerationQueue,
+} from "@/utils/jobTitleValidation";
 import {
   AlertCircle,
   Briefcase02,
@@ -668,13 +681,14 @@ export const CreateYourUsername = () => {
 
 const shareYourGoalsFormSchema = z.object({
   location: z.string().min(1, "Please enter at least 1 character(s)"),
-  languages: z.string().min(1, "Please enter at least 1 character(s)"),
+  languages: z.array(z.string()).min(1, "Please select at least one language"),
 })
 
 type ShareYourGoalsFormValues = z.infer<typeof shareYourGoalsFormSchema>
 
 export const ShareYourLocation = () => {
   const {
+    control,
     register,
     formState: { errors },
     handleSubmit,
@@ -779,19 +793,18 @@ export const ShareYourLocation = () => {
           <form className="mt-[50px]" onSubmit={handleSubmit(onSubmit)}>
             <div className="space-y-6">
               <div className="flex flex-col gap-y-1.5">
-                <Label
-                  className="text-dark-blue-400"
-                  htmlFor="username"
-                  size="sm"
-                >
-                  What’s your location?
-                </Label>
-                <Input
-                  id="username"
-                  placeholder="Enter your city or town"
-                  {...register("location")}
-                  isInvalid={hookFormHasError({ errors, name: "location" })}
-                />
+                <Controller
+                control={control}
+                name="location"
+                render={({ field: { value, onChange } }) => (
+                  <LocationAutocomplete
+                    value={value}
+                    onValueChange={onChange}
+                    invalid={hookFormHasError({ errors, name: "location" })}
+                  />
+                )}
+              />
+
                 <HookFormErrorMessage
                   errors={errors}
                   name="location"
@@ -801,18 +814,16 @@ export const ShareYourLocation = () => {
                 />
               </div>
               <div className="flex flex-col gap-y-1.5">
-                <Label
-                  className="text-dark-blue-400"
-                  htmlFor="speaking-language"
-                  size="sm"
-                >
-                  What languages do you speak?
-                </Label>
-                <Input
-                  id="speaking-language"
-                  placeholder="Enter your languages"
-                  {...register("languages")}
-                  isInvalid={hookFormHasError({ errors, name: "languages" })}
+                <Controller
+                  control={control}
+                  name="languages"
+                  render={({ field: { value, onChange } }) => (
+                    <LanguageSelectorSingle
+                      value={value}
+                      onValueChange={onChange}
+                      invalid={hookFormHasError({ errors, name: "languages" })}
+                    />
+                  )}
                 />
                 <HookFormErrorMessage
                   errors={errors}
@@ -844,6 +855,7 @@ export const ShareYourLocation = () => {
     </div>
   )
 }
+
 
 const skills = [
   "JavaScript",
@@ -1019,293 +1031,290 @@ export const ShowcaseYourTalent = () => {
       recentJobTitle: "",
       studying: false,
     },
-  })
-  const onSubmit: SubmitHandler<ShowcaseYourTalentFormValues> = (values) => {}
+  });
+
+  const onSubmit: SubmitHandler<ShowcaseYourTalentFormValues> = (values) => {};
+
+  // ✅ Hook inside component to fetch job titles
+  const defaultJobTitles = jobTitles.map((job) => job.label);
+const [jobTitleLabels, setJobTitleLabels] = useState<string[]>([]);
+
+useEffect(() => {
+  const loadTitles = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/talent/autocomplete?type=job-title")
+      const dynamicTitles = (await res.json()).map((entry: any) => entry.value);
+      const combined = Array.from(new Set([...defaultJobTitles, ...dynamicTitles])).sort((a, b) =>
+        a.localeCompare(b)
+      );
+      setJobTitleLabels(combined);
+    } catch (err) {
+      console.error("Failed to fetch dynamic job titles", err);
+      setJobTitleLabels(defaultJobTitles);
+    }
+  };
+
+  loadTitles();
+}, []);
+
+
   return (
-    <div className="min-h-screen flex">
-      <div className="relative p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
-        <Logo className="h-9 w-[245px] shrink-0" />
+  <div className="min-h-screen flex">
+    {/* ✅ Left panel with blue sidebar and branding */}
+    <div className="relative p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
+      <Logo className="h-9 w-[245px] shrink-0" />
 
-        <div className="mt-[80px]">
-          <h1 className="text-[30px] leading-[36.31px] font-bold text-white">
-            The Future of Remote Work Is Here...
-          </h1>
+      <div className="mt-[80px]">
+        <h1 className="text-[30px] leading-[36.31px] font-bold text-white">
+          The Future of Remote Work Is Here...
+        </h1>
 
-          <ul className="mt-[30px] space-y-5">
-            <li className="flex gap-x-3">
-              <Check className="size-7 shrink-0 text-primary-500" />
-
-              <div className="pt-[5px] space-y-1 flex-auto">
-                <h3 className="text-base leading-[19.36px] text-white font-bold">
-                  Find Tailored Projects
-                </h3>
-                <p className="text-sm leading-[16.94px] text-white">
-                  Discover curated matches to elevate your talent.
-                </p>
-              </div>
-            </li>
-            <li className="flex gap-x-3">
-              <Check className="size-7 shrink-0 text-primary-500" />
-
-              <div className="pt-[5px] space-y-1 flex-auto">
-                <h3 className="text-base leading-[19.36px] text-white font-bold">
-                  Connect with Ideal Teams
-                </h3>
-                <p className="text-sm leading-[16.94px] text-white">
-                  Collaborate with teams that align with your expertise.
-                </p>
-              </div>
-            </li>
-            <li className="flex gap-x-3">
-              <Check className="size-7 shrink-0 text-primary-500" />
-
-              <div className="pt-[5px] space-y-1 flex-auto">
-                <h3 className="text-base leading-[19.36px] text-white font-bold">
-                  Get Paid, Stress Free
-                </h3>
-                <p className="text-sm leading-[16.94px] text-white">
-                  Secure contracts. Fast, hassle-free payments every time.
-                </p>
-              </div>
-            </li>
-          </ul>
-        </div>
-
-        <Triangles className="absolute bottom-0 right-0" />
-
-        <div className="relative mt-auto flex flex-col gap-y-5">
-          <span className="text-base leading-[19.36px] text-white focus-visible:outline-none">
-            Already have an account?
-          </span>
-
-          <div className="relative self-start">
-            <Button
-              className="hover:bg-white hover:text-dark-blue-400 border-white/[.2] text-white hover:border-white"
-              size="lg"
-              visual="gray"
-              variant="outlined"
-            >
-              Sign In
-            </Button>
-            <Pointer className="absolute top-[34px] right-0 -rotate-6" />
-          </div>
-        </div>
+        <ul className="mt-[30px] space-y-5">
+          <li className="flex gap-x-3">
+            <Check className="size-7 shrink-0 text-primary-500" />
+            <div className="pt-[5px] space-y-1 flex-auto">
+              <h3 className="text-base leading-[19.36px] text-white font-bold">
+                Find Tailored Projects
+              </h3>
+              <p className="text-sm leading-[16.94px] text-white">
+                Discover curated matches to elevate your talent.
+              </p>
+            </div>
+          </li>
+          <li className="flex gap-x-3">
+            <Check className="size-7 shrink-0 text-primary-500" />
+            <div className="pt-[5px] space-y-1 flex-auto">
+              <h3 className="text-base leading-[19.36px] text-white font-bold">
+                Connect with Ideal Teams
+              </h3>
+              <p className="text-sm leading-[16.94px] text-white">
+                Collaborate with teams that align with your expertise.
+              </p>
+            </div>
+          </li>
+          <li className="flex gap-x-3">
+            <Check className="size-7 shrink-0 text-primary-500" />
+            <div className="pt-[5px] space-y-1 flex-auto">
+              <h3 className="text-base leading-[19.36px] text-white font-bold">
+                Get Paid, Stress Free
+              </h3>
+              <p className="text-sm leading-[16.94px] text-white">
+                Secure contracts. Fast, hassle-free payments every time.
+              </p>
+            </div>
+          </li>
+        </ul>
       </div>
 
-      <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
-        <div className="max-w-[560px] w-full mx-auto">
-          <div className="flex gap-x-2 items-center">
-            <CircularProgress
-              show={false}
-              size={15.43}
-              strokeWidth={2.5}
-              value={30}
-            />
-            <span className="text-[11px] leading-[15.43px] text-gray-700">
-              STEP 4 / 5
-            </span>
+      <Triangles className="absolute bottom-0 right-0" />
+    </div>
+
+    {/* ✅ Right content panel */}
+    <div className="relative flex justify-stretch items-center flex-auto py-[100px] px-[200px]">
+      <div className="max-w-[560px] w-full mx-auto">
+        <div className="flex gap-x-2 items-center">
+          <CircularProgress
+            show={false}
+            size={15.43}
+            strokeWidth={2.5}
+            value={30}
+          />
+          <span className="text-[11px] leading-[15.43px] text-gray-700">
+            STEP 4 / 5
+          </span>
+        </div>
+
+        <h1 className="text-2xl leading-[36px] mt-2 text-dark-blue-400 font-semibold">
+          Showcase your talent
+        </h1>
+        <p className="text-base leading-[19.36px] text-dark-blue-400 mt-2 font-light">
+          Highlight your skills and expertise to attract the projects that suit you best
+        </p>
+
+        <form className="mt-[50px]" onSubmit={handleSubmit(onSubmit)}>
+          <div className="space-y-6">
+            {/* Job Title */}
+            <div className="flex flex-col gap-y-1.5">
+              <Controller
+                control={control}
+                name="recentJobTitle"
+                render={({ field: { value, onChange } }) => (
+                  <YourJobTitle
+                    value={value}
+                    onValueChange={onChange}
+                    invalid={hookFormHasError({ errors, name: "recentJobTitle" })}
+                    jobTitleLabels={jobTitleLabels}
+                  />
+                )}
+              />
+              <HookFormErrorMessage
+                errors={errors}
+                name="recentJobTitle"
+                render={({ message }) => (
+                  <ErrorMessage size="sm">{message}</ErrorMessage>
+                )}
+              />
+            </div>
+
+            {/* Industry */}
+            <div className="flex flex-col gap-y-1.5">
+              <Controller
+                control={control}
+                name="industriesWorkedWith"
+                render={({ field: { value, onChange } }) => (
+                  <IndustrySelectorSingle
+                    value={value ? [value] : []}
+                    onValueChange={(arr) => onChange(arr[0] || "")}
+                    invalid={hookFormHasError({ errors, name: "industriesWorkedWith" })}
+                  />
+                )}
+              />
+              <HookFormErrorMessage
+                errors={errors}
+                name="industriesWorkedWith"
+                render={({ message }) => (
+                  <ErrorMessage size="sm">{message}</ErrorMessage>
+                )}
+              />
+            </div>
+
+            {/* Multi Skills */}
+            <div className="flex flex-col gap-y-1.5">
+              <Controller
+                control={control}
+                name="yourTopSkills"
+                render={({ field: { value, onChange } }) => (
+                  <MultiJobTitles
+                    value={value}
+                    onValueChange={onChange}
+                    invalid={hookFormHasError({ errors, name: "yourTopSkills" })}
+                    jobTitleLabels={jobTitleLabels}
+                  />
+                )}
+              />
+              <HookFormErrorMessage
+                errors={errors}
+                name="yourTopSkills"
+                render={({ message }) => (
+                  <ErrorMessage size="sm">{message}</ErrorMessage>
+                )}
+              />
+            </div>
+
+            {/* Checkbox */}
+            <div className="mt-6 flex flex-row-reverse justify-end items-center gap-x-5">
+              <Label size="sm" htmlFor="studying">
+                I’m currently a student
+              </Label>
+              <Controller
+                control={control}
+                name="studying"
+                render={({ field: { value, onChange, ...field } }) => (
+                  <Checkbox
+                    id="studying"
+                    checked={value}
+                    onCheckedChange={onChange}
+                    {...field}
+                  />
+                )}
+              />
+            </div>
           </div>
 
-          <h1 className="text-2xl leading-[36px] mt-2 text-dark-blue-400 font-semibold">
-            Showcase your talent
-          </h1>
+          <div className="mt-[50px] flex items-center justify-between">
+            <Button size="md" variant="outlined" visual="gray" type="button">
+              Back
+            </Button>
 
-          <p className="text-base leading-[19.36px] text-dark-blue-400 mt-2 font-light">
-            Highlight your skills and expertise to attract the projects that
-            suit you best
-          </p>
-
-          <form className="mt-[50px]" onSubmit={handleSubmit(onSubmit)}>
-            <div className="space-y-6">
-              <div className="flex flex-col gap-y-1.5">
-                <Label
-                  size="sm"
-                  className="text-dark-blue-400"
-                  htmlFor="recent-job-title"
-                >
-                  What’s your most recent job title?
-                </Label>
-                <Input
-                  id="recent-job-title"
-                  placeholder="e.g., Software Developer"
-                  {...register("recentJobTitle")}
-                  isInvalid={hookFormHasError({
-                    errors,
-                    name: "recentJobTitle",
-                  })}
-                />
-                <HookFormErrorMessage
-                  errors={errors}
-                  name="recentJobTitle"
-                  render={({ message }) => (
-                    <ErrorMessage size="sm">{message}</ErrorMessage>
-                  )}
-                />
-              </div>
-              <div className="flex flex-col gap-y-1.5">
-                <Label
-                  size="sm"
-                  className="text-dark-blue-400"
-                  htmlFor="industries"
-                >
-                  Which industries have you worked in?
-                </Label>
-                <Input
-                  id="industries"
-                  placeholder="e.g., Banking"
-                  {...register("industriesWorkedWith")}
-                  isInvalid={hookFormHasError({
-                    errors,
-                    name: "industriesWorkedWith",
-                  })}
-                />
-                <HookFormErrorMessage
-                  errors={errors}
-                  name="industriesWorkedWith"
-                  render={({ message }) => (
-                    <ErrorMessage size="sm">{message}</ErrorMessage>
-                  )}
-                />
-              </div>
-
-              <div className="flex flex-col gap-y-1.5">
-                <Controller
-                  control={control}
-                  name="yourTopSkills"
-                  render={({ field: { value, onChange } }) => (
-                    <TopSkills
-                      value={value}
-                      onValueChange={onChange}
-                      invalid={hookFormHasError({
-                        errors,
-                        name: "yourTopSkills",
-                      })}
-                    />
-                  )}
-                />
-                <HookFormErrorMessage
-                  errors={errors}
-                  name="yourTopSkills"
-                  render={({ message }) => (
-                    <ErrorMessage size="sm">{message}</ErrorMessage>
-                  )}
-                />
-              </div>
-
-              <div className="mt-6 flex flex-row-reverse justify-end items-center gap-x-5">
-                <Label size="sm" htmlFor="studying">
-                  I’m currently a student{" "}
-                </Label>
-                <Controller
-                  control={control}
-                  name="studying"
-                  render={({ field: { value, onChange, ...field } }) => (
-                    <Checkbox
-                      id="studying"
-                      checked={value}
-                      onCheckedChange={onChange}
-                      {...field}
-                    />
-                  )}
-                />
-              </div>
-            </div>
-
-            <div className="mt-[50px] flex items-center justify-between">
-              <Button size="md" variant="outlined" visual="gray" type="button">
-                Back
+            <div className="flex items-center gap-x-10">
+              <Button variant="ghost" visual="gray" type="button">
+                Skip
               </Button>
-
-              <div className="flex items-center gap-x-10">
-                <Button variant="ghost" visual="gray" type="button">
-                  Skip
-                </Button>
-                <Button size="md" visual="primary">
-                  Continue
-                </Button>
-              </div>
+              <Button size="md" visual="primary">
+                Continue
+              </Button>
             </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
     </div>
-  )
-}
+  </div>
+);
+};
+
+
+const defaultProjectLabels = projects.map((p) => p.label);
 
 const ProjectPreferences = ({
   invalid,
   onValueChange,
   value: valueProp,
 }: {
-  invalid?: boolean
-  onValueChange?: (values: string[]) => void
-  value?: string[]
+  invalid?: boolean;
+  onValueChange?: (values: string[]) => void;
+  value?: string[];
 }) => {
-  const [inputValue, setInputValue] = useState("")
+  const [inputValue, setInputValue] = useState("");
+  const [open, setOpen] = useState(false);
   const [values, setValues] = useControllableState<string[]>({
     defaultValue: [],
     onChange: onValueChange,
     value: valueProp,
-  })
-  const [selected, setSelected] = useState<string[]>([])
+  });
+  const [selected, setSelected] = useState<string[]>([]);
+  const [projectLabels, setProjectLabels] = useState<string[]>([]);
 
-  const resetInputValue = () => setInputValue("")
+  // ✅ Fetch dynamic project labels
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/talent/autocomplete?type=project");
+        const dynamicProjects = (await res.json()).map((entry: any) => entry.value);
+        const combined = Array.from(
+          new Set([...defaultProjectLabels, ...dynamicProjects])
+        ).sort((a, b) => a.localeCompare(b));
+        setProjectLabels(combined);
+      } catch (err) {
+        console.error("❌ Failed to fetch dynamic projects:", err);
+        setProjectLabels(defaultProjectLabels);
+      }
+    };
 
-  const addValue = () => {
-    if (!inputValue) return
+    loadProjects();
+  }, []);
 
-    setValues((prev) => {
-      return prev.includes(inputValue) ? prev : [...prev, inputValue]
-    })
-    resetInputValue()
-  }
-
-  const removeValue = (index: number) => {
-    const tag = values[index]
-
-    setValues((prev) => {
-      const nextState = prev.filter((_, i) => i !== index)
-      return nextState
-    })
-    setSelected((prev) => {
-      const nextState = prev.filter((value) => value !== tag)
-      return nextState
-    })
-  }
-
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const {
-      target: { value },
-    } = event
-    setInputValue(value)
-  }
-
-  const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    const { key } = event
-    if (key === HOT_KEYS.ENTER) addValue()
-  }
-
-  const filteredRoles = skills.filter((skill) =>
-    skill.toLowerCase().includes(inputValue.toLowerCase())
-  )
-
+  // ✅ Add selected values to controlled state
   useEffect(() => {
     setValues((preValues) => {
-      const filteredSelected = selected.filter(
-        (value) => !preValues.includes(value)
-      )
-      return [...preValues, ...filteredSelected]
-    })
-  }, [selected])
+      const filteredSelected = selected.filter((value) => !preValues.includes(value));
+      return [...preValues, ...filteredSelected];
+    });
+  }, [selected]);
+
+  const fuse = new Fuse(projectLabels, {
+    includeScore: true,
+    threshold: 0.3,
+  });
+
+  const filteredRoles = inputValue
+    ? (() => {
+        const results = fuse.search(inputValue);
+        if (results.length === 0) return [];
+
+        const [top, ...rest] = results;
+        const topItem = top.item;
+        const restSorted = rest
+          .map((r) => r.item)
+          .filter((item) => item !== topItem)
+          .sort((a, b) => a.localeCompare(b));
+
+        return [topItem, ...restSorted];
+      })()
+    : projectLabels;
 
   return (
     <div className="space-y-3">
-      <Combobox
-        className="w-full"
-        value={selected}
-        onChange={setSelected}
-        multiple
-      >
+      <Combobox value={selected} onChange={setSelected} multiple>
         <ComboboxTrigger className="flex flex-col gap-y-1.5">
           <ComboboxLabel size="sm" className="text-dark-blue-400">
             What types of projects would you like to work on?
@@ -1314,19 +1323,41 @@ const ProjectPreferences = ({
             size="lg"
             className="pl-3.5"
             placeholder="Enter your project preferences (e.g., Data Analysis)"
-            onChange={onChange}
-            onKeyDown={onKeyDown}
             value={inputValue}
+            onFocus={() => setOpen(true)}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+              setOpen(true);
+            }}
+            onBlur={() => setTimeout(() => setOpen(false), 150)}
+            onKeyDown={async (e) => {
+              if (e.key === "Tab" || e.key === "Enter") {
+                if (!projectLabels.includes(inputValue)) {
+                  const isValid =
+                    await spellCheck(inputValue) &&
+                    profanityCheck(inputValue) &&
+                    formatCheck(inputValue) &&
+                    categoryCheck(inputValue);
+
+                  if (isValid) {
+                    console.log("🚀 Submitting project:", inputValue);
+                    await submitTextToModerationQueue(inputValue, "project");
+                  } else {
+                    console.warn("❌ Rejected project:", inputValue);
+                  }
+                }
+              }
+            }}
             invalid={invalid}
           />
         </ComboboxTrigger>
 
-        <ScaleOutIn afterLeave={() => setInputValue("")}>
+        <ScaleOutIn show={open} afterLeave={() => setInputValue("")}>
           <ComboboxOptions>
             <ScrollArea viewportClassName="max-h-[304px]">
-              {filteredRoles.map((role, index) => (
-                <ComboboxOption key={index} value={role}>
-                  {role}
+              {filteredRoles.map((project, index) => (
+                <ComboboxOption key={index} value={project}>
+                  {project}
                 </ComboboxOption>
               ))}
             </ScrollArea>
@@ -1334,14 +1365,17 @@ const ProjectPreferences = ({
         </ScaleOutIn>
       </Combobox>
 
-      {getIsNotEmpty(values) && (
+      {values.length > 0 && (
         <div className="flex flex-wrap gap-3">
           {values.map((item, index) => (
             <Badge visual="primary" key={index}>
               {item}
               <button
                 className="focus-visible:outline-none"
-                onClick={() => removeValue(index)}
+                onClick={() => {
+                  const newValues = values.filter((_, i) => i !== index);
+                  setSelected(newValues);
+                }}
                 type="button"
               >
                 <X2 className="h-3 w-3" />
@@ -1351,8 +1385,10 @@ const ProjectPreferences = ({
         </div>
       )}
     </div>
-  )
-}
+  );
+};
+
+
 
 const YourAvailability = ({
   invalid,
@@ -1720,3 +1756,432 @@ export const LastStep = () => {
     </div>
   )
 }
+
+const YourJobTitle = ({
+  value,
+  onValueChange,
+  invalid,
+  jobTitleLabels,
+}: {
+  value?: string;
+  onValueChange?: (val: string) => void;
+  invalid?: boolean;
+  jobTitleLabels: String[];
+}) => {
+  const [inputValue, setInputValue] = useState(value || "");
+  const [open, setOpen] = useState(false);
+
+  const fuse = new Fuse(jobTitleLabels, {
+    includeScore: true,
+    threshold: 0.3,
+  });
+
+  const filtered = inputValue
+  ? (() => {
+      const results = fuse.search(inputValue);
+      if (results.length === 0) return [];
+
+      const [top, ...rest] = results;
+      const topItem = top.item;
+      const restSorted = rest
+        .map((r) => r.item)
+        .filter((item) => item !== topItem)
+        .sort((a, b) => a.toString().localeCompare(b.toString()))
+
+      return [topItem, ...restSorted];
+    })()
+  : jobTitleLabels;
+
+  return (
+    <div className="space-y-3">
+      <Combobox
+        value={value}
+        onChange={(val) => {
+          onValueChange?.(val);
+          setInputValue(val);
+          setOpen(false);
+        }}
+      >
+        <ComboboxTrigger className="flex flex-col gap-y-1.5">
+          <ComboboxLabel size="sm" className="text-dark-blue-400">
+            What’s your most recent job title?
+          </ComboboxLabel>
+          <ComboboxInput
+            size="lg"
+            className="pl-3.5"
+            placeholder="e.g., Software Developer"
+            value={inputValue}
+            onFocus={() => setOpen(true)}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+              setOpen(true);
+            }}
+            onKeyDown={async (e) => {
+              if (e.key === "Tab" || e.key === "Enter") {
+                if (!jobTitleLabels.includes(inputValue)) {
+                  const isValid =
+                    await spellCheck(inputValue) &&
+                    profanityCheck(inputValue) &&
+                    formatCheck(inputValue) &&
+                    categoryCheck(inputValue);
+            
+                  if (isValid) {
+                    console.log("🚀 Submitting title:", inputValue);
+                    await submitTextToModerationQueue(inputValue, "job-title");
+                  } else {
+                    console.warn("❌ Rejected title:", inputValue);
+                  }
+                }
+              }
+            }}                      
+            invalid={invalid}
+          />
+        </ComboboxTrigger>
+
+        <ScaleOutIn show={open} afterLeave={() => setInputValue("")}>
+          <ComboboxOptions>
+            <ScrollArea viewportClassName="max-h-[304px]">
+              {filtered.map((title, i) => (
+                <ComboboxOption key={i} value={title}>
+                  {title}
+                </ComboboxOption>
+              ))}
+            </ScrollArea>
+          </ComboboxOptions>
+        </ScaleOutIn>
+      </Combobox>
+    </div>
+  );
+};
+
+const MultiJobTitles = ({
+  value,
+  onValueChange,
+  invalid,
+  jobTitleLabels
+}: {
+  value?: string[];
+  onValueChange?: (val: string[]) => void;
+  invalid?: boolean;
+  jobTitleLabels: string[]
+}) => {
+  const [inputValue, setInputValue] = useState("");
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useControllableState<string[]>({
+    defaultValue: [],
+    value,
+    onChange: onValueChange,
+  });
+
+  const fuse = new Fuse(jobTitleLabels, {
+    includeScore: true,
+    threshold: 0.3,
+  });
+
+  const filtered = inputValue
+  ? (() => {
+      const results = fuse.search(inputValue);
+      if (results.length === 0) return [];
+
+      const [top, ...rest] = results;
+      const topItem = top.item;
+      const restSorted = rest
+        .map((r) => r.item)
+        .filter((item) => item !== topItem)
+        .sort((a, b) => a.localeCompare(b));
+
+      return [topItem, ...restSorted];
+    })()
+  : jobTitleLabels;
+
+  return (
+    <div className="space-y-3">
+      <Combobox value={selected} onChange={setSelected} multiple>
+        <ComboboxTrigger className="flex flex-col gap-y-1.5">
+          <ComboboxLabel size="sm" className="text-dark-blue-400">
+            Who are you looking to work with?
+          </ComboboxLabel>
+          <ComboboxInput
+            size="lg"
+            className="pl-3.5"
+            placeholder="Enter job titles related to your project"
+            value={inputValue}
+            onFocus={() => setOpen(true)}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+              setOpen(true);
+            }}
+            onKeyDown={async (e) => {
+              if (e.key === "Tab" || e.key === "Enter") {
+                if (!jobTitleLabels.includes(inputValue)) {
+                  const isValid =
+                    await spellCheck(inputValue) &&
+                    profanityCheck(inputValue) &&
+                    formatCheck(inputValue) &&
+                    categoryCheck(inputValue);
+            
+                  if (isValid) {
+                    console.log("🚀 Submitting title:", inputValue);
+                    await submitTextToModerationQueue(inputValue, "job-title");
+                  } else {
+                    console.warn("❌ Rejected title:", inputValue);
+                  }
+                }
+              }
+            }}                      
+            invalid={invalid}
+          />
+        </ComboboxTrigger>
+        <ScaleOutIn show={open} afterLeave={() => setInputValue("")}>
+          <ComboboxOptions>
+            <ScrollArea viewportClassName="max-h-[304px]">
+              {filtered.map((title, i) => (
+                <ComboboxOption key={i} value={title}>
+                  {title}
+                </ComboboxOption>
+              ))}
+            </ScrollArea>
+          </ComboboxOptions>
+        </ScaleOutIn>
+      </Combobox>
+
+      {selected.length > 0 && (
+        <div className="flex flex-wrap gap-3">
+          {selected.map((item, index) => (
+            <Badge visual="primary" key={index}>
+              {item}
+              <button
+                className="focus-visible:outline-none"
+                onClick={() =>
+                  setSelected(selected.filter((_, i) => i !== index))
+                }
+                type="button"
+              >
+                <X2 className="h-3 w-3" />
+              </button>
+            </Badge>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const languageLabels = languages.map((lang) => lang.label);
+
+const LanguageSelectorSingle = ({
+  value,
+  onValueChange,
+  invalid,
+}: {
+  value?: string[];
+  onValueChange?: (val: string[]) => void;
+  invalid?: boolean;
+}) => {
+  const [inputValue, setInputValue] = useState("");
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useControllableState<string[]>({
+    defaultValue: [],
+    value,
+    onChange: onValueChange,
+  });
+
+  const fuse = new Fuse(languageLabels, {
+    includeScore: true,
+    threshold: 0.3,
+  });
+
+  const filtered = inputValue
+    ? fuse
+        .search(inputValue)
+        .sort((a, b) => (a.score ?? 0) - (b.score ?? 0))
+        .map((r) => r.item)
+    : languageLabels;
+
+  return (
+    <div className="space-y-3">
+      <Combobox value={selected} onChange={setSelected} multiple>
+        <ComboboxTrigger className="flex flex-col gap-y-1.5">
+          <ComboboxLabel size="sm" className="text-dark-blue-400">
+            What languages do you speak?
+          </ComboboxLabel>
+          <ComboboxInput
+            size="lg"
+            className="pl-3.5"
+            placeholder="e.g., English, Spanish"
+            value={inputValue}
+            onFocus={() => setOpen(true)}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+              setOpen(true); // Keep open on change
+            }}
+            onBlur={() => setTimeout(() => setOpen(false), 150)} // Allow click events to register
+            invalid={invalid}
+          />
+        </ComboboxTrigger>
+
+        <ScaleOutIn show={open} afterLeave={() => setInputValue("")}>
+          <ComboboxOptions>
+            <ScrollArea viewportClassName="max-h-[304px]">
+              {filtered.map((lang, index) => (
+                <ComboboxOption key={index} value={lang}>
+                  {lang}
+                </ComboboxOption>
+              ))}
+            </ScrollArea>
+          </ComboboxOptions>
+        </ScaleOutIn>
+      </Combobox>
+
+      {selected.length > 0 && (
+        <div className="flex flex-wrap gap-3">
+          {selected.map((item, index) => (
+            <Badge visual="primary" key={index}>
+              {item}
+              <button
+                className="focus-visible:outline-none"
+                onClick={() =>
+                  setSelected(selected.filter((_, i) => i !== index))
+                }
+                type="button"
+              >
+                <X2 className="h-3 w-3" />
+              </button>
+            </Badge>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* updated IndustrySelectorSingle to support moderation */
+
+const defaultIndustryLabels = industries.map((industry) => industry.label);
+
+const IndustrySelectorSingle = ({
+  value,
+  onValueChange,
+  invalid,
+}: {
+  value?: string[];
+  onValueChange?: (val: string[]) => void;
+  invalid?: boolean;
+}) => {
+  const [inputValue, setInputValue] = useState("");
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useControllableState<string[]>({
+    defaultValue: [],
+    value,
+    onChange: onValueChange,
+  });
+
+  const [industryLabels, setIndustryLabels] = useState<string[]>([]); // ✅ moved inside
+
+  // ✅ Load dynamic industry titles from DB and combine with JSON
+  useEffect(() => {
+  const loadIndustries = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/talent/autocomplete?type=industry");
+      const data = await res.json();
+      const dynamicIndustries = data.map((entry: any) => entry.value);
+      const combined = Array.from(
+        new Set([...defaultIndustryLabels, ...dynamicIndustries])
+      ).sort((a, b) => a.localeCompare(b));
+      setIndustryLabels(combined);
+    } catch (err) {
+      console.error("❌ Failed to fetch industries from backend:", err);
+      setIndustryLabels(defaultIndustryLabels); // fallback
+    }
+  };
+
+  loadIndustries();
+}, []);
+
+  const fuse = new Fuse(industryLabels, {
+    includeScore: true,
+    threshold: 0.3,
+  });
+
+  const filtered = inputValue
+    ? fuse
+        .search(inputValue)
+        .sort((a, b) => (a.score ?? 0) - (b.score ?? 0))
+        .map((r) => r.item)
+    : industryLabels;
+
+  return (
+    <div className="space-y-3">
+      <Combobox value={selected} onChange={setSelected} multiple>
+        <ComboboxTrigger className="flex flex-col gap-y-1.5">
+          <ComboboxLabel size="sm" className="text-dark-blue-400">
+            Which industries have you worked in?
+          </ComboboxLabel>
+          <ComboboxInput
+            size="lg"
+            className="pl-3.5"
+            placeholder="e.g., Banking"
+            value={inputValue}
+            onFocus={() => setOpen(true)}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+              setOpen(true);
+            }}
+            onKeyDown={async (e) => {
+              if (e.key === "Tab" || e.key === "Enter") {
+                if (!industryLabels.includes(inputValue)) {
+                  const isValid =
+                    await spellCheck(inputValue) &&
+                    profanityCheck(inputValue) &&
+                    formatCheck(inputValue) &&
+                    categoryCheck(inputValue);
+
+                  if (isValid) {
+                    console.log("🚀 Submitting industry:", inputValue);
+                    await submitTextToModerationQueue(inputValue, "industry");
+                  } else {
+                    console.warn("❌ Rejected industry:", inputValue);
+                  }
+                }
+              }
+            }}
+            onBlur={() => setTimeout(() => setOpen(false), 150)}
+            invalid={invalid}
+          />
+        </ComboboxTrigger>
+
+        <ScaleOutIn show={open} afterLeave={() => setInputValue("")}>
+          <ComboboxOptions>
+            <ScrollArea viewportClassName="max-h-[304px]">
+              {filtered.map((industry, index) => (
+                <ComboboxOption key={index} value={industry}>
+                  {industry}
+                </ComboboxOption>
+              ))}
+            </ScrollArea>
+          </ComboboxOptions>
+        </ScaleOutIn>
+      </Combobox>
+
+      {selected.length > 0 && (
+        <div className="flex flex-wrap gap-3">
+          {selected.map((item, index) => (
+            <Badge visual="primary" key={index}>
+              {item}
+              <button
+                className="focus-visible:outline-none"
+                onClick={() =>
+                  setSelected(selected.filter((_, i) => i !== index))
+                }
+                type="button"
+              >
+                <X2 className="h-3 w-3" />
+              </button>
+            </Badge>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
