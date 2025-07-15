@@ -1,6 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useAuth } from "@/contexts/auth"
+import SecuritySettingsStepper from "@/stories/security-settings.stories"
 import { cn } from "@/utils/functions"
 import { ChevronLeft, ChevronRight } from "@blend-metrics/icons"
 import { Swiper as SwiperRoot, SwiperSlide } from "swiper/react"
@@ -669,18 +671,46 @@ const Categories = () => {
 }
 
 export default function Marketplace() {
+  const { user } = useAuth()
+  const [showSecurityModal, setShowSecurityModal] = useState(false)
+
+  useEffect(() => {
+    const safeUser = user as {
+      provider?: string
+      password?: string
+    }
+
+    const passwordIsEmpty =
+      typeof safeUser?.password !== "string" ||
+      safeUser.password.trim().length === 0
+
+    if (safeUser && safeUser.provider === "EMAIL" && passwordIsEmpty) {
+      setShowSecurityModal(true)
+    }
+  }, [user])
+
   return (
-    <div className="bg-gray-25">
-      <Hero />
-      <div className="py-10 px-3.5 md:px-10 lg:px-[100px] xl:px-[150px] 2xl:px-[250px] overflow-hidden space-y-10 lg:space-y-[100px] lg:py-[100px]">
-        <FavoriteProjects />
-        <NewestAdditions />
-        <PopularProjects />
-        <OnlineSalesFunnels />
-        <CustomerServiceSolutions />
-        <MarketingAutomationCampaigns />
-        <Categories />
+    <>
+      {showSecurityModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+          <SecuritySettingsStepper
+            onCloseModal={() => setShowSecurityModal(false)}
+          />
+        </div>
+      )}
+
+      <div className="bg-gray-25">
+        <Hero />
+        <div className="py-10 px-3.5 md:px-10 lg:px-[100px] xl:px-[150px] 2xl:px-[250px] overflow-hidden space-y-10 lg:space-y-[100px] lg:py-[100px]">
+          <FavoriteProjects />
+          <NewestAdditions />
+          <PopularProjects />
+          <OnlineSalesFunnels />
+          <CustomerServiceSolutions />
+          <MarketingAutomationCampaigns />
+          <Categories />
+        </div>
       </div>
-    </div>
+    </>
   )
 }

@@ -1,5 +1,6 @@
 import {
   CheckUsernameParams,
+  CreatePasswordParams,
   GoogleLoginParams,
   LinkedInLoginParams,
   LoginParams,
@@ -26,5 +27,15 @@ export const AuthAPI = {
 
   CheckUsername: (data: CheckUsernameParams) => {
     return AxiosRequest.post("/auth/check-username", data)
+  },
+
+  CreatePassword: (data: CreatePasswordParams) => {
+    return AxiosRequest.post("/auth/reset/new-password", data)
+  },
+
+  Logout: () => {
+    return AxiosRequest.post("/auth/logout", null, {
+      withCredentials: true,
+    })
   },
 }
