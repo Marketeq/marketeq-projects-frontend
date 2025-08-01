@@ -1,76 +1,80 @@
-import React, { useEffect, useState } from "react";
-import Fuse from "fuse.js";
+import React, { useEffect, useState } from "react"
+import jobTitles from "@/public/mock/job_titles.json"
+import { useControllableState } from "@/utils/hooks"
 import {
+  categoryCheck,
+  formatCheck,
+  profanityCheck,
+  spellCheck,
+  submitTextToModerationQueue,
+} from "@/utils/jobTitleValidation"
+import Fuse from "fuse.js"
+import {
+  Badge,
   Combobox,
-  ComboboxTrigger,
   ComboboxInput,
   ComboboxLabel,
-  ComboboxOptions,
   ComboboxOption,
-  ScrollArea,
+  ComboboxOptions,
+  ComboboxTrigger,
   ScaleOutIn,
-  Badge,
-} from "@/components/ui";
-import { useControllableState } from "@/utils/hooks";
-import {
-  spellCheck,
-  profanityCheck,
-  formatCheck,
-  categoryCheck,
-  submitTextToModerationQueue,
-} from "@/utils/jobTitleValidation";
-import jobTitles from "@/public/mock/job_titles.json"; // Static fallback
+  ScrollArea,
+} from "@/components/ui"
+
+// Static fallback
 
 interface Props {
-  value?: string;
-  onValueChange?: (val: string) => void;
-  invalid?: boolean;
+  value?: string
+  onValueChange?: (val: string) => void
+  invalid?: boolean
 }
 
-const defaultJobTitleLabels = jobTitles.map((title) => title.label);
+const defaultJobTitleLabels = jobTitles.map((title) => title.label)
 
 export const YourJobTitle = ({ value, onValueChange, invalid }: Props) => {
-  const [inputValue, setInputValue] = useState("");
-  const [open, setOpen] = useState(false);
+  const [inputValue, setInputValue] = useState("")
+  const [open, setOpen] = useState(false)
 
   const [selected, setSelected] = useControllableState<string>({
     defaultValue: "",
     value,
     onChange: onValueChange,
-  });
+  })
 
-  const [jobTitleLabels, setJobTitleLabels] = useState<string[]>([]);
+  const [jobTitleLabels, setJobTitleLabels] = useState<string[]>([])
 
   useEffect(() => {
     const loadJobTitles = async () => {
       try {
-        const res = await fetch("http://localhost:3000/talent/autocomplete?type=job-title");
-        const data = await res.json();
-        const dynamic = data.map((entry: any) => entry.value);
-        const combined = Array.from(new Set([...defaultJobTitleLabels, ...dynamic])).sort((a, b) =>
-          a.localeCompare(b)
-        );
-        setJobTitleLabels(combined);
+        const res = await fetch(
+          "http://localhost:3000/talent/autocomplete?type=job-title"
+        )
+        const data = await res.json()
+        const dynamic = data.map((entry: any) => entry.value)
+        const combined = Array.from(
+          new Set([...defaultJobTitleLabels, ...dynamic])
+        ).sort((a, b) => a.localeCompare(b))
+        setJobTitleLabels(combined)
       } catch (err) {
-        console.error("❌ Failed to load job titles:", err);
-        setJobTitleLabels(defaultJobTitleLabels);
+        console.error("❌ Failed to load job titles:", err)
+        setJobTitleLabels(defaultJobTitleLabels)
       }
-    };
+    }
 
-    loadJobTitles();
-  }, []);
+    loadJobTitles()
+  }, [])
 
   const fuse = new Fuse(jobTitleLabels, {
     includeScore: true,
     threshold: 0.3,
-  });
+  })
 
   const filtered = inputValue
     ? fuse
         .search(inputValue)
         .sort((a, b) => (a.score ?? 0) - (b.score ?? 0))
         .map((r) => r.item)
-    : jobTitleLabels;
+    : jobTitleLabels
 
   return (
     <div className="space-y-3">
@@ -86,23 +90,23 @@ export const YourJobTitle = ({ value, onValueChange, invalid }: Props) => {
             value={inputValue}
             onFocus={() => setOpen(true)}
             onChange={(e) => {
-              setInputValue(e.target.value);
-              setOpen(true);
+              setInputValue(e.target.value)
+              setOpen(true)
             }}
             onKeyDown={async (e) => {
               if (e.key === "Tab" || e.key === "Enter") {
                 if (!jobTitleLabels.includes(inputValue)) {
                   const isValid =
-                    await spellCheck(inputValue) &&
+                    (await spellCheck(inputValue)) &&
                     profanityCheck(inputValue) &&
                     formatCheck(inputValue) &&
-                    categoryCheck(inputValue);
+                    categoryCheck(inputValue)
 
                   if (isValid) {
-                    console.log("🚀 Submitting job title:", inputValue);
-                    await submitTextToModerationQueue(inputValue, "job-title");
+                    console.log("🚀 Submitting job title:", inputValue)
+                    await submitTextToModerationQueue(inputValue, "job-title")
                   } else {
-                    console.warn("❌ Rejected job title:", inputValue);
+                    console.warn("❌ Rejected job title:", inputValue)
                   }
                 }
               }
@@ -140,5 +144,5 @@ export const YourJobTitle = ({ value, onValueChange, invalid }: Props) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
