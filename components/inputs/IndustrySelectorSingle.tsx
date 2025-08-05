@@ -58,7 +58,7 @@ export const IndustrySelectorSingle = ({
         ).sort((a, b) => a.localeCompare(b))
         setIndustryLabels(combined)
       } catch (err) {
-        // console.error("❌ Failed to load industries:", err);
+        console.error("❌ Failed to load industries:", err)
         setIndustryLabels(defaultIndustryLabels)
       }
     }
@@ -105,10 +105,10 @@ export const IndustrySelectorSingle = ({
                     categoryCheck(inputValue)
 
                   if (isValid) {
-                    // console.log("🚀 Submitting industry:", inputValue);
+                    console.log("🚀 Submitting industry:", inputValue)
                     await submitTextToModerationQueue(inputValue, "industry")
                   } else {
-                    // console.warn("❌ Rejected industry:", inputValue);
+                    console.warn("❌ Rejected industry:", inputValue)
                   }
                 }
               }

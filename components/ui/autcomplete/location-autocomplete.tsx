@@ -1,37 +1,40 @@
 // components/ui/location-autocomplete.tsx
-import React, { useState } from "react";
-import { useLocationSearch } from "@/utils/useLocationSearch";
+import React, { useState } from "react"
+import { getIsNotEmpty } from "@/utils/functions"
+import { useLocationSearch } from "@/utils/useLocationSearch"
 import {
   Combobox,
   ComboboxInput,
-  ComboboxTrigger,
-  ComboboxOptions,
-  ComboboxOption,
-  ScrollArea,
   ComboboxLabel,
+  ComboboxOption,
+  ComboboxOptions,
+  ComboboxTrigger,
   ScaleOutIn,
-} from "@/components/ui";
-import { getIsNotEmpty } from "@/utils/functions";
+  ScrollArea,
+} from "@/components/ui"
 
 export const LocationAutocomplete = ({
   value,
   onValueChange,
   invalid,
 }: {
-  value?: string;
-  onValueChange?: (val: string) => void;
-  invalid?: boolean;
+  value?: string
+  onValueChange?: (val: string) => void
+  invalid?: boolean
 }) => {
-  const [inputValue, setInputValue] = useState("");
-  const [open, setOpen] = useState(false);
+  const [inputValue, setInputValue] = useState("")
+  const [open, setOpen] = useState(false)
 
-  const { results } = useLocationSearch(inputValue);
+  const { results } = useLocationSearch(inputValue)
 
   return (
-    <Combobox value={value} onChange={(val) => {
-      onValueChange?.(val);
-      setOpen(false);
-    }}>
+    <Combobox
+      value={value}
+      onChange={(val) => {
+        onValueChange?.(val)
+        setOpen(false)
+      }}
+    >
       <ComboboxTrigger className="flex flex-col gap-y-1.5">
         <ComboboxLabel size="sm" className="text-dark-blue-400">
           What’s your location?
@@ -43,8 +46,8 @@ export const LocationAutocomplete = ({
           value={inputValue}
           onFocus={() => setOpen(true)}
           onChange={(e) => {
-            setInputValue(e.target.value);
-            setOpen(true);
+            setInputValue(e.target.value)
+            setOpen(true)
           }}
           onBlur={() => setTimeout(() => setOpen(false), 150)}
           invalid={invalid}
@@ -63,5 +66,5 @@ export const LocationAutocomplete = ({
         </ComboboxOptions>
       </ScaleOutIn>
     </Combobox>
-  );
-};
+  )
+}

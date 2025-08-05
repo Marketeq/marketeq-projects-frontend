@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { HOT_KEYS } from "@/utils/constants"
 import { getIsNotEmpty, hookFormHasError, keys } from "@/utils/functions"
+import { extractSuffixFromJobTitle } from "@/utils/getJobTitleSuffixes"
 import { useControllableState, useUncontrolledState } from "@/utils/hooks"
 import {
   AlertCircle,
@@ -28,6 +29,8 @@ import { useToggle } from "react-use"
 import { number, z } from "zod"
 import { Logo } from "@/components/icons"
 import { Pointer } from "@/components/icons/pointer"
+import { IndustrySelectorSingle } from "@/components/inputs/IndustrySelectorSingle"
+import { YourJobTitle } from "@/components/inputs/YourJobTitle"
 import { Triangles } from "@/components/triangles"
 import {
   Alert,
@@ -61,10 +64,6 @@ import {
   ScaleOutIn,
   ScrollArea,
 } from "@/components/ui"
-import { IndustrySelectorSingle } from "@/components/inputs/IndustrySelectorSingle"
-import { YourJobTitle } from "@/components/inputs/YourJobTitle";
-import { extractSuffixFromJobTitle } from "@/utils/getJobTitleSuffixes"
-
 
 const meta: Meta = {
   title: "Client Onboarding",
@@ -281,27 +280,25 @@ export const DescribeYourTeam = () => {
               />
             </div>
             <div className="flex flex-col gap-y-1.5 mt-6">
-
-  <Controller
-    name="industry"
-    control={control}
-    render={({ field }) => (
-      <IndustrySelectorSingle
-        value={field.value}
-        onValueChange={field.onChange}
-        invalid={hookFormHasError({ errors, name: "industry" })}
-      />
-    )}
-  />
-  <HookFormErrorMessage
-    errors={errors}
-    name="industry"
-    render={({ message }) => (
-      <ErrorMessage size="sm">{message}</ErrorMessage>
-    )}
-  />
-</div>
-
+              <Controller
+                name="industry"
+                control={control}
+                render={({ field }) => (
+                  <IndustrySelectorSingle
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    invalid={hookFormHasError({ errors, name: "industry" })}
+                  />
+                )}
+              />
+              <HookFormErrorMessage
+                errors={errors}
+                name="industry"
+                render={({ message }) => (
+                  <ErrorMessage size="sm">{message}</ErrorMessage>
+                )}
+              />
+            </div>
 
             <div className="mt-[148px] flex items-center justify-between">
               <Button size="md" variant="outlined" visual="gray" type="button">
@@ -524,9 +521,9 @@ type InviteYourTeamFormValues = z.infer<typeof inviteYourTeamFormSchema>
 
 export const InviteYourTeam = () => {
   // TODO: Replace with actual user data later (from context/localStorage)
-const senderEmail = "admin@marketeq.com"
-const userId = "sample-user-id"
-const teamId = "sample-team-id"
+  const senderEmail = "admin@marketeq.com"
+  const userId = "sample-user-id"
+  const teamId = "sample-team-id"
 
   const {
     control,
@@ -544,37 +541,40 @@ const teamId = "sample-team-id"
     name: "emails",
   })
   const onSubmit: SubmitHandler<InviteYourTeamFormValues> = async (values) => {
-  const teamMemberEmails = values.emails.map((entry) => entry.email)
+    const teamMemberEmails = values.emails.map((entry) => entry.email)
 
-  const payload = {
-    senderEmail,
-    userId,
-    teamId,
-    teamMemberEmails,
-  }
-
-  try {
-    const response = await fetch("http://localhost:3000/notification/send-invite", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    })
-
-    const result = await response.json()
-
-    if (response.ok && result.success) {
-      console.log("Invitations sent successfully!")
-      // Optional: Show success message or navigate
-    } else {
-      console.error("Failed to send invitations:", result.message)
-      // Optional: Show error toast
+    const payload = {
+      senderEmail,
+      userId,
+      teamId,
+      teamMemberEmails,
     }
-  } catch (err) {
-    console.error("Error sending invitations:", err)
+
+    try {
+      const response = await fetch(
+        "http://localhost:3000/notification/send-invite",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      )
+
+      const result = await response.json()
+
+      if (response.ok && result.success) {
+        console.log("Invitations sent successfully!")
+        // Optional: Show success message or navigate
+      } else {
+        console.error("Failed to send invitations:", result.message)
+        // Optional: Show error toast
+      }
+    } catch (err) {
+      console.error("Error sending invitations:", err)
+    }
   }
-}
   return (
     <div className="min-h-screen flex">
       <div className="relative p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
@@ -763,7 +763,9 @@ export const CreateYourUsername = () => {
         const jsonData = await jsonRes.json()
         const jsonTitles = jsonData.map((item: any) => item.label || item)
 
-        const dbRes = await fetch("http://localhost:3000/talent/autocomplete?type=job-title")
+        const dbRes = await fetch(
+          "http://localhost:3000/talent/autocomplete?type=job-title"
+        )
         const dbData = await dbRes.json()
         const dbTitles = dbData.map((item: any) => item.value)
 
@@ -777,7 +779,6 @@ export const CreateYourUsername = () => {
           if (suffix) suffixes.add(suffix)
         })
 
-
         setJobTitleSuffixes(Array.from(suffixes))
       } catch (error) {
         console.error("Error fetching job titles for suffixes:", error)
@@ -787,28 +788,30 @@ export const CreateYourUsername = () => {
     fetchJobTitles()
   }, [])
 
-  const onSubmit: SubmitHandler<CreateYourUsernameFormValues> = async (data) => {
-  try {
-    const response = await fetch("http://localhost:3000/user/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username: data.username }),
-    });
+  const onSubmit: SubmitHandler<CreateYourUsernameFormValues> = async (
+    data
+  ) => {
+    try {
+      const response = await fetch("http://localhost:3000/user/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username: data.username }),
+      })
 
-    if (!response.ok) {
-      throw new Error("Failed to create user");
+      if (!response.ok) {
+        throw new Error("Failed to create user")
+      }
+
+      const result = await response.json()
+      console.log("User created:", result)
+      // You can show a toast or navigate here
+    } catch (error) {
+      console.error("Error creating user:", error)
+      // You can show an error message here
     }
-
-    const result = await response.json();
-    console.log("User created:", result);
-    // You can show a toast or navigate here
-  } catch (error) {
-    console.error("Error creating user:", error);
-    // You can show an error message here
   }
-};
   return (
     <div className="min-h-screen flex">
       <div className="relative p-[75px] w-[480px] shrink-0 flex flex-col bg-dark-blue-500">
@@ -890,58 +893,62 @@ export const CreateYourUsername = () => {
             </div>
 
             {show ? (
-  <div className="mt-6 flex flex-wrap gap-2">
-    {["@esha.design", "@esha.designer", "@esha.dev"].map(
-      (username) => (
-        <Button
-          key={username}
-          className="text-primary-500/50 hover:text-primary-500"
-          size="lg"
-          visual="gray"
-          variant="link"
-          type="button"
-          tabIndex={-1} // prevents accidental selection with Enter key
-          onClick={() => setValue("username", username)}
-        >
-          {username}
-        </Button>
-      )
-    )}
-  </div>
-) : (
-  <div className="mt-6">
-    <span className="block text-sm leading-[16.94px] text-gray-500">
-      {jobTitleSuffixes.map((username, index, arr) => (
-        <span key={username}>
-          <Button
-            className="text-primary-500/50 hover:text-primary-500"
-            size="lg"
-            visual="gray"
-            variant="link"
-            type="button"
-            tabIndex={-1}
-            onClick={() => setValue("username", username)}
-          >
-            {username}
-          </Button>
-          {index < arr.length - 2 ? ", " : index === arr.length - 2 ? ", and " : " are available"}
-        </span>
-      ))}
-    </span>
+              <div className="mt-6 flex flex-wrap gap-2">
+                {["@esha.design", "@esha.designer", "@esha.dev"].map(
+                  (username) => (
+                    <Button
+                      key={username}
+                      className="text-primary-500/50 hover:text-primary-500"
+                      size="lg"
+                      visual="gray"
+                      variant="link"
+                      type="button"
+                      tabIndex={-1} // prevents accidental selection with Enter key
+                      onClick={() => setValue("username", username)}
+                    >
+                      {username}
+                    </Button>
+                  )
+                )}
+              </div>
+            ) : (
+              <div className="mt-6">
+                <span className="block text-sm leading-[16.94px] text-gray-500">
+                  {jobTitleSuffixes.map((username, index, arr) => (
+                    <span key={username}>
+                      <Button
+                        className="text-primary-500/50 hover:text-primary-500"
+                        size="lg"
+                        visual="gray"
+                        variant="link"
+                        type="button"
+                        tabIndex={-1}
+                        onClick={() => setValue("username", username)}
+                      >
+                        {username}
+                      </Button>
+                      {index < arr.length - 2
+                        ? ", "
+                        : index === arr.length - 2
+                          ? ", and "
+                          : " are available"}
+                    </span>
+                  ))}
+                </span>
 
-    <Button
-      className="mt-3"
-      size="md"
-      variant="link"
-      type="button"
-      visual="gray"
-      onClick={toggleShow}
-    >
-      <Plus className="size-[15px]" />
-      More suggestions
-    </Button>
-  </div>
-)}
+                <Button
+                  className="mt-3"
+                  size="md"
+                  variant="link"
+                  type="button"
+                  visual="gray"
+                  onClick={toggleShow}
+                >
+                  <Plus className="size-[15px]" />
+                  More suggestions
+                </Button>
+              </div>
+            )}
 
             <div className="mt-[50px]">
               <Alert>

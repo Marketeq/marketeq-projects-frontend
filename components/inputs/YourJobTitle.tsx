@@ -56,7 +56,7 @@ export const YourJobTitle = ({ value, onValueChange, invalid }: Props) => {
         ).sort((a, b) => a.localeCompare(b))
         setJobTitleLabels(combined)
       } catch (err) {
-        // console.error("❌ Failed to load job titles:", err);
+        console.error("❌ Failed to load job titles:", err)
         setJobTitleLabels(defaultJobTitleLabels)
       }
     }
@@ -103,10 +103,10 @@ export const YourJobTitle = ({ value, onValueChange, invalid }: Props) => {
                     categoryCheck(inputValue)
 
                   if (isValid) {
-                    // console.log("🚀 Submitting job title:", inputValue);
+                    console.log("🚀 Submitting job title:", inputValue)
                     await submitTextToModerationQueue(inputValue, "job-title")
                   } else {
-                    // console.warn("❌ Rejected job title:", inputValue);
+                    console.warn("❌ Rejected job title:", inputValue)
                   }
                 }
               }

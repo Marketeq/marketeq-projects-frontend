@@ -4,12 +4,17 @@ import {
   CSSProperties,
   Fragment,
   useCallback,
+  useEffect,
   useMemo,
   useReducer,
   useState,
 } from "react"
 import React from "react"
+// import ReactPlayer from "react-player"
+import dynamic from "next/dynamic"
+import { useAuth } from "@/contexts/auth"
 import options from "@/public/mock/options.json"
+import { ProjectAPI } from "@/service/http/project"
 import { Empty1 } from "@/stories/publish-project.stories"
 import { HTTPS, ONE_SECOND } from "@/utils/constants"
 import {
@@ -101,7 +106,6 @@ import {
   useForm,
   useWatch,
 } from "react-hook-form"
-import ReactPlayer from "react-player"
 import {
   useIsomorphicLayoutEffect,
   useToggle,
@@ -109,6 +113,7 @@ import {
 } from "react-use"
 import { util, z } from "zod"
 import { Prettify } from "@/types/core"
+import { CreateProjectType } from "@/types/project"
 import { GripVertical2 } from "@/components/icons/grip-vertical-2"
 import { Network } from "@/components/icons/network"
 import { Network1 } from "@/components/icons/network-1"
@@ -187,6 +192,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui"
+
+const ReactPlayer = dynamic(() => import("react-player"), { ssr: false })
 
 declare module "@tanstack/react-table" {
   // @ts-expect-error
@@ -467,7 +474,58 @@ const BottomBar = ({ progressValue }: { progressValue?: number }) => {
     useStepRootContext()
 
   const { isValid } = stepsState[currentStep]
-  const { setIsProjectSubmitted } = useProjectScopeContext()
+  const { user } = useAuth()
+  const projectInfoMethods = useProjectInfoContext()
+  const mediaMethods = useMediaContext()
+  const { setIsProjectSubmitted, projectScopeMethods } =
+    useProjectScopeContext()
+  const [phases] = projectScopeMethods
+
+  const handleSubmit = async () => {
+    const projectInfo = projectInfoMethods.getValues()
+    const media = mediaMethods.getValues()
+
+    const phasesPayload = phases
+      .filter((p) => p.phaseName && p.rows)
+      .map((p, pIdx) => ({
+        name: p.phaseName ?? "",
+        stage: `Stage ${pIdx + 1}`,
+        startDay: 1,
+        endDay: 1,
+        tasks: (p.rows ?? []).map((r) => ({
+          taskName: r.task,
+          role: r.role ?? "",
+          location: r.location ? [r.location] : [],
+          experience: r.experience ?? "",
+          duration: r.duration.value,
+        })),
+      }))
+
+    const payload: CreateProjectType = {
+      title: projectInfo.title,
+      shortDescription: projectInfo.shortDescription,
+      longDescription: projectInfo.fullDescription,
+      categoriesWithSubcategories:
+        projectInfo.category?.map((cat: any) => ({
+          category: cat.category,
+          subcategories: cat.subCategories,
+        })) ?? [],
+      industries: projectInfo.industry,
+      tags: projectInfo.tags,
+      skills: projectInfo.skills,
+      phases: phasesPayload.length ? phasesPayload : undefined,
+      media: media.featuredVideo
+        ? { videoUrl: media.featuredVideo }
+        : undefined,
+      userId: user?.id ?? "",
+    }
+
+    try {
+      await ProjectAPI.CreateProject(payload)
+      setIsProjectSubmitted(true)
+    } catch {}
+  }
+
   return (
     <div className="h-[78px] z-40 fixed left-0 min-[1024px]:left-[260px] bottom-0 right-0 bg-white border-b border-gray-200">
       <Progress value={progressValue} bubble={false} />
@@ -490,7 +548,10 @@ const BottomBar = ({ progressValue }: { progressValue?: number }) => {
           ) : (
             <Button
               disabled={!isValid}
-              onClick={() => setIsProjectSubmitted(true)}
+              onClick={() => {
+                setIsProjectSubmitted(true)
+                handleSubmit()
+              }}
             >
               Submit Project
             </Button>
@@ -1580,6 +1641,8 @@ type MediaFormValues = {
 }
 
 const Media = () => {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
   const { toggleValidation } = useStepContext()
   const {
     control,
@@ -1838,7 +1901,7 @@ const Media = () => {
 
               {error?.formErrors.fieldErrors.featuredVideo ? null : (
                 <div className="group relative inline-block mt-6">
-                  <ReactPlayer
+                  {/* <ReactPlayer
                     url={mediaValues.featuredVideo}
                     width={229}
                     height={140}
@@ -1846,7 +1909,18 @@ const Media = () => {
                       borderRadius: "0.5rem",
                       overflow: "hidden",
                     }}
-                  />
+                  /> */}
+                  {mounted && (
+                    <ReactPlayer
+                      url={mediaValues.featuredVideo}
+                      width={229}
+                      height={140}
+                      style={{
+                        borderRadius: "0.5rem",
+                        overflow: "hidden",
+                      }}
+                    />
+                  )}
 
                   <button
                     className="absolute right-[9.56px] transition duration-300 group-hover:opacity-100 opacity-0 text-white hover:text-error-500 top-2.5 size-7 focus-visible:outline-none bg-black/20 hover:bg-black rounded-full inline-flex items-center justify-center"
@@ -3593,6 +3667,15 @@ function PublishProject({
 }
 
 export default function PublishRootProject() {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
+
   return (
     <PublishProject
       projectInfo={<ProjectInfo />}
