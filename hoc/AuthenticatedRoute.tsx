@@ -1,49 +1,82 @@
 import { useEffect, useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth"
+import { ROLE } from "@/types/user"
 import { Spinner } from "@/components/ui/spinner/spinner"
 
 const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter()
-
   const pathname = usePathname()
-
   const { isLoading, user } = useAuth()
-
   const [isPageLoading, setIsPageLoading] = useState(true)
 
   const routeCheck = async () => {
-    if (!isLoading && user) {
-      if (
-        (user?.role && !pathname?.includes("onboarding")) ||
-        (!user?.role && pathname?.includes("onboarding"))
-      ) {
-        setIsPageLoading(false)
-      } else if (!user?.role) {
-        router.push(`/onboarding`)
-      } else {
-        router.push(`/`)
+    if (isLoading) return
+
+    //Not logged in
+    if (!user) {
+      if (pathname !== "/sign-in") {
+        router.push("/sign-in")
       }
+      return
     }
 
-    if (!isLoading && !user) {
-      router.push(`/sign-in`)
+    const hasRole = !!user?.role
+    const onboardingDismissed = user?.onboardingDismissed
+
+    //New user, no role yet
+    if (!hasRole) {
+      if (!pathname?.includes("onboarding")) {
+        router.push("/onboarding")
+      } else {
+        setIsPageLoading(false)
+      }
+      return
+    }
+
+    //Has role, but onboarding not dismissed
+    if (hasRole && !onboardingDismissed) {
+      if (!pathname?.includes("onboarding")) {
+        router.push("/onboarding")
+      } else {
+        setIsPageLoading(false)
+      }
+      return
+    }
+
+    //Has role and onboarding is dismissed
+    if (hasRole && onboardingDismissed) {
+      if (!pathname?.includes("onboarding")) {
+        if (user.role === ROLE.TALENT) {
+          router.push(`/talent-dashboard`)
+        } else if (user.role === ROLE.CLIENT) {
+          router.push(`/client-dashboard`)
+        } else {
+          router.push(`/`)
+        }
+
+        setIsPageLoading(false)
+        return
+      } else {
+        router.push("/")
+        return
+      }
     }
   }
 
   useEffect(() => {
     routeCheck()
-  }, [user, isLoading])
+  }, [user, isLoading, pathname])
 
   return (
     <>
-      {isPageLoading && (
+      {isPageLoading ? (
         <div className="w-full h-screen flex justify-center items-center">
           <Spinner size={32} strokeWidth={3} />
         </div>
+      ) : (
+        user && <>{children}</>
       )}
-
-      {!isPageLoading && user && <>{children}</>}
     </>
   )
 }

@@ -48,50 +48,55 @@ const LinkedInLogin = () => {
     }
   }
 
-  const handleLoginWithLinkedInApi = (code: string) => {
-    if (!hasLoggedInRef.current) {
-      hasLoggedInRef.current = true
+  const handleLoginWithLinkedInApi = useCallback(
+    (code: string) => {
+      if (!hasLoggedInRef.current) {
+        hasLoggedInRef.current = true
 
-      const redirectUrl = `${window?.location?.origin}${pathName}`
+        const redirectUrl = `${window?.location?.origin}${pathName}`
 
-      setIsLoading(true)
+        setIsLoading(true)
 
-      AuthAPI.LoginWithLinkedIn({
-        code,
-        redirectUrl,
-      })
-        .then((response) => {
-          if (
-            response?.status === 200 &&
-            response?.data?.accessToken &&
-            response?.data?.user
-          ) {
-            Cookies.set("accessToken", response?.data?.accessToken)
-            setUser(response?.data?.user)
-
-            router.push("/")
-          }
+        AuthAPI.LoginWithLinkedIn({
+          code,
+          redirectUrl,
         })
-        .catch((error) => {
-          if (error?.response?.data?.errors?.message) {
-            toast({
-              title: error?.response?.data?.errors?.message,
-              variant: "destructive",
-            })
-          }
-        })
-        .finally(() => {
-          setIsLoading(false)
-        })
-    }
-  }
+          .then((response) => {
+            if (
+              response?.status === 200 &&
+              response?.data?.accessToken &&
+              response?.data?.user
+            ) {
+              Cookies.set("accessToken", response?.data?.accessToken)
+              setUser(response?.data?.user)
+              router.push("/")
+            }
+          })
+          .catch((error) => {
+            if (error?.response?.data?.errors?.message) {
+              toast({
+                title: error?.response?.data?.errors?.message,
+                variant: "destructive",
+              })
+            }
+          })
+          .finally(() => {
+            setIsLoading(false)
+          })
+      }
+    },
+    [pathName, router, setUser, toast]
+  )
 
-  const handlePostMessage = useCallback((event: any) => {
-    if (event?.data?.type === "code" && event?.data?.code) {
-      const { code } = event.data
-      handleLoginWithLinkedInApi(code)
-    }
-  }, [])
+  const handlePostMessage = useCallback(
+    (event: any) => {
+      if (event?.data?.type === "code" && event?.data?.code) {
+        const { code } = event.data
+        handleLoginWithLinkedInApi(code)
+      }
+    },
+    [handleLoginWithLinkedInApi]
+  )
 
   useEffect(() => {
     if (window.opener && window.opener !== window) {

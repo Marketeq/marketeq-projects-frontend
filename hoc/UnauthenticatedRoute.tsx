@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth"
+import { ROLE } from "@/types/user"
 import { Spinner } from "@/components/ui/spinner/spinner"
 
 const UnauthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -15,7 +16,13 @@ const UnauthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
 
     if (user && !isLoading) {
       if (user?.role) {
-        router.push("/")
+        if (user.role === ROLE.TALENT) {
+          router.push(`/talent-dashboard`)
+        } else if (user.role === ROLE.CLIENT) {
+          router.push(`/client-dashboard`)
+        } else {
+          router.push(`/`)
+        }
       } else {
         router.push("/onboarding")
       }
