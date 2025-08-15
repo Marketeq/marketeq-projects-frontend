@@ -38,9 +38,37 @@ import {
   IconButton,
 } from "@/components/ui"
 
+import { Conversation } from "@/types/conversation";
+import { format, isToday, isYesterday, parseISO } from "date-fns";
+import { apiFetch } from "@/src/lib/api"
+
 const chatVariants = cva(
   "group/chat relative cursor-pointer flex items-start gap-x-2 pl-3.5 hover:bg-gray-100 data-[state=active]:bg-primary-50 hover:data-[state=active]:bg-primary-100"
 )
+
+
+const formatConversationDate = (isoDateStr: string) => {
+  const date = parseISO(isoDateStr);
+
+  if (isToday(date)) return "Today";
+  if (isYesterday(date)) return "Yesterday";
+
+  return format(date, "MMM dd"); // e.g., "Jun 23"
+};
+
+
+
+
+interface ChatProps {
+  conversation: Conversation;
+  currentUserId: string;
+  onClick: () => void;
+  className?: string
+  variant?: "default" | "active"
+  pinned?: boolean
+  onPinnedChange?: (value: boolean) => void
+}
+const jwtToken = localStorage.getItem('access_token')
 
 export const [ChatsContextProvider, useChatsContext] = createContext<{
   pinnedChats: number
@@ -54,13 +82,17 @@ export const [ChatsContextProvider, useChatsContext] = createContext<{
 })
 
 interface UserDetailProps {
+  name?: string
   className?: string
   variant?: "default" | "active"
   pinned?: boolean
   onPinnedChange?: (value: boolean) => void
+  conversation: Conversation;
+  onClick?: () => void;
 }
 
 export const UserDetail = ({
+  conversation,
   className,
   variant = "default",
   pinned,
@@ -68,12 +100,38 @@ export const UserDetail = ({
 }: UserDetailProps) => {
   const { onChatPinned, showPinnedIcon, onChatChecked, checkedChats } =
     useChatsContext()
+
+    //jwt token
+  const jwtToken = localStorage.getItem('token')
+
   const [isPinned, setIsPinned] = useControllableState({
     defaultValue: false,
     value: pinned,
-    onChange: (value) => {
+    onChange: async (value) => {
       onPinnedChange?.(value)
       onChatPinned(value)
+      
+      try {
+        await apiFetch<{ message: string }>(
+          `/api/messaging/conversations/${conversation.id}/pin`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${jwtToken}`,
+            },
+          }
+        )
+       
+      } catch (err) {
+        console.error("Failed to toggle pin on server", err)
+
+        // Revert UI if server failed
+        const reverted = !value
+        setIsPinned(reverted)
+        onPinnedChange?.(reverted)
+        onChatPinned(reverted)
+      }
+
     },
   })
   const [selected, setSelected] = useUncontrolledState<CheckedState>({
@@ -114,11 +172,11 @@ export const UserDetail = ({
       <div className="pr-3.5 flex flex-col flex-auto gap-y-0.5 items-start py-[18px] border-b border-gray-200">
         <div className="flex self-stretch items-center justify-between">
           <h3 className="group-data-[state=active]/chat:font-bold text-[13px] leading-[18.88px] font-medium text-dark-blue-400">
-            Susan Rice
+            {conversation.participantUsername || "Unknown"}
           </h3>
 
           <span className="transition duration-300 group-data-[state=active]/chat:font-bold group-hover/chat:opacity-0 opacity-100 text-xs leading-[14.52px] font-medium text-dark-blue-400">
-            Jun 14
+               {formatConversationDate(conversation.createdAt)}
           </span>
 
           <DropdownMenu>
@@ -133,9 +191,13 @@ export const UserDetail = ({
               <DropdownMenuItem>
                 <AlertCircle className="h-4 w-4" /> Move to Spam
               </DropdownMenuItem>
+
               <DropdownMenuItem onSelect={() => setIsPinned((prev) => !prev)}>
                 <Pin02 className="h-4 w-4" /> {isPinned ? "Unpin" : "Pin"}
               </DropdownMenuItem>
+
+
+
               <DropdownMenuItem>
                 <Archive className="h-4 w-4" /> Archive
               </DropdownMenuItem>
@@ -195,29 +257,37 @@ export const UserDetail = ({
   )
 }
 
-type ChatProps = UserDetailProps
 
-export const Chat = ({ variant, className }: ChatProps) => {
+
+export const Chat = ({ conversation, variant, className, onClick  }: ChatProps) => {
   const { showPinnedIcon } = useChatsContext()
   const [isPinned, setIsPinned] = useState(false)
 
   if (showPinnedIcon) {
     return isPinned ? (
+       <div onClick={onClick} className="cursor-pointer hover:bg-gray-100 rounded-md">
       <UserDetail
         pinned={isPinned}
         onPinnedChange={setIsPinned}
         variant={variant}
         className={className}
+        conversation={conversation}
+        name={conversation.participantUsername || "Unknown"}
       />
+      </div>
     ) : null
   }
 
   return (
+    <div onClick={onClick} className="cursor-pointer hover:bg-gray-100 rounded-md">
     <UserDetail
       pinned={isPinned}
       onPinnedChange={setIsPinned}
       variant={variant}
       className={className}
+        conversation={conversation}
+      name={conversation.participantUsername || "Unknown"}
     />
+    </div>
   )
 }
