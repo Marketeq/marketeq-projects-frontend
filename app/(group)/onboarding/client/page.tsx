@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/auth"
 import AuthenticatedRoute from "@/hoc/AuthenticatedRoute"
 import { AuthAPI } from "@/service/http/auth"
 import { ClientAPI } from "@/service/http/client"
+import { UserAPI } from "@/service/http/user"
 import { HOT_KEYS } from "@/utils/constants"
 import {
   cn,
@@ -49,7 +50,7 @@ import {
 import { useDebounce, useIsomorphicLayoutEffect, useToggle } from "react-use"
 import { z } from "zod"
 import { CreateClientType } from "@/types/client"
-import { User } from "@/types/user"
+import { ROLE, User } from "@/types/user"
 import { Spinner } from "@/components/ui/spinner/spinner"
 import { Logo } from "@/components/icons"
 import { Pointer } from "@/components/icons/pointer"
@@ -1518,9 +1519,16 @@ const OutlineYourInterests = ({
   }
 
   const skip = () => {
-    toggleValidation(true)
-    const nextStepIndex = currentStep + 1
-    setStep(nextStepIndex)
+    try {
+      toggleValidation(true)
+      const nextStepIndex = currentStep + 1
+      setStep(nextStepIndex)
+    } catch (error) {
+      toast({
+        title: "Failed to skip onboarding. Please try again.",
+        variant: "destructive",
+      })
+    }
   }
 
   const back = () => {
@@ -1817,8 +1825,21 @@ const DoNext = ({
   clientUser: User | null
 }) => {
   const router = useRouter()
-
   const { setUser } = useAuth()
+  const [isLoading, setIsLoading] = React.useState(false)
+  const handleFinish = async () => {
+    try {
+      setIsLoading(true)
+      const response = await UserAPI.handleSkip({ role: ROLE.CLIENT })
+      const userResponse = await UserAPI.me()
+      setUser(userResponse.data.user)
+      setIsLoading(false)
+      router.push("/client-dashboard")
+    } catch (error) {
+      console.error("Failed to complete onboarding", error)
+      // Show error toast if needed
+    }
+  }
 
   return (
     <div className="min-h-screen flex lg:pl-[480px]">
@@ -1877,7 +1898,9 @@ const DoNext = ({
             <div
               className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300"
               onClick={() => {
-                setUser(clientUser)
+                if (clientUser) {
+                  setUser(clientUser)
+                }
                 router.push("/")
               }}
             >
@@ -1897,10 +1920,7 @@ const DoNext = ({
 
         <div className="mt-10 lg:mt-[50px] max-w-[688px] lg:max-w-[660px] mx-auto w-full self-end flex justify-end">
           <Button
-            onClick={() => {
-              setUser(clientUser)
-              router.push("/client-dashboard")
-            }}
+            onClick={handleFinish}
             className="text-primary-500"
             variant="link"
             visual="gray"

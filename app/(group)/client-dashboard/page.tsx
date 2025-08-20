@@ -1,6 +1,10 @@
 "use client"
 
+import { useEffect, useState } from "react"
+import { useAuth } from "@/contexts/auth"
+import AuthenticatedRoute from "@/hoc/AuthenticatedRoute"
 import data from "@/public/mock/projects.json"
+import SecuritySettingsStepper from "@/stories/security-settings.stories"
 import { cn } from "@/utils/functions"
 import {
   AlertCircle,
@@ -1060,10 +1064,37 @@ const Footer = () => {
 }
 
 export default function ClientDashboard() {
+  const { user } = useAuth()
+  const [showSecurityModal, setShowSecurityModal] = useState(false)
+
+  useEffect(() => {
+    const safeUser = user as {
+      provider?: string
+      password?: string
+    }
+
+    const passwordIsEmpty =
+      typeof safeUser?.password !== "string" ||
+      safeUser.password.trim().length === 0
+
+    if (safeUser && safeUser.provider === "EMAIL" && passwordIsEmpty) {
+      setShowSecurityModal(true)
+    }
+  }, [user])
+
   return (
     <>
-      <LeftSidebar />
-      <Content />
+      {showSecurityModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+          <SecuritySettingsStepper
+            onCloseModal={() => setShowSecurityModal(false)}
+          />
+        </div>
+      )}
+      <AuthenticatedRoute>
+        <LeftSidebar />
+        <Content />
+      </AuthenticatedRoute>
     </>
   )
 }

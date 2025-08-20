@@ -83,7 +83,7 @@ export const IndustrySelectorSingle = ({
       <Combobox value={selected} onChange={setSelected}>
         <ComboboxTrigger className="flex flex-col gap-y-1.5 w-full">
           <ComboboxLabel size="sm" className="text-dark-blue-400">
-            What's your Industry?
+            What&apos;s your Industry?
           </ComboboxLabel>
           <ComboboxInput
             size="lg"

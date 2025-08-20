@@ -61,6 +61,7 @@ function useProvideAuth() {
   const logoutHandler = async () => {
     try {
       await AuthAPI.Logout()
+      document.cookie = "accessToken=; Path=/; Max-Age=0; SameSite=None; Secure"
     } catch (err: any) {
       toast({
         title:

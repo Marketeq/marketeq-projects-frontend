@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/auth"
 import AuthenticatedRoute from "@/hoc/AuthenticatedRoute"
 import { AuthAPI } from "@/service/http/auth"
 import { TalentAPI } from "@/service/http/talent"
+import { UserAPI } from "@/service/http/user"
 import { DAY_PERIODS, HOT_KEYS, TIMES } from "@/utils/constants"
 import {
   capitalize,
@@ -49,7 +50,7 @@ import {
 import { z } from "zod"
 import { DAYS } from "@/types/day"
 import { AVAILABILITY, CreateTalentType } from "@/types/talent"
-import { User } from "@/types/user"
+import { ROLE, User } from "@/types/user"
 import { Spinner } from "@/components/ui/spinner/spinner"
 import { Logo } from "@/components/icons"
 import { Pointer } from "@/components/icons/pointer"
@@ -1708,7 +1709,6 @@ const SetYourPreferences = ({
   setTalentUser: React.Dispatch<React.SetStateAction<User | null>>
 }) => {
   const { toast } = useToast()
-
   const [isLoading, setIsLoading] = React.useState(false)
 
   const {
@@ -1819,10 +1819,17 @@ const SetYourPreferences = ({
 
   const progress = ((currentStep + 1) / totalSteps) * 100
 
-  const skip = () => {
-    toggleValidation(true)
-    const nextStepIndex = currentStep + 1
-    setStep(nextStepIndex)
+  const skip = async () => {
+    try {
+      toggleValidation(true)
+      const nextStepIndex = currentStep + 1
+      setStep(nextStepIndex)
+    } catch (error) {
+      toast({
+        title: "Failed to skip onboarding. Please try again.",
+        variant: "destructive",
+      })
+    }
   }
 
   const back = () => {
@@ -2023,8 +2030,21 @@ const DoNext = ({
   talentUser: User | null
 }) => {
   const router = useRouter()
-
   const { setUser } = useAuth()
+  const [isLoading, setIsLoading] = React.useState(false)
+  const handleFinish = async () => {
+    try {
+      setIsLoading(true)
+      const response = await UserAPI.handleSkip({ role: ROLE.TALENT })
+      const userResponse = await UserAPI.me()
+      setUser(userResponse.data.user)
+      setIsLoading(false)
+      router.push("/talent-dashboard")
+    } catch (error) {
+      console.error("Failed to complete onboarding", error)
+      // Show error toast if needed
+    }
+  }
 
   return (
     <div className="min-h-screen flex md:pl-[480px] bg-white">
@@ -2043,7 +2063,9 @@ const DoNext = ({
             <div
               className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300"
               onClick={() => {
-                setUser(talentUser)
+                if (talentUser) {
+                  setUser(talentUser)
+                }
                 router.push("/")
               }}
             >
@@ -2100,10 +2122,7 @@ const DoNext = ({
 
         <div className="mt-10 lg:mt-[50px] mx-auto w-full max-w-[608px] lg:max-w-[660px] flex self-end justify-end">
           <Button
-            onClick={() => {
-              setUser(talentUser)
-              router.push("/talent-dashboard")
-            }}
+            onClick={handleFinish}
             className="text-primary-500"
             variant="link"
             visual="gray"
