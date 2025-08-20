@@ -1,1 +1,1 @@
-declare module 'leo-profanity';
+declare module "leo-profanity"
