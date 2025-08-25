@@ -101,6 +101,8 @@ interface ListboxButtonProps<T = any>
   iconClassName?: string
   placeholder?: string
   isInvalid?: boolean
+  placeholderClassName?: string
+  displayValue?: (value: T) => React.ReactNode
 }
 
 export const ListboxButton = ({
@@ -109,6 +111,8 @@ export const ListboxButton = ({
   iconClassName,
   children,
   isInvalid,
+  placeholderClassName,
+  displayValue,
   ...props
 }: ListboxButtonProps) => {
   return (
@@ -128,9 +132,13 @@ export const ListboxButton = ({
           {value
             ? children
               ? children?.({ disabled, open, value })
-              : isString(value) && value
+              : isString(value)
+                ? value
+                : displayValue?.(value)
             : placeholder && (
-                <span className="text-gray-500">{placeholder}</span>
+                <span className={cn("text-gray-500", placeholderClassName)}>
+                  {placeholder}
+                </span>
               )}
           <ChevronDown
             className={cn(
@@ -200,10 +208,18 @@ interface ListboxOption<T = any>
   value: T
   children?: React.ReactNode
   iconClassName?: string
+  indicator?: boolean
 }
 
 export const ListboxOption = React.forwardRef(
-  ({ className, value, children, iconClassName, ...props }: ListboxOption) => (
+  ({
+    className,
+    value,
+    children,
+    iconClassName,
+    indicator = true,
+    ...props
+  }: ListboxOption) => (
     <ListboxPrimitive.Option
       className={cn(
         "flex cursor-pointer items-center gap-x-2 p-3 text-[13px] truncate leading-[13.25px] text-gray-500 ui-active:bg-gray-50 ui-active:text-gray-black",
@@ -215,7 +231,7 @@ export const ListboxOption = React.forwardRef(
       {({ selected }) => (
         <>
           {children}
-          {selected && (
+          {indicator && selected && (
             <Check
               className={cn("ml-auto h-4 w-4 text-primary-500", iconClassName)}
             />

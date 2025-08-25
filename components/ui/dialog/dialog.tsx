@@ -50,25 +50,39 @@ const dialogContentVariants = cva(
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> &
-    VariantProps<typeof dialogContentVariants>
->(({ className, variant, children, onOpenAutoFocus, ...props }, ref) => (
-  <DialogPortal>
-    <DialogOverlay />
-    <DialogPrimitive.Content
-      onOpenAutoFocus={onOpenAutoFocus ?? ((e) => e.preventDefault())}
-      ref={ref}
-      className={cn(
-        dialogContentVariants({
-          className,
-          variant,
-        })
-      )}
-      {...props}
-    >
-      {children}
-    </DialogPrimitive.Content>
-  </DialogPortal>
-))
+    VariantProps<typeof dialogContentVariants> & {
+      dialogOverlay?: React.ReactNode
+    }
+>(
+  (
+    {
+      className,
+      variant,
+      children,
+      dialogOverlay = <DialogOverlay />,
+      onOpenAutoFocus,
+      ...props
+    },
+    ref
+  ) => (
+    <DialogPortal>
+      {dialogOverlay}
+      <DialogPrimitive.Content
+        onOpenAutoFocus={onOpenAutoFocus ?? ((e) => e.preventDefault())}
+        ref={ref}
+        className={cn(
+          dialogContentVariants({
+            className,
+            variant,
+          })
+        )}
+        {...props}
+      >
+        {children}
+      </DialogPrimitive.Content>
+    </DialogPortal>
+  )
+)
 DialogContent.displayName = DialogPrimitive.Content.displayName
 
 const DialogHeader = ({
@@ -114,6 +128,7 @@ DialogDescription.displayName = DialogPrimitive.Description.displayName
 export {
   Dialog,
   DialogTrigger,
+  DialogOverlay,
   DialogContent,
   DialogHeader,
   DialogFooter,
