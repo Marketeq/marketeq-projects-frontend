@@ -21,6 +21,9 @@ import {
   RefreshCw,
   SearchMd,
   Share,
+  Share01,
+  Share06,
+  Share07,
   Star,
   XCircle,
 } from "@blend-metrics/icons"
@@ -231,6 +234,18 @@ export default function Default() {
   const [isCardStuck, setIsCardStuck] = useState<boolean>(false)
   const [isTabsListStuck, setIsTabsListStuck] = useState<boolean>(false)
 
+  // Auto-expand state for sections
+  const [autoExpandPortfolio, setAutoExpandPortfolio] = useState<boolean>(false)
+  const [autoExpandSkills, setAutoExpandSkills] = useState<boolean>(false)
+  const [autoExpandOffers, setAutoExpandOffers] = useState<boolean>(false)
+  const [autoExpandWorkExperience, setAutoExpandWorkExperience] =
+    useState<boolean>(false)
+  const [autoExpandEducation, setAutoExpandEducation] = useState<boolean>(false)
+  const [autoExpandProjectHistory, setAutoExpandProjectHistory] =
+    useState<boolean>(false)
+  const [backgroundActiveTab, setBackgroundActiveTab] =
+    useState<string>("Work Experience")
+
   useEffect(() => {
     const element = cardRef.current
 
@@ -269,6 +284,95 @@ export default function Default() {
       return () => {
         window.removeEventListener("scroll", handleScroll)
       }
+    }
+  }, [])
+
+  // Auto-expand sections when navigated to via hash
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash
+
+      // Reset all auto-expand states
+      setAutoExpandPortfolio(false)
+      setAutoExpandSkills(false)
+      setAutoExpandOffers(false)
+      setAutoExpandWorkExperience(false)
+      setAutoExpandEducation(false)
+      setAutoExpandProjectHistory(false)
+
+      // Reset background tab to default
+      setBackgroundActiveTab("Work Experience")
+
+      // Set auto-expand for the target section
+      switch (hash) {
+        case "#portfolio":
+          setAutoExpandPortfolio(true)
+          break
+        case "#skills":
+          setAutoExpandSkills(true)
+          break
+        case "#offers":
+          setAutoExpandOffers(true)
+          break
+        case "#background":
+          setAutoExpandWorkExperience(true)
+          setAutoExpandEducation(true)
+          break
+        case "#education":
+          setAutoExpandWorkExperience(true)
+          setAutoExpandEducation(true)
+          setBackgroundActiveTab("Education")
+          // Prevent default scroll behavior and manually scroll to background section
+          setTimeout(() => {
+            const backgroundElement = document.getElementById("background")
+            if (backgroundElement) {
+              backgroundElement.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              })
+            }
+          }, 50)
+          break
+        case "#project-history":
+          setAutoExpandProjectHistory(true)
+          break
+      }
+    }
+
+    // Handle click events on specific links that need auto-expand or special handling
+    const handleNavigationClick = (e: Event) => {
+      const target = e.target as HTMLAnchorElement
+      if (target.href && target.href.includes("#")) {
+        const hash = target.href.split("#")[1]
+        if (hash === "education") {
+          e.preventDefault()
+          window.history.pushState(null, "", "#education")
+          handleHashChange()
+        } else if (hash === "background") {
+          e.preventDefault()
+          window.history.pushState(null, "", "#background")
+          handleHashChange()
+        } else if (hash === "portfolio" || hash === "skills") {
+          // Let normal scroll happen, then trigger hash change for auto-expand
+          setTimeout(() => {
+            handleHashChange()
+          }, 50)
+        }
+      }
+    }
+
+    // Add click listeners to all navigation links
+    document.addEventListener("click", handleNavigationClick)
+
+    // Handle initial hash on load
+    handleHashChange()
+
+    // Listen for hash changes
+    window.addEventListener("hashchange", handleHashChange)
+
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange)
+      document.removeEventListener("click", handleNavigationClick)
     }
   }, [])
 
@@ -383,7 +487,7 @@ export default function Default() {
                       visual="gray"
                       size="md"
                     >
-                      <Share className="size-[20px]" />
+                      <Share06 className="size-[20px]" />
                     </IconButton>
                   </div>
                 </div>
@@ -436,16 +540,15 @@ export default function Default() {
                             >
                               Next.js
                             </Badge>
-                            {!isShowing ? (
+                            <NextLink href="#skills">
                               <Badge
                                 className="text-gray-700 cursor-pointer"
                                 visual="gray"
                                 size="lg"
-                                onClick={() => setIsShowing(true)}
                               >
                                 <Plus2 className="h-3 w-3" /> 6 more...
                               </Badge>
-                            ) : null}
+                            </NextLink>
                             <Badge
                               className="text-gray-700"
                               visual="gray"
@@ -600,8 +703,10 @@ export default function Default() {
                     <TabsTrigger value="Education" asChild>
                       <NextLink href="#education">Education</NextLink>
                     </TabsTrigger>
-                    <TabsTrigger value="#project-history" asChild>
-                      <NextLink href="#">Project History</NextLink>
+                    <TabsTrigger value="Project History" asChild>
+                      <NextLink href="#project-history">
+                        Project History
+                      </NextLink>
                     </TabsTrigger>
                   </div>
                 </div>
@@ -655,7 +760,7 @@ export default function Default() {
                       visual="gray"
                       size="md"
                     >
-                      <Share className="size-[20px]" />
+                      <Share06 className="size-[20px]" />
                     </IconButton>
                   </div>
 
@@ -679,7 +784,10 @@ export default function Default() {
           >
             <div className="pt-6 flex gap-x-8">
               <div className="flex-auto">
-                <ShowMoreLessRoot>
+                <ShowMoreLessRoot
+                  value={autoExpandPortfolio}
+                  onValueChange={setAutoExpandPortfolio}
+                >
                   {({ isShowing, setIsShowing, ref, scrollHeight }) => (
                     <>
                       <div
@@ -693,7 +801,7 @@ export default function Default() {
                               : "auto",
                         }}
                       >
-                        <ShowMoreLessComp max={3}>
+                        <ShowMoreLess max={3}>
                           <article className="group relative rounded-lg overflow-hidden h-[200px]">
                             <NextImage
                               className="object-cover"
@@ -1118,7 +1226,7 @@ export default function Default() {
                               </div>
                             </div>
                           </article>
-                        </ShowMoreLessComp>
+                        </ShowMoreLess>
                       </div>
 
                       <div className="my-6">
@@ -1146,7 +1254,10 @@ export default function Default() {
                     Skills
                   </h1>
 
-                  <ShowMoreLessRoot>
+                  <ShowMoreLessRoot
+                    value={autoExpandSkills}
+                    onValueChange={setAutoExpandSkills}
+                  >
                     {({ isShowing, setIsShowing, ref, scrollHeight }) => (
                       <>
                         <div
@@ -1657,7 +1768,10 @@ export default function Default() {
                     </div>
 
                     <TabsContent value="Projects">
-                      <ShowMoreLessRoot>
+                      <ShowMoreLessRoot
+                        value={autoExpandOffers}
+                        onValueChange={setAutoExpandOffers}
+                      >
                         {({ setIsShowing, isShowing, ref, scrollHeight }) => (
                           <>
                             <div
@@ -3234,7 +3348,10 @@ export default function Default() {
                     </TabsContent>
 
                     <TabsContent value="Services">
-                      <ShowMoreLessRoot>
+                      <ShowMoreLessRoot
+                        value={autoExpandOffers}
+                        onValueChange={setAutoExpandOffers}
+                      >
                         {({ setIsShowing, isShowing, scrollHeight, ref }) => (
                           <>
                             <div
@@ -4814,7 +4931,11 @@ export default function Default() {
                     Background
                   </h1>
 
-                  <Tabs defaultValue="Work Experience" className="mt-6">
+                  <Tabs
+                    value={backgroundActiveTab}
+                    onValueChange={setBackgroundActiveTab}
+                    className="mt-6"
+                  >
                     <RadixTabs.List className="inline-flex items-center gap-x-3">
                       <TabsTrigger
                         variant="unstyled"
@@ -4835,7 +4956,10 @@ export default function Default() {
                     </RadixTabs.List>
 
                     <TabsContent value="Work Experience">
-                      <ShowMoreLessRoot>
+                      <ShowMoreLessRoot
+                        value={autoExpandWorkExperience}
+                        onValueChange={setAutoExpandWorkExperience}
+                      >
                         {({ isShowing, setIsShowing, scrollHeight, ref }) => (
                           <>
                             <div
@@ -5436,7 +5560,10 @@ export default function Default() {
                     </TabsContent>
 
                     <TabsContent value="Education">
-                      <ShowMoreLessRoot>
+                      <ShowMoreLessRoot
+                        value={autoExpandEducation}
+                        onValueChange={setAutoExpandEducation}
+                      >
                         {({ isShowing, setIsShowing, scrollHeight, ref }) => (
                           <>
                             <div
@@ -5921,7 +6048,10 @@ export default function Default() {
                       </div>
                     </RadixTabs.List>
                     <TabsContent value="Completed">
-                      <ShowMoreLessRoot>
+                      <ShowMoreLessRoot
+                        value={autoExpandProjectHistory}
+                        onValueChange={setAutoExpandProjectHistory}
+                      >
                         {({ isShowing, setIsShowing, scrollHeight, ref }) => (
                           <>
                             <div
