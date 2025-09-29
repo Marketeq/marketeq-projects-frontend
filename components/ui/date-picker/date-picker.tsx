@@ -19,11 +19,13 @@ const DatePicker = ({
   onValueChange,
   placeholder,
   inputClassName,
+  indicator = <CalendarPlus01 className="h-5 w-5 text-gray-700" />,
 }: {
   value?: Date
   onValueChange?: (value: Date) => void
   placeholder?: string
   inputClassName?: string
+  indicator?: React.ReactNode
 }) => {
   const [date, setDate] = useControllableState({
     value,
@@ -51,7 +53,7 @@ const DatePicker = ({
           variant="outlined"
           visual="gray"
         >
-          <CalendarPlus01 className="h-5 w-5 text-gray-700" />
+          {indicator}
           {date ? (
             format(date, "LLL d, yyyy")
           ) : (

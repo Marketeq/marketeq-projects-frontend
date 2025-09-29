@@ -64,9 +64,11 @@ export const ShowMoreLessRoot = ({
 export const ShowMoreLess = ({
   children,
   max = 3,
+  trigger,
 }: {
   children?: React.ReactNode
   max?: number
+  trigger?: (extraChildrenCount?: number) => React.ReactNode
 }) => {
   const validChildren = getValidChildren(children)
   const extra = validChildren.length > max
@@ -79,6 +81,7 @@ export const ShowMoreLess = ({
           ? validChildren
           : validChildren.slice(0, max)
         : validChildren}
+      {!isShowing && extra ? trigger?.(validChildren.length - max) : null}
     </>
   )
 }

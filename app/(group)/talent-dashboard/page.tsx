@@ -6,7 +6,6 @@ import { SVGProps } from "react"
 import { useAuth } from "@/contexts/auth"
 import AuthenticatedRoute from "@/hoc/AuthenticatedRoute"
 import data from "@/public/mock/projects.json"
-import SecuritySettingsStepper from "@/stories/security-settings.stories"
 import { ONE_SECOND } from "@/utils/constants"
 import { cn, getId, getIsEmpty, getIsNotEmpty } from "@/utils/functions"
 import { useEditable } from "@ark-ui/react"
@@ -48,6 +47,7 @@ import { Facebook, Linkedin, Logo, Logo3, XIcon } from "@/components/icons"
 import { GridVertical6 } from "@/components/icons/grid-vertical-6"
 import NextImage from "@/components/next-image"
 import NextLink from "@/components/next-link"
+import SecuritySettingsStepper from "@/components/security-settings"
 import {
   Avatar,
   AvatarFallback,
