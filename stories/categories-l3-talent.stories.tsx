@@ -195,13 +195,14 @@ export const Default = () => {
                               </div>
 
                               <div className="mt-3">
-                                <h1 className="text-sm font-bold leading-none textd-dark-blue-400">
+                                <h1 className="text-sm font-bold leading-none text-dark-blue-400">
                                   $85 - $120
                                   <span className="text-[10px] leading-none font-light">
                                     /hr
                                   </span>
                                 </h1>
-                                <h1 className="text-sm mt-3 font-bold leading-none textd-dark-blue-400">
+
+                                <h1 className="text-sm mt-3 font-bold leading-none text-dark-blue-400">
                                   Ngozi{" "}
                                   <span className="text-[12px] text-gray-500 leading-none font-light">
                                     @BlueberryBelle
