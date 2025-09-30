@@ -1819,145 +1819,109 @@ export const Default = () => {
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="p-[50px] bg-white border-t border-gray-200">
-          <h1 className="text-[28px] leading-none font-bold text-dark-blue-400">
-            More Ways to Explore
-          </h1>
-          <div className="mt-6">
-            <div className="flex items-center gap-x-3">
-              <Badge
-                variant="circular"
-                visual="gray"
-                size="lg"
-                className="h-8 border bg-white border-gray-300 px-3.5 text-gray-500"
-              >
-                Related Categories
-              </Badge>
-              <Badge
-                variant="circular"
-                visual="gray"
-                size="lg"
-                className="h-8 border bg-white border-gray-300 px-3.5 text-gray-500"
-              >
-                Related Searches
-              </Badge>
-              <Badge
-                variant="circular"
-                visual="gray"
-                size="lg"
-                className="h-8 border bg-white border-gray-300 px-3.5 text-gray-500"
-              >
-                Trending Searches
-              </Badge>
-            </div>
-          </div>
-
-          <div className="mt-8 flex justify-between">
-            {Array(4)
-              .fill(0)
-              .map((_, index) => (
-                <div key={index} className="flex flex-col gap-y-3">
-                  <span className="text-lg font-bold leading-none text-dark-blue-400">
-                    Blockchain
-                  </span>
-
-                  <Button
-                    size="lg"
-                    variant="link"
-                    className="text-dark-blue-400"
-                  >
-                    Lorem lipsum
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="link"
-                    className="text-dark-blue-400"
-                  >
-                    Lorem lipsum
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="link"
-                    className="text-dark-blue-400"
-                  >
-                    Lorem lipsum
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="link"
-                    className="text-dark-blue-400"
-                  >
-                    Lorem lipsum
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="link"
-                    className="text-dark-blue-400"
-                  >
-                    Lorem lipsum
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="link"
-                    className="text-dark-blue-400"
-                  >
-                    Lorem lipsum
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="link"
-                    className="text-dark-blue-400"
-                  >
-                    Lorem lipsum
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="link"
-                    className="text-dark-blue-400"
-                  >
-                    Lorem lipsum
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="link"
-                    className="text-dark-blue-400"
-                  >
-                    Lorem lipsum
-                  </Button>
-                </div>
-              ))}
+      <div className="p-[50px] bg-white border-t border-gray-200">
+        <h1 className="text-[28px] leading-none font-bold text-dark-blue-400">
+          More Ways to Explore
+        </h1>
+        <div className="mt-6">
+          <div className="flex items-center gap-x-3">
+            <Badge
+              variant="circular"
+              visual="gray"
+              size="lg"
+              className="h-8 border bg-white border-gray-300 px-3.5 text-gray-500"
+            >
+              Related Categories
+            </Badge>
+            <Badge
+              variant="circular"
+              visual="gray"
+              size="lg"
+              className="h-8 border bg-white border-gray-300 px-3.5 text-gray-500"
+            >
+              Related Searches
+            </Badge>
+            <Badge
+              variant="circular"
+              visual="gray"
+              size="lg"
+              className="h-8 border bg-white border-gray-300 px-3.5 text-gray-500"
+            >
+              Trending Searches
+            </Badge>
           </div>
         </div>
 
-        <div className="p-[50px] bg-primary-25">
-          <h1 className="text-[28px] text-center text-dark-blue-400 leading-none font-semibold">
-            Stay Up to Date with Marketeq
-          </h1>
-          <p className="text-base text-center leading-5 mt-5 font-light text-dark-blue-400">
-            Subscribe to our newsletter and get the latest updates.
-          </p>
+        <div className="mt-8 flex justify-between">
+          {Array(4)
+            .fill(0)
+            .map((_, index) => (
+              <div key={index} className="flex flex-col gap-y-3">
+                <span className="text-lg font-bold leading-none text-dark-blue-400">
+                  Blockchain
+                </span>
 
-          <div className="mt-5 max-w-[506px] mx-auto">
-            <div className="flex items-enter gap-x-3">
-              <InputGroup fieldHeight={48} className="flex-auto">
-                <Input
-                  className="h-12"
-                  type="email"
-                  placeholder="Email Address"
-                />
-                <InputLeftElement>
-                  <Mail className="text-gray-500 size-5" />
-                </InputLeftElement>
-              </InputGroup>
-              <Button size="xl">Subscribe</Button>
-            </div>
+                <Button size="lg" variant="link" className="text-dark-blue-400">
+                  Lorem lipsum
+                </Button>
+                <Button size="lg" variant="link" className="text-dark-blue-400">
+                  Lorem lipsum
+                </Button>
+                <Button size="lg" variant="link" className="text-dark-blue-400">
+                  Lorem lipsum
+                </Button>
+                <Button size="lg" variant="link" className="text-dark-blue-400">
+                  Lorem lipsum
+                </Button>
+                <Button size="lg" variant="link" className="text-dark-blue-400">
+                  Lorem lipsum
+                </Button>
+                <Button size="lg" variant="link" className="text-dark-blue-400">
+                  Lorem lipsum
+                </Button>
+                <Button size="lg" variant="link" className="text-dark-blue-400">
+                  Lorem lipsum
+                </Button>
+                <Button size="lg" variant="link" className="text-dark-blue-400">
+                  Lorem lipsum
+                </Button>
+                <Button size="lg" variant="link" className="text-dark-blue-400">
+                  Lorem lipsum
+                </Button>
+              </div>
+            ))}
+        </div>
+      </div>
 
-            <div className="mt-3 max-w-[346px] text-xs leading-[19px] text-center mx-auto">
-              You may unsubscribe at any time. By signing up, you agree to
-              Marketeq’s <span className="underline">Privacy Policy</span> and
-              <span className="underline">Terms of Use</span>.
-            </div>
+      <div className="p-[50px] bg-primary-25">
+        <h1 className="text-[28px] text-center text-dark-blue-400 leading-none font-semibold">
+          Stay Up to Date with Marketeq
+        </h1>
+        <p className="text-base text-center leading-5 mt-5 font-light text-dark-blue-400">
+          Subscribe to our newsletter and get the latest updates.
+        </p>
+
+        <div className="mt-5 max-w-[506px] mx-auto">
+          <div className="flex items-enter gap-x-3">
+            <InputGroup fieldHeight={48} className="flex-auto">
+              <Input
+                className="h-12"
+                type="email"
+                placeholder="Email Address"
+              />
+              <InputLeftElement>
+                <Mail className="text-gray-500 size-5" />
+              </InputLeftElement>
+            </InputGroup>
+            <Button size="xl">Subscribe</Button>
+          </div>
+
+          <div className="mt-3 max-w-[346px] text-xs leading-[19px] text-center mx-auto">
+            You may unsubscribe at any time. By signing up, you agree to
+            Marketeq’s <span className="underline">Privacy Policy</span> and
+            <span className="underline">Terms of Use</span>.
           </div>
         </div>
       </div>

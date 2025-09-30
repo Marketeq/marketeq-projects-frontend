@@ -80,14 +80,23 @@ export const Default = () => {
                     </span>
                   </div>
 
-                  <div className="mt-[50px] px-[50px]">
-                    <h1 className="text-[36px] font-bold leading-none text-white">
-                      Found a Project?
-                    </h1>
-                    <p className="text-xl mt-3 leading-none text-white">
-                      Explore a diverse pool of iOS developers and find the
-                      perfect fit for your project.
-                    </p>
+                  <div className="mt-[50px] pb-6 pl-6 flex items-start justify-between pr-[100px]">
+                    <div className="max-w-[440px]">
+                      <h1 className="text-[36px] font-bold leading-none text-white">
+                        Found a Project?
+                      </h1>
+                      <p className="text-xl mt-2 leading-none text-white">
+                        Explore a diverse pool of iOS developers and find the
+                        perfect fit for your project.
+                      </p>
+                    </div>
+
+                    <Button
+                      size="xl"
+                      className="mt-6 rounded-full bg-white text-dark-blue-400"
+                    >
+                      Explore iOS Talent <ArrowRight className="size-[15px]" />
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -117,7 +126,7 @@ export const Default = () => {
                     Social Media App
                   </button>
 
-                  <button className="absolute rounded-full inset-y-0 my-auto -right-4 focus-visible:outline-none size-9 shrink-0 inline-flex items-center justify-center border-[.97px] border-gray-500 bg-white text-gray-500">
+                  <button className="absolute rounded-full inset-y-0 my-auto -right-4 focus-visible:outline-none size-9 shrink-0 inline-flex items-center justify-center border-[.97px] border-gray-500 hover:border-gray-950 hover:ring-1 hover:ring-gray-950 bg-white text-gray-500">
                     <ChevronRight className="size-4" />
                   </button>
                 </div>
@@ -142,11 +151,17 @@ export const Default = () => {
                         <Filter className="size-6" />
                       </IconButton>
 
-                      <ToggleGroupRoot>
-                        <ToggleGroupItem value="grid">
+                      <ToggleGroupRoot className="p-0">
+                        <ToggleGroupItem
+                          className="size-10 py-0 px-0"
+                          value="grid"
+                        >
                           <Grid />
                         </ToggleGroupItem>
-                        <ToggleGroupItem value="list">
+                        <ToggleGroupItem
+                          className="size-10 py-0 px-0"
+                          value="list"
+                        >
                           <List />
                         </ToggleGroupItem>
                       </ToggleGroupRoot>
