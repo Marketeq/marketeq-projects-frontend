@@ -9,6 +9,8 @@ import {
   MarkerPin02,
   Signal01,
   Star,
+  Star01,
+  Star02,
 } from "@blend-metrics/icons"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs"
 import { Meta } from "@storybook/react"
@@ -271,7 +273,15 @@ export const Default = () => {
                                 className="object-cover"
                               />
                             </div>
-                            <div className="absolute grid rounded-full shrink-0 border-[2.53px] bg-white size-[27px] -left-[13.5px] -bottom-[13.5px] border-white">
+                            <div className="text-white flex items-center absolute px-2.5 pt-2.5 justify-between top-0 inset-x-0">
+                              <div className="font-bold rounded-[5px] py-0.5 px-1.5 bg-black/[.57] inline-flex items-center gap-x-1 text-white text-[10px]">
+                                <Star02 /> All Stars
+                              </div>
+
+                              <Star01 className="size-3" />
+                            </div>
+
+                            <div className="absolute grid rounded-full shrink-0 border-[2.53px] bg-white size-[29.53px] -left-[7px] -bottom-1 border-white">
                               <div className="bg-success-500 flex items-center justify-center rounded-full text-white">
                                 <Check className="size-[13.97px]" />
                               </div>
