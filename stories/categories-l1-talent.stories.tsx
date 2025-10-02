@@ -336,25 +336,53 @@ export const Default = () => {
                         </div>
 
                         <div className="p-3 flex flex-wrap gap-2 border-t border-gray-200 bg-[#122A4B]/[.02]">
-                          <Button variant="link" visual="gray">
+                          <Button
+                            className="text-gray-500/60 hover:text-gray-500"
+                            variant="link"
+                            visual="gray"
+                          >
                             AR/VR Design
                           </Button>
-                          <Button variant="link" visual="gray">
+                          <Button
+                            className="text-gray-500/60 hover:text-gray-500"
+                            variant="link"
+                            visual="gray"
+                          >
                             AR/VR Design
                           </Button>
-                          <Button variant="link" visual="gray">
+                          <Button
+                            className="text-gray-500/60 hover:text-gray-500"
+                            variant="link"
+                            visual="gray"
+                          >
                             AR/VR Design
                           </Button>
-                          <Button variant="link" visual="gray">
+                          <Button
+                            className="text-gray-500/60 hover:text-gray-500"
+                            variant="link"
+                            visual="gray"
+                          >
                             AR/VR Design
                           </Button>
-                          <Button variant="link" visual="gray">
+                          <Button
+                            className="text-gray-500/60 hover:text-gray-500"
+                            variant="link"
+                            visual="gray"
+                          >
                             AR/VR Design
                           </Button>
-                          <Button variant="link" visual="gray">
+                          <Button
+                            className="text-gray-500/60 hover:text-gray-500"
+                            variant="link"
+                            visual="gray"
+                          >
                             AR/VR Design
                           </Button>
-                          <Button variant="link" visual="gray">
+                          <Button
+                            className="text-gray-500/60 hover:text-gray-500"
+                            variant="link"
+                            visual="gray"
+                          >
                             AR/VR Design
                           </Button>
                         </div>

@@ -152,15 +152,15 @@ export const Default = () => {
                         <DropdownIcon className="size-6" />
                       </IconButton>
 
-                      <ToggleGroupRoot className="p-0">
+                      <ToggleGroupRoot className="p-0 gap-x-0">
                         <ToggleGroupItem
-                          className="size-10 py-0 px-0"
+                          className="size-10 py-0 px-0 rounded-l-lg rounded-r-none"
                           value="grid"
                         >
                           <Grid />
                         </ToggleGroupItem>
                         <ToggleGroupItem
-                          className="size-10 py-0 px-0"
+                          className="size-10 py-0 px-0 rounded-r-lg rounded-l-none"
                           value="list"
                         >
                           <List />

@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs"
 import { Meta } from "@storybook/react"
 import { ToggleGroupItem, ToggleGroupRoot } from "@/components/ui/toggle-group"
 import { Filter, Grid, List } from "@/components/icons"
+import { DropdownIcon } from "@/components/icons/dropdown-icon"
 import { Money } from "@/components/money"
 import NextImage from "@/components/next-image"
 import NextLink from "@/components/next-link"
@@ -151,18 +152,18 @@ export const Default = () => {
                         variant="ghost"
                         visual="gray"
                       >
-                        <Filter className="size-6" />
+                        <DropdownIcon className="size-6" />
                       </IconButton>
 
-                      <ToggleGroupRoot className="p-0">
+                      <ToggleGroupRoot className="p-0 gap-x-0">
                         <ToggleGroupItem
-                          className="size-10 py-0 px-0"
+                          className="size-10 py-0 px-0 rounded-l-lg rounded-r-none"
                           value="grid"
                         >
                           <Grid />
                         </ToggleGroupItem>
                         <ToggleGroupItem
-                          className="size-10 py-0 px-0"
+                          className="size-10 py-0 px-0 rounded-r-lg rounded-l-none"
                           value="list"
                         >
                           <List />
@@ -258,25 +259,53 @@ export const Default = () => {
                             </div>
 
                             <div className="p-3 flex flex-wrap gap-2 border-t border-gray-200 bg-[#122A4B]/[.02]">
-                              <Button variant="link" visual="gray">
+                              <Button
+                                className="text-gray-500/60 hover:text-gray-500"
+                                variant="link"
+                                visual="gray"
+                              >
                                 AR/VR Design
                               </Button>
-                              <Button variant="link" visual="gray">
+                              <Button
+                                className="text-gray-500/60 hover:text-gray-500"
+                                variant="link"
+                                visual="gray"
+                              >
                                 AR/VR Design
                               </Button>
-                              <Button variant="link" visual="gray">
+                              <Button
+                                className="text-gray-500/60 hover:text-gray-500"
+                                variant="link"
+                                visual="gray"
+                              >
                                 AR/VR Design
                               </Button>
-                              <Button variant="link" visual="gray">
+                              <Button
+                                className="text-gray-500/60 hover:text-gray-500"
+                                variant="link"
+                                visual="gray"
+                              >
                                 AR/VR Design
                               </Button>
-                              <Button variant="link" visual="gray">
+                              <Button
+                                className="text-gray-500/60 hover:text-gray-500"
+                                variant="link"
+                                visual="gray"
+                              >
                                 AR/VR Design
                               </Button>
-                              <Button variant="link" visual="gray">
+                              <Button
+                                className="text-gray-500/60 hover:text-gray-500"
+                                variant="link"
+                                visual="gray"
+                              >
                                 AR/VR Design
                               </Button>
-                              <Button variant="link" visual="gray">
+                              <Button
+                                className="text-gray-500/60 hover:text-gray-500"
+                                variant="link"
+                                visual="gray"
+                              >
                                 AR/VR Design
                               </Button>
                             </div>
@@ -367,25 +396,53 @@ export const Default = () => {
                             </div>
 
                             <div className="p-3 flex flex-wrap gap-2 border-t border-gray-200 bg-[#122A4B]/[.02]">
-                              <Button variant="link" visual="gray">
+                              <Button
+                                className="text-gray-500/60 hover:text-gray-500"
+                                variant="link"
+                                visual="gray"
+                              >
                                 AR/VR Design
                               </Button>
-                              <Button variant="link" visual="gray">
+                              <Button
+                                className="text-gray-500/60 hover:text-gray-500"
+                                variant="link"
+                                visual="gray"
+                              >
                                 AR/VR Design
                               </Button>
-                              <Button variant="link" visual="gray">
+                              <Button
+                                className="text-gray-500/60 hover:text-gray-500"
+                                variant="link"
+                                visual="gray"
+                              >
                                 AR/VR Design
                               </Button>
-                              <Button variant="link" visual="gray">
+                              <Button
+                                className="text-gray-500/60 hover:text-gray-500"
+                                variant="link"
+                                visual="gray"
+                              >
                                 AR/VR Design
                               </Button>
-                              <Button variant="link" visual="gray">
+                              <Button
+                                className="text-gray-500/60 hover:text-gray-500"
+                                variant="link"
+                                visual="gray"
+                              >
                                 AR/VR Design
                               </Button>
-                              <Button variant="link" visual="gray">
+                              <Button
+                                className="text-gray-500/60 hover:text-gray-500"
+                                variant="link"
+                                visual="gray"
+                              >
                                 AR/VR Design
                               </Button>
-                              <Button variant="link" visual="gray">
+                              <Button
+                                className="text-gray-500/60 hover:text-gray-500"
+                                variant="link"
+                                visual="gray"
+                              >
                                 AR/VR Design
                               </Button>
                             </div>
