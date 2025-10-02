@@ -1466,7 +1466,7 @@ export const Default = () => {
 
           <div className="mt-3 max-w-[346px] text-xs leading-[19px] text-center mx-auto">
             You may unsubscribe at any time. By signing up, you agree to
-            Marketeq’s <span className="underline">Privacy Policy</span> and
+            Marketeq’s <span className="underline">Privacy Policy</span> and{" "}
             <span className="underline">Terms of Use</span>.
           </div>
         </div>

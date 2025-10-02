@@ -9,6 +9,7 @@ import {
   MarkerPin02,
   Star,
 } from "@blend-metrics/icons"
+import { AdobeBrand } from "@blend-metrics/icons/brands"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs"
 import { Meta } from "@storybook/react"
 import { Money } from "@/components/money"
@@ -567,10 +568,21 @@ export const Default = () => {
                             </Badge>
                           </div>
 
-                          <div className="mt-5 flex items-center flex-wrap gap-3">
-                            <div className="size-[25px] rounded-full shrink-0 relative bg-gray-50"></div>
-                            <div className="size-[25px] rounded-full shrink-0 relative bg-gray-50"></div>
-                            <div className="size-[25px] rounded-full shrink-0 relative bg-gray-50"></div>
+                          <div className="mt-5 space-y-2">
+                            <span className="block text-[11px] font-light text-dark-blue-400">
+                              Previous clients
+                            </span>
+                            <div className="mt-2 flex items-center flex-wrap gap-3">
+                              <div className="size-[25px] rounded-full shrink-0 relative bg-gray-50">
+                                <AdobeBrand className="size-7" />
+                              </div>
+                              <div className="size-[25px] rounded-full shrink-0 relative bg-gray-50">
+                                <AdobeBrand className="size-7" />
+                              </div>
+                              <div className="size-[25px] rounded-full shrink-0 relative bg-gray-50">
+                                <AdobeBrand className="size-7" />
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </article>
@@ -1508,7 +1520,7 @@ export const Default = () => {
 
           <div className="mt-3 max-w-[346px] text-xs leading-[19px] text-center mx-auto">
             You may unsubscribe at any time. By signing up, you agree to
-            Marketeq’s <span className="underline">Privacy Policy</span> and
+            Marketeq’s <span className="underline">Privacy Policy</span> and{" "}
             <span className="underline">Terms of Use</span>.
           </div>
         </div>

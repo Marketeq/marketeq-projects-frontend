@@ -11,6 +11,7 @@ import {
   Star01,
   Star02,
 } from "@blend-metrics/icons"
+import { AdobeBrand } from "@blend-metrics/icons/brands"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs"
 import { Meta } from "@storybook/react"
 import { Money } from "@/components/money"
@@ -1366,10 +1367,21 @@ export const Default = () => {
                             </Badge>
                           </div>
 
-                          <div className="mt-5 flex items-center flex-wrap gap-3">
-                            <div className="size-[25px] rounded-full shrink-0 relative bg-gray-50"></div>
-                            <div className="size-[25px] rounded-full shrink-0 relative bg-gray-50"></div>
-                            <div className="size-[25px] rounded-full shrink-0 relative bg-gray-50"></div>
+                          <div className="mt-5 space-y-2">
+                            <span className="block text-[11px] font-light text-dark-blue-400">
+                              Previous clients
+                            </span>
+                            <div className="mt-2 flex items-center flex-wrap gap-3">
+                              <div className="size-[25px] rounded-full shrink-0 relative bg-gray-50">
+                                <AdobeBrand className="size-7" />
+                              </div>
+                              <div className="size-[25px] rounded-full shrink-0 relative bg-gray-50">
+                                <AdobeBrand className="size-7" />
+                              </div>
+                              <div className="size-[25px] rounded-full shrink-0 relative bg-gray-50">
+                                <AdobeBrand className="size-7" />
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </article>
@@ -1558,7 +1570,12 @@ export const Default = () => {
                           </div>
                         </div>
 
-                        <div className="p-3 flex flex-wrap gap-2 border-t border-gray-200 bg-[#122A4B]/[.02]">
+                        <div className="relative p-3 flex flex-wrap gap-2 border-t border-gray-200 bg-[#122A4B]/[.02]">
+                          <div className="absolute right-3 bottom-3">
+                            <Button variant="link" visual="gray">
+                              More...
+                            </Button>
+                          </div>
                           <Button
                             className="text-gray-500/60 hover:text-gray-500"
                             variant="link"
@@ -1959,7 +1976,7 @@ export const Default = () => {
 
           <div className="mt-3 max-w-[346px] text-xs leading-[19px] text-center mx-auto">
             You may unsubscribe at any time. By signing up, you agree to
-            Marketeq’s <span className="underline">Privacy Policy</span> and
+            Marketeq’s <span className="underline">Privacy Policy</span> and{" "}
             <span className="underline">Terms of Use</span>.
           </div>
         </div>

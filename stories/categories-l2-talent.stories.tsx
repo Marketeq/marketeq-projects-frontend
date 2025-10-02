@@ -340,7 +340,12 @@ export const Default = () => {
                           </div>
                         </div>
 
-                        <div className="p-3 flex flex-wrap gap-2 border-t border-gray-200 bg-[#122A4B]/[.02]">
+                        <div className="relative p-3 flex flex-wrap gap-2 border-t border-gray-200 bg-[#122A4B]/[.02]">
+                          <div className="absolute right-3 bottom-3">
+                            <Button variant="link" visual="gray">
+                              More...
+                            </Button>
+                          </div>
                           <Button
                             className="text-gray-500/60 hover:text-gray-500"
                             variant="link"
@@ -789,7 +794,7 @@ export const Default = () => {
 
             <div className="mt-3 max-w-[346px] text-xs leading-[19px] text-center mx-auto">
               You may unsubscribe at any time. By signing up, you agree to
-              Marketeq’s <span className="underline">Privacy Policy</span> and
+              Marketeq’s <span className="underline">Privacy Policy</span> and{" "}
               <span className="underline">Terms of Use</span>.
             </div>
           </div>
