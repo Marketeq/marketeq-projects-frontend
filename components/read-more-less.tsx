@@ -1,5 +1,5 @@
 import React from "react"
-import { cn, toPxIfNumber } from "@/utils/functions"
+import { cn } from "@/utils/functions"
 import { mergeRefs } from "@/utils/react-utils"
 import { motion } from "framer-motion"
 import { useToggle } from "react-use"
@@ -65,6 +65,7 @@ export const ReadMoreLessComp = ({
     on: () => void
     off: () => void
     text: string
+    shouldShow: boolean
   }) => React.ReactNode
 }) => {
   const { isShowing, scrollHeight, ref, setIsShowing } =
@@ -82,11 +83,7 @@ export const ReadMoreLessComp = ({
         className
       )}
       style={{
-        height: isShowing
-          ? "auto"
-          : scrollHeight
-            ? toPxIfNumber(scrollHeight)
-            : "auto",
+        height: "auto",
         ...style,
       }}
       {...props}
@@ -97,6 +94,7 @@ export const ReadMoreLessComp = ({
         on: () => setIsShowing(true),
         off: () => setIsShowing(false),
         text: isShowing ? text : truncatedTextWithEllipses,
+        shouldShow: text.length > max,
       })}
     </div>
   )

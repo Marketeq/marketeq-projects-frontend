@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { useAuth } from "@/contexts/auth"
 import AuthenticatedRoute from "@/hoc/AuthenticatedRoute"
 import data from "@/public/mock/projects.json"
-import SecuritySettingsStepper from "@/stories/security-settings.stories"
 import { cn } from "@/utils/functions"
 import {
   AlertCircle,
@@ -39,6 +38,7 @@ import { VariantProps, cva } from "class-variance-authority"
 import { useToggle } from "react-use"
 import { Logo3, XIcon } from "@/components/icons"
 import NextLink from "@/components/next-link"
+import SecuritySettingsStepper from "@/components/security-settings"
 import {
   Accordion,
   AccordionTrigger,

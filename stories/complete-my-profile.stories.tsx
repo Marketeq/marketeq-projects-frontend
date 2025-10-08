@@ -1,5 +1,5 @@
 import React, { Fragment, SVGProps, useEffect, useRef, useState } from "react"
-import { cn, hookFormHasError } from "@/utils/functions"
+import { cn, hookFormHasError, noop } from "@/utils/functions"
 import {
   useCallbackRef,
   useControllableState,
@@ -13,11 +13,13 @@ import {
   Briefcase02,
   Building03,
   Check,
+  ChevronDown,
   Clock,
   CreditCard02,
   Edit03,
   FaceId,
   Home03,
+  Info,
   Mail01,
   MapPin,
   Palette,
@@ -43,10 +45,16 @@ import { ErrorMessage as HookFormErrorMessage } from "@hookform/error-message"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Meta } from "@storybook/react"
 import Confetti from "react-confetti"
+import CurrencyInput from "react-currency-input-field"
 import { Controller, SubmitHandler, useForm, useWatch } from "react-hook-form"
 import { z } from "zod"
 import NextImage from "@/components/next-image"
 import {
+  Alert,
+  AlertContent,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Avatar,
   AvatarFallback,
   AvatarImage,
@@ -71,6 +79,8 @@ import {
   ErrorMessage,
   IconButton,
   Input,
+  InputGroup,
+  InputLeftAddon,
   Label,
   Listbox,
   ListboxButton,
@@ -81,6 +91,7 @@ import {
   ScrollArea,
   ScrollBar,
   Textarea,
+  inputVariants,
 } from "@/components/ui"
 
 const meta: Meta = {
@@ -368,6 +379,7 @@ const DIALOG_NAMES = [
   "SKILLS",
   "WORK-EXPERIENCE",
   "EDUCATION",
+  "JOB_TITLE_RATE",
   "CONGRATULATIONS",
 ] as const
 
@@ -392,11 +404,15 @@ const content = {
     title: "Work Experience",
     desc: "Build credibility with proven industry experience",
   },
-
   EDUCATION: {
     icon: <Building03 className="size-5" />,
     title: "Education",
     desc: "Show your qualifications to give clients confidence",
+  },
+  JOB_TITLE_RATE: {
+    icon: <User className="size-5" />,
+    title: "Job Title & Rate",
+    desc: "Message is received in Gmail",
   },
 } as Record<
   Exclude<(typeof DIALOG_NAMES)[number], "CONGRATULATIONS">,
@@ -436,11 +452,37 @@ export const StatusDialog = () => {
       if (nextIndex !== undefined) {
         const nextDialogName = DIALOG_NAMES[nextIndex]
 
-        setDialogsState((prev) => ({
-          ...prev,
-          [openedDialogName]: { ...prev[openedDialogName], opened: false },
-          [nextDialogName]: { ...prev[nextDialogName], opened: true },
-        }))
+        if (nextDialogName === "CONGRATULATIONS") {
+          const uncompletedDialogIndex = DIALOG_NAMES.slice(0, -1).findIndex(
+            (dialogName) => !dialogsState[dialogName].finished
+          )
+          const uncompletedDialogName = DIALOG_NAMES[uncompletedDialogIndex]
+
+          setDialogsState((prev) => ({
+            ...prev,
+            [openedDialogName]: {
+              ...prev[openedDialogName],
+              opened: false,
+            },
+            ...(uncompletedDialogIndex === -1
+              ? { [nextDialogName]: { ...prev[nextDialogName], opened: true } }
+              : {
+                  [uncompletedDialogName]: {
+                    ...prev[uncompletedDialogName],
+                    opened: true,
+                  },
+                }),
+          }))
+        } else {
+          setDialogsState((prev) => ({
+            ...prev,
+            [openedDialogName]: {
+              ...prev[openedDialogName],
+              opened: false,
+            },
+            [nextDialogName]: { ...prev[nextDialogName], opened: true },
+          }))
+        }
       }
     }
   }
@@ -547,6 +589,23 @@ export const StatusDialog = () => {
           setDialogsState((prev) => ({
             ...prev,
             EDUCATION: { ...prev["EDUCATION"], opened },
+          }))
+        }
+        next={next}
+        previous={previous}
+      />
+      <MoreInfoDialog
+        onFinished={(finished) =>
+          setDialogsState((prev) => ({
+            ...prev,
+            JOB_TITLE_RATE: { ...prev["JOB_TITLE_RATE"], finished },
+          }))
+        }
+        opened={dialogsState["JOB_TITLE_RATE"].opened}
+        onOpenedChange={(opened) =>
+          setDialogsState((prev) => ({
+            ...prev,
+            JOB_TITLE_RATE: { ...prev["JOB_TITLE_RATE"], opened },
           }))
         }
         next={next}
@@ -663,6 +722,654 @@ export const StatusDialog = () => {
         </DialogContent>
       </Dialog>
     </>
+  )
+}
+
+const moreInfoFormSchema = z.object({
+  jobTitle: z.string().min(1, "Please enter at least 1 character(s)"),
+  saveAsDefault: z.boolean(),
+  clientRate: z.number({ message: "Please enter an amount" }),
+  earning: z.number({ message: "Please enter an amount" }),
+  fee: z.number({ message: "Please enter an amount" }),
+})
+
+type MoreInfoFormValues = z.infer<typeof moreInfoFormSchema>
+
+const moreInfoFormDefaultValues: Partial<MoreInfoFormValues> = {
+  jobTitle: "",
+  saveAsDefault: false,
+}
+
+export const MoreInfoDialog = ({
+  onFinished,
+  onOpenedChange,
+  opened,
+  next,
+  previous,
+}: {
+  onFinished?: (isFinished: boolean) => void
+  opened?: boolean
+  onOpenedChange?: (opened: boolean) => void
+  next?: () => void
+  previous?: () => void
+}) => {
+  const [open, setOpen] = useControllableState({
+    defaultValue: false,
+    value: opened,
+    onChange: onOpenedChange,
+  })
+  const [isOpen, setIsOpen] = useState(false)
+  const [state, setState] = useState<"default" | "preview" | "action">(
+    "default"
+  )
+  const [editingIndex, setEditingIndex] = useState<number>()
+  const [workExperiences, setWorkExperiences] = useUncontrolledState<
+    MoreInfoFormValues[] | undefined
+  >({
+    onChange: (value) => {
+      onFinished?.(Boolean(value?.length))
+    },
+    defaultValue: undefined,
+  })
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isValid },
+    register,
+    reset,
+    watch,
+    setValue,
+  } = useForm<MoreInfoFormValues>({
+    resolver: zodResolver(moreInfoFormSchema),
+    defaultValues: moreInfoFormDefaultValues,
+  })
+  const onSubmit: SubmitHandler<MoreInfoFormValues> = (values) => {
+    if (editingIndex !== undefined) {
+      setWorkExperiences(
+        workExperiences?.map((workExperience, index) =>
+          index === editingIndex ? values : workExperience
+        )
+      )
+      setEditingIndex(undefined)
+    } else {
+      setWorkExperiences((prev) => (prev ? [...prev, values] : [values]))
+    }
+    reset()
+    setState("preview")
+  }
+
+  const submitTriggerRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    const [clientRate, earning] = watch(["clientRate", "earning"])
+
+    function calculatePercentage({
+      percentage,
+      value,
+    }: {
+      value: number
+      percentage: number
+    }) {
+      return (value * percentage) / 100
+    }
+
+    earning != null
+      ? setValue(
+          "fee",
+          calculatePercentage({
+            value: earning,
+            percentage: 20,
+          })
+        )
+      : clientRate != null
+        ? setValue(
+            "fee",
+            calculatePercentage({
+              value: clientRate,
+              percentage: 20,
+            })
+          )
+        : noop()
+  }, [watch, setValue])
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button>Open</Button>
+      </DialogTrigger>
+      <DialogContent
+        className={cn(
+          "max-w-[1090px] grid grid-cols-2 rounded-[24px] p-[30px]",
+          state === "action" && "grid-cols-5"
+        )}
+      >
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className={cn(
+            "transition-all duration-300",
+            state === "action" && "col-span-3"
+          )}
+        >
+          <div className="border-x border-t rounded-t-[10px] pt-[30px] border-gray-200 bg-gray-50">
+            <div className="px-[30px]">
+              {state !== "action" ? (
+                <div className="flex items-start justify-between">
+                  <div className="max-w-[157px] flex-auto flex items-center gap-x-3">
+                    <span className="text-sm font-medium text-dark-blue-400">
+                      40%
+                    </span>
+                    <div className="max-w-[115px] flex-auto">
+                      <Progress value={20} />
+                    </div>
+                  </div>
+
+                  {state === "preview" && (
+                    <Button
+                      onClick={() => {
+                        setState("action")
+                        reset()
+                      }}
+                      className="bg-white"
+                      variant="outlined"
+                      visual="gray"
+                      type="button"
+                    >
+                      <Plus className="size-[15px]" />
+                      Add Job Title
+                    </Button>
+                  )}
+                </div>
+              ) : (
+                <Button
+                  className="text-dark-blue-400"
+                  onClick={() => setIsOpen(true)}
+                  size="md"
+                  visual="gray"
+                  variant="link"
+                  type="button"
+                >
+                  <ArrowLeft className="size-[15px]" />
+                  Back
+                </Button>
+              )}
+            </div>
+
+            <div className="px-[30px] mt-6 pb-6">
+              <h1 className="text-[36px] leading-[44px] font-semibold text-dark-blue-400">
+                Job Title & Rate
+              </h1>
+              <p className="mt-1 text-base leading-[24.31px] text-dark-blue-400">
+                Tell us what you do and set your hourly rates
+              </p>
+            </div>
+
+            <ScrollArea
+              scrollBar={<ScrollBar className="w-4 p-1" />}
+              className="h-[400px] px-[26px]"
+            >
+              <div className="pb-[30px] px-1">
+                <div className="mt-6">
+                  {state === "default" && (
+                    <Button
+                      onClick={() => setState("action")}
+                      className="bg-white"
+                      variant="outlined"
+                      visual="gray"
+                      type="button"
+                    >
+                      <Plus className="size-[15px]" />
+                      Add Job Title
+                    </Button>
+                  )}
+
+                  {state === "preview" && (
+                    <div className="space-y-3">
+                      {workExperiences?.map((workExperience, index) => (
+                        <article
+                          key={index}
+                          className="p-6 rounded-lg flex items-center bg-white border border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]"
+                        >
+                          <div className="flex-auto">
+                            <h1 className="text-base leading-none font-bold text-dark-blue-400">
+                              {workExperience.jobTitle}
+                            </h1>
+
+                            <div className="mt-1 flex items-center gap-x-3">
+                              <div className="flex items-center flex-none gap-x-2">
+                                <span className="text-xs leading-none font-light text-dark-blue-400">
+                                  Client rate {workExperience.clientRate}/hr
+                                </span>
+                                <span className="inline-block size-1 bg-gray-300 rounded-full" />
+                                <span className="text-xs leading-none font-light text-dark-blue-400">
+                                  Your earnings {workExperience.earning}/hr
+                                </span>
+                              </div>
+
+                              {workExperience.saveAsDefault && (
+                                <Badge visual="primary">Default</Badge>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-x-1">
+                            <IconButton
+                              visual="gray"
+                              variant="ghost"
+                              type="button"
+                              className="text-gray-400 rounded-full"
+                              onClick={() => {
+                                reset(workExperience)
+                                setEditingIndex(index)
+                                setState("action")
+                              }}
+                            >
+                              <Edit03 className="size-[15px]" />
+                            </IconButton>
+                            <IconButton
+                              visual="gray"
+                              variant="ghost"
+                              type="button"
+                              className="text-gray-400 rounded-full hover:text-error-500 hover:bg-error-50"
+                            >
+                              <Trash03 className="size-[15px]" />
+                            </IconButton>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  )}
+
+                  {state === "action" && (
+                    <>
+                      <div className="space-y-1.5">
+                        <Label size="sm" htmlFor="job-title-1">
+                          Job Title 1
+                        </Label>
+
+                        <Input
+                          id="job-title-1"
+                          placeholder="e.g. Software Engineer"
+                          {...register("jobTitle")}
+                          isInvalid={hookFormHasError({
+                            errors,
+                            name: "jobTitle",
+                          })}
+                        />
+
+                        <HookFormErrorMessage
+                          errors={errors}
+                          name="jobTitle"
+                          render={({ message }) => (
+                            <ErrorMessage size="sm">{message}</ErrorMessage>
+                          )}
+                        />
+                      </div>
+
+                      <div className="mt-3 flex items-center gap-x-3">
+                        <Controller
+                          control={control}
+                          name="saveAsDefault"
+                          render={({ field: { onChange, value } }) => (
+                            <Checkbox
+                              id="save-as-default"
+                              checked={value}
+                              onCheckedChange={onChange}
+                            />
+                          )}
+                        />
+                        <Label
+                          className="text-dark-blue-400"
+                          htmlFor="save-as-default"
+                          size="sm"
+                        >
+                          Save as default job title
+                        </Label>
+                      </div>
+
+                      <div className="space-y-6 mt-6">
+                        <div className="flex items-center gap-x-5">
+                          <div className="flex-auto space-y-[5px]">
+                            <h2 className="text-sm leading-none text-dark-blue-400">
+                              Client Rate
+                            </h2>
+
+                            <p className="text-xs leading-none text-dark-blue-400 font-light">
+                              This is what clients will see
+                            </p>
+                          </div>
+
+                          <div className="max-w-[292px] flex-auto">
+                            <div className="flex items-center gap-x-2">
+                              <Label htmlFor="client-rate" className="sr-only">
+                                Client Rate
+                              </Label>
+                              <InputGroup>
+                                <InputLeftAddon className="inline-flex items-center gap-x-1">
+                                  USD
+                                  <Info className="size-4" />
+                                </InputLeftAddon>
+
+                                <Controller
+                                  control={control}
+                                  name="clientRate"
+                                  render={({ field: { value, onChange } }) => (
+                                    <CurrencyInput
+                                      id="client-rate"
+                                      className={cn(
+                                        inputVariants({
+                                          className: "text-right",
+                                          variant: hookFormHasError({
+                                            errors,
+                                            name: "clientRate",
+                                          })
+                                            ? "error"
+                                            : undefined,
+                                        })
+                                      )}
+                                      value={value ?? undefined}
+                                      intlConfig={{
+                                        locale: "en-US",
+                                        currency: "USD",
+                                      }}
+                                      onValueChange={(value, name, values) =>
+                                        onChange(values?.float)
+                                      }
+                                      placeholder="$78"
+                                      decimalsLimit={0}
+                                    />
+                                  )}
+                                />
+                              </InputGroup>
+
+                              <span className="inline-block text-base text-gray-500">
+                                /hr
+                              </span>
+                            </div>
+
+                            <HookFormErrorMessage
+                              errors={errors}
+                              name="clientRate"
+                              render={({ message }) => (
+                                <ErrorMessage className="mt-1.5" size="sm">
+                                  {message}
+                                </ErrorMessage>
+                              )}
+                            />
+                          </div>
+                        </div>
+
+                        <Alert>
+                          <AlertIcon>
+                            <AlertCircle className="h-5 w-5" />
+                          </AlertIcon>
+                          <AlertContent className="flex items-start gap-x-5">
+                            <div className="flex-auto">
+                              <AlertTitle className="text-gray-600">
+                                Marketeq Service Fee (20%)
+                              </AlertTitle>
+                              <AlertDescription>
+                                Lorem ipsum dolor sit amet consectetur
+                                adipisicing elit.
+                              </AlertDescription>
+                            </div>
+
+                            <div>
+                              <div className="inline-flex items-center gap-x-2">
+                                <Label htmlFor="fee" className="sr-only">
+                                  Fee
+                                </Label>
+                                <Controller
+                                  control={control}
+                                  name="fee"
+                                  render={({ field: { value, onChange } }) => (
+                                    <CurrencyInput
+                                      id="fee"
+                                      className={cn(
+                                        inputVariants({
+                                          className:
+                                            "text-right [field-sizing:content] pointer-events-none opacity-50",
+                                        })
+                                      )}
+                                      value={value ?? undefined}
+                                      intlConfig={{
+                                        locale: "en-US",
+                                        currency: "USD",
+                                      }}
+                                      onValueChange={(value, name, values) =>
+                                        onChange(values?.float)
+                                      }
+                                      placeholder="$13"
+                                      decimalsLimit={0}
+                                    />
+                                  )}
+                                />
+
+                                <span className="inline-block text-base text-gray-500">
+                                  /hr
+                                </span>
+                              </div>
+                            </div>
+                          </AlertContent>
+                        </Alert>
+
+                        <div className="flex items-center gap-x-5">
+                          <div className="flex-auto space-y-[5px]">
+                            <h2 className="text-sm leading-none text-dark-blue-400">
+                              Your Earnings
+                            </h2>
+
+                            <p className="text-xs leading-none text-dark-blue-400 font-light">
+                              Estimated take-home pay after fees
+                            </p>
+                          </div>
+
+                          <div className="max-w-[292px] flex-auto">
+                            <div className="flex items-center gap-x-2">
+                              <Label htmlFor="your-earning" className="sr-only">
+                                Your Earning
+                              </Label>
+                              <InputGroup>
+                                <InputLeftAddon className="inline-flex items-center gap-x-1">
+                                  USD
+                                  <Info className="size-4" />
+                                </InputLeftAddon>
+
+                                <Controller
+                                  control={control}
+                                  name="earning"
+                                  render={({ field: { value, onChange } }) => (
+                                    <CurrencyInput
+                                      id="your-earning"
+                                      className={cn(
+                                        inputVariants({
+                                          className: "text-right",
+                                          variant: hookFormHasError({
+                                            errors,
+                                            name: "earning",
+                                          })
+                                            ? "error"
+                                            : undefined,
+                                        })
+                                      )}
+                                      value={value ?? undefined}
+                                      intlConfig={{
+                                        locale: "en-US",
+                                        currency: "USD",
+                                      }}
+                                      onValueChange={(value, name, values) =>
+                                        onChange(values?.float)
+                                      }
+                                      placeholder="$65"
+                                      decimalsLimit={0}
+                                    />
+                                  )}
+                                />
+                              </InputGroup>
+
+                              <span className="inline-block text-base text-gray-500">
+                                /hr
+                              </span>
+                            </div>
+                            <HookFormErrorMessage
+                              errors={errors}
+                              name="earning"
+                              render={({ message }) => (
+                                <ErrorMessage className="mt-1.5" size="sm">
+                                  {message}
+                                </ErrorMessage>
+                              )}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </ScrollArea>
+          </div>
+
+          <div className="border rounded-b-[10px] flex items-center justify-between border-gray-200 bg-white py-4 px-6">
+            {state !== "action" ? (
+              <>
+                <Button
+                  className="bg-white"
+                  size="md"
+                  variant="outlined"
+                  visual="gray"
+                  type="button"
+                  onClick={previous}
+                >
+                  Back
+                </Button>
+                <div className="flex items-center gap-x-3">
+                  <Button
+                    onClick={next}
+                    size="md"
+                    variant="ghost"
+                    visual="gray"
+                    type="button"
+                  >
+                    Skip
+                  </Button>
+                  <Button
+                    size="md"
+                    type="button"
+                    disabled={!Boolean(workExperiences?.length)}
+                    onClick={next}
+                  >
+                    Save & Continue
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <Button
+                  onClick={() => setIsOpen(true)}
+                  variant="link"
+                  visual="gray"
+                  type="button"
+                >
+                  <X className="size-[15px]" /> Cancel
+                </Button>
+                <Button ref={submitTriggerRef}>Save</Button>
+
+                <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                  <DialogContent className="max-w-[409px] p-0">
+                    <div className="p-6">
+                      <DialogTitle className="text-dark-blue-400">
+                        Save Job Title & Rate?
+                      </DialogTitle>
+                      <DialogDescription className="text-dark-blue-400 mt-2">
+                        Do you want to save your information?
+                      </DialogDescription>
+                    </div>
+
+                    <div className="border-t rounded-b-xl flex items-center justify-between border-gray-200 bg-gray-25 py-4 px-6">
+                      <DialogClose
+                        onClick={() => {
+                          Boolean(workExperiences?.length)
+                            ? setState("preview")
+                            : setState("default")
+                          reset()
+                        }}
+                        asChild
+                      >
+                        <Button variant="link" visual="gray">
+                          <X className="size-[15px]" /> Discard Changes
+                        </Button>
+                      </DialogClose>
+
+                      <DialogClose
+                        onClick={() => {
+                          isValid
+                            ? submitTriggerRef.current?.click()
+                            : setIsOpen(false)
+                        }}
+                        asChild
+                      >
+                        <Button variant="outlined" visual="gray">
+                          Yes, Save
+                        </Button>
+                      </DialogClose>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </>
+            )}
+          </div>
+        </form>
+        <div
+          className={cn(
+            "p-[50px] relative transition-all duration-300",
+            state === "action" &&
+              "col-span-2 [--title-font-size:22px] [--body-font-size:14px]"
+          )}
+        >
+          <DialogClose asChild>
+            <IconButton
+              className="absolute text-gray-500 right-0 top-0"
+              size="md"
+              variant="ghost"
+              visual="gray"
+            >
+              <X className="size-5" />
+            </IconButton>
+          </DialogClose>
+          <h1 className="text-[length:var(--title-font-size,28px)] leading-none font-bold text-dark-blue-400">
+            Your Journey, Your Impact!
+          </h1>
+          <p className="text-[length:var(--body-font-size,theme(fontSize.base))] text-dark-blue-400 mt-2.5">
+            Your work experience is more than just a timeline. It&apos;s the
+            proof of your expertise and the value you bring to the table.
+          </p>
+
+          <div className="mt-[49px]">
+            <ul className="mt-4 space-y-[15px]">
+              <li className="flex items-start gap-x-5">
+                <Bulb className="shrink-0 text-warning-300" />
+                <span className="text-[length:var(--body-font-size,theme(fontSize.base))] text-dark-blue-400 leading-none">
+                  Highlighting your strengths means the right clients can find
+                  you faster.
+                </span>
+              </li>
+              <li className="flex items-start gap-x-5">
+                <Bulb className="shrink-0 text-warning-300" />
+                <span className="text-[length:var(--body-font-size,theme(fontSize.base))] text-dark-blue-400 leading-none">
+                  What makes you passionate about what you do?
+                </span>
+              </li>
+              <li className="flex items-start gap-x-5">
+                <Bulb className="shrink-0 text-warning-300" />
+                <span className="text-[length:var(--body-font-size,theme(fontSize.base))] text-dark-blue-400 leading-none">
+                  What’s that one thing that’ll make someone remember you?
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }
 
@@ -2745,57 +3452,6 @@ export const Portfolio = ({
                 </span>
               </li>
             </ul>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-export const MoreInfoDialog = () => {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button>Open</Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-[700px] grid grid-cols-2 rounded-[24px] p-0">
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex items-start gap-x-2">
-            <div className="flex-auto">
-              <h1 className="text-lg text-dark-blue-400 leading-7 font-semibold">
-                Job Title & Rates
-              </h1>
-              <p className="text-sm font-light text-dark-blue-400">
-                Tell us what you do and set your hourly rates
-              </p>
-            </div>
-
-            <div className="flex items-start gap-x-3">
-              <Button variant="outlined" visual="gray">
-                <Plus className="size-[15px]" />
-                Add Job Title
-              </Button>
-
-              <IconButton variant="ghost" visual="gray">
-                <X className="size-5" />
-              </IconButton>
-            </div>
-          </div>
-
-          <div className="p-6 rounded-lg border-2 border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]">
-            <div className="flex items-center justify-between">
-              <Label size="sm">Job Title 1</Label>
-
-              <div className="inline-flex items-center justify-center">
-                <IconButton
-                  className="hover:bg-error-50 hover:text-error-500 rounded-full"
-                  variant="ghost"
-                  visual="gray"
-                >
-                  <Trash className="size-5" />
-                </IconButton>
-              </div>
-            </div>
           </div>
         </div>
       </DialogContent>
