@@ -246,6 +246,7 @@ export default function Default() {
     useState<boolean>(false)
   const [backgroundActiveTab, setBackgroundActiveTab] =
     useState<string>("Work Experience")
+  const [activeTab, setActiveTab] = useState<string>("Portfolio")
   const [showLanguageSection, setShowLanguageSection] = useState<boolean>(true)
   const [lastScrollY, setLastScrollY] = useState<number>(0)
   useEffect(() => {
@@ -330,19 +331,50 @@ export default function Default() {
       // Set auto-expand for the target section
       switch (hash) {
         case "#portfolio":
-          setAutoExpandPortfolio(true)
+          // Delay for portfolio to allow layout to settle
+          setTimeout(() => {
+            setActiveTab("Portfolio")
+            setAutoExpandPortfolio(true)
+            // Manual scroll to portfolio section
+            setTimeout(() => {
+              const portfolioElement = document.getElementById("portfolio")
+              if (portfolioElement) {
+                portfolioElement.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                })
+              }
+            }, 50)
+          }, 150)
           break
         case "#skills":
-          setAutoExpandSkills(true)
+          // Delay for skills to allow layout to settle
+          setTimeout(() => {
+            setActiveTab("Skills")
+            setAutoExpandSkills(true)
+            // Manual scroll to skills section
+            setTimeout(() => {
+              const skillsElement = document.getElementById("skills")
+              if (skillsElement) {
+                skillsElement.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                })
+              }
+            }, 50)
+          }, 150)
           break
         case "#offers":
+          setActiveTab("Offers")
           setAutoExpandOffers(true)
           break
         case "#background":
+          setActiveTab("Work Experience")
           setAutoExpandWorkExperience(true)
           setAutoExpandEducation(true)
           break
         case "#education":
+          setActiveTab("Education")
           setAutoExpandWorkExperience(true)
           setAutoExpandEducation(true)
           setBackgroundActiveTab("Education")
@@ -358,7 +390,11 @@ export default function Default() {
           }, 50)
           break
         case "#project-history":
+          setActiveTab("Project History")
           setAutoExpandProjectHistory(true)
+          break
+        case "#overview":
+          setActiveTab("Overview")
           break
       }
     }
@@ -377,10 +413,10 @@ export default function Default() {
           window.history.pushState(null, "", "#background")
           handleHashChange()
         } else if (hash === "portfolio" || hash === "skills") {
-          // Let normal scroll happen, then trigger hash change for auto-expand
-          setTimeout(() => {
-            handleHashChange()
-          }, 50)
+          // Prevent default scroll and handle manually
+          e.preventDefault()
+          window.history.pushState(null, "", `#${hash}`)
+          handleHashChange()
         }
       }
     }
@@ -564,7 +600,7 @@ export default function Default() {
                             >
                               Next.js
                             </Badge>
-                            <NextLink href="#skills">
+                            <NextLink href="#skills" onClick={() => setActiveTab("Skills")}>
                               <Badge
                                 className="text-gray-700 cursor-pointer"
                                 visual="gray"
@@ -672,7 +708,7 @@ export default function Default() {
           </div>
         </div>
 
-        <Tabs className="mt-6" defaultValue="Portfolio">
+        <Tabs className="mt-6" value={activeTab} onValueChange={setActiveTab}>
           <TabsList
             className="group/list p-0 bg-transparent data-[status=stuck]:border-b data-[status=stuck]:border-gray-200 z-50 transition duration-300 top-0 sticky block data-[status=stuck]:bg-white border-0"
             data-status={isTabsListStuck ? "stuck" : "unstuck"}
@@ -803,7 +839,7 @@ export default function Default() {
             </div>
           </TabsList>
           <div
-            className="max-w-[1440px] mx-auto px-[100px] scroll-mt-[137.5px]"
+            className="p-6 bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] scroll-mt-[137.5px]"
             id="portfolio"
           >
             <div className="pt-6 flex gap-x-8">
