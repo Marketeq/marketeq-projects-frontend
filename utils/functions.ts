@@ -537,3 +537,7 @@ export function strToArray(value: string) {
     return value.split(",").map((item) => item.trim())
   }
 }
+
+export function fromLength(length: number) {
+  return Array(length).keys().toArray()
+}
