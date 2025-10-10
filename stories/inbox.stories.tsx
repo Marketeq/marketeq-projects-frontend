@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import Image from "next/image"
-import { isNotUndefined } from "@/utils/functions"
+import { DataEmoji, EmojiProperties, isNotUndefined } from "@/utils/functions"
 import { useUncontrolledState } from "@/utils/hooks"
 import { createContext } from "@/utils/react-utils"
 import {
@@ -20,6 +20,7 @@ import {
 import { GoogleDrive1Brand } from "@blend-metrics/icons/brands"
 import { Meta } from "@storybook/react"
 import { useIsomorphicLayoutEffect, useToggle } from "react-use"
+import { EmojiPicker } from "@/components/EmojiPicker"
 import { Chat } from "@/components/chat"
 import {
   Avatar,
@@ -41,6 +42,7 @@ export default meta
 export const Bubble = ({ message }: { message: string }) => {
   const [value, setValue] = useState(message)
   const { onChatChange, chat, isSaved, onUnsave } = useEditContext()
+  const [reaction, setReaction] = useState<string | null>(null)
 
   useIsomorphicLayoutEffect(() => {
     if (chat && isSaved) {
@@ -49,9 +51,18 @@ export const Bubble = ({ message }: { message: string }) => {
     }
   }, [isSaved])
 
+  const handleEmojiReaction = (emoji: DataEmoji) => {
+    const emojiChar = String.fromCodePoint(
+      ...emoji[EmojiProperties.unified]
+        .split("-")
+        .map((hex) => parseInt(hex, 16))
+    )
+    setReaction(emojiChar)
+  }
+
   return (
     <article className="group inline-flex flex-col items-start gap-y-2">
-      <div className="p-5 pt-2.5 flex-auto rounded-xl flex flex-col gap-y-2 bg-primary-500/[.04]">
+      <div className="p-5 pt-2.5 flex-auto rounded-xl flex flex-col gap-y-2 bg-primary-500/[.04] relative">
         <div className="flex items-end justify-between">
           <h3 className="text-sm leading-[16.8px] font-bold text-dark-blue-400">
             Me{" "}
@@ -64,9 +75,11 @@ export const Bubble = ({ message }: { message: string }) => {
             <button className="size-7 inline-flex rounded-full focus-visible:outline-none text-gray-400 hover:bg-primary-50 hover:text-dark-blue-400 justify-center items-center shrink-0">
               <CornerUpLeft className="size-4" />
             </button>
-            <button className="size-7 inline-flex rounded-full focus-visible:outline-none text-gray-400 hover:bg-primary-50 hover:text-dark-blue-400 justify-center items-center shrink-0">
-              <Smile className="size-4" />
-            </button>
+            <EmojiPicker onEmojiSelect={handleEmojiReaction}>
+              <button className="size-7 inline-flex rounded-full focus-visible:outline-none text-gray-400 hover:bg-primary-50 hover:text-dark-blue-400 justify-center items-center shrink-0">
+                <Smile className="size-4" />
+              </button>
+            </EmojiPicker>
 
             <DropdownMenu>
               <DropdownMenuTrigger className="size-7 inline-flex rounded-full focus-visible:outline-none text-gray-400 hover:bg-primary-50 hover:text-dark-blue-400 justify-center items-center shrink-0">
@@ -98,6 +111,12 @@ export const Bubble = ({ message }: { message: string }) => {
         <span className="text-sm leading-[16.94px] text-dark-blue-400">
           {value}
         </span>
+
+        {reaction && (
+          <div className="absolute -bottom-3 right-2 bg-white border border-gray-200 rounded-full px-2 py-1 shadow-sm">
+            <span className="text-base">{reaction}</span>
+          </div>
+        )}
       </div>
 
       <span className="inline-flex self-end text-[11px] leading-[15.47px] text-gray-500 items-center gap-x-1">
@@ -118,6 +137,17 @@ export const [EditContextProvider, useEditContext] = createContext<{
 })
 
 export const YourBubble = ({ message }: { message: string }) => {
+  const [reaction, setReaction] = useState<string | null>(null)
+
+  const handleEmojiReaction = (emoji: DataEmoji) => {
+    const emojiChar = String.fromCodePoint(
+      ...emoji[EmojiProperties.unified]
+        .split("-")
+        .map((hex) => parseInt(hex, 16))
+    )
+    setReaction(emojiChar)
+  }
+
   return (
     <article className="inline-flex items-end gap-x-2">
       <Avatar
@@ -130,7 +160,7 @@ export const YourBubble = ({ message }: { message: string }) => {
       </Avatar>
 
       <div className="group inline-flex flex-col items-start gap-y-2">
-        <div className="p-5 pt-2.5 flex-auto rounded-xl flex flex-col gap-y-2 bg-primary-500/[.04]">
+        <div className="p-5 pt-2.5 flex-auto rounded-xl flex flex-col gap-y-2 bg-primary-500/[.04] relative">
           <div className="flex items-end justify-between">
             <h3 className="text-sm leading-[16.8px] font-bold text-dark-blue-400">
               Me{" "}
@@ -143,9 +173,11 @@ export const YourBubble = ({ message }: { message: string }) => {
               <button className="size-7 inline-flex rounded-full focus-visible:outline-none text-gray-400 hover:bg-primary-50 hover:text-dark-blue-400 justify-center items-center shrink-0">
                 <CornerUpLeft className="size-4" />
               </button>
-              <button className="size-7 inline-flex rounded-full focus-visible:outline-none text-gray-400 hover:bg-primary-50 hover:text-dark-blue-400 justify-center items-center shrink-0">
-                <Smile className="size-4" />
-              </button>
+              <EmojiPicker onEmojiSelect={handleEmojiReaction}>
+                <button className="size-7 inline-flex rounded-full focus-visible:outline-none text-gray-400 hover:bg-primary-50 hover:text-dark-blue-400 justify-center items-center shrink-0">
+                  <Smile className="size-4" />
+                </button>
+              </EmojiPicker>
 
               <DropdownMenu>
                 <DropdownMenuTrigger className="size-7 inline-flex rounded-full focus-visible:outline-none text-gray-400 hover:bg-primary-50 hover:text-dark-blue-400 justify-center items-center shrink-0">
@@ -177,6 +209,12 @@ export const YourBubble = ({ message }: { message: string }) => {
           <span className="text-sm leading-[16.94px] text-dark-blue-400">
             {message}
           </span>
+
+          {reaction && (
+            <div className="absolute -bottom-3 left-2 bg-white border border-gray-200 rounded-full px-2 py-1 shadow-sm">
+              <span className="text-base">{reaction}</span>
+            </div>
+          )}
         </div>
 
         <span className="inline-flex self-start text-[11px] leading-[15.47px] text-gray-500 items-center gap-x-1">

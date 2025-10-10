@@ -8,6 +8,7 @@ import {
   useEditContext,
 } from "@/stories/inbox.stories"
 import { noop, toPxIfNumber } from "@/utils/functions"
+import { DataEmoji, EmojiProperties } from "@/utils/functions"
 import { useControllableState } from "@/utils/hooks"
 import {
   AlertTriangle,
@@ -37,6 +38,7 @@ import {
 import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu"
 import { useMeasure, useToggle } from "react-use"
 import { ToggleGroupItem, ToggleGroupRoot } from "@/components/ui/toggle-group"
+import { EmojiPicker } from "@/components/EmojiPicker"
 import { Chat, ChatsContextProvider, useChatsContext } from "@/components/chat"
 import {
   Avatar,
@@ -77,7 +79,7 @@ const LeftSidebar = () => {
     useChatsContext()
 
   return (
-    <div className="w-[322px] shrink-0 border-r bg-white border-gray-200">
+    <div className="w-[322px] shrink-0 border-r bg-white border-gray-200 flex flex-col h-screen">
       <div className="pt-1 p-3 border-b border-gray-200">
         <button className="focus-visible:outline-none h-11 px-3.5 inline-flex items-center justify-center shrink-0 text-base leading-6 font-semibold gap-x-1.5">
           All Messages <ChevronDown className="size-4" />
@@ -230,7 +232,7 @@ const LeftSidebar = () => {
         </div>
       )}
       <ScrollArea
-        className="h-[calc(theme(height.screen)-185px)]"
+        className="h-[calc(theme(height.screen)-185px)] flex-1"
         scrollBar={<ScrollBar className="w-4 p-1" />}
       >
         <div className="flex flex-col">
@@ -392,6 +394,15 @@ const Chats = () => {
     setTextareaValue(value)
   }
 
+  const handleEmojiSelect = (emoji: DataEmoji) => {
+    const emojiChar = String.fromCodePoint(
+      ...emoji[EmojiProperties.unified]
+        .split("-")
+        .map((hex) => parseInt(hex, 16))
+    )
+    setTextareaValue((prev) => (prev || "") + emojiChar)
+  }
+
   return (
     <div className="flex-auto relative">
       <div className="px-8 sticky top-0 border-b flex items-center justify-between border-gray-200 py-6">
@@ -517,14 +528,16 @@ const Chats = () => {
         ref={bottomRef}
       >
         <div className="flex items-center gap-x-1">
-          <IconButton
-            className="rounded-full text-gray-500"
-            visual="gray"
-            variant="ghost"
-            size="lg"
-          >
-            <Smile className="size-[22px]" />
-          </IconButton>
+          <EmojiPicker onEmojiSelect={handleEmojiSelect}>
+            <IconButton
+              className="rounded-full text-gray-500"
+              visual="gray"
+              variant="ghost"
+              size="lg"
+            >
+              <Smile className="size-[22px]" />
+            </IconButton>
+          </EmojiPicker>
 
           <Dialog open={open} onOpenChange={toggle}>
             <DialogTrigger asChild>
