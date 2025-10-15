@@ -12,17 +12,15 @@ import {
   omit,
 } from "@/utils/functions"
 import { useUncontrolledState } from "@/utils/hooks"
-import { SearchMd, X } from "@blend-metrics/icons"
+import { SearchMd } from "@blend-metrics/icons"
 import { useAsync } from "react-use"
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogTrigger,
-  IconButton,
   Input,
   InputGroup,
   InputRightElement,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   ScrollArea,
   ScrollBar,
   Tabs,
@@ -81,12 +79,16 @@ interface EmojiPickerProps {
   onEmojiSelect?: (emoji: DataEmoji) => void
   onGifSelect?: (gif: Result) => void
   children: React.ReactNode
+  align?: "start" | "center" | "end"
+  side?: "top" | "bottom" | "left" | "right"
 }
 
 export const EmojiPicker = ({
   onEmojiSelect,
   onGifSelect,
   children,
+  align = "start",
+  side = "top",
 }: EmojiPickerProps) => {
   const [query, setQuery] = React.useState("")
   const [tab, setTab] = useUncontrolledState({
@@ -148,20 +150,16 @@ export const EmojiPicker = ({
   }, [url])
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-[325px] rounded-xl px-0 py-4">
-        <DialogClose asChild>
-          <IconButton
-            className="rounded-full opacity-50 hover:opacity-100 absolute right-[3px] top-[3px]"
-            visual="gray"
-            variant="ghost"
-          >
-            <X className="size-4" />
-          </IconButton>
-        </DialogClose>
+    <Popover>
+      <PopoverTrigger asChild>{children}</PopoverTrigger>
+      <PopoverContent
+        align={align}
+        side={side}
+        sideOffset={10}
+        className="w-[344px] rounded-[12px] p-4 shadow-[0px_4px_12px_rgba(0,0,0,0.08)] bg-white border border-gray-200"
+      >
         <Tabs value={tab} onValueChange={setTab}>
-          <div className="space-y-2 px-4">
+          <div className="space-y-2.5">
             <TabsList className="justify-start px-0 border-transparent">
               <TabsTrigger value="emojis">Emojis</TabsTrigger>
               <TabsTrigger value="gifs">GIFs</TabsTrigger>
@@ -181,19 +179,19 @@ export const EmojiPicker = ({
             </InputGroup>
           </div>
           <TabsContent value="emojis">
-            <div className="pt-5">
+            <div className="pt-2.5">
               <ScrollArea
-                className="h-[268px]"
+                className="h-[180px]"
                 scrollBar={<ScrollBar className="w-4 p-1" />}
               >
-                <div className="space-y-3 px-4">
+                <div className="space-y-2.5">
                   {getIsNotEmpty(suggestions) && (
-                    <div className="space-y-3">
+                    <div className="space-y-2.5">
                       <h3 className="text-xs leading-[14.52px] font-medium text-dark-blue-400">
                         {configByCategory[Categories.SUGGESTED].name}
                       </h3>
 
-                      <div className="flex items-center gap-3 flex-wrap">
+                      <div className="flex items-center gap-2.5 flex-wrap">
                         {suggestions.map((emoji) => (
                           <button
                             key={emojiUnified(emoji)}
@@ -208,13 +206,13 @@ export const EmojiPicker = ({
                   )}
 
                   {keys(filteredEmojis).map((key) => (
-                    <div className="space-y-3" key={key}>
+                    <div className="space-y-2.5" key={key}>
                       <h3 className="text-xs leading-[14.52px] font-medium text-dark-blue-400">
                         {configByCategory[key].name}
                       </h3>
 
                       {filteredEmojis[key] && (
-                        <div className="flex items-center gap-3 flex-wrap">
+                        <div className="flex items-center gap-2.5 flex-wrap">
                           {filteredEmojis[key].map((emoji) => (
                             <button
                               key={emojiUnified(emoji)}
@@ -233,7 +231,7 @@ export const EmojiPicker = ({
             </div>
           </TabsContent>
           <TabsContent value="gifs">
-            <div className="pt-2 px-4">
+            <div className="pt-2.5">
               <div className="flex items-center gap-x-1 overflow-x-auto scrollbar-none">
                 <button
                   className="border border-gray-300 shrink-0 inline-flex items-center bg-[#F8F9FC] rounded-full focus-visible:outline-none h-[22px] text-[10px] leading-[18px] text-dark-blue-400 px-2"
@@ -261,12 +259,12 @@ export const EmojiPicker = ({
                 </button>
               </div>
             </div>
-            <div className="pt-2">
+            <div className="pt-2.5">
               <ScrollArea
-                className="h-[258px]"
+                className="h-[180px]"
                 scrollBar={<ScrollBar className="w-4 p-1" />}
               >
-                <div className="grid grid-cols-2 gap-x-1 px-4">
+                <div className="grid grid-cols-2 gap-x-1">
                   <div className="grid gap-y-1">
                     {value?.results
                       .slice(0, getMiddleIndex(value.results))
@@ -306,7 +304,7 @@ export const EmojiPicker = ({
             </div>
           </TabsContent>
         </Tabs>
-      </DialogContent>
-    </Dialog>
+      </PopoverContent>
+    </Popover>
   )
 }

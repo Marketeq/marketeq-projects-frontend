@@ -75,7 +75,11 @@ export const Bubble = ({ message }: { message: string }) => {
             <button className="size-7 inline-flex rounded-full focus-visible:outline-none text-gray-400 hover:bg-primary-50 hover:text-dark-blue-400 justify-center items-center shrink-0">
               <CornerUpLeft className="size-4" />
             </button>
-            <EmojiPicker onEmojiSelect={handleEmojiReaction}>
+            <EmojiPicker
+              onEmojiSelect={handleEmojiReaction}
+              align="end"
+              side="top"
+            >
               <button className="size-7 inline-flex rounded-full focus-visible:outline-none text-gray-400 hover:bg-primary-50 hover:text-dark-blue-400 justify-center items-center shrink-0">
                 <Smile className="size-4" />
               </button>
@@ -173,7 +177,11 @@ export const YourBubble = ({ message }: { message: string }) => {
               <button className="size-7 inline-flex rounded-full focus-visible:outline-none text-gray-400 hover:bg-primary-50 hover:text-dark-blue-400 justify-center items-center shrink-0">
                 <CornerUpLeft className="size-4" />
               </button>
-              <EmojiPicker onEmojiSelect={handleEmojiReaction}>
+              <EmojiPicker
+                onEmojiSelect={handleEmojiReaction}
+                align="end"
+                side="top"
+              >
                 <button className="size-7 inline-flex rounded-full focus-visible:outline-none text-gray-400 hover:bg-primary-50 hover:text-dark-blue-400 justify-center items-center shrink-0">
                   <Smile className="size-4" />
                 </button>

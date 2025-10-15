@@ -283,7 +283,7 @@ const RightSidebar = () => {
               Save
             </Button>
 
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <IconButton
                   className="group rounded-l-none xs:max-lg:size-[25.5px] text-gray-500"
@@ -590,7 +590,7 @@ const Chats = () => {
             </DialogContent>
           </Dialog>
 
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <IconButton
                 className="rounded-full text-gray-500"
@@ -601,7 +601,11 @@ const Chats = () => {
                 <Attachment01 className="size-[22px]" />
               </IconButton>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[212px]">
+            <DropdownMenuContent
+              className="w-[212px]"
+              align="start"
+              side="bottom"
+            >
               <DropdownMenuItem>
                 <UploadCloud className="size-6" /> Upload from Desktop
               </DropdownMenuItem>
