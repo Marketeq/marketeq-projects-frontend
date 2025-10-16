@@ -85,14 +85,16 @@ export const Bubble = ({ message }: { message: string }) => {
               </button>
             </EmojiPicker>
 
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
               <DropdownMenuTrigger className="size-7 inline-flex rounded-full focus-visible:outline-none text-gray-400 hover:bg-primary-50 hover:text-dark-blue-400 justify-center items-center shrink-0">
                 <DotsHorizontal className="size-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 side="bottom"
-                align="start"
-                className="min-w-[142px]"
+                align="end"
+                className="w-[100px] h-[169px] rounded-[5px] data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=closed]:duration-100"
+                sideOffset={4}
+                avoidCollisions={false}
               >
                 <DropdownMenuItem onSelect={() => onChatChange(value)}>
                   <Edit03 className="h-4 w-4" /> Edit
@@ -187,14 +189,16 @@ export const YourBubble = ({ message }: { message: string }) => {
                 </button>
               </EmojiPicker>
 
-              <DropdownMenu>
+              <DropdownMenu modal={false}>
                 <DropdownMenuTrigger className="size-7 inline-flex rounded-full focus-visible:outline-none text-gray-400 hover:bg-primary-50 hover:text-dark-blue-400 justify-center items-center shrink-0">
                   <DotsHorizontal className="size-4" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   side="bottom"
-                  align="start"
-                  className="min-w-[142px]"
+                  align="end"
+                  className="w-[100px] h-[169px] rounded-[5px] data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=closed]:duration-100"
+                  sideOffset={4}
+                  avoidCollisions={false}
                 >
                   <DropdownMenuItem>
                     <Edit03 className="h-4 w-4" /> Edit
