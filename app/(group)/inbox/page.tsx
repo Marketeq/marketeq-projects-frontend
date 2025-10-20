@@ -81,9 +81,36 @@ const LeftSidebar = () => {
   return (
     <div className="w-[322px] shrink-0 border-r bg-white border-gray-200 flex flex-col h-screen">
       <div className="pt-1 p-3 border-b border-gray-200">
-        <button className="focus-visible:outline-none h-11 px-3.5 inline-flex items-center justify-center shrink-0 text-base leading-6 font-semibold gap-x-1.5">
-          All Messages <ChevronDown className="size-4" />
-        </button>
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger asChild>
+            <button className="focus-visible:outline-none h-11 px-3.5 inline-flex items-center justify-center shrink-0 text-base leading-6 font-semibold gap-x-1.5">
+              All Messages <ChevronDown className="size-4" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" side="bottom">
+            <DropdownMenuItem>
+              <Mail05 className="size-4" /> All Messages
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Mail05 className="size-4" /> Unread
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Star className="size-4" /> Starred
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Send className="size-4" /> Sent
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Archive className="size-4" /> Archived
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <AlertTriangle className="size-4" /> Spam
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Trash2 className="size-4" /> Trash
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         {checkedChats > 0 ? (
           <div className="flex items-center justify-between">
@@ -194,7 +221,11 @@ const LeftSidebar = () => {
               </InputLeftElement>
             </InputGroup>
 
-            <IconButton className="size-8" visual="gray" variant="ghost">
+            <IconButton
+              className="size-8 rounded-full"
+              visual="gray"
+              variant="ghost"
+            >
               <Edit05 className="size-4" />
             </IconButton>
           </div>
@@ -447,17 +478,48 @@ const Chats = () => {
             >
               <Info className="size-[22px]" />
             </IconButton>
-            <div className="size-11 flex items-center justify-center shrink-0">
+            <div className="size-11 flex items-center justify-center shrink-0 rounded-full hover:bg-gray-100 cursor-pointer transition-colors">
               <Favorite className="text-gray-500" />
             </div>
-            <IconButton
-              className="rounded-full text-gray-500"
-              visual="gray"
-              variant="ghost"
-              size="lg"
-            >
-              <MoreHorizontal className="size-[22px]" />
-            </IconButton>
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger asChild>
+                <IconButton
+                  className="rounded-full text-gray-500"
+                  visual="gray"
+                  variant="ghost"
+                  size="lg"
+                >
+                  <MoreHorizontal className="size-[22px]" />
+                </IconButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" side="bottom">
+                <DropdownMenuItem>
+                  <Info className="size-4" /> Profile Info
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Star className="size-4" /> Mark Favorite
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Mail05 className="size-4" /> Mark Unread
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Pin02 className="size-4" /> Pin Chat
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Archive className="size-4" /> Archive
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <AlertTriangle className="size-4" /> Move to Spam
+                </DropdownMenuItem>
+                <DropdownMenuItem className="text-error-500">
+                  <AlertTriangle className="size-4" /> Block / Report
+                </DropdownMenuItem>
+                <DropdownMenuItem className="text-error-500">
+                  <Trash2 className="size-4" /> Delete Chat
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
