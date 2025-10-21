@@ -83,31 +83,36 @@ const LeftSidebar = () => {
       <div className="pt-1 p-3 border-b border-gray-200">
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
-            <button className="focus-visible:outline-none h-11 px-3.5 inline-flex items-center justify-center shrink-0 text-base leading-6 font-semibold gap-x-1.5">
+            <button className="focus-visible:outline-none w-[157px] h-11 inline-flex items-center justify-center shrink-0 text-base leading-6 font-semibold gap-x-[6px]">
               All Messages <ChevronDown className="size-4" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" side="bottom">
-            <DropdownMenuItem>
-              <Mail05 className="size-4" /> All Messages
+          <DropdownMenuContent
+            align="start"
+            side="bottom"
+            sideOffset={4}
+            className="w-[142px] max-h-[170px] overflow-y-auto rounded-[5px]"
+          >
+            <DropdownMenuItem className="w-[142px] h-[34px] gap-[8px] py-[10px] px-3">
+              All Messages
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Mail05 className="size-4" /> Unread
+            <DropdownMenuItem className="w-[142px] h-[34px] gap-[8px] py-[10px] px-3">
+              Unread
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Star className="size-4" /> Starred
+            <DropdownMenuItem className="w-[142px] h-[34px] gap-[8px] py-[10px] px-3">
+              Starred
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Send className="size-4" /> Sent
+            <DropdownMenuItem className="w-[142px] h-[34px] gap-[8px] py-[10px] px-3">
+              Sent
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Archive className="size-4" /> Archived
+            <DropdownMenuItem className="w-[142px] h-[34px] gap-[8px] py-[10px] px-3">
+              Archived
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <AlertTriangle className="size-4" /> Spam
+            <DropdownMenuItem className="w-[142px] h-[34px] gap-[8px] py-[10px] px-3">
+              Spam
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Trash2 className="size-4" /> Trash
+            <DropdownMenuItem className="w-[142px] h-[34px] gap-[8px] py-[10px] px-3">
+              Trash
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
