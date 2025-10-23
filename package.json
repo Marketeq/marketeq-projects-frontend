@@ -70,6 +70,7 @@
     "headless-stepper": "^1.11.0",
     "idb": "^8.0.3",
     "js-cookie": "^3.0.5",
+    "jwt-decode": "^4.0.0",
     "leo-profanity": "^1.8.0",
     "next": "^14.1.4",
     "nprogress": "^0.2.0",
