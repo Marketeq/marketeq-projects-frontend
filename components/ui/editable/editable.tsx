@@ -62,7 +62,7 @@ const EditablePreview = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <EditablePrimitives.Preview
     className={cn(
-      "focus-visible:outline-none focus:ring-0 p-0 border-0 text-dark-blue-400 font-medium text-sm leading-5 group-data-[placeholder-shown]/area:text-gray-500",
+      "focus-visible:outline-none focus:ring-0 p-0 border-0 text-dark-blue-400 group-data-[placeholder-shown]/area:text-gray-500 font-medium text-sm leading-5",
       className
     )}
     ref={ref}
