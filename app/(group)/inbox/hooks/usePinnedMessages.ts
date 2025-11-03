@@ -1,21 +1,20 @@
 // src/hooks/usePinnedMessages.ts
-import { useState, useEffect } from 'react'
-import { decryptAES } from "../../../../src/crypto/e2ee";
-import { loadKey } from "../../../../src/crypto/storage";
-import type { Message } from '@/types/conversation'
-import { apiFetch } from '../../../../src/lib/api';
+import { useEffect, useState } from "react"
+import type { Message } from "@/types/conversation"
+import { decryptAES } from "../../../../src/crypto/e2ee"
+import { loadKey } from "../../../../src/crypto/storage"
+import { apiFetch } from "../../../../src/lib/api"
 
 export function usePinnedMessages(convId: string, token: string) {
   const [messages, setMessages] = useState<Message[]>([])
 
   useEffect(() => {
     if (!convId || !token) return
-
     ;(async () => {
       try {
         const key = loadKey(convId)
         if (!key) {
-          console.warn('No AES key for conversation', convId)
+          console.warn("No AES key for conversation", convId)
           return
         }
 
@@ -23,7 +22,7 @@ export function usePinnedMessages(convId: string, token: string) {
         const data = await apiFetch<Message[]>(
           `/api/messaging/conversations/${convId}/pinned`,
           {
-            method: 'GET',
+            method: "GET",
             headers: { Authorization: `Bearer ${token}` },
           }
         )
@@ -38,7 +37,7 @@ export function usePinnedMessages(convId: string, token: string) {
 
         setMessages(decrypted)
       } catch (err) {
-        console.error('usePinnedMessages error:', err)
+        console.error("usePinnedMessages error:", err)
       }
     })()
   }, [convId, token])

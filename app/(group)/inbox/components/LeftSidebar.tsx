@@ -1,12 +1,14 @@
 "use client"
 
 import React, { useCallback, useMemo, useState } from "react"
+import { useEffect } from "react"
 import {
   Bubble,
   EditContextProvider,
   YourBubble,
   useEditContext,
 } from "@/stories/inbox.stories"
+import { getCurrentUser } from "@/utils/auth"
 import { noop, toPxIfNumber } from "@/utils/functions"
 import { useControllableState } from "@/utils/hooks"
 import {
@@ -36,6 +38,9 @@ import {
 } from "@blend-metrics/icons/brands"
 import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu"
 import { useMeasure, useToggle } from "react-use"
+import { Conversation } from "@/types/conversation"
+import { Message } from "@/types/message"
+import { User } from "@/types/user"
 import { ToggleGroupItem, ToggleGroupRoot } from "@/components/ui/toggle-group"
 import { Chat, ChatsContextProvider, useChatsContext } from "@/components/chat"
 import {
@@ -71,147 +76,132 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui"
-
+import { apiFetch } from "../../../../src/lib/api"
 import {
+  ensureEncryptionKeysExist,
+  exportPrivateKey,
+  exportPublicKey,
   generateKeyPair,
+  importPrivateKey,
   savePrivateKey,
   savePublicKey,
-  exportPublicKey,
-  exportPrivateKey,
-  importPrivateKey,
-  ensureEncryptionKeysExist ,
-} from "..//../../../src/crypto/keys";
+} from "..//../../../src/crypto/keys"
+import { useAblyChannel } from "..//../../../utils/useAblyChannel"
 
-import { useAblyChannel } from "..//../../../utils/useAblyChannel";
-import { getCurrentUser } from "@/utils/auth";
-import { User } from "@/types/user";
-import { useEffect } from "react";
-import { Conversation } from "@/types/conversation";
-import { Message } from "@/types/message";
-import { apiFetch } from '../../../../src/lib/api';
-
-
-
-
-
-
-
-
-
-
-
-function getOtherParticipantId(conv: Conversation, me: string): string | undefined {
-  return conv.participants.find(p => p.userId !== me)?.userId;
+function getOtherParticipantId(
+  conv: Conversation,
+  me: string
+): string | undefined {
+  return conv.participants.find((p) => p.userId !== me)?.userId
 }
 
-
-
 interface LeftSidebarProps {
-  selectedConversation: Conversation | null;
-  setSelectedConversation: (conv: Conversation) => void;
+  selectedConversation: Conversation | null
+  setSelectedConversation: (conv: Conversation) => void
   messagesByConversation: Record<string, Message[]>
 }
 
-
-const LeftSidebar = ({ selectedConversation, setSelectedConversation,  messagesByConversation }: LeftSidebarProps) => {
-  const token = localStorage.getItem("token");
+const LeftSidebar = ({
+  selectedConversation,
+  setSelectedConversation,
+  messagesByConversation,
+}: LeftSidebarProps) => {
+  const token = localStorage.getItem("token")
   const { pinnedChats, toggleShowPinnedIcon, showPinnedIcon, checkedChats } =
     useChatsContext()
 
-    //getting the user id || can get other details later as required
-    const currentUser = getCurrentUser();
-    const currentUserId = currentUser?.id || "";
+  //getting the user id || can get other details later as required
+  const currentUser = getCurrentUser()
+  const currentUserId = currentUser?.id || ""
 
+  const [conversations, setConversations] = useState<Conversation[]>([])
 
-const [conversations, setConversations] = useState<Conversation[]>([]);
+  useEffect(() => {
+    const token = localStorage.getItem("token")
 
-
-useEffect(() => {
-  const token = localStorage.getItem("token");
-
-  const fetchConversations = async () => {
-    try {
-     
-      const data = await apiFetch<Conversation[]>('/api/messaging/conversations', {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-
-const enriched = await Promise.all(
-  data.map(async (conv: Conversation) => {
-    // GROUP conversation
-    if (conv.isGroup) {
+    const fetchConversations = async () => {
       try {
-        const group = await apiFetch<{ name: string }>(
-          `/api/messaging/groups/${conv.id}`,
-          { method: 'GET',
+        const data = await apiFetch<Conversation[]>(
+          "/api/messaging/conversations",
+          {
+            method: "GET",
             headers: { Authorization: `Bearer ${token}` },
-           }
-        );
-       
+          }
+        )
 
-        return {
-          ...conv,
-          participantUsername: group.name, // or participantName, whatever you're rendering
-        };
+        const enriched = await Promise.all(
+          data.map(async (conv: Conversation) => {
+            // GROUP conversation
+            if (conv.isGroup) {
+              try {
+                const group = await apiFetch<{ name: string }>(
+                  `/api/messaging/groups/${conv.id}`,
+                  {
+                    method: "GET",
+                    headers: { Authorization: `Bearer ${token}` },
+                  }
+                )
+
+                return {
+                  ...conv,
+                  participantUsername: group.name, // or participantName, whatever you're rendering
+                }
+              } catch (err) {
+                console.warn(
+                  `[LeftSidebar] failed to fetch group name for ${conv.id}`,
+                  err
+                )
+                return {
+                  ...conv,
+                  participantUsername: "Unnamed Group",
+                }
+              }
+            }
+
+            // INDIVIDUAL conversation
+            const otherId = conv.participants.find(
+              (p) => p.userId !== currentUserId
+            )?.userId
+
+            if (!otherId) {
+              console.warn(
+                `[LeftSidebar] couldn’t find “other” participant for conv ${conv.id}`,
+                { currentUserId, participants: conv.participants }
+              )
+              return {
+                ...conv,
+                participantUsername: "Unknown User",
+              }
+            }
+
+            try {
+              const user = await apiFetch<{ username: string }>(
+                `/api/messaging/users/${otherId}`,
+                { method: "GET", headers: { Authorization: `Bearer ${token}` } }
+              )
+
+              return { ...conv, participantUsername: user.username }
+            } catch (err) {
+              console.warn(
+                `[LeftSidebar] failed to fetch user for ${otherId}`,
+                err
+              )
+              return {
+                ...conv,
+                participantUsername: "Unknown User",
+              }
+            }
+          })
+        )
+
+        setConversations(enriched)
       } catch (err) {
-        console.warn(`[LeftSidebar] failed to fetch group name for ${conv.id}`, err);
-        return {
-          ...conv,
-          participantUsername: 'Unnamed Group',
-        };
+        console.error("[LeftSidebar] error fetching conversations:", err)
       }
     }
 
-    // INDIVIDUAL conversation
-    const otherId = conv.participants.find(p => p.userId !== currentUserId)?.userId;
-
-    if (!otherId) {
-      console.warn(
-        `[LeftSidebar] couldn’t find “other” participant for conv ${conv.id}`, 
-        { currentUserId, participants: conv.participants }
-      );
-      return { 
-        ...conv, 
-        participantUsername: 'Unknown User' 
-      };
-    }
-
-    try {
-      const user = await apiFetch<{ username: string }>(
-        `/api/messaging/users/${otherId}`,
-        { method: 'GET',
-          headers: { Authorization: `Bearer ${token}` },
-         }
-      );
-     
-
-      return { ...conv, participantUsername: user.username };
-    } catch (err) {
-      console.warn(`[LeftSidebar] failed to fetch user for ${otherId}`, err);
-      return {
-        ...conv,
-        participantUsername: 'Unknown User',
-      };
-    }
-  })
-);
-
-
-
-     
-      setConversations(enriched);
-    } catch (err) {
-      console.error('[LeftSidebar] error fetching conversations:', err);
-    }
-  };
-
-  fetchConversations();
-}, [currentUserId]);
-
-
-
+    fetchConversations()
+  }, [currentUserId])
 
   return (
     <div className="w-[322px] shrink-0 border-r bg-white border-gray-200">
@@ -368,29 +358,27 @@ const enriched = await Promise.all(
       )}
 
       <ScrollArea>
-  <div className="flex flex-col">
-    {conversations.map((conv) => {
-      const otherId = getOtherParticipantId(conv, currentUserId)!;
-      return (
-        <Chat
-          key={conv.id}
-          conversation={{
-            ...conv,
-            participantUsername: conv.participantUsername,
-          }}
-          currentUserId={currentUserId}
-          onClick={() => {
-            setSelectedConversation(conv);
-          }}
-        />
-      );
-    })}
-  </div>
-</ScrollArea>
-
-
+        <div className="flex flex-col">
+          {conversations.map((conv) => {
+            const otherId = getOtherParticipantId(conv, currentUserId)!
+            return (
+              <Chat
+                key={conv.id}
+                conversation={{
+                  ...conv,
+                  participantUsername: conv.participantUsername,
+                }}
+                currentUserId={currentUserId}
+                onClick={() => {
+                  setSelectedConversation(conv)
+                }}
+              />
+            )
+          })}
+        </div>
+      </ScrollArea>
     </div>
   )
 }
 
-export default LeftSidebar;
+export default LeftSidebar
