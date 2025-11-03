@@ -39,6 +39,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui"
+import { Sidebar } from "../../(group)/search/sidebar"
 
 export default function Talent() {
   return (
@@ -46,7 +47,9 @@ export default function Talent() {
       <div className="py-[50px]">
         <div className="max-w-[1440px] mx-auto px-[50px]">
           <div className="flex gap-x-[50px]">
-            <div className="w-[210px] flex-none" />
+            <div className="w-[210px] flex-none">
+              <Sidebar />
+            </div>
 
             <div className="flex-auto">
               <div className="relative rounded-lg overflow-hidden h-[227px]">
