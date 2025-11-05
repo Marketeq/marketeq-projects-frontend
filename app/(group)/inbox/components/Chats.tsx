@@ -10,7 +10,12 @@ import {
 } from "@/stories/inbox.stories"
 import { getCurrentUser } from "@/utils/auth"
 import { getOtherParticipantId } from "@/utils/conversation"
-import { noop, toPxIfNumber } from "@/utils/functions"
+import {
+  DataEmoji,
+  EmojiProperties,
+  noop,
+  toPxIfNumber,
+} from "@/utils/functions"
 import { useControllableState } from "@/utils/hooks"
 import {
   AlertTriangle,
@@ -45,6 +50,7 @@ import { Conversation } from "@/types/conversation"
 import { Message } from "@/types/message"
 import { User } from "@/types/user"
 import { ToggleGroupItem, ToggleGroupRoot } from "@/components/ui/toggle-group"
+import { EmojiPicker } from "@/components/EmojiPicker"
 import { Chat, ChatsContextProvider, useChatsContext } from "@/components/chat"
 import {
   Avatar,
@@ -128,6 +134,15 @@ export default function Chats({
         Not logged in
       </div>
     )
+  }
+
+  const handleEmojiSelect = (emoji: DataEmoji) => {
+    const emojiChar = String.fromCodePoint(
+      ...emoji[EmojiProperties.unified]
+        .split("-")
+        .map((hex) => parseInt(hex, 16))
+    )
+    setTextareaValue((prev) => (prev || "") + emojiChar)
   }
 
   // 1) unwrap the AES key once per conversation
@@ -676,9 +691,11 @@ export default function Chats({
       >
         {/* Emoji + File + Upload */}
         <div className="flex items-center gap-x-1">
-          <IconButton visual="gray" variant="ghost" size="lg">
-            <Smile className="size-[22px]" />
-          </IconButton>
+          <EmojiPicker onEmojiSelect={handleEmojiSelect}>
+            <IconButton visual="gray" variant="ghost" size="lg">
+              <Smile className="size-[22px]" />
+            </IconButton>
+          </EmojiPicker>
 
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
