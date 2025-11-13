@@ -225,7 +225,7 @@ type TalentProfile = {
 }
 
 const meta: Meta = {
-  title: "Talent Profile",
+  title: "Talent Profile 1",
   parameters: {
     layout: "fullscreen",
   },

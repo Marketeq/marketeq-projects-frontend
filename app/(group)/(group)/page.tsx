@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react"
 import { useAuth } from "@/contexts/auth"
-import SecuritySettingsStepper from "@/stories/security-settings.stories"
 import { cn } from "@/utils/functions"
 import { ChevronLeft, ChevronRight } from "@blend-metrics/icons"
 import { Swiper as SwiperRoot, SwiperSlide } from "swiper/react"
 import { Swiper } from "swiper/types"
 import { Blocks1 } from "@/components/blocks-1"
 import NextImage from "@/components/next-image"
+import SecuritySettingsStepper from "@/components/security-settings"
 import {
   Button,
   Favorite,

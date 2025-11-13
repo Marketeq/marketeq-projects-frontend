@@ -113,6 +113,9 @@ const SelectSeparator = React.forwardRef<
 ))
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName
 
+const HeadlessSelectTrigger = SelectPrimitive.Trigger
+const HeadlessSelectIcon = SelectPrimitive.Icon
+
 export {
   Select,
   SelectGroup,
@@ -122,4 +125,6 @@ export {
   SelectLabel,
   SelectItem,
   SelectSeparator,
+  HeadlessSelectTrigger,
+  HeadlessSelectIcon,
 }

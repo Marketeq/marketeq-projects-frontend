@@ -4,12 +4,18 @@ import {
   CSSProperties,
   Fragment,
   useCallback,
+  useEffect,
   useMemo,
   useReducer,
+  useRef,
   useState,
 } from "react"
 import React from "react"
+// import ReactPlayer from "react-player"
+import dynamic from "next/dynamic"
+import { useAuth } from "@/contexts/auth"
 import options from "@/public/mock/options.json"
+import { ProjectAPI } from "@/service/http/project"
 import { Empty1 } from "@/stories/publish-project.stories"
 import { HTTPS, ONE_SECOND } from "@/utils/constants"
 import {
@@ -101,7 +107,6 @@ import {
   useForm,
   useWatch,
 } from "react-hook-form"
-import ReactPlayer from "react-player"
 import {
   useIsomorphicLayoutEffect,
   useToggle,
@@ -109,6 +114,7 @@ import {
 } from "react-use"
 import { util, z } from "zod"
 import { Prettify } from "@/types/core"
+import { CreateProjectType } from "@/types/project"
 import { GripVertical2 } from "@/components/icons/grip-vertical-2"
 import { Network } from "@/components/icons/network"
 import { Network1 } from "@/components/icons/network-1"
@@ -182,11 +188,20 @@ import {
   TableHeader,
   TableRow,
   Textarea,
+  ToastAction,
+  Toaster,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
+  useToast,
 } from "@/components/ui"
+
+type ProgressProps = {
+  setProgress?: (val: number) => void
+}
+
+const ReactPlayer = dynamic(() => import("react-player"), { ssr: false })
 
 declare module "@tanstack/react-table" {
   // @ts-expect-error
@@ -288,12 +303,21 @@ const Sidebar = () => {
   const mediaFlattenError = mediaError?.flatten()
   const { projectScopeMethods } = useProjectScopeContext()
   const [phases] = projectScopeMethods
+  // Show status icons only after the user has started filling Project Scope
+  const hasStartedScope =
+    Array.isArray(phases) &&
+    phases.some(
+      (p) =>
+        (p.phaseName?.trim?.() ?? "").length > 0 ||
+        (Array.isArray(p.rows) && p.rows.length > 0)
+    )
 
   return (
     <div className="py-6 px-[15px] flex flex-col shrink-0 gap-y-5 xs:max-[1024px]:hidden w-[260px] border-r border-gray-200 bg-gray-50">
       {stepsState.map(({ label, isValid }, index) => {
         const isActive = currentStep === index
-
+        // can open this step if it's the first, or the previous step is valid
+        const canOpen = index === 0 || stepsState[index - 1]?.isValid
         return (
           <TooltipProvider key={index}>
             <Tooltip>
@@ -302,9 +326,16 @@ const Sidebar = () => {
                   <button
                     className="group flex items-center justify-between focus-visible:outline-none hover:bg-gray-100 disabled:hover:bg-transparent rounded-md px-3 py-2"
                     data-ui-state={
-                      isActive ? "active" : isValid ? "complete" : "disabled"
+                      isActive
+                        ? "active"
+                        : isValid
+                          ? "complete"
+                          : !canOpen
+                            ? "disabled"
+                            : undefined // unlocked but incomplete -> no special state
                     }
-                    onClick={() => (isValid ? setStep(index) : noop)}
+                    disabled={!canOpen} // physically disable click when locked
+                    onClick={() => (canOpen ? setStep(index) : noop)} // allow opening if unlocked, even if not yet valid
                   >
                     <span className="flex items-center gap-x-3">
                       <span className="text-sm leading-[16.94px] font-semibold size-[25px] rounded-full shrink-0 inline-flex justify-center items-center text-white group-data-[ui-state=active]:border-2 group-data-[ui-state=active]:text-primary-500 group-data-[ui-state=active]:border-primary-500 group-data-[ui-state=complete]:bg-primary-500 group-data-[ui-state=disabled]:bg-gray-300">
@@ -383,32 +414,34 @@ const Sidebar = () => {
                             {field.label}
                           </span>
 
-                          {(field.label === "Task Name" &&
-                            pickFromProjectScopeSchema({
-                              task: true,
-                            }).safeParse(phases)) ||
-                          (field.label === "Role" &&
-                            pickFromProjectScopeSchema({
-                              role: true,
-                            }).safeParse(phases)) ||
-                          (field.label === "Location" &&
-                            pickFromProjectScopeSchema({
-                              location: true,
-                            }).safeParse(phases)) ||
-                          (field.label === "Experience" &&
-                            pickFromProjectScopeSchema({
-                              experience: true,
-                            }).safeParse(phases)) ||
-                          (field.label === "Duration" &&
-                            pickFromProjectScopeSchema({
-                              duration: true,
-                            }).safeParse(phases)) ? (
-                            <div className="size-[18px] rounded-full inline-flex items-center justify-center shrink-0 bg-success-500">
-                              <Check className="size-3 text-white" />
-                            </div>
-                          ) : (
-                            <AlertCircle className="size-[18px] text-warning-500 shrink-0" />
-                          )}
+                          {hasStartedScope ? (
+                            (field.label === "Task Name" &&
+                              pickFromProjectScopeSchema({
+                                task: true,
+                              }).safeParse(phases)) ||
+                            (field.label === "Role" &&
+                              pickFromProjectScopeSchema({
+                                role: true,
+                              }).safeParse(phases)) ||
+                            (field.label === "Location" &&
+                              pickFromProjectScopeSchema({
+                                location: true,
+                              }).safeParse(phases)) ||
+                            (field.label === "Experience" &&
+                              pickFromProjectScopeSchema({
+                                experience: true,
+                              }).safeParse(phases)) ||
+                            (field.label === "Duration" &&
+                              pickFromProjectScopeSchema({
+                                duration: true,
+                              }).safeParse(phases)) ? (
+                              <div className="size-[18px] rounded-full inline-flex items-center justify-center shrink-0 bg-success-500">
+                                <Check className="size-3 text-white" />
+                              </div>
+                            ) : (
+                              <AlertCircle className="size-[18px] text-warning-500 shrink-0" />
+                            )
+                          ) : null}
                         </div>
                       ))}
                   </div>
@@ -461,13 +494,70 @@ const Header = ({ onSaveExit }: { onSaveExit?: () => void }) => {
   )
 }
 
-const BottomBar = ({ progressValue }: { progressValue?: number }) => {
+const BottomBar = ({
+  progressValue,
+  onNextClick,
+}: {
+  progressValue?: number
+  onNextClick?: () => void
+}) => {
   const { nextStep, prevStep } = useStepperContext()
   const { hasNextStep, hasPreviousStep, totalSteps, currentStep, stepsState } =
     useStepRootContext()
 
   const { isValid } = stepsState[currentStep]
-  const { setIsProjectSubmitted } = useProjectScopeContext()
+  const { user } = useAuth()
+  const projectInfoMethods = useProjectInfoContext()
+  const mediaMethods = useMediaContext()
+  const { setIsProjectSubmitted, projectScopeMethods } =
+    useProjectScopeContext()
+  const [phases] = projectScopeMethods
+
+  const handleSubmit = async () => {
+    const projectInfo = projectInfoMethods.getValues()
+    const media = mediaMethods.getValues()
+
+    const phasesPayload = phases
+      .filter((p) => p.phaseName && p.rows)
+      .map((p, pIdx) => ({
+        name: p.phaseName ?? "",
+        stage: `Stage ${pIdx + 1}`,
+        startDay: 1,
+        endDay: 1,
+        tasks: (p.rows ?? []).map((r) => ({
+          taskName: r.task,
+          role: r.role ?? "",
+          location: r.location ? [r.location] : [],
+          experience: r.experience ?? "",
+          duration: r.duration.value,
+        })),
+      }))
+
+    const payload: CreateProjectType = {
+      title: projectInfo.title,
+      shortDescription: projectInfo.shortDescription,
+      longDescription: projectInfo.fullDescription,
+      categoriesWithSubcategories:
+        projectInfo.category?.map((cat: any) => ({
+          category: cat.category,
+          subcategories: cat.subCategories,
+        })) ?? [],
+      industries: projectInfo.industry,
+      tags: projectInfo.tags,
+      skills: projectInfo.skills,
+      phases: phasesPayload.length ? phasesPayload : undefined,
+      media: media.featuredVideo
+        ? { videoUrl: media.featuredVideo }
+        : undefined,
+      userId: user?.id ?? "",
+    }
+
+    try {
+      await ProjectAPI.CreateProject(payload)
+      setIsProjectSubmitted(true)
+    } catch {}
+  }
+
   return (
     <div className="h-[78px] z-40 fixed left-0 min-[1024px]:left-[260px] bottom-0 right-0 bg-white border-b border-gray-200">
       <Progress value={progressValue} bubble={false} />
@@ -484,13 +574,24 @@ const BottomBar = ({ progressValue }: { progressValue?: number }) => {
             </Button>
           )}
           {hasNextStep ? (
-            <Button onClick={isValid ? nextStep : noop}>
+            <Button
+              onClick={() => {
+                if (isValid) {
+                  nextStep()
+                } else {
+                  onNextClick?.() // show errors on the current step
+                }
+              }}
+            >
               Next <ChevronRight className="size-[15px]" />
             </Button>
           ) : (
             <Button
               disabled={!isValid}
-              onClick={() => setIsProjectSubmitted(true)}
+              onClick={() => {
+                setIsProjectSubmitted(true)
+                handleSubmit()
+              }}
             >
               Submit Project
             </Button>
@@ -573,7 +674,7 @@ const ProjectInfoTip = ({
 const projectInfoSchema = z.object({
   title: z
     .string()
-    .min(1, "Please enter at least 1 character(s)")
+    .min(10, "Please enter at least 10 character(s)")
     .max(120, "Please do not enter more than 120 character(s)"),
   category: z
     .array(
@@ -599,11 +700,11 @@ const projectInfoSchema = z.object({
     .max(5, "Please do not enter more than 5 industry(s)"),
   shortDescription: z
     .string()
-    .min(1, "Please enter at least 1 character(s)")
+    .min(50, "Please enter at least 50 character(s)")
     .max(300, "Please do not enter more than 300 character(s)"),
   fullDescription: z
     .string()
-    .min(1, "Please enter at least 1 character(s)")
+    .min(100, "Please enter at least 100 character(s)")
     .max(2_000, "Please do not enter more than 2,000 character(s)"),
   tags: z
     .array(z.string(), {
@@ -637,29 +738,83 @@ const techDesignCategories = [
 ]
 
 const skills = ["Node.js", "Javascript", "Wireframing"]
+type ProjectInfoProps = {
+  setProgress?: (val: number) => void
+}
 
-const ProjectInfo = () => {
+const ProjectInfo = ({
+  setProgress,
+}: {
+  setProgress?: (val: number) => void
+}) => {
   const { toggleValidation } = useStepContext()
   const methods = useProjectInfoContext()
   const {
     formState: { isValid, errors },
     setValue,
     trigger,
+    getValues,
   } = methods
+
+  const [suggested, setSuggested] = useState([
+    { category: "Design", subCategory: "UI/UX Design" },
+    { category: "Development", subCategory: "Mobile App" },
+    { category: "Data Science", subCategory: "Machine Learning" },
+  ])
+
+  const [showSuggestions, setShowSuggestions] = useState(true)
 
   useIsomorphicLayoutEffect(() => {
     toggleValidation(isValid)
   }, [isValid])
 
   const onSubmit: SubmitHandler<ProjectInfoFormValues> = (values) => {}
+  // Delay-hiding "Suggested Categories" after the 3rd slot is filled
+  const hideSuggestionsTimeoutRef = React.useRef<number | null>(null)
+
+  // Optional: clear any pending timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hideSuggestionsTimeoutRef.current) {
+        clearTimeout(hideSuggestionsTimeoutRef.current)
+      }
+    }
+  }, [])
 
   const projectInfoValues = useWatch({ control: methods.control })
+  const categoryValues = useWatch({
+    control: methods.control,
+    name: "category",
+  })
+
+  useEffect(() => {
+    const allCategoriesFilled = Array.isArray(categoryValues)
+      ? categoryValues.every(
+          (cat) =>
+            cat &&
+            Array.isArray(cat.subCategories) &&
+            cat.subCategories.length > 0 &&
+            cat.subCategories.every((val) => val.trim?.() !== "")
+        )
+      : false
+
+    if (allCategoriesFilled) {
+      setShowSuggestions(false)
+    } else if (!allCategoriesFilled && suggested.length > 0) {
+      setShowSuggestions(true)
+    }
+  }, [categoryValues, suggested])
+
   const { error } = projectInfoSchema.safeParse(projectInfoValues)
   const totalFields = keys(methods.control._fields).length
   const totalFieldErrors = error ? keys(error.flatten().fieldErrors).length : 0
   const progressValue = parseInt(
-    `${((totalFields - totalFieldErrors) / totalFields) * 100}`
+    `${((totalFields - totalFieldErrors) / totalFields) * 33}`
   )
+  // NEW: Report progress to parent whenever it changes
+  useEffect(() => {
+    setProgress?.(progressValue) //calls the prop passed from PublishProject
+  }, [progressValue, setProgress])
 
   const suggestedSkills = skills.filter(
     (value) => !projectInfoValues.skills?.includes(value)
@@ -716,11 +871,11 @@ const ProjectInfo = () => {
           </div>
 
           <div className="flex-auto">
-            <h1 className="text-xl leading-[30px] font-semibold text-gray-900">
+            <h1 className="text-xl leading-[30px] font-semibold text-dark-blue-400">
               Project Info
             </h1>
 
-            <div className="space-y-1.5 mt-6">
+            <div className="space-y-1.5 mt-6 mb-6">
               <div className="space-y-0.5">
                 <Label
                   className="leading-9 text-dark-blue-400 font-semibold"
@@ -746,6 +901,7 @@ const ProjectInfo = () => {
                 type="text"
                 placeholder="Enter Title"
                 {...methods.register("title")}
+                onBlur={() => methods.trigger("title")}
                 isInvalid={hookFormHasError({
                   errors,
                   name: "title",
@@ -761,7 +917,7 @@ const ProjectInfo = () => {
               />
             </div>
 
-            <div className="space-y-6 mt-6">
+            <div className="space-y-6 mt-0">
               <div className="space-y-0.5">
                 <Label
                   className="leading-9 text-dark-blue-400 font-semibold"
@@ -792,8 +948,15 @@ const ProjectInfo = () => {
                         <Listbox value={value} onChange={onChange}>
                           <ListboxButton
                             placeholder="Add Category"
+                            className="w-full max-w-[202px] h-[44px] px-[14px] py-[10px] flex items-center justify-start  border border-gray-300 rounded-[5px]"
                             {...field}
-                          />
+                          >
+                            {({ value }) => (
+                              <span className="truncate block">
+                                {value || "Add Category"}
+                              </span>
+                            )}
+                          </ListboxButton>
                           <ListboxOptions>
                             {techDesignCategories.map((category) => (
                               <ListboxOption key={category} value={category}>
@@ -818,7 +981,7 @@ const ProjectInfo = () => {
                         <TagsInputContext>
                           {(tagsInput) => (
                             <>
-                              <TagsInputControl className="relative pr-[28px]">
+                              <TagsInputControl className="relative pr-[28px] flex flex-wrap !justify-start !items-start !text-left  w-full max-w-[679px] h-auto rounded-[5px] border border-gray-300 px-[14px] py-[10px] m-0">
                                 {tagsInput.value.map((value, index) => (
                                   <TagsInputItem
                                     key={index}
@@ -843,8 +1006,8 @@ const ProjectInfo = () => {
                                 <TagsInputInput
                                   placeholder="Add Sub-Category(s)"
                                   options={options.value}
+                                  className="flex-1 min-w-[100px] "
                                 />
-
                                 <SearchMd className="size-4 shrink-0 absolute inset-y-0 right-3 my-auto text-gray-400" />
                               </TagsInputControl>
                             </>
@@ -882,8 +1045,15 @@ const ProjectInfo = () => {
                         <Listbox value={value} onChange={onChange}>
                           <ListboxButton
                             placeholder="Add Category"
+                            className="w-full max-w-[202px] h-[44px] px-[14px] py-[10px] flex items-center justify-start  border border-gray-300 rounded-[5px]"
                             {...field}
-                          />
+                          >
+                            {({ value }) => (
+                              <span className="truncate block">
+                                {value || "Add Category"}
+                              </span>
+                            )}
+                          </ListboxButton>
                           <ListboxOptions>
                             {techDesignCategories.map((category) => (
                               <ListboxOption key={category} value={category}>
@@ -908,7 +1078,11 @@ const ProjectInfo = () => {
                         <TagsInputContext>
                           {(tagsInput) => (
                             <>
-                              <TagsInputControl className="relative pr-[28px]">
+                              <TagsInputControl
+                                className="relative pr-[28px] flex flex-wrap !justify-start
+                               !items-start !text-left  w-full max-w-[679px] h-auto rounded-[5px] 
+                               border border-gray-300 px-[14px] py-[10px] m-0"
+                              >
                                 {tagsInput.value.map((value, index) => (
                                   <TagsInputItem
                                     key={index}
@@ -933,6 +1107,7 @@ const ProjectInfo = () => {
                                 <TagsInputInput
                                   options={options.value}
                                   placeholder="Add Sub-Category(s)"
+                                  className="flex-1 min-w-[100px]"
                                 />
 
                                 <SearchMd className="size-4 shrink-0 absolute inset-y-0 right-3 my-auto text-gray-400" />
@@ -972,8 +1147,15 @@ const ProjectInfo = () => {
                         <Listbox value={value} onChange={onChange}>
                           <ListboxButton
                             placeholder="Add Category"
+                            className="w-full max-w-[202px] h-[44px] px-[14px] py-[10px] flex items-center justify-start  border border-gray-300 rounded-[5px]"
                             {...field}
-                          />
+                          >
+                            {({ value }) => (
+                              <span className="truncate block">
+                                {value || "Add Category"}
+                              </span>
+                            )}
+                          </ListboxButton>
                           <ListboxOptions>
                             {techDesignCategories.map((category) => (
                               <ListboxOption key={category} value={category}>
@@ -998,7 +1180,11 @@ const ProjectInfo = () => {
                         <TagsInputContext>
                           {(tagsInput) => (
                             <>
-                              <TagsInputControl className="relative pr-[28px]">
+                              <TagsInputControl
+                                className="relative pr-[28px] flex flex-wrap !justify-start
+                               !items-start !text-left  w-full max-w-[679px] h-auto rounded-[5px] 
+                               border border-gray-300 px-[14px] py-[10px] m-0"
+                              >
                                 {tagsInput.value.map((value, index) => (
                                   <TagsInputItem
                                     key={index}
@@ -1023,6 +1209,7 @@ const ProjectInfo = () => {
                                 <TagsInputInput
                                   options={options.value}
                                   placeholder="Add Sub-Category(s)"
+                                  className="flex-1 min-w-[100px]"
                                 />
 
                                 <SearchMd className="size-4 shrink-0 absolute inset-y-0 right-3 my-auto text-gray-400" />
@@ -1049,39 +1236,111 @@ const ProjectInfo = () => {
               </div>
             </div>
 
-            <div className="mt-6 space-y-1.5">
-              <span className="block text-xs leading-5 text-dark-blue-400">
-                Suggested Categories
-              </span>
+            {showSuggestions && (
+              <div className="mt-6 space-y-1.5">
+                <span className="block text-xs leading-5 text-dark-blue-400">
+                  Suggested Categories
+                </span>
 
-              <div className="flex items-center gap-x-3">
-                {[
-                  { category: "Design", subCategory: "UI/UX Design" },
-                  { category: "Development", subCategory: "Mobile App" },
-                ].map(({ category, subCategory }) => (
-                  <Badge
-                    size="md"
-                    className="pr-2 focus-visible:outline-none text-primary-500 bg-primary-50"
-                    visual="primary"
-                    asChild
-                    key={category}
-                  >
-                    <button type="button">
-                      {category} / {subCategory}
-                      <Plus2 className="size-3 opacity-50 hover:opacity-100" />
-                    </button>
-                  </Badge>
-                ))}
+                <div className="flex items-center gap-x-3">
+                  {suggested.map(({ category, subCategory }) => (
+                    <Badge
+                      size="md"
+                      className="pr-2 focus-visible:outline-none text-primary-500 bg-primary-50"
+                      visual="primary"
+                      asChild
+                      key={category}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const categories = getValues("category") || []
+
+                          // pick the first empty among 0,1,2 so we don’t overwrite
+                          const indexToUpdate =
+                            [0, 1, 2].find(
+                              (i) => !categories?.[i]?.category?.trim?.()
+                            ) ?? 0
+
+                          // write values and mark as user-driven so Sidebar shows the checkmark
+                          setValue(
+                            `category.${indexToUpdate}.category`,
+                            category,
+                            {
+                              shouldDirty: true,
+                              shouldValidate: true,
+                            }
+                          )
+                          setValue(
+                            `category.${indexToUpdate}.subCategories`,
+                            [subCategory],
+                            {
+                              shouldDirty: true,
+                              shouldValidate: true,
+                            }
+                          )
+
+                          // validate that slot
+                          trigger(`category.${indexToUpdate}`)
+
+                          // remove the clicked suggestion immediately
+                          setSuggested((prev) =>
+                            prev.filter(
+                              (item) =>
+                                !(
+                                  item.category === category &&
+                                  item.subCategory === subCategory
+                                )
+                            )
+                          )
+
+                          // if all three slots are now filled, delay-hide suggestions in 3000ms
+                          const cats = getValues("category")
+                          const allThreeFilled = [0, 1, 2].every(
+                            (i) =>
+                              cats?.[i]?.category &&
+                              Array.isArray(cats?.[i]?.subCategories) &&
+                              cats[i].subCategories.length > 0
+                          )
+
+                          if (allThreeFilled) {
+                            // clear any previous timer, then schedule hide
+                            if (hideSuggestionsTimeoutRef.current) {
+                              clearTimeout(hideSuggestionsTimeoutRef.current)
+                            }
+                            hideSuggestionsTimeoutRef.current =
+                              window.setTimeout(() => {
+                                setShowSuggestions(false)
+                                hideSuggestionsTimeoutRef.current = null
+                              }, 3000)
+                          }
+                        }}
+                      >
+                        {category} / {subCategory}
+                        <Plus2 className="size-3 opacity-50 hover:opacity-100" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
               </div>
-            </div>
-
+            )}
             <div className="space-y-1.5 mt-6">
               <Controller
                 name="industry"
                 control={methods.control}
                 render={({ field: { onChange, ...field } }) => (
                   <TagsInputRoot
-                    onValueChange={(details) => onChange(details.value)}
+                    onValueChange={(details) => {
+                      if (details.value.length > 5) {
+                        methods.setError("industry", {
+                          type: "manual",
+                          message: "You can only add up to 5 industries",
+                        })
+                        return
+                      }
+                      methods.clearErrors("industry")
+                      onChange(details.value)
+                    }}
                     {...field}
                     className="space-y-1.5"
                   >
@@ -1128,7 +1387,7 @@ const ProjectInfo = () => {
                             ))}
                             <TagsInputInput
                               options={options.value}
-                              placeholder="Add tags"
+                              placeholder="Add Industries"
                             />
 
                             <SearchMd className="size-4 shrink-0 absolute inset-y-0 right-3 my-auto text-gray-400" />
@@ -1173,7 +1432,9 @@ const ProjectInfo = () => {
               <Textarea
                 id="short-description"
                 placeholder="Enter a short description..."
-                {...methods.register("shortDescription")}
+                {...methods.register("shortDescription", {
+                  onBlur: () => trigger("shortDescription"),
+                })}
                 isInvalid={hookFormHasError({
                   errors,
                   name: "shortDescription",
@@ -1212,8 +1473,10 @@ const ProjectInfo = () => {
 
               <Textarea
                 id="full-description"
-                placeholder="Enter a short description..."
-                {...methods.register("fullDescription")}
+                placeholder="Enter a full description..."
+                {...methods.register("fullDescription", {
+                  onBlur: () => trigger("fullDescription"),
+                })}
                 isInvalid={hookFormHasError({
                   errors,
                   name: "fullDescription",
@@ -1235,7 +1498,17 @@ const ProjectInfo = () => {
                 control={methods.control}
                 render={({ field: { onChange, ...field } }) => (
                   <TagsInputRoot
-                    onValueChange={(details) => onChange(details.value)}
+                    onValueChange={(details) => {
+                      if (details.value.length > 10) {
+                        methods.setError("tags", {
+                          type: "manual",
+                          message: "You can only add up to 10 tags",
+                        })
+                        return
+                      }
+                      methods.clearErrors("tags")
+                      onChange(details.value)
+                    }}
                     {...field}
                     className="space-y-1.5"
                   >
@@ -1311,7 +1584,17 @@ const ProjectInfo = () => {
                 control={methods.control}
                 render={({ field: { onChange, ...field } }) => (
                   <TagsInputRoot
-                    onValueChange={(details) => onChange(details.value)}
+                    onValueChange={(details) => {
+                      if (details.value.length > 10) {
+                        methods.setError("skills", {
+                          type: "manual",
+                          message: "You can only add up to 10 skills",
+                        })
+                        return
+                      }
+                      methods.clearErrors("skills")
+                      onChange(details.value)
+                    }}
                     {...field}
                     className="space-y-1.5"
                   >
@@ -1398,17 +1681,18 @@ const ProjectInfo = () => {
                       <button
                         type="button"
                         onClick={() => {
-                          setValue(
-                            "skills",
-                            projectInfoValues.skills
-                              ? [...projectInfoValues.skills, suggestedSkill]
-                              : [suggestedSkill]
-                          )
-                          isValid ? trigger("skills") : noop()
+                          const next = projectInfoValues.skills
+                            ? [...projectInfoValues.skills, suggestedSkill]
+                            : [suggestedSkill]
+
+                          // tell RHF this field changed and should be validated
+                          setValue("skills", next, {
+                            shouldDirty: true,
+                            shouldValidate: true,
+                          })
                         }}
                       >
                         {suggestedSkill}
-
                         <Plus2 className="size-3 opacity-50 hover:opacity-100" />
                       </button>
                     </Badge>
@@ -1422,8 +1706,6 @@ const ProjectInfo = () => {
           </div>
         </div>
       </ScrollArea>
-
-      <BottomBar progressValue={progressValue} />
     </form>
   )
 }
@@ -1528,14 +1810,16 @@ const mediaFormSchema = z
     ),
     featuredVideo: z
       .string()
-      .min(1, "Please provide a valid url")
       .refine(
-        (value) =>
-          /^(https?):\/\/(?=.*\.[a-z]{2,})[^\s$.?#].[^\s]*$/i.test(value),
+        (value) => {
+          if (!value) return true //  allow empty value
+          return /^(https?):\/\/(?=.*\.[a-z]{2,})[^\s$.?#].[^\s]*$/i.test(value)
+        },
         {
           message: "Please enter a valid URL",
         }
-      ),
+      )
+      .optional(),
   })
   .refine(
     (data) => data.featuredImages.every((value) => value.progress === 100),
@@ -1578,8 +1862,13 @@ type MediaFormValues = {
   }[][]
   featuredVideo: string
 }
+type MediaProps = {
+  setProgress?: (val: number) => void
+}
 
-const Media = () => {
+const Media = ({ setProgress }: { setProgress?: (val: number) => void }) => {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
   const { toggleValidation } = useStepContext()
   const {
     control,
@@ -1590,6 +1879,9 @@ const Media = () => {
     setValue,
   } = useMediaContext()
 
+  const { currentStep } = useStepRootContext()
+  const [progressValue, setProgressValue] = useState(0)
+
   useIsomorphicLayoutEffect(() => {
     toggleValidation(isValid)
   }, [isValid])
@@ -1598,11 +1890,70 @@ const Media = () => {
 
   const mediaValues = useWatch({ control: control })
   const { error } = mediaFormSchema.safeParse(mediaValues)
-  const totalFields = keys(control._fields).length
-  const totalFieldErrors = error ? keys(error.flatten().fieldErrors).length : 0
-  const progressValue = parseInt(
-    `${((totalFields - totalFieldErrors) / totalFields) * 100}`
-  )
+  const featuredImage = useWatch({ control, name: "featuredImages" })
+  const additionalImages = useWatch({ control, name: "additionalImages" })
+  const featuredVideo = useWatch({ control, name: "featuredVideo" })
+
+  const featuredImageRef = React.useRef(featuredImage)
+  const progressValueRef = React.useRef(progressValue)
+
+  useEffect(() => {
+    featuredImageRef.current = featuredImage
+  }, [featuredImage])
+
+  useEffect(() => {
+    progressValueRef.current = progressValue
+  }, [progressValue])
+
+  useEffect(() => {
+    if (currentStep === 1) {
+      let count = 0
+
+      const allFeaturedUploaded =
+        Array.isArray(featuredImage) &&
+        featuredImage.length > 0 &&
+        featuredImage.every((img) => img.progress === 100)
+
+      const hasAdditionalImages =
+        Array.isArray(additionalImages) &&
+        additionalImages.some(
+          (group) =>
+            Array.isArray(group) && group.some((img) => img.progress === 100)
+        )
+
+      if (allFeaturedUploaded) count += 1
+      if (hasAdditionalImages) count += 1
+      if (featuredVideo) count += 1
+
+      const percent = count * 11
+      setProgressValue(percent)
+      setProgress?.(percent)
+    }
+  }, [currentStep, featuredImage, additionalImages, featuredVideo, setProgress])
+
+  useEffect(() => {
+    return () => {
+      // only when leaving the Media step
+      if (currentStep !== 1) return
+
+      const fi = featuredImageRef.current
+      const allFeaturedUploaded =
+        Array.isArray(fi) &&
+        fi.length > 0 &&
+        fi.every((img) => img.progress === 100)
+
+      if (allFeaturedUploaded) {
+        // bump Media to at least its full 33% share,
+        // but don't reduce if user already reached 55/66
+        const bumped = Math.max(progressValueRef.current ?? 0, 33)
+        setProgressValue(bumped)
+        setProgress?.(bumped)
+      } else {
+        setProgressValue(0)
+        setProgress?.(0)
+      }
+    }
+  }, [currentStep, setProgress])
 
   const ref = React.useRef(new Set<() => void>())
 
@@ -1610,6 +1961,10 @@ const Media = () => {
     ref.current.forEach((cb) => cb())
     ref.current.clear()
   })
+  //Report progress to parent whenever it changes
+  useEffect(() => {
+    setProgress?.(progressValue)
+  }, [progressValue, setProgress])
 
   return (
     <form className="contents" onSubmit={handleSubmit(onSubmit)}>
@@ -1661,7 +2016,7 @@ const Media = () => {
           </div>
 
           <div className="flex-auto">
-            <h1 className="text-xl leading-[30px] font-semibold text-gray-900">
+            <h1 className="text-xl leading-[30px] font-semibold text-dark-blue-400">
               Media
             </h1>
 
@@ -1685,6 +2040,7 @@ const Media = () => {
                 name="featuredImages"
                 render={({ field: { value, onChange } }) => (
                   <Dropzone
+                    className="transition-colors duration-300"
                     size="lg"
                     icon
                     value={value}
@@ -1759,6 +2115,7 @@ const Media = () => {
                     control={control}
                     render={({ field: { value, onChange } }) => (
                       <SquareShapeDropzone
+                        className="transition-colors duration-300"
                         value={value}
                         onValueChange={(value) => {
                           onChange(
@@ -1838,7 +2195,7 @@ const Media = () => {
 
               {error?.formErrors.fieldErrors.featuredVideo ? null : (
                 <div className="group relative inline-block mt-6">
-                  <ReactPlayer
+                  {/* <ReactPlayer
                     url={mediaValues.featuredVideo}
                     width={229}
                     height={140}
@@ -1846,7 +2203,18 @@ const Media = () => {
                       borderRadius: "0.5rem",
                       overflow: "hidden",
                     }}
-                  />
+                  /> */}
+                  {mounted && (
+                    <ReactPlayer
+                      url={mediaValues.featuredVideo}
+                      width={229}
+                      height={140}
+                      style={{
+                        borderRadius: "0.5rem",
+                        overflow: "hidden",
+                      }}
+                    />
+                  )}
 
                   <button
                     className="absolute right-[9.56px] transition duration-300 group-hover:opacity-100 opacity-0 text-white hover:text-error-500 top-2.5 size-7 focus-visible:outline-none bg-black/20 hover:bg-black rounded-full inline-flex items-center justify-center"
@@ -1868,8 +2236,6 @@ const Media = () => {
           </div>
         </div>
       </ScrollArea>
-
-      <BottomBar progressValue={progressValue} />
     </form>
   )
 }
@@ -1973,10 +2339,12 @@ const PhaseNameDialog = ({
   onOpenChange,
   onAddPhaseName,
   open,
+  defaultName,
 }: {
   open?: boolean
   onOpenChange?: (open: boolean) => void
   onAddPhaseName: (phaseName: string) => void
+  defaultName?: string
 }) => {
   const [isOpen, toggleIsOpen] = useControllableState({
     defaultValue: false,
@@ -1988,9 +2356,18 @@ const PhaseNameDialog = ({
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<PhaseNameFormValues>({
     resolver: zodResolver(phaseNameFormSchema),
+    defaultValues: { name: defaultName ?? "" },
   })
+
+  // whenever dialog opens for a different phase, sync the input
+  useEffect(() => {
+    if (isOpen) {
+      reset({ name: defaultName ?? "" })
+    }
+  }, [isOpen, defaultName, reset])
 
   const onSubmit: SubmitHandler<PhaseNameFormValues> = (values) => {
     const { name } = values
@@ -2008,13 +2385,17 @@ const PhaseNameDialog = ({
             onSubmit={handleSubmit(onSubmit)}
           >
             <div className="space-y-1.5">
-              <Label htmlFor="phase-name" className="text-gray-700" size="sm">
+              <Label
+                htmlFor="phase-name"
+                className="text-dark-blue-400"
+                size="sm"
+              >
                 Phase Name
               </Label>
               <Input
                 id="phase-name"
                 className="text-gray-900"
-                defaultValue="Stage 1"
+                placeholder="Enter your phase name"
                 {...register("name")}
                 isInvalid={hookFormHasError({ errors, name: "name" })}
               />
@@ -2383,7 +2764,7 @@ const DeletePhaseDialog = ({
   })
   return (
     <Dialog open={isOpen} onOpenChange={toggleIsOpen}>
-      <DialogContent className="px-5 w-full py-10 md:px-10 bg-transparent shadow-none rounded-none">
+      <DialogContent className="px-5 w-full py-10 md:px-10 bg-transparent shadow-none rounded-none flex items-center justify-center min-h-screen">
         <div className="max-w-[371px] bg-white p-6 rounded-xl shadow-[0px_8px_8px_-4px_rgba(16,24,40,.03)_0px_20px_24px_-4px_rgba(16,24,40,.08)]">
           <DialogTitle>Delete this phase?</DialogTitle>
           <DialogDescription>
@@ -2404,7 +2785,7 @@ const DeletePhaseDialog = ({
                 toggleIsOpen(false)
               }}
             >
-              Done
+              Yes, Delete
             </Button>
           </DialogFooter>
         </div>
@@ -2925,8 +3306,17 @@ type DeletePhaseDialogState = {
   open: boolean
   phaseIndex: number | null
 }
+type ProjectScopeProps = {
+  setProgress?: (val: number) => void
+}
 
-const ProjectScope = () => {
+const ProjectScope = ({
+  setProgress,
+}: {
+  setProgress?: (val: number) => void
+}) => {
+  const { toast } = useToast()
+  const lastUndo = useRef<null | (() => void)>(null)
   const [taskDialogState, setTaskDialogState] = useState<TaskDialogState>({
     editingPhaseIndex: null,
     open: false,
@@ -3008,26 +3398,100 @@ const ProjectScope = () => {
     [setPhases]
   )
 
+  // helper to show success toast with Undo
+  const pushSuccess = (label: string, onUndo?: () => void) =>
+    toast({
+      variant: "success",
+      title: label,
+      action: (
+        <ToastAction
+          altText="Undo"
+          className="px-0 border-0 bg-transparent text-success-500 underline hover:no-underline focus:outline-none"
+          onClick={() => onUndo?.()}
+        >
+          Undo
+        </ToastAction>
+      ),
+    })
+
   const onAddPhaseName = useCallback(
     (phaseName: string) => {
       const { action, editingPhaseIndex, addTo } = phaseDialogState
 
       if (action === "EDIT" && typeof editingPhaseIndex === "number") {
         setPhases((prev) => {
+          const oldName = prev[editingPhaseIndex]?.phaseName ?? ""
           const nextState = prev.map((item, index) =>
             index === editingPhaseIndex ? { ...item, phaseName } : item
           )
+
+          // prepare undo: restore old name
+          lastUndo.current = () =>
+            setPhases((s) =>
+              s.map((p, i) =>
+                i === editingPhaseIndex ? { ...p, phaseName: oldName } : p
+              )
+            )
+
           return nextState
         })
-      } else {
-        setPhases((prev) =>
-          addTo === "start"
-            ? [{ phaseName }, ...prev]
-            : [...prev, { phaseName }]
-        )
+
+        // toast: Phase renamed
+        toast({
+          variant: "success",
+          title: "Phase renamed",
+          action: (
+            <ToastAction
+              altText="Undo"
+              className="px-0 border-0 bg-transparent text-success-500 underline hover:no-underline focus:outline-none"
+              onClick={() => {
+                lastUndo.current?.()
+                lastUndo.current = null
+              }}
+            >
+              Undo
+            </ToastAction>
+          ),
+        })
+
+        return
       }
+
+      // Do the add
+      setPhases((prev) => {
+        if (addTo === "start") {
+          // prepend (added above)
+          return [{ phaseName }, ...prev]
+        }
+        // append (added below)
+        return [...prev, { phaseName }]
+      })
+
+      // Prepare Undo for this action
+      lastUndo.current =
+        addTo === "start"
+          ? () => setPhases((prev) => prev.slice(1)) // remove first
+          : () => setPhases((prev) => prev.slice(0, -1)) // remove last
+
+      // Toast
+      toast({
+        variant: "success",
+        title: addTo === "start" ? "Phase added above" : "Phase added below",
+        action: (
+          <ToastAction
+            altText="Undo"
+            className="px-0 border-0 bg-transparent text-success-500 underline hover:no-underline focus:outline-none"
+            onClick={() => {
+              lastUndo.current?.()
+              lastUndo.current = null // clear after use
+            }}
+          >
+            Undo
+          </ToastAction>
+        ),
+      })
     },
-    [phaseDialogState, setPhases]
+    [phaseDialogState, setPhases, toast]
   )
 
   const onAddTask = useCallback(
@@ -3058,27 +3522,69 @@ const ProjectScope = () => {
 
   const onDurationFormValuesChange = useCallback(
     (durationFormValues: DurationFormValues) => {
-      const { editingPhaseIndex, editingPhaseRowIndex } = durationDialogState
-      if (
-        typeof editingPhaseIndex === "number" &&
-        typeof editingPhaseRowIndex === "number"
-      ) {
-        setPhases((prevPhases) => {
-          const newRows = prevPhases[editingPhaseIndex].rows?.map(
-            (item, index) =>
-              index === editingPhaseRowIndex
-                ? { ...item, ...durationFormValues }
-                : item
-          )
-          const newPhases = prevPhases.map((item, index) =>
-            index === editingPhaseIndex ? { ...item, rows: newRows } : item
-          )
+      const { editingPhaseIndex: pIdx, editingPhaseRowIndex: rIdx } =
+        durationDialogState
+      if (typeof pIdx !== "number" || typeof rIdx !== "number") return
 
-          return newPhases
+      // we'll detect if anything actually changed, capture a snapshot for Undo,
+      // then show the toast.
+      let didChange = false
+      let oldRowSnapshot: any = null
+
+      setPhases((prev) => {
+        const phase = prev[pIdx]
+        const rows = phase?.rows ?? []
+        const oldRow = rows[rIdx] ?? {}
+
+        // shallow-compare only keys present in durationFormValues
+        didChange = Object.keys(durationFormValues).some(
+          (k) => (oldRow as any)?.[k] !== (durationFormValues as any)[k]
+        )
+        if (!didChange) return prev
+
+        oldRowSnapshot = oldRow
+
+        const newRows = rows.map((row, i) =>
+          i === rIdx ? { ...row, ...durationFormValues } : row
+        )
+        const newPhases = prev.map((ph, i) =>
+          i === pIdx ? { ...ph, rows: newRows } : ph
+        )
+
+        // prepare Undo: restore the old row snapshot
+        lastUndo.current = () =>
+          setPhases((s) => {
+            const sPhase = s[pIdx]
+            const sRows = (sPhase?.rows ?? []).slice()
+            sRows[rIdx] = oldRowSnapshot
+            const out = s.slice()
+            out[pIdx] = { ...sPhase, rows: sRows }
+            return out
+          })
+
+        return newPhases
+      })
+
+      if (didChange) {
+        toast({
+          variant: "success",
+          title: "Duration changed",
+          action: (
+            <ToastAction
+              altText="Undo"
+              className="px-0 border-0 bg-transparent text-success-500 underline hover:no-underline focus:outline-none"
+              onClick={() => {
+                lastUndo.current?.()
+                lastUndo.current = null
+              }}
+            >
+              Undo
+            </ToastAction>
+          ),
         })
       }
     },
-    [durationDialogState, setPhases]
+    [durationDialogState, setPhases, toast]
   )
 
   const durationFormValues = useMemo(() => {
@@ -3096,10 +3602,34 @@ const ProjectScope = () => {
     }
   }, [durationDialogState, phases])
 
-  const onDeletePhase = useCallback(() => {
-    const { phaseIndex } = deletePhaseDialogState
-    setPhases((prev) => prev.filter((_, index) => index !== phaseIndex))
-  }, [deletePhaseDialogState, setPhases])
+  const onDeletePhase = useCallback(
+    (id: string) => {
+      setPhases((prev) => {
+        const idx = prev.findIndex(
+          (p, i) => String(i) === id || (p as any).id === id
+        )
+        if (idx < 0) return prev
+        const removed = prev[idx]
+
+        // prepare undo: reinsert at same index
+        lastUndo.current = () =>
+          setPhases((s) => {
+            const next = [...s]
+            next.splice(idx, 0, removed)
+            return next
+          })
+
+        // do delete
+        const next = [...prev]
+        next.splice(idx, 0) // no-op to satisfy TS if needed
+        return prev.filter((_, i) => i !== idx)
+      })
+
+      pushSuccess("Phase deleted", lastUndo.current || undefined)
+      lastUndo.current = null
+    },
+    [pushSuccess, setPhases]
+  )
 
   const handleOpenDeletePhaseDialog = useCallback((phaseIndex: number) => {
     setDeletePhaseDialogState({
@@ -3109,15 +3639,27 @@ const ProjectScope = () => {
   }, [])
 
   const onDuplicatePhase = useCallback(
-    (phaseIndex: number) => {
+    (idx: number) => {
       setPhases((prev) => {
-        const nextState = [...prev]
-        nextState.splice(phaseIndex, 0, nextState[phaseIndex])
-        return nextState
+        const source = prev[idx]
+        if (!source) return prev
+        const dup = { ...source } // add new id if you have ids
+        const next = [...prev]
+        next.splice(idx + 1, 0, dup)
+
+        // undo: remove the new duplicate at idx+1
+        lastUndo.current = () =>
+          setPhases((s) => s.filter((_, i) => i !== idx + 1))
+
+        return next
       })
+
+      pushSuccess("Phase duplicated", lastUndo.current || undefined)
+      lastUndo.current = null
     },
-    [setPhases]
+    [pushSuccess, setPhases]
   )
+
   const fieldsValidationArr = [
     pickFromProjectScopeSchema({ task: true }).safeParse(phases),
     pickFromProjectScopeSchema({ experience: true }).safeParse(phases),
@@ -3125,10 +3667,39 @@ const ProjectScope = () => {
     pickFromProjectScopeSchema({ location: true }).safeParse(phases),
     pickFromProjectScopeSchema({ duration: true }).safeParse(phases),
   ]
-  const progressValue =
+
+  // Each valid field contributes 34% to the total progress
+  const progressValue = Math.round(
     (fieldsValidationArr.filter((item) => item).length /
       fieldsValidationArr.length) *
-    100
+      34
+  )
+  // Report progress to parent
+  useEffect(() => {
+    setProgress?.(progressValue)
+  }, [progressValue, setProgress])
+
+  //helper function to convert numbers to words
+  const numberToWord = (num: number) => {
+    const words = [
+      "One",
+      "Two",
+      "Three",
+      "Four",
+      "Five",
+      "Six",
+      "Seven",
+      "Eight",
+      "Nine",
+      "Ten",
+    ]
+    return words[num] || num + 1 // fallback for numbers > 10
+  }
+
+  const currentPhaseName =
+    typeof phaseDialogState.editingPhaseIndex === "number"
+      ? phases[phaseDialogState.editingPhaseIndex]?.phaseName ?? ""
+      : ""
 
   return (
     <>
@@ -3182,7 +3753,7 @@ const ProjectScope = () => {
 
           <div className="space-y-6 flex-auto">
             <div className="flex md:flex-row flex-col gap-y-6 md:gap-y-0 md:items-center justify-between">
-              <h1 className="text-xl leading-[30px] font-semibold text-gray-800">
+              <h1 className="text-xl leading-[30px] font-semibold text-dark-blue-400">
                 Project Scope
               </h1>
 
@@ -3243,7 +3814,7 @@ const ProjectScope = () => {
                               </AccordionTrigger>
 
                               <span className="text-base md:text-[18px] font-semibold leading-7 text-gray-900">
-                                Phase One{" "}
+                                Phase {numberToWord(index)}{" "}
                                 <span className="font-light">{phaseName}</span>
                               </span>
                             </div>
@@ -3321,7 +3892,7 @@ const ProjectScope = () => {
 
                               <div className="inline-flex md:flex-row gap-x-1.5 flex-col md:items-center gap-y-3 md:gap-x-5">
                                 <span className="text-base md:text-[18px] font-semibold md:font-light leading-7 text-gray-900">
-                                  Phase one
+                                  Phase {numberToWord(index)}
                                 </span>{" "}
                                 {phaseName ? (
                                   <span className="text-lg leading-8 font-semibold text-gray-900">
@@ -3386,13 +3957,15 @@ const ProjectScope = () => {
                           <div className="w-full overflow-auto flex border-t border-gray-200 flex-col justify-center min-h-[208px] md:min-h-[228px]">
                             <div className="max-w-[352px] mx-auto">
                               <h1 className="text-base font-semibold text-center leading-6 text-gray-800">
-                                Create your first task
+                                {index === 0
+                                  ? "Create your first task"
+                                  : "Create a task"}
                               </h1>
                               <p className="text-sm mt-1 leading-5 text-center text-gray-800">
-                                Start defining your project scope with a clear,
-                                actionable step.
+                                {index === 0
+                                  ? "Start defining your project scope with a clear, actionable step."
+                                  : "Define your project scope with a clear, actionable step."}
                               </p>
-
                               <div className="mt-6 flex justify-center">
                                 <Button
                                   className="bg-primary-50 text-primary-500 hover:bg-primary-500 hover:text-white"
@@ -3427,7 +4000,9 @@ const ProjectScope = () => {
               }
               open={phaseDialogState.open}
               onAddPhaseName={onAddPhaseName}
+              defaultName={currentPhaseName}
             />
+
             <TaskDialog
               open={taskDialogState.open}
               onOpenChange={(open) =>
@@ -3459,7 +4034,11 @@ const ProjectScope = () => {
                   open,
                 })
               }
-              onDeletePhase={onDeletePhase}
+              onDeletePhase={() => {
+                if (deletePhaseDialogState.phaseIndex !== null) {
+                  onDeletePhase(String(deletePhaseDialogState.phaseIndex))
+                }
+              }}
             />
           </div>
 
@@ -3468,8 +4047,6 @@ const ProjectScope = () => {
           </div>
         </div>
       </ScrollArea>
-
-      <BottomBar progressValue={progressValue} />
     </>
   )
 }
@@ -3508,9 +4085,9 @@ function PublishProject({
   projectInfo,
   projectScope,
 }: {
-  projectInfo?: React.ReactNode
-  media?: React.ReactNode
-  projectScope?: React.ReactNode
+  projectInfo?: React.ReactElement<ProgressProps>
+  media?: React.ReactElement<ProgressProps>
+  projectScope?: React.ReactElement<ProgressProps>
 }) {
   const {
     nextStep,
@@ -3553,6 +4130,29 @@ function PublishProject({
     () => ({ projectScopeMethods, isProjectSubmitted, setIsProjectSubmitted }),
     [projectScopeMethods, isProjectSubmitted, setIsProjectSubmitted]
   )
+  //  Validate the current step when Next is clicked
+  const validateCurrentStep = React.useCallback(async () => {
+    if (currentStep === 0) {
+      // Project Info: validate ALL fields, focus first invalid
+      return await projectInfoMethods.trigger(undefined, { shouldFocus: true })
+    }
+    if (currentStep === 1) {
+      // Media: validate all (kept for parity / future)
+      return await mediaMethods.trigger(undefined, { shouldFocus: true })
+    }
+    // Step 3 uses its own schema checks
+    return true
+  }, [currentStep, projectInfoMethods, mediaMethods])
+
+  //  NEW: Track cumulative progress for all steps
+  const [projectInfoProgress, setProjectInfoProgress] = useState(0)
+
+  const [mediaProgress, setMediaProgress] = useState(0)
+  const [projectScopeProgress, setProjectScopeProgress] = useState(0)
+
+  const overallProgress = useMemo(() => {
+    return projectInfoProgress + mediaProgress + projectScopeProgress
+  }, [projectInfoProgress, mediaProgress, projectScopeProgress])
 
   return isProjectSubmitted ? (
     <div className="min-h-screen flex flex-col">
@@ -3578,10 +4178,35 @@ function PublishProject({
                     onOpenChange={toggleIsSaveExitDialogOpen}
                   />
                   <StepControl className="contents">
-                    <Step className="contents">{projectInfo}</Step>
-                    <Step className="contents">{media}</Step>
-                    <Step className="contents">{projectScope}</Step>
+                    {/*  Wrap steps to inject progress setter props */}
+                    <Step className="contents">
+                      {projectInfo && React.isValidElement(projectInfo)
+                        ? React.cloneElement(projectInfo, {
+                            setProgress: setProjectInfoProgress, // <-- inject progress
+                          })
+                        : null}
+                    </Step>
+                    <Step className="contents">
+                      {media && React.isValidElement(media)
+                        ? React.cloneElement(media, {
+                            setProgress: setMediaProgress,
+                          })
+                        : null}
+                    </Step>
+                    <Step className="contents">
+                      {projectScope && React.isValidElement(projectScope)
+                        ? React.cloneElement(projectScope, {
+                            setProgress: setProjectScopeProgress, // <-- inject progress
+                          })
+                        : null}
+                    </Step>
                   </StepControl>
+                  {/* Single BottomBar with global progress */}
+                  <BottomBar
+                    progressValue={overallProgress}
+                    onNextClick={validateCurrentStep}
+                  />{" "}
+                  {/* <-- moved here */}
                 </div>
               </ProjectScopeProvider>
             </MediaProvider>
@@ -3593,11 +4218,23 @@ function PublishProject({
 }
 
 export default function PublishRootProject() {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
+
   return (
-    <PublishProject
-      projectInfo={<ProjectInfo />}
-      media={<Media />}
-      projectScope={<ProjectScope />}
-    />
+    <>
+      <PublishProject
+        projectInfo={<ProjectInfo />}
+        media={<Media />}
+        projectScope={<ProjectScope />}
+      />
+      <Toaster />
+    </>
   )
 }

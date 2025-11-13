@@ -73,7 +73,9 @@ Alert.displayName = "Alert"
 const AlertContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
->((props, ref) => <div className={cn("flex-auto")} ref={ref} {...props} />)
+>(({ className, ...props }, ref) => (
+  <div className={cn("flex-auto", className)} ref={ref} {...props} />
+))
 
 AlertContent.displayName = "AlertContent"
 

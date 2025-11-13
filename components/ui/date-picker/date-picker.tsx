@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { preventDefault } from "@/utils/dom-utils"
+import { cn } from "@/utils/functions"
 import { useControllableState, useToggle } from "@/utils/hooks"
 import { CalendarPlus01 } from "@blend-metrics/icons"
 import { format } from "date-fns"
@@ -17,10 +18,14 @@ const DatePicker = ({
   value,
   onValueChange,
   placeholder,
+  inputClassName,
+  indicator = <CalendarPlus01 className="h-5 w-5 text-gray-700" />,
 }: {
   value?: Date
   onValueChange?: (value: Date) => void
   placeholder?: string
+  inputClassName?: string
+  indicator?: React.ReactNode
 }) => {
   const [date, setDate] = useControllableState({
     value,
@@ -40,12 +45,15 @@ const DatePicker = ({
     <Popover open={isOpen} onOpenChange={toggle}>
       <PopoverTrigger asChild>
         <Button
-          className="gap-x-2 text-gray-700 items-center inline-flex"
+          className={cn(
+            "gap-x-2 text-gray-700 items-center inline-flex",
+            inputClassName
+          )}
           size="md"
           variant="outlined"
           visual="gray"
         >
-          <CalendarPlus01 className="h-5 w-5 text-gray-700" />
+          {indicator}
           {date ? (
             format(date, "LLL d, yyyy")
           ) : (

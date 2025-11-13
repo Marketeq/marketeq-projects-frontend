@@ -21,6 +21,7 @@ export type User = {
   provider: AUTH_PROVIDERS
   socialId?: string | null
   emailVerified: boolean
+  onboardingDismissed: boolean
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
