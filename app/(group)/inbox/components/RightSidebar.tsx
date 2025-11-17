@@ -1,12 +1,14 @@
 "use client"
 
 import React, { useCallback, useMemo, useState } from "react"
+import { useEffect } from "react"
 import {
   Bubble,
   EditContextProvider,
   YourBubble,
   useEditContext,
 } from "@/stories/inbox.stories"
+import { getCurrentUser } from "@/utils/auth"
 import { noop, toPxIfNumber } from "@/utils/functions"
 import { useControllableState } from "@/utils/hooks"
 import {
@@ -36,6 +38,9 @@ import {
 } from "@blend-metrics/icons/brands"
 import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu"
 import { useMeasure, useToggle } from "react-use"
+import { Conversation } from "@/types/conversation"
+import { Message } from "@/types/message"
+import { User } from "@/types/user"
 import { ToggleGroupItem, ToggleGroupRoot } from "@/components/ui/toggle-group"
 import { Chat, ChatsContextProvider, useChatsContext } from "@/components/chat"
 import {
@@ -71,35 +76,18 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui"
-
 import {
+  ensureEncryptionKeysExist,
+  exportPrivateKey,
+  exportPublicKey,
   generateKeyPair,
+  importPrivateKey,
   savePrivateKey,
   savePublicKey,
-  exportPublicKey,
-  exportPrivateKey,
-  importPrivateKey,
-  ensureEncryptionKeysExist ,
-} from "..//../../../src/crypto/keys";
-import { useMessaging } from "..//../../../src//hooks/useMessaging";
-
-import { useAblyChannel } from "..//../../../utils/useAblyChannel";
-import { getCurrentUser } from "@/utils/auth";
-import { User } from "@/types/user";
-import { useEffect } from "react";
-import { Conversation } from "@/types/conversation";
-import { Message } from "@/types/message";
-
-
-
-
-
-
-
-
-
-
-
+} from "..//../../../src/crypto/keys"
+// FIXME: a wrong import
+// import { useMessaging } from "..//../../../src//hooks/useMessaging";
+import { useAblyChannel } from "..//../../../utils/useAblyChannel"
 
 const RightSidebar = () => {
   return (
@@ -226,5 +214,4 @@ const RightSidebar = () => {
   )
 }
 
-
-export default RightSidebar;
+export default RightSidebar

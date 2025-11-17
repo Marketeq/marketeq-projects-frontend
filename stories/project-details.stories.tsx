@@ -274,15 +274,18 @@ const Chats = () => {
           </div>
 
           <div className="flex justify-start">
-            <YourBubble message="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+            {/* FIXME: a type error as the message prop's type has been changed */}
+            {/*<YourBubble message="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />*/}
           </div>
 
           <div className="flex justify-end">
-            <Bubble message="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+            {/* FIXME: a type error as the message prop's type has been changed */}
+            {/*<Bubble message="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />*/}
           </div>
 
           <div className="flex justify-start">
-            <YourBubble message="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+            {/* FIXME: a type error as the message prop's type has been changed */}
+            {/*<YourBubble message="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />*/}
           </div>
 
           <div className="flex gap-x-3 py-6 items-center">
@@ -294,11 +297,13 @@ const Chats = () => {
           </div>
 
           <div className="flex justify-end">
-            <Bubble message="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+            {/* FIXME: a type error as the message prop's type has been changed */}
+            {/*<Bubble message="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />*/}
           </div>
 
           <div className="flex justify-start">
-            <YourBubble message="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+            {/* FIXME: a type error as the message prop's type has been changed */}
+            {/*<YourBubble message="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />*/}
           </div>
 
           <div className="flex gap-x-3 py-6 items-center">
@@ -310,7 +315,8 @@ const Chats = () => {
           </div>
 
           <div className="flex justify-end">
-            <Bubble message="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+            {/* FIXME: a type error as the message prop's type has been changed */}
+            {/*<Bubble message="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />*/}
           </div>
         </div>
       </ScrollArea>

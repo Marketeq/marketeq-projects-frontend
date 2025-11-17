@@ -18,6 +18,8 @@ const GoogleLoginButton = () => {
 
   const [isLoading, setIsLoading] = useState(false)
 
+  // No safety check needed as the client ID is hardcoded in layout.tsx
+
   const handleLoginWithGoogle = useGoogleLogin({
     onSuccess: (credentialResponse) => {
       if (credentialResponse?.access_token) {

@@ -1,9 +1,9 @@
 // src/hooks/useMessaging.ts
-import { useState, useEffect } from 'react'
-import { decryptWithPrivateKey, decryptAES } from "../../../../src/crypto/e2ee";
-import { saveKey, loadKey } from "../../../../src/crypto/storage";
-import type { Message } from '@/types/message';
-import { apiFetch } from '../../../../src/lib/api';
+import { useEffect, useState } from "react"
+import type { Message } from "@/types/message"
+import { decryptAES, decryptWithPrivateKey } from "../../../../src/crypto/e2ee"
+import { loadKey, saveKey } from "../../../../src/crypto/storage"
+import { apiFetch } from "../../../../src/lib/api"
 
 // src/hooks/useMessages.ts
 
@@ -19,23 +19,21 @@ export function useMessages(convId: string, token: string) {
 
   useEffect(() => {
     if (!convId || !token) return
-
     ;(async () => {
       try {
         // 1) load the raw AES key from localStorage
         const key = loadKey(convId)
 
-         // 2) fetch the encrypted messages via apiFetch (handles base URL, JSON, errors)
+        // 2) fetch the encrypted messages via apiFetch (handles base URL, JSON, errors)
         const data = await apiFetch<Message[]>(
           `/api/messaging/conversations/${convId}/messages`,
           {
-            method: 'GET',
+            method: "GET",
             headers: { Authorization: `Bearer ${token}` },
           }
         )
 
-
-         // 3) Decrypt each one and preserve its metadata
+        // 3) Decrypt each one and preserve its metadata
         const decrypted = await Promise.all(
           data.map(async (m) => ({
             ...m,
@@ -43,12 +41,12 @@ export function useMessages(convId: string, token: string) {
           }))
         )
 
-        setMessages(decrypted);
+        setMessages(decrypted)
       } catch (err) {
-        console.error('useMessages error:', err);
+        console.error("useMessages error:", err)
       }
-    })();
-  }, [convId, token]);
+    })()
+  }, [convId, token])
 
   return messages
 }
