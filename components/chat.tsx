@@ -162,7 +162,7 @@ export const UserDetail = ({
           />
         </div>
       </div>
-      <div className="pr-3.5 flex flex-col flex-auto gap-y-0.5 items-start py-[18px] border-b border-gray-200">
+      <div className="pr-3.5 flex flex-col flex-auto gap-y-0.5 items-start py-[18px] border-b border-gray-200 relative">
         <div className="flex self-stretch items-center justify-between">
           <h3 className="group-data-[state=active]/chat:font-bold text-[13px] leading-[18.88px] font-medium text-dark-blue-400">
             {conversation.participantUsername || "Unknown"}
@@ -172,12 +172,20 @@ export const UserDetail = ({
             {formatConversationDate(conversation.createdAt)}
           </span>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger className="absolute top-[13.73px] right-[15px] size-[27px] hidden group-hover/chat:inline-flex justify-center items-center focus-visible:outline-none text-gray-500 transition duration-300 group-hover/chat:opacity-100 opacity-0 rounded-full hover:text-dark-blue-500 hover:bg-primary-50">
-              <MoreHorizontal className="size-[15px]" />
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button className="absolute top-[13.73px] right-[15px] size-[27px] hidden group-hover/chat:inline-flex data-[state=open]:inline-flex justify-center items-center focus-visible:outline-none text-gray-500 transition-opacity duration-300 group-hover/chat:opacity-100 data-[state=open]:opacity-100 opacity-0 rounded-full hover:text-dark-blue-500 hover:bg-primary-50">
+                <MoreHorizontal className="size-[15px]" />
+              </button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent className="min-w-[142px]">
+            <DropdownMenuContent
+              className="min-w-[142px] data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=closed]:duration-100"
+              align="end"
+              side="bottom"
+              sideOffset={4}
+              avoidCollisions={false}
+            >
               <DropdownMenuItem>
                 <EyeOff className="h-4 w-4" /> Mark Unread
               </DropdownMenuItem>

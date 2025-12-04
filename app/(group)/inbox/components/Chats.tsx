@@ -10,7 +10,12 @@ import {
 } from "@/stories/inbox.stories"
 import { getCurrentUser } from "@/utils/auth"
 import { getOtherParticipantId } from "@/utils/conversation"
-import { noop, toPxIfNumber } from "@/utils/functions"
+import {
+  DataEmoji,
+  EmojiProperties,
+  noop,
+  toPxIfNumber,
+} from "@/utils/functions"
 import { useControllableState } from "@/utils/hooks"
 import {
   AlertTriangle,
@@ -45,6 +50,7 @@ import { Conversation } from "@/types/conversation"
 import { Message } from "@/types/message"
 import { User } from "@/types/user"
 import { ToggleGroupItem, ToggleGroupRoot } from "@/components/ui/toggle-group"
+import { EmojiPicker } from "@/components/EmojiPicker"
 import { Chat, ChatsContextProvider, useChatsContext } from "@/components/chat"
 import {
   Avatar,
@@ -122,6 +128,22 @@ export default function Chats({
   const [isUploading, setIsUploading] = useState(false)
 
   const currentUser = getCurrentUser()
+  if (!currentUser) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        Not logged in
+      </div>
+    )
+  }
+
+  const handleEmojiSelect = (emoji: DataEmoji) => {
+    const emojiChar = String.fromCodePoint(
+      ...emoji[EmojiProperties.unified]
+        .split("-")
+        .map((hex) => parseInt(hex, 16))
+    )
+    setTextareaValue((prev) => (prev || "") + emojiChar)
+  }
 
   // 1) unwrap the AES key once per conversation
   useEffect(() => {
@@ -222,7 +244,7 @@ export default function Chats({
       isDeleted?: boolean
     }) => {
       // Skip if the message is from current user
-      if (incoming.senderId === currentUser?.id) return
+      if (incoming.senderId === currentUser.id) return
 
       const key = loadKey(incoming.conversationId)
       if (!key) {
@@ -247,7 +269,7 @@ export default function Chats({
         },
       ])
     },
-    [setLocalMsgs, currentUser?.id] // only changes if setLocalMsgs ever changes (it won’t)
+    [setLocalMsgs] // only changes if setLocalMsgs ever changes (it won’t)
   )
 
   //pin/unpin,  delete, undo delete
@@ -486,14 +508,6 @@ export default function Chats({
   //   }
   // };
 
-  if (!currentUser) {
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        Not logged in
-      </div>
-    )
-  }
-
   if (!selectedConversation) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -512,7 +526,7 @@ export default function Chats({
 
   // Compute full name
   const fullName = selectedConversation?.isGroup
-    ? selectedConversation.group?.name ?? "Unnamed Group"
+    ? (selectedConversation.group?.name ?? "Unnamed Group")
     : [receiverUser.firstName?.trim(), receiverUser.lastName?.trim()]
         .filter(Boolean)
         .join(" ") ||
@@ -538,13 +552,13 @@ export default function Chats({
               alt={
                 selectedConversation?.isGroup
                   ? selectedConversation?.group?.name || "Group"
-                  : receiverUser.username ?? ""
+                  : (receiverUser.username ?? "")
               }
             />
             <AvatarFallback>
               {selectedConversation?.isGroup
-                ? selectedConversation?.group?.name?.[0] ?? "G"
-                : receiverUser.username?.[0] ?? ""}
+                ? (selectedConversation?.group?.name?.[0] ?? "G")
+                : (receiverUser.username?.[0] ?? "")}
             </AvatarFallback>
           </Avatar>
 
@@ -587,9 +601,45 @@ export default function Chats({
               <Favorite className="text-gray-500" />
             </div>
 
-            <IconButton visual="gray" variant="ghost" size="lg">
-              <MoreHorizontal className="size-[22px]" />
-            </IconButton>
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger asChild>
+                <IconButton
+                  className="rounded-full text-gray-500"
+                  visual="gray"
+                  variant="ghost"
+                  size="lg"
+                >
+                  <MoreHorizontal className="size-[22px]" />
+                </IconButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" side="bottom">
+                <DropdownMenuItem>
+                  <Info className="size-4" /> Profile Info
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Star className="size-4" /> Mark Favorite
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Mail05 className="size-4" /> Mark Unread
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Pin02 className="size-4" /> Pin Chat
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Archive className="size-4" /> Archive
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <AlertTriangle className="size-4" /> Move to Spam
+                </DropdownMenuItem>
+                <DropdownMenuItem className="text-error-500">
+                  <AlertTriangle className="size-4" /> Block / Report
+                </DropdownMenuItem>
+                <DropdownMenuItem className="text-error-500">
+                  <Trash2 className="size-4" /> Delete Chat
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
@@ -641,9 +691,11 @@ export default function Chats({
       >
         {/* Emoji + File + Upload */}
         <div className="flex items-center gap-x-1">
-          <IconButton visual="gray" variant="ghost" size="lg">
-            <Smile className="size-[22px]" />
-          </IconButton>
+          <EmojiPicker onEmojiSelect={handleEmojiSelect}>
+            <IconButton visual="gray" variant="ghost" size="lg">
+              <Smile className="size-[22px]" />
+            </IconButton>
+          </EmojiPicker>
 
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -799,9 +851,7 @@ export default function Chats({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger
-                  className={`text-gray-500 hover:text-primary-500 disabled:text-gray-400 ${
-                    isUploading ? "animate-pulse" : ""
-                  }`}
+                  className={`text-gray-500 hover:text-primary-500 disabled:text-gray-400 ${isUploading ? "animate-pulse" : ""}`}
                   onClick={handleSendMessage}
                   disabled={
                     (!textareaValue.trim() && selectedFiles.length === 0) ||

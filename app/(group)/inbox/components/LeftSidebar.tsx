@@ -206,9 +206,41 @@ const LeftSidebar = ({
   return (
     <div className="w-[322px] shrink-0 border-r bg-white border-gray-200">
       <div className="pt-1 p-3 border-b border-gray-200">
-        <button className="focus-visible:outline-none h-11 px-3.5 inline-flex items-center justify-center shrink-0 text-base leading-6 font-semibold gap-x-1.5">
-          All Messages <ChevronDown className="size-4" />
-        </button>
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger asChild>
+            <button className="focus-visible:outline-none w-[157px] h-11 inline-flex items-center justify-center shrink-0 text-base leading-6 font-semibold gap-x-[6px]">
+              All Messages <ChevronDown className="size-4" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="start"
+            side="bottom"
+            sideOffset={4}
+            className="w-[142px] max-h-[170px] overflow-y-auto rounded-[5px]"
+          >
+            <DropdownMenuItem className="w-[142px] h-[34px] gap-[8px] py-[10px] px-3">
+              All Messages
+            </DropdownMenuItem>
+            <DropdownMenuItem className="w-[142px] h-[34px] gap-[8px] py-[10px] px-3">
+              Unread
+            </DropdownMenuItem>
+            <DropdownMenuItem className="w-[142px] h-[34px] gap-[8px] py-[10px] px-3">
+              Starred
+            </DropdownMenuItem>
+            <DropdownMenuItem className="w-[142px] h-[34px] gap-[8px] py-[10px] px-3">
+              Sent
+            </DropdownMenuItem>
+            <DropdownMenuItem className="w-[142px] h-[34px] gap-[8px] py-[10px] px-3">
+              Archived
+            </DropdownMenuItem>
+            <DropdownMenuItem className="w-[142px] h-[34px] gap-[8px] py-[10px] px-3">
+              Spam
+            </DropdownMenuItem>
+            <DropdownMenuItem className="w-[142px] h-[34px] gap-[8px] py-[10px] px-3">
+              Trash
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         {checkedChats > 0 ? (
           <div className="flex items-center justify-between">
