@@ -47,6 +47,18 @@ import { useToggle } from "react-use"
 import { z } from "zod"
 import NextImage from "@/components/next-image"
 import {
+  BecomeTopSeller,
+  Carousel,
+  CreateYourOwnProject,
+  Footer,
+  LeftSidebar,
+  RecentProjects,
+  RecommendedForYou,
+  TakeCareersToNextLevel,
+  Tasks,
+  Welcome,
+} from "@/components/talent-dashboard-comps"
+import {
   Alert,
   AlertContent,
   AlertDescription,
@@ -89,17 +101,6 @@ import {
   Textarea,
   inputVariants,
 } from "@/components/ui"
-import {
-  BecomeTopSeller,
-  Carousel,
-  CreateYourOwnProject,
-  Footer,
-  LeftSidebar,
-  RecentProjects,
-  RecommendedForYou,
-  TakeCareersToNextLevel,
-  Welcome,
-} from "../../../components/talent-dashboard-comps"
 
 const Bulb = (props: SVGProps<SVGSVGElement>) => (
   <svg
@@ -270,6 +271,10 @@ const RightSidebar = () => {
             </Button>
           </div>
         </div>
+      </div>
+
+      <div className="bg-white mt-5 border rounded-lg border-gray-200 shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
+        <Tasks />
       </div>
     </div>
   )
