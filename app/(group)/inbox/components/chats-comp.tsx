@@ -2,12 +2,19 @@
 
 import React, { useCallback, useMemo, useRef, useState } from "react"
 import { useEffect } from "react"
+import { decryptAES, decryptWithPrivateKey } from "@/src/crypto/e2ee"
 import {
-  Bubble,
-  EditContextProvider,
-  YourBubble,
-  useEditContext,
-} from "@/stories/inbox.stories"
+  ensureEncryptionKeysExist,
+  exportPrivateKey,
+  exportPublicKey,
+  generateKeyPair,
+  importPrivateKey,
+  savePrivateKey,
+  savePublicKey,
+} from "@/src/crypto/keys"
+import { loadKey, saveKey } from "@/src/crypto/storage"
+import { apiFetch } from "@/src/lib/api"
+import { Bubble, YourBubble } from "@/stories/inbox.stories"
 import { getCurrentUser } from "@/utils/auth"
 import { getOtherParticipantId } from "@/utils/conversation"
 import {
@@ -17,6 +24,7 @@ import {
   toPxIfNumber,
 } from "@/utils/functions"
 import { useControllableState } from "@/utils/hooks"
+import { useAblyChannel } from "@/utils/useAblyChannel"
 import {
   AlertTriangle,
   Archive,
@@ -50,8 +58,8 @@ import { Conversation } from "@/types/conversation"
 import { Message } from "@/types/message"
 import { User } from "@/types/user"
 import { ToggleGroupItem, ToggleGroupRoot } from "@/components/ui/toggle-group"
-import { EmojiPicker } from "@/components/EmojiPicker"
 import { Chat, ChatsContextProvider, useChatsContext } from "@/components/chat"
+import { EmojiPicker } from "@/components/emoji-picker"
 import {
   Avatar,
   AvatarFallback,
@@ -85,23 +93,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui"
-import { decryptAES, decryptWithPrivateKey } from "..//../../../src/crypto/e2ee"
-import {
-  ensureEncryptionKeysExist,
-  exportPrivateKey,
-  exportPublicKey,
-  generateKeyPair,
-  importPrivateKey,
-  savePrivateKey,
-  savePublicKey,
-} from "..//../../../src/crypto/keys"
-import { loadKey, saveKey } from "..//../../../src/crypto/storage"
-import { apiFetch } from "..//../../../src/lib/api"
-import { useAblyChannel } from "..//../../../utils/useAblyChannel"
-import { useFileUpload } from "../hooks/useFileUpload"
-import { addParticipantToGroup } from "../hooks/useGroupEncryption"
-import { useMessages } from "../hooks/useMessages"
-import { useSendMessage } from "../hooks/useSendMessage"
+import { useFileUpload } from "../hooks/use-file-upload"
+import { addParticipantToGroup } from "../hooks/use-group-encryption"
+import { useMessages } from "../hooks/use-messages"
+import { useSendMessage } from "../hooks/use-send-message"
 
 interface ChatsProps {
   selectedConversation: Conversation | null
@@ -109,7 +104,7 @@ interface ChatsProps {
   privateKey: CryptoKey | null
 }
 
-export default function Chats({
+export function Chats({
   selectedConversation,
   jwtToken,
   privateKey,
@@ -128,13 +123,6 @@ export default function Chats({
   const [isUploading, setIsUploading] = useState(false)
 
   const currentUser = getCurrentUser()
-  if (!currentUser) {
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        Not logged in
-      </div>
-    )
-  }
 
   const handleEmojiSelect = (emoji: DataEmoji) => {
     const emojiChar = String.fromCodePoint(
@@ -244,7 +232,7 @@ export default function Chats({
       isDeleted?: boolean
     }) => {
       // Skip if the message is from current user
-      if (incoming.senderId === currentUser.id) return
+      if (incoming.senderId === currentUser?.id) return
 
       const key = loadKey(incoming.conversationId)
       if (!key) {
@@ -269,7 +257,7 @@ export default function Chats({
         },
       ])
     },
-    [setLocalMsgs] // only changes if setLocalMsgs ever changes (it won’t)
+    [setLocalMsgs, currentUser?.id] // only changes if setLocalMsgs ever changes (it won’t)
   )
 
   //pin/unpin,  delete, undo delete
@@ -508,6 +496,14 @@ export default function Chats({
   //   }
   // };
 
+  if (!currentUser) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        Not logged in
+      </div>
+    )
+  }
+
   if (!selectedConversation) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -526,7 +522,7 @@ export default function Chats({
 
   // Compute full name
   const fullName = selectedConversation?.isGroup
-    ? (selectedConversation.group?.name ?? "Unnamed Group")
+    ? selectedConversation.group?.name ?? "Unnamed Group"
     : [receiverUser.firstName?.trim(), receiverUser.lastName?.trim()]
         .filter(Boolean)
         .join(" ") ||
@@ -552,13 +548,13 @@ export default function Chats({
               alt={
                 selectedConversation?.isGroup
                   ? selectedConversation?.group?.name || "Group"
-                  : (receiverUser.username ?? "")
+                  : receiverUser.username ?? ""
               }
             />
             <AvatarFallback>
               {selectedConversation?.isGroup
-                ? (selectedConversation?.group?.name?.[0] ?? "G")
-                : (receiverUser.username?.[0] ?? "")}
+                ? selectedConversation?.group?.name?.[0] ?? "G"
+                : receiverUser.username?.[0] ?? ""}
             </AvatarFallback>
           </Avatar>
 
@@ -851,7 +847,9 @@ export default function Chats({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger
-                  className={`text-gray-500 hover:text-primary-500 disabled:text-gray-400 ${isUploading ? "animate-pulse" : ""}`}
+                  className={`text-gray-500 hover:text-primary-500 disabled:text-gray-400 ${
+                    isUploading ? "animate-pulse" : ""
+                  }`}
                   onClick={handleSendMessage}
                   disabled={
                     (!textareaValue.trim() && selectedFiles.length === 0) ||

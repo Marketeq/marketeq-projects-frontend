@@ -1,6 +1,6 @@
-import { getRecipientPublicKey } from "../../../../src/api/user"
-import { encryptWithPublicKey } from "../../../../src/crypto/e2ee"
-import { loadKey } from "../../../../src/crypto/storage"
+import { getRecipientPublicKey } from "@/src/api/user"
+import { encryptWithPublicKey } from "@/src/crypto/e2ee"
+import { loadKey } from "@/src/crypto/storage"
 
 export async function encryptGroupKeyForUser(
   groupId: string,

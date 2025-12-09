@@ -3,14 +3,20 @@
 import React, { useCallback, useMemo, useState } from "react"
 import { useEffect } from "react"
 import {
-  Bubble,
-  EditContextProvider,
-  YourBubble,
-  useEditContext,
-} from "@/stories/inbox.stories"
+  ensureEncryptionKeysExist,
+  exportPrivateKey,
+  exportPublicKey,
+  generateKeyPair,
+  importPrivateKey,
+  savePrivateKey,
+  savePublicKey,
+} from "@/src/crypto/keys"
 import { getCurrentUser } from "@/utils/auth"
 import { noop, toPxIfNumber } from "@/utils/functions"
 import { useControllableState } from "@/utils/hooks"
+// FIXME: a wrong import
+// import { useMessaging } from "..//../../../src//hooks/useMessaging";
+import { useAblyChannel } from "@/utils/useAblyChannel"
 import {
   AlertTriangle,
   Archive,
@@ -76,18 +82,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui"
-import {
-  ensureEncryptionKeysExist,
-  exportPrivateKey,
-  exportPublicKey,
-  generateKeyPair,
-  importPrivateKey,
-  savePrivateKey,
-  savePublicKey,
-} from "..//../../../src/crypto/keys"
-// FIXME: a wrong import
-// import { useMessaging } from "..//../../../src//hooks/useMessaging";
-import { useAblyChannel } from "..//../../../utils/useAblyChannel"
 
 const RightSidebar = () => {
   return (

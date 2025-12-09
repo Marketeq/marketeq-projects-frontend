@@ -1,9 +1,9 @@
 // src/hooks/usePinnedMessages.ts
 import { useEffect, useState } from "react"
+import { decryptAES } from "@/src/crypto/e2ee"
+import { loadKey } from "@/src/crypto/storage"
+import { apiFetch } from "@/src/lib/api"
 import type { Message } from "@/types/conversation"
-import { decryptAES } from "../../../../src/crypto/e2ee"
-import { loadKey } from "../../../../src/crypto/storage"
-import { apiFetch } from "../../../../src/lib/api"
 
 export function usePinnedMessages(convId: string, token: string) {
   const [messages, setMessages] = useState<Message[]>([])

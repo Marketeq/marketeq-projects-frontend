@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { EditContextProvider, useEditContext } from "@/stories/inbox.stories"
 import { cn, noop, toPxIfNumber } from "@/utils/functions"
 import { useControllableState, useMakeFixedBehaveSticky } from "@/utils/hooks"
 import {
@@ -47,6 +46,7 @@ import { TbStar, TbStarHalfFilled } from "react-icons/tb"
 import { useToggle } from "react-use"
 import useMeasure from "react-use-measure"
 import { ChatsContextProvider } from "@/components/chat"
+import { EditContextProvider, useEditContext } from "@/components/inbox-comps"
 import { LikeDislike } from "@/components/like-dislike"
 import NextImage from "@/components/next-image"
 import NextLink from "@/components/next-link"

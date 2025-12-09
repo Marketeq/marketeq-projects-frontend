@@ -16,7 +16,6 @@ import dynamic from "next/dynamic"
 import { useAuth } from "@/contexts/auth"
 import options from "@/public/mock/options.json"
 import { ProjectAPI } from "@/service/http/project"
-import { Empty1 } from "@/stories/publish-project.stories"
 import { HTTPS, ONE_SECOND } from "@/utils/constants"
 import {
   cn,
@@ -210,6 +209,47 @@ declare module "@tanstack/react-table" {
     openDurationDialog: (index: number) => void
     roles: string[]
   }
+}
+
+export const Empty = () => {
+  return (
+    <div className="grid flex-auto place-items-center">
+      <div className="flex flex-col max-w-[440px] items-center justify-between">
+        <div className="size-[56px] shrink-0 rounded-full inline-flex items-center justify-center bg-primary-50 text-primary-500">
+          <Send className="size-7" />
+        </div>
+
+        <h1 className="mt-8 text-xl text-center text-gray-800 leading-[30px] font-semibold">
+          Your Project Has Been Submitted for a Review!
+        </h1>
+
+        <p className="mt-6 text-sm leading-[16.94px] text-center text-gray-500">
+          Our team will review your project over the next few days and will get
+          back to you if there are any changes to be made.
+        </p>
+
+        <div className="flex items-center justify-center gap-x-1 mt-6">
+          <p className="text-sm leading-[16.94px] text-gray-500">
+            You can check your project status anytime in
+          </p>
+          <Button variant="link">My Projects</Button>
+        </div>
+
+        <p className="text-sm leading-[30px] font-semibold text-center text-gray-800 mt-6">
+          Thanks for submitting, we’ll be in touch soon!
+        </p>
+
+        <div className="flex justify-center gap-x-3 items-center mt-8">
+          <Button visual="gray" variant="outlined">
+            <Home03 className="size-[15px]" />
+            Take me home
+          </Button>
+
+          <Button>View in Dashboard</Button>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 const meta = {
@@ -3398,21 +3438,25 @@ const ProjectScope = ({
     [setPhases]
   )
 
-  // helper to show success toast with Undo
-  const pushSuccess = (label: string, onUndo?: () => void) =>
-    toast({
-      variant: "success",
-      title: label,
-      action: (
-        <ToastAction
-          altText="Undo"
-          className="px-0 border-0 bg-transparent text-success-500 underline hover:no-underline focus:outline-none"
-          onClick={() => onUndo?.()}
-        >
-          Undo
-        </ToastAction>
-      ),
-    })
+  // Helper to show success toast with Undo
+  const pushSuccess = useCallback(
+    (label: string, onUndo?: () => void) => {
+      toast({
+        variant: "success",
+        title: label,
+        action: (
+          <ToastAction
+            altText="Undo"
+            className="px-0 border-0 bg-transparent text-success-500 underline hover:no-underline focus:outline-none"
+            onClick={() => onUndo?.()}
+          >
+            Undo
+          </ToastAction>
+        ),
+      })
+    },
+    [toast]
+  )
 
   const onAddPhaseName = useCallback(
     (phaseName: string) => {
@@ -4161,7 +4205,7 @@ function PublishProject({
           Publish to Marketplace
         </h1>
       </div>
-      <Empty1 />
+      <Empty />
     </div>
   ) : (
     <StepperProvider value={stepperValue}>

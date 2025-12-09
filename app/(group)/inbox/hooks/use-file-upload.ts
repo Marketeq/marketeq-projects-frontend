@@ -1,9 +1,9 @@
 "use client"
 
+import { encryptAES } from "@/src/crypto/e2ee"
 import { saveKey } from "@/src/crypto/indexedDb"
-import { encryptAES } from "../../../../src/crypto/e2ee"
-import { loadKey } from "../../../../src/crypto/storage"
-import { apiFetch } from "../../../../src/lib/api"
+import { loadKey } from "@/src/crypto/storage"
+import { apiFetch } from "@/src/lib/api"
 
 interface FileUploadResponse {
   message: {

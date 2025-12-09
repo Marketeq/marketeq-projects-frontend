@@ -1,11 +1,11 @@
 "use client"
 
+import { decryptWithPrivateKey, encryptAES } from "@/src/crypto/e2ee"
+import { exportPrivateKey } from "@/src/crypto/keys"
+import { loadKey, saveKey } from "@/src/crypto/storage"
+import { apiFetch } from "@/src/lib/api"
 import { keyframes } from "framer-motion"
 import type { Message } from "@/types/message"
-import { decryptWithPrivateKey, encryptAES } from "../../../../src/crypto/e2ee"
-import { exportPrivateKey } from "../../../../src/crypto/keys"
-import { loadKey, saveKey } from "../../../../src/crypto/storage"
-import { apiFetch } from "../../../../src/lib/api"
 
 /// Response type for the send endpoint
 interface SendResponse {

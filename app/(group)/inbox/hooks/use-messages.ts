@@ -1,9 +1,9 @@
 // src/hooks/useMessaging.ts
 import { useEffect, useState } from "react"
+import { decryptAES, decryptWithPrivateKey } from "@/src/crypto/e2ee"
+import { loadKey, saveKey } from "@/src/crypto/storage"
+import { apiFetch } from "@/src/lib/api"
 import type { Message } from "@/types/message"
-import { decryptAES, decryptWithPrivateKey } from "../../../../src/crypto/e2ee"
-import { loadKey, saveKey } from "../../../../src/crypto/storage"
-import { apiFetch } from "../../../../src/lib/api"
 
 // src/hooks/useMessages.ts
 

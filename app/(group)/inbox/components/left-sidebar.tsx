@@ -3,14 +3,19 @@
 import React, { useCallback, useMemo, useState } from "react"
 import { useEffect } from "react"
 import {
-  Bubble,
-  EditContextProvider,
-  YourBubble,
-  useEditContext,
-} from "@/stories/inbox.stories"
+  ensureEncryptionKeysExist,
+  exportPrivateKey,
+  exportPublicKey,
+  generateKeyPair,
+  importPrivateKey,
+  savePrivateKey,
+  savePublicKey,
+} from "@/src/crypto/keys"
+import { apiFetch } from "@/src/lib/api"
 import { getCurrentUser } from "@/utils/auth"
 import { noop, toPxIfNumber } from "@/utils/functions"
 import { useControllableState } from "@/utils/hooks"
+import { useAblyChannel } from "@/utils/useAblyChannel"
 import {
   AlertTriangle,
   Archive,
@@ -76,17 +81,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui"
-import { apiFetch } from "../../../../src/lib/api"
-import {
-  ensureEncryptionKeysExist,
-  exportPrivateKey,
-  exportPublicKey,
-  generateKeyPair,
-  importPrivateKey,
-  savePrivateKey,
-  savePublicKey,
-} from "..//../../../src/crypto/keys"
-import { useAblyChannel } from "..//../../../utils/useAblyChannel"
 
 function getOtherParticipantId(
   conv: Conversation,

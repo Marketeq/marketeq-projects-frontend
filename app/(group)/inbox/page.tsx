@@ -2,97 +2,18 @@
 
 import React, { useCallback, useMemo, useState } from "react"
 import { useEffect } from "react"
+import { importPrivateKey } from "@/src/crypto/keys"
 import { apiFetch } from "@/src/lib/api"
-import {
-  Bubble,
-  EditContextProvider,
-  YourBubble,
-  useEditContext,
-} from "@/stories/inbox.stories"
-import { getCurrentUser } from "@/utils/auth"
-import { noop, toPxIfNumber } from "@/utils/functions"
-import { useControllableState } from "@/utils/hooks"
-import {
-  AlertTriangle,
-  Archive,
-  Attachment01,
-  ChevronDown,
-  Edit05,
-  Image03,
-  Info,
-  Mail05,
-  MoreHorizontal,
-  Pin02,
-  Plus,
-  SearchMd,
-  Send,
-  Smile,
-  Star,
-  Trash2,
-  UploadCloud,
-  X,
-} from "@blend-metrics/icons"
-import {
-  DropboxBrand,
-  GoogleDrive1Brand,
-  MsOnedriveBrand,
-} from "@blend-metrics/icons/brands"
-import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu"
-import { useMeasure, useToggle } from "react-use"
-import { decryptWithKEK, deriveKEK } from "src/crypto/backup"
+import { useToggle } from "react-use"
 import { parseJwt } from "src/lib/jwt"
 import { Conversation } from "@/types/conversation"
 import { Message } from "@/types/message"
 import { User } from "@/types/user"
-import { ToggleGroupItem, ToggleGroupRoot } from "@/components/ui/toggle-group"
-import { Chat, ChatsContextProvider, useChatsContext } from "@/components/chat"
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-  Badge,
-  Button,
-  CircularProgressDropzone,
-  CircularProgressDropzoneState,
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogTrigger,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioTrigger,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  Favorite,
-  IconButton,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  InputRightElement,
-  ScrollArea,
-  ScrollBar,
-  Textarea,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui"
-import {
-  ensureEncryptionKeysExist,
-  ensureKeysAndDevice,
-  exportPrivateKey,
-  exportPublicKey,
-  generateKeyPair,
-  importPrivateKey,
-  savePrivateKey,
-  savePublicKey,
-} from "../../../src/crypto/keys"
-import { useAblyChannel } from "../../../utils/useAblyChannel"
-import Chats from "./components/Chats"
-import LeftSidebar from "./components/LeftSidebar"
-import RightSidebar from "./components/RightSidebar"
+import { ChatsContextProvider } from "@/components/chat"
+import { EditContextProvider } from "@/components/inbox-comps"
+import { Chats } from "./components/chats-comp"
+import LeftSidebar from "./components/left-sidebar"
+import RightSidebar from "./components/right-sidebar"
 
 const Inbox = ({ children }: { children?: React.ReactNode }) => {
   const [pinnedChats, setPinnedChats] = useState(0)
@@ -166,7 +87,7 @@ const Inbox = ({ children }: { children?: React.ReactNode }) => {
   )
 }
 
-//new implementation for new encryption logic
+//New implementation for new encryption logic
 export default function InboxRoot() {
   const [selectedConversation, setSelectedConversation] =
     useState<Conversation | null>(null)

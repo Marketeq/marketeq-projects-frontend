@@ -600,7 +600,10 @@ export default function Default() {
                             >
                               Next.js
                             </Badge>
-                            <NextLink href="#skills" onClick={() => setActiveTab("Skills")}>
+                            <NextLink
+                              href="#skills"
+                              onClick={() => setActiveTab("Skills")}
+                            >
                               <Badge
                                 className="text-gray-700 cursor-pointer"
                                 visual="gray"
