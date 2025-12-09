@@ -1,8 +1,11 @@
-import { SVGProps, useState } from "react"
-import { cn } from "@/utils/functions"
+import React, { SVGProps, useEffect, useRef, useState } from "react"
+import { cn, fromLength, getId } from "@/utils/functions"
 import {
   ArrowDown,
+  ArrowLeft,
+  ArrowRight,
   ArrowUp,
+  Attachment01,
   BarChart10,
   Check,
   ChevronDown,
@@ -14,6 +17,7 @@ import {
   EyeOff,
   File02,
   File06,
+  Image03,
   Image as ImageIcon,
   List,
   MapPin,
@@ -23,6 +27,7 @@ import {
   Monitor02,
   PlaySquare,
   Plus,
+  Send,
   Smile,
   Trash01,
   Type02,
@@ -30,7 +35,20 @@ import {
   Users03,
   X,
 } from "@blend-metrics/icons"
+import { Slot } from "@radix-ui/react-slot"
 import { Meta } from "@storybook/react"
+import {
+  DragControls,
+  HTMLMotionProps,
+  MotionValue,
+  Reorder,
+  animate,
+  motion,
+  useDragControls,
+  useMotionValue,
+} from "framer-motion"
+import { useDrag } from "react-aria"
+import { useMotion } from "react-use"
 import {
   Bold,
   Italic,
@@ -48,6 +66,7 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
+  Badge,
   Button,
   Dialog,
   DialogClose,
@@ -127,7 +146,45 @@ export const Toolbar = ({ className }: { className?: string }) => {
   )
 }
 
-export const BlockToolbar = ({ className }: { className?: string }) => {
+const Grid = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    width={13}
+    height={11}
+    viewBox="0 0 13 11"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="M10.842.342a1.166 1.166 0 1 1 1.65 1.65 1.166 1.166 0 0 1-1.65-1.65M6.417 0a1.167 1.167 0 1 0 0 2.333 1.167 1.167 0 0 0 0-2.333m-5.25 0a1.167 1.167 0 1 0 0 2.333 1.167 1.167 0 0 0 0-2.333m9.675 4.675a1.166 1.166 0 1 1 1.65 1.65 1.166 1.166 0 0 1-1.65-1.65m-4.425-.342a1.167 1.167 0 1 0 0 2.334 1.167 1.167 0 0 0 0-2.334m-5.25 0a1.167 1.167 0 1 0 0 2.334 1.167 1.167 0 0 0 0-2.334m9.675 4.676a1.166 1.166 0 1 1 1.65 1.649 1.166 1.166 0 0 1-1.65-1.65m-4.425-.341a1.167 1.167 0 1 0 0 2.333 1.167 1.167 0 0 0 0-2.333m-5.25 0a1.167 1.167 0 1 0 0 2.333 1.167 1.167 0 0 0 0-2.333"
+      fill="currentColor"
+    />
+  </svg>
+)
+
+export const BlockToolbar = ({
+  className,
+  onDrag,
+  canMoveLeft,
+  canMoveRight,
+  moveLeft,
+  moveRight,
+  onRemove,
+  onDuplicate,
+  canDuplicate,
+  canRemove,
+}: {
+  className?: string
+  onDrag?: (event: React.PointerEvent<HTMLElement>) => void
+  moveLeft?: () => void
+  canMoveLeft?: boolean
+  moveRight?: () => void
+  canMoveRight?: boolean
+  onRemove?: () => void
+  canRemove?: boolean
+  onDuplicate?: () => void
+  canDuplicate?: boolean
+}) => {
   return (
     <div
       className={cn(
@@ -135,21 +192,77 @@ export const BlockToolbar = ({ className }: { className?: string }) => {
         className
       )}
     >
-      <button className="first:rounded-l-[5px] last:rounded-r-[5px] focus-visible:outline-none inline-flex items-center size-9 shrink-0 text-gray-500 justify-center hover:bg-gray-100 hover:text-gray-950">
-        <ArrowUp className="size-4" />
-      </button>
-      <button className="first:rounded-l-[5px] last:rounded-r-[5px] focus-visible:outline-none inline-flex items-center size-9 shrink-0 text-gray-500 justify-center hover:bg-gray-100 hover:text-gray-950">
-        <ArrowDown className="size-4" />
-      </button>
-      <button className="first:rounded-l-[5px] last:rounded-r-[5px] focus-visible:outline-none inline-flex items-center size-9 shrink-0 text-gray-500 justify-center hover:bg-gray-100 hover:text-gray-950">
-        <EyeOff className="size-4" />
-      </button>
-      <button className="first:rounded-l-[5px] last:rounded-r-[5px] focus-visible:outline-none inline-flex items-center size-9 shrink-0 text-gray-500 justify-center hover:bg-gray-100 hover:text-gray-950">
-        <Copy02 className="size-4" />
-      </button>
-      <button className="first:rounded-l-[5px] last:rounded-r-[5px] focus-visible:outline-none inline-flex items-center size-9 shrink-0 text-error-500 justify-center hover:bg-error-100 hover:text-error-600">
-        <Trash01 className="size-4" />
-      </button>
+      <TooltipProvider delayDuration={75}>
+        <Tooltip>
+          <TooltipTrigger
+            onPointerDown={onDrag}
+            className="first:rounded-l-[5px] cursor-grab last:rounded-r-[5px] focus-visible:outline-none inline-flex items-center size-9 shrink-0 text-gray-500 justify-center hover:bg-gray-100 hover:text-gray-950"
+          >
+            <Grid />
+          </TooltipTrigger>
+          <TooltipContent visual="white">Drag</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      {canMoveRight && (
+        <TooltipProvider delayDuration={75}>
+          <Tooltip>
+            <TooltipTrigger
+              onClick={moveRight}
+              className="first:rounded-l-[5px] last:rounded-r-[5px] focus-visible:outline-none inline-flex items-center size-9 shrink-0 text-gray-500 justify-center hover:bg-gray-100 hover:text-gray-950"
+            >
+              <ArrowRight className="size-4" />
+            </TooltipTrigger>
+            <TooltipContent visual="white">Move Right</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+      {canMoveLeft && (
+        <TooltipProvider delayDuration={75}>
+          <Tooltip>
+            <TooltipTrigger
+              onClick={moveLeft}
+              className="first:rounded-l-[5px] last:rounded-r-[5px] focus-visible:outline-none inline-flex items-center size-9 shrink-0 text-gray-500 justify-center hover:bg-gray-100 hover:text-gray-950"
+            >
+              <ArrowLeft className="size-4" />
+            </TooltipTrigger>
+            <TooltipContent visual="white">Move Left</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+      <TooltipProvider delayDuration={75}>
+        <Tooltip>
+          <TooltipTrigger className="first:rounded-l-[5px] last:rounded-r-[5px] focus-visible:outline-none inline-flex items-center size-9 shrink-0 text-gray-500 justify-center hover:bg-gray-100 hover:text-gray-950">
+            <EyeOff className="size-4" />
+          </TooltipTrigger>
+          <TooltipContent visual="white">Hide Element </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      {canDuplicate && (
+        <TooltipProvider delayDuration={75}>
+          <Tooltip>
+            <TooltipTrigger
+              onClick={onDuplicate}
+              className="first:rounded-l-[5px] last:rounded-r-[5px] focus-visible:outline-none inline-flex items-center size-9 shrink-0 text-gray-500 justify-center hover:bg-gray-100 hover:text-gray-950"
+            >
+              <Copy02 className="size-4" />
+            </TooltipTrigger>
+            <TooltipContent visual="white">Duplicate</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+      {canRemove && (
+        <TooltipProvider delayDuration={75}>
+          <Tooltip>
+            <TooltipTrigger
+              onClick={onRemove}
+              className="first:rounded-l-[5px] last:rounded-r-[5px] focus-visible:outline-none inline-flex items-center size-9 shrink-0 text-error-500 justify-center hover:bg-error-100 hover:text-error-600"
+            >
+              <Trash01 className="size-4" />
+            </TooltipTrigger>
+            <TooltipContent visual="white">Delete</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
     </div>
   )
 }
@@ -547,12 +660,21 @@ export const TemplateDialog = () => {
   )
 }
 
-export const Addened = ({ className }: { className?: string }) => {
+export const Addened = ({
+  className,
+  onAdd,
+}: {
+  className?: string
+  onAdd?: () => void
+}) => {
   return (
     <div className={cn("h-[402px] relative inline-flex", className)}>
       <div className="w-1 rounded-full bg-primary-500" />
       <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
-        <button className="rounded-full focus-visible:outline-none transition duration-300 hover:bg-white hover:text-primary-500 bg-primary-500 shrink-0 text-white size-[25px] inline-flex items-center justify-center">
+        <button
+          onClick={onAdd}
+          className="rounded-full focus-visible:outline-none transition duration-300 hover:bg-white hover:text-primary-500 bg-primary-500 shrink-0 text-white border-2 border-primary-500 size-[25px] inline-flex items-center justify-center"
+        >
           <Plus className="size-4" />
         </button>
       </div>
@@ -579,19 +701,161 @@ const Picture = (props: SVGProps<SVGSVGElement>) => (
   </svg>
 )
 
+const ControlledDraggable = ({
+  children,
+  withFragments = false,
+  ...props
+}: Omit<HTMLMotionProps<"h1">, "children"> & {
+  children?: (dragControls: DragControls) => React.ReactNode
+  withFragments?: boolean
+}) => {
+  const dragControls = useDragControls()
+
+  if (withFragments) {
+    return <>{children?.(dragControls)}</>
+  }
+
+  return (
+    <motion.div
+      drag
+      dragListener={false}
+      dragControls={dragControls}
+      {...props}
+    >
+      {children?.(dragControls)}
+    </motion.div>
+  )
+}
+
+const inactiveShadow = "0px 0px 0px rgba(0,0,0,0)"
+
+export function useRaisedShadow(value: MotionValue<number>) {
+  const boxShadow = useMotionValue(inactiveShadow)
+
+  useEffect(() => {
+    let isActive = false
+    value.on("change", (latest) => {
+      const wasActive = isActive
+      if (latest !== 0) {
+        isActive = true
+        if (isActive !== wasActive) {
+          animate(boxShadow, "0px 32px 64px -12px rgba(16,24,40,.14)")
+        }
+      } else {
+        isActive = false
+        if (isActive !== wasActive) {
+          animate(boxShadow, inactiveShadow)
+        }
+      }
+    })
+  }, [value, boxShadow])
+
+  return boxShadow
+}
+
+const inactiveBorderColor = "rgba(0,0,0,0)"
+
+export function useRaisedBorderColor(value: MotionValue<number>) {
+  const borderColor = useMotionValue(inactiveBorderColor)
+
+  useEffect(() => {
+    let isActive = false
+    value.on("change", (latest) => {
+      const wasActive = isActive
+      if (latest !== 0) {
+        isActive = true
+        if (isActive !== wasActive) {
+          animate(borderColor, "rgba(48,108,254,1)")
+        }
+      } else {
+        isActive = false
+        if (isActive !== wasActive) {
+          animate(borderColor, inactiveBorderColor)
+        }
+      }
+    })
+  }, [value, borderColor])
+
+  return borderColor
+}
+
+export function useBeingDragged(value: MotionValue<number>) {
+  const [dragged, setDragged] = useState(false)
+
+  useEffect(() => {
+    let isActive = false
+    value.on("change", (latest) => {
+      const wasActive = isActive
+      if (latest !== 0) {
+        isActive = true
+        if (isActive !== wasActive) {
+          setDragged(true)
+        }
+      } else {
+        isActive = false
+        if (isActive !== wasActive) {
+          setDragged(false)
+        }
+      }
+    })
+  }, [value])
+
+  return dragged
+}
+
+const ArticleRoot = ({
+  children,
+  value,
+  isLast,
+  dragControls,
+}: {
+  children?: React.ReactNode
+  value: number
+  isLast: boolean
+  dragControls: DragControls
+}) => {
+  const x = useMotionValue(0)
+  const boxShadow = useRaisedShadow(x)
+  const borderColor = useRaisedBorderColor(x)
+  const isBeingDragged = useBeingDragged(x)
+
+  return (
+    <Reorder.Item
+      as="article"
+      value={value}
+      style={{ x, boxShadow, borderColor }}
+      data-last={isLast}
+      dragListener={false}
+      dragControls={dragControls}
+      className="peer group/article relative rounded-lg border-2"
+      data-state={isBeingDragged ? "dragged" : ""}
+    >
+      {children}
+    </Reorder.Item>
+  )
+}
+
+const swap = <T extends any[]>(values: T, i: number, j: number) => {
+  ;[values[i], values[j]] = [values[j], values[i]]
+  return values.slice()
+}
+
 export const BlockWithCols = () => {
+  const [items, setItems] = useState([0, 1])
+  const len = items.length
+
   return (
     <div className="relative group/root border border-gray-200 p-[100px] bg-white rounded-[10px] flex flex-col gap-y-[100px]">
       <Toolbar className="top-[50px] absolute -right-[33px]" />
 
       <div className="space-y-3">
         <h1 className="group/block relative font-semibold">
-          <span className="absolute -inset-5 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
+          <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
             <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
               Text
             </span>
-            <BlockToolbar className="-top-[18px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-            <FlexibleToolbar className="absolute left-0 -top-[60.14px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
+            {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
+            <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
           </span>
           <EditableRoot
             className="relative"
@@ -609,13 +873,14 @@ export const BlockWithCols = () => {
             </EditableArea>
           </EditableRoot>
         </h1>
+
         <p className="group/block relative">
-          <span className="absolute -inset-5 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
+          <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
             <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
               Text
             </span>
-            <BlockToolbar className="-top-[18px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-            <FlexibleToolbar className="absolute left-0 -top-[60.14px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
+            {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
+            <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
           </span>
           <EditableRoot
             className="relative"
@@ -637,12 +902,12 @@ export const BlockWithCols = () => {
 
       <div className="relative group">
         <h1 className="relative group/block">
-          <span className="absolute -inset-5 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
+          <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
             <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
               Text
             </span>
-            <BlockToolbar className="-top-[18px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-            <FlexibleToolbar className="absolute left-0 -top-[60.14px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
+            {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
+            <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
           </span>
           <EditableRoot
             className="relative"
@@ -660,256 +925,153 @@ export const BlockWithCols = () => {
             </EditableArea>
           </EditableRoot>
         </h1>
-        <BlockToolbar className="-top-[18px] -right-[17px] absolute hidden opacity-0 group-focus-within:group-hover:hidden group-focus-within:group-hover:opacity-0 group-hover:inline-flex group-hover:opacity-100 transition duration-300" />
+        {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute hidden opacity-0 group-focus-within:group-hover:hidden group-focus-within:group-hover:opacity-0 group-hover:inline-flex group-hover:opacity-100 transition duration-300" />*/}
 
-        <div className="relative mt-8 grid grid-cols-3 gap-x-[--gap] [--cols:3] [--gap:50px]">
-          <article>
-            <PictureEditor
-              startingPoint={({ dataUrl, open, style, onRemove, onEdit }) => (
-                <div className="overflow-hidden relative group/image h-[250px] bg-gray-100 grid rounded-lg place-items-center hover:bg-black/20 hover:ring-2 hover:ring-primary-500 transition duration-300">
-                  {dataUrl ? (
-                    <div
-                      className="size-full rounded-lg transform"
-                      style={style}
+        <div className="mt-8">
+          <Reorder.Group
+            as="div"
+            className="isolate relative grid grid-cols-[repeat(var(--cols),minmax(0,1fr))] gap-x-[--gap] [--gap:50px]"
+            axis="x"
+            style={{ ...({ "--cols": len } as Record<string, number>) }}
+            values={items}
+            onReorder={setItems}
+          >
+            {items.map((item, index) => (
+              <React.Fragment key={item}>
+                <ControlledDraggable withFragments>
+                  {(dragControls) => (
+                    <ArticleRoot
+                      value={item}
+                      isLast={index === len - 1}
+                      dragControls={dragControls}
                     >
-                      <img
-                        src={dataUrl}
-                        aria-label="Picture"
-                        className="absolute object-contain rounded-lg"
+                      <BlockToolbar
+                        className="group-hover/article:opacity-100 group-hover/article:inline-flex hidden opacity-0 transition duration-300 -top-[18px] -right-[17px] absolute z-10"
+                        onDrag={(event) => dragControls.start(event)}
+                        canMoveLeft={Boolean(index)}
+                        moveLeft={() => setItems(swap(items, index, index - 1))}
+                        canMoveRight={index < len - 1}
+                        moveRight={() =>
+                          setItems(swap(items, index, index + 1))
+                        }
+                        canRemove={len > 2}
+                        onRemove={() =>
+                          setItems(items.filter((itm) => itm !== item))
+                        }
+                        canDuplicate={len < 3}
+                        onDuplicate={() => {
+                          const uniqueId = getId() + 2
+                          setItems(items.toSpliced(index, 0, uniqueId))
+                        }}
                       />
-                    </div>
-                  ) : (
-                    <>
-                      <Picture className="w-[84px] shrink-0 h-[76px] text-gray-300 group-hover/image:text-white" />
-                    </>
-                  )}
-                  <BlockImageToolbar
-                    className="top-5 left-5 absolute hidden opacity-0 group-hover/image:inline-flex group-hover/image:opacity-100 transition duration-300"
-                    onAddImage={open}
-                    onRemove={onRemove}
-                    onEdit={onEdit}
-                  />
-                </div>
-              )}
-            />
-            <div className="mt-6">
-              <h1 className="relative group/block">
-                <span className="absolute -inset-5 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
-                  <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
-                    Text
-                  </span>
-                  <BlockToolbar className="-top-[18px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-                  <FlexibleToolbar className="absolute left-0 -top-[60.14px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-                </span>
-                <EditableRoot
-                  className="relative"
-                  defaultValue="This is your heading"
-                >
-                  <EditableLabel>Title</EditableLabel>
-                  <EditableArea>
-                    <EditableInput
-                      asChild
-                      className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-2xl leading-none font-semibold text-dark-blue-400"
-                    >
-                      <textarea />
-                    </EditableInput>
-                    <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-2xl leading-none font-semibold text-dark-blue-400" />
-                  </EditableArea>
-                </EditableRoot>
-              </h1>
-              <p className="relative group/block mt-3">
-                <span className="absolute -inset-5 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
-                  <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
-                    Text
-                  </span>
-                  <BlockToolbar className="-top-[18px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-                  <FlexibleToolbar className="absolute left-0 -top-[60.14px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-                </span>
-                <EditableRoot
-                  className="relative"
-                  defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
-                >
-                  <EditableLabel>Sub Title</EditableLabel>
-                  <EditableArea>
-                    <EditableInput
-                      asChild
-                      className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-2xl leading-none font-light text-dark-blue-400"
-                    >
-                      <textarea />
-                    </EditableInput>
-                    <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-2xl leading-none font-light text-dark-blue-400" />
-                  </EditableArea>
-                </EditableRoot>
-              </p>
-            </div>
-          </article>
-          <div className="absolute w-[--gap] group/gap flex justify-center inset-y-0 left-[calc(calc(calc(calc(theme(size.full)-calc(var(--gap)*calc(var(--cols)-1)))/var(--cols))*var(--pos))+calc(var(--gap)*calc(var(--pos)-1)))] [--pos:1]">
-            <Addened className="h-full group-hover/gap:visible invisible transition-[visibility] duration-300" />
-          </div>
-          <article>
-            <PictureEditor
-              startingPoint={({ dataUrl, open, style, onRemove, onEdit }) => (
-                <div className="overflow-hidden relative group/image h-[250px] bg-gray-100 grid rounded-lg place-items-center hover:bg-black/20 hover:ring-2 hover:ring-primary-500 transition duration-300">
-                  {dataUrl ? (
-                    <div
-                      className="size-full rounded-lg transform"
-                      style={style}
-                    >
-                      <img
-                        src={dataUrl}
-                        aria-label="Picture"
-                        className="absolute object-contain rounded-lg"
-                      />
-                    </div>
-                  ) : (
-                    <>
-                      <Picture className="w-[84px] shrink-0 h-[76px] text-gray-300 group-hover/image:text-white" />
-                    </>
-                  )}
-                  <BlockImageToolbar
-                    className="top-5 left-5 absolute hidden opacity-0 group-hover/image:inline-flex group-hover/image:opacity-100 transition duration-300"
-                    onAddImage={open}
-                    onRemove={onRemove}
-                    onEdit={onEdit}
-                  />
-                </div>
-              )}
-            />
-            <div className="mt-6">
-              <h1 className="relative group/block">
-                <span className="absolute -inset-5 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
-                  <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
-                    Text
-                  </span>
-                  <BlockToolbar className="-top-[18px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-                  <FlexibleToolbar className="absolute left-0 -top-[60.14px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-                </span>
-                <EditableRoot
-                  className="relative"
-                  defaultValue="This is your heading"
-                >
-                  <EditableLabel>Title</EditableLabel>
-                  <EditableArea>
-                    <EditableInput
-                      asChild
-                      className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-2xl leading-none font-semibold text-dark-blue-400"
-                    >
-                      <textarea />
-                    </EditableInput>
-                    <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-2xl leading-none font-semibold text-dark-blue-400" />
-                  </EditableArea>
-                </EditableRoot>
-              </h1>
-              <p className="relative group/block mt-3">
-                <span className="absolute -inset-5 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
-                  <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
-                    Text
-                  </span>
-                  <BlockToolbar className="-top-[18px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-                  <FlexibleToolbar className="absolute left-0 -top-[60.14px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-                </span>
-                <EditableRoot
-                  className="relative"
-                  defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
-                >
-                  <EditableLabel>Sub Title</EditableLabel>
-                  <EditableArea>
-                    <EditableInput
-                      asChild
-                      className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-2xl leading-none font-light text-dark-blue-400"
-                    >
-                      <textarea />
-                    </EditableInput>
-                    <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-2xl leading-none font-light text-dark-blue-400" />
-                  </EditableArea>
-                </EditableRoot>
-              </p>
-            </div>
-          </article>
-          <div className="absolute w-[--gap] group/gap flex justify-center inset-y-0 left-[calc(calc(calc(calc(theme(size.full)-calc(var(--gap)*calc(var(--cols)-1)))/var(--cols))*var(--pos))+calc(var(--gap)*calc(var(--pos)-1)))] [--pos:2]">
-            <Addened className="h-full group-hover/gap:visible invisible transition-[visibility] duration-300" />
-          </div>
-          <article>
-            <PictureEditor
-              startingPoint={({ dataUrl, open, style, onRemove, onEdit }) => (
-                <div className="overflow-hidden relative group/image h-[250px] bg-gray-100 grid rounded-lg place-items-center hover:bg-black/20 hover:ring-2 hover:ring-primary-500 transition duration-300">
-                  {dataUrl ? (
-                    <div
-                      className="size-full rounded-lg transform"
-                      style={style}
-                    >
-                      <img
-                        src={dataUrl}
-                        aria-label="Picture"
-                        className="absolute object-contain rounded-lg"
-                      />
-                    </div>
-                  ) : (
-                    <>
-                      <Picture className="w-[84px] shrink-0 h-[76px] text-gray-300 group-hover/image:text-white" />
-                    </>
-                  )}
-                  <BlockImageToolbar
-                    className="top-5 left-5 absolute hidden opacity-0 group-hover/image:inline-flex group-hover/image:opacity-100 transition duration-300"
-                    onAddImage={open}
-                    onRemove={onRemove}
-                    onEdit={onEdit}
-                  />
-                </div>
-              )}
-            />
 
-            <div className="mt-6">
-              <h1 className="relative group/block">
-                <span className="absolute -inset-5 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
-                  <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
-                    Text
-                  </span>
-                  <BlockToolbar className="-top-[18px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-                  <FlexibleToolbar className="absolute left-0 -top-[60.14px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-                </span>
-                <EditableRoot
-                  className="relative"
-                  defaultValue="This is your heading"
-                >
-                  <EditableLabel>Title</EditableLabel>
-                  <EditableArea>
-                    <EditableInput
-                      asChild
-                      className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-2xl leading-none font-semibold text-dark-blue-400"
-                    >
-                      <textarea />
-                    </EditableInput>
-                    <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-2xl leading-none font-semibold text-dark-blue-400" />
-                  </EditableArea>
-                </EditableRoot>
-              </h1>
-              <p className="relative group/block mt-3">
-                <span className="absolute -inset-5 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
-                  <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
-                    Text
-                  </span>
-                  <BlockToolbar className="-top-[18px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-                  <FlexibleToolbar className="absolute left-0 -top-[60.14px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-                </span>
-                <EditableRoot
-                  className="relative"
-                  defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
-                >
-                  <EditableLabel>Sub Title</EditableLabel>
-                  <EditableArea>
-                    <EditableInput
-                      asChild
-                      className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-2xl leading-none font-light text-dark-blue-400"
-                    >
-                      <textarea />
-                    </EditableInput>
-                    <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-2xl leading-none font-light text-dark-blue-400" />
-                  </EditableArea>
-                </EditableRoot>
-              </p>
-            </div>
-          </article>
+                      <PictureEditor
+                        startingPoint={({
+                          dataUrl,
+                          open,
+                          style,
+                          onRemove,
+                          onEdit,
+                        }) => (
+                          <div className="group-data-[state=dragged]/article:pointer-events-none overflow-hidden relative group/image h-[250px] bg-gray-100 grid rounded-lg place-items-center hover:bg-black/20 hover:ring-2 hover:ring-primary-500 transition duration-300">
+                            {dataUrl ? (
+                              <div
+                                className="size-full rounded-lg transform"
+                                style={style}
+                              >
+                                <img
+                                  src={dataUrl}
+                                  aria-label="Picture"
+                                  className="absolute object-contain rounded-lg"
+                                />
+                              </div>
+                            ) : (
+                              <>
+                                <Picture className="w-[84px] shrink-0 h-[76px] text-gray-300 group-hover/image:text-white" />
+                              </>
+                            )}
+                            <BlockImageToolbar
+                              className="top-5 left-5 absolute hidden opacity-0 group-hover/image:inline-flex group-hover/image:opacity-100 transition duration-300"
+                              onAddImage={open}
+                              onRemove={onRemove}
+                              onEdit={onEdit}
+                            />
+                          </div>
+                        )}
+                      />
+                      <div className="mt-6">
+                        <h1 className="relative group/block">
+                          <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
+                            <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
+                              Text
+                            </span>
+                            {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
+                            <FlexibleToolbar className="absolute z-10 left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
+                          </span>
+                          <EditableRoot
+                            className="relative"
+                            defaultValue="This is your heading"
+                          >
+                            <EditableLabel>Title</EditableLabel>
+                            <EditableArea>
+                              <EditableInput
+                                asChild
+                                className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-2xl leading-none font-semibold text-dark-blue-400"
+                              >
+                                <textarea />
+                              </EditableInput>
+                              <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-2xl leading-none font-semibold text-dark-blue-400" />
+                            </EditableArea>
+                          </EditableRoot>
+                        </h1>
+                        <p className="relative group/block mt-3">
+                          <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
+                            <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
+                              Text
+                            </span>
+                            {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
+                            <FlexibleToolbar className="absolute z-10 left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
+                          </span>
+                          <EditableRoot
+                            className="relative"
+                            defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
+                          >
+                            <EditableLabel>Sub Title</EditableLabel>
+                            <EditableArea>
+                              <EditableInput
+                                asChild
+                                className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-2xl leading-none font-light text-dark-blue-400"
+                              >
+                                <textarea />
+                              </EditableInput>
+                              <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-2xl leading-none font-light text-dark-blue-400" />
+                            </EditableArea>
+                          </EditableRoot>
+                        </p>
+                      </div>
+                    </ArticleRoot>
+                  )}
+                </ControlledDraggable>
+
+                {len < 3 && (
+                  <div
+                    style={{
+                      ...({ "--pos": index + 1 } as Record<string, number>),
+                    }}
+                    className="peer-data-[last=true]:hidden absolute w-[--gap] group/gap flex justify-center inset-y-0 left-[calc(calc(calc(calc(theme(size.full)-calc(var(--gap)*calc(var(--cols)-1)))/var(--cols))*var(--pos))+calc(var(--gap)*calc(var(--pos)-1)))]"
+                  >
+                    <Addened
+                      className="h-full group-hover/gap:visible invisible transition-[visibility] duration-300"
+                      onAdd={() => {
+                        const uniqueId = getId() + 2
+                        setItems(items.toSpliced(index, 0, uniqueId))
+                      }}
+                    />
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
+          </Reorder.Group>
         </div>
       </div>
 
@@ -926,7 +1088,7 @@ export const SplitCard = () => {
           <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/region:invisible group-hover/region:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/region:group-focus-within/block:invisible">
             Region
           </span>
-          <BlockToolbar className="-top-[18px] -right-[17px] absolute group-hover/region:visible invisible transition-[visibility] duration-300" />
+          <BlockToolbar className="-top-[46px] -right-[17px] absolute group-hover/region:visible invisible transition-[visibility] duration-300" />
         </span>
 
         <div className="relative grid grid-cols-2 gap-x-[50px]">
@@ -956,12 +1118,12 @@ export const SplitCard = () => {
 
           <div>
             <h1 className="group/block relative font-semibold">
-              <span className="absolute -inset-5 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
+              <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
                 <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
                   Text
                 </span>
-                <BlockToolbar className="-top-[18px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-                <FlexibleToolbar className="absolute left-0 -top-[60.14px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
+                <BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />
+                <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
               </span>
               <EditableRoot
                 className="relative"
@@ -981,12 +1143,12 @@ export const SplitCard = () => {
             </h1>
 
             <p className="group/block relative mt-5">
-              <span className="absolute -inset-5 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
+              <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
                 <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
                   Text
                 </span>
-                <BlockToolbar className="-top-[18px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-                <FlexibleToolbar className="absolute left-0 -top-[60.14px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
+                <BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />
+                <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
               </span>
               <EditableRoot
                 className="relative"
@@ -1014,7 +1176,104 @@ export const SplitCard = () => {
 export const ClientView = () => {
   return (
     <div className="p-[100px] bg-white">
-      <div className="grid grid-cols-2">
+      <div className="border rounded-lg bg-border-200 gap-x-[53.33px] flex items-center justify-between flex-wrap p-[50px]">
+        <div className="space-y-2">
+          <h1 className="font-bold text-[40px] leading-none text-dark-blue-400">
+            50%
+          </h1>
+          <p className="text-xl leading-none text-dark-blue-400">
+            Less Time Spent
+          </p>
+        </div>
+        <div className="space-y-2">
+          <h1 className="font-bold text-[40px] leading-none text-dark-blue-400">
+            50%
+          </h1>
+          <p className="text-xl leading-none text-dark-blue-400">
+            Less Time Spent
+          </p>
+        </div>
+        <div className="space-y-2">
+          <h1 className="font-bold text-[40px] leading-none text-dark-blue-400">
+            50%
+          </h1>
+          <p className="text-xl leading-none text-dark-blue-400">
+            Less Time Spent
+          </p>
+        </div>
+        <div className="space-y-2">
+          <h1 className="font-bold text-[40px] leading-none text-dark-blue-400">
+            50%
+          </h1>
+          <p className="text-xl leading-none text-dark-blue-400">
+            Less Time Spent
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-[100px]">
+        <h1 className="text-[40px] leading-none font-semibold text-dark-blue-400">
+          This is your process
+        </h1>
+
+        <p className="leading-none mt-3 text-dark-blue-400 text-2xl font-light">
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry.
+        </p>
+
+        <div className="grid grid-cols-3 gap-x-3 mt-8">
+          {fromLength(3).map((key) => (
+            <article key={key}>
+              <div className="flex items-center gap-x-3">
+                <div className="size-[91px] rounded-full text-[39px] leading-none font-medium text-primary-500 border-[4.33px] border-primary-500 shrink-0 inline-flex items-center justify-center">
+                  1
+                </div>
+
+                <div className="border-2 flex-auto border-primary-500 border-dashed opacity-20" />
+              </div>
+
+              <div className="pr-[38px] mt-5">
+                <h1 className="text-2xl leading-[1.5] font-medium text-dark-blue-400">
+                  Step Name
+                </h1>
+                <p className="text-base leading-none font-light text-dark-blue-400">
+                  This is sample description for process
+                </p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+      <div className="mt-[100px]">
+        <h1 className="text-[40px] leading-none font-semibold text-dark-blue-400">
+          Interview Pointers
+        </h1>
+
+        <div className="mt-6">
+          <p className="leading-none text-dark-blue-400 text-2xl font-light">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+            aliquip ex ea commodo consequat.
+          </p>
+
+          <ul className="mt-4 space-y-4">
+            <li className="leading-none text-2xl text-dark-blue-400 font-light">
+              <span className="font-bold">Bullet Point 1:</span> Sed ut
+              perspiciatis unde omnis iste natus
+            </li>
+            <li className="leading-none text-2xl  text-dark-blue-400 font-light">
+              <span className="font-bold">Bullet Point 2:</span> Sed ut
+              perspiciatis unde omnis iste natus
+            </li>
+            <li className="leading-none text-2xl  text-dark-blue-400 font-light">
+              <span className="font-bold">Bullet Point 3:</span> Sed ut
+              perspiciatis unde omnis iste natus
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 border border-gray-200 rounded-lg overflow-hidden mt-[100px]">
         <div className="relative rounded-l-lg p-[32px]">
           <NextImage
             className="object-cover"
@@ -1213,8 +1472,10 @@ export const ClientView = () => {
           This is your Conclusion
         </h1>
         <p className="mt-6 text-dark-blue-400 text-2xl leading-none font-light">
-          Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry.
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industry&apos;s standard dummy text
+          ever since the 1500s, when an unknown printer took a galley of type
+          and scrambled it to make a type specimen book.
         </p>
       </div>
 
@@ -1222,6 +1483,44 @@ export const ClientView = () => {
         <h1 className="font-semibold text-[40px] leading-none text-dark-blue-400">
           More Projects
         </h1>
+
+        <div className="grid grid-cols-3 gap-x-6 mt-6">
+          {fromLength(3).map((key) => (
+            <article
+              key={key}
+              className="rounded-lg min-h-[200px] border border-gray-200 overflow-hidden p-[15px] relative flex flex-col justify-end"
+            >
+              <NextImage
+                className="object-cover"
+                src="/robot-2.jpg"
+                alt="Robot"
+                sizes="25vw"
+                fill
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_50.12%,rgba(0,0,0,.5)_82.64%)]" />
+              <div className="relative">
+                <h1 className="text-sm leading-none font-medium text-white">
+                  React.js Front End Ecommerce Store
+                </h1>
+
+                <div className="flex items-center gap-x-[6.79px] mt-2">
+                  <Badge className="bg-white/20 text-white">UI/UX Design</Badge>
+                  <Badge className="bg-white/20 text-white">
+                    Visual Design
+                  </Badge>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-x-1 mt-6">
+          <div className="h-px bg-gray-200 flex-auto" />
+          <Button className="text-xs" variant="link" visual="gray">
+            View More
+          </Button>
+          <div className="h-px bg-gray-200 flex-auto" />
+        </div>
 
         <div className="mt-6">
           <div className="bg-white rounded-[15px] border grid grid-cols-2 gap-x-[50px] p-[75px] border-gray-200">
@@ -1263,9 +1562,75 @@ export const ClientView = () => {
                   <Button
                     variant="outlined"
                     visual="gray"
-                    className="border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white"
+                    className="border-primary-500 text-primary-500 hover:bg-primary-500 border-2 hover:text-white"
                   >
                     <MessageSquare01 className="size-[15px]" /> Message
+                  </Button>
+                </div>
+
+                <div className="mt-8">
+                  <h1 className="text-sm leading-none text-dark-blue-400 font-bold">
+                    Related Skills
+                  </h1>
+
+                  <div className="mt-3 flex flex-wrap gap-3">
+                    <Badge size="lg" variant="rounded" visual="gray">
+                      Typescript
+                    </Badge>
+                    <Badge size="lg" variant="rounded" visual="gray">
+                      React.js
+                    </Badge>
+                    <Badge size="lg" variant="rounded" visual="gray">
+                      Tailwind CSS
+                    </Badge>
+                    <Badge size="lg" variant="rounded" visual="gray">
+                      Next.js
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h1 className="text-[22px] leading-none font-semibold text-dark-blue-400">
+                Let’s collaborate on the next project!
+              </h1>
+
+              <div className="mt-6 flex flex-col">
+                <textarea
+                  className="h-[200px] resize-none rounded-t-lg border rounded-none border-gray-200 bg-gray-50 shadow-[0px_1px_2px_0px_rgba(16,24,40,.05)] focus:ring-0 py-3.5 px-5 placeholder:text-gray-500 placeholder:italic"
+                  placeholder="Leave a message for Saumya..."
+                />
+                <div className="p-3 bg-white border border-t-0 border-gray-200 rounded-b-lg flex items-center justify-between">
+                  <div className="flex items-center gap-x-1">
+                    <IconButton
+                      className="rounded-full"
+                      variant="ghost"
+                      visual="gray"
+                      size="lg"
+                    >
+                      <Smile className="size-[22px]" />
+                    </IconButton>
+                    <IconButton
+                      className="rounded-full"
+                      variant="ghost"
+                      visual="gray"
+                      size="lg"
+                    >
+                      <Image03 className="size-[22px]" />
+                    </IconButton>
+                    <IconButton
+                      className="rounded-full"
+                      variant="ghost"
+                      visual="gray"
+                      size="lg"
+                    >
+                      <Attachment01 className="size-[22px]" />
+                    </IconButton>
+                  </div>
+
+                  <Button>
+                    Send Message <Send className="size-[15px]" />
                   </Button>
                 </div>
               </div>
