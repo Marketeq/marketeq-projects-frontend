@@ -541,3 +541,27 @@ export function strToArray(value: string) {
 export function fromLength(length: number) {
   return Array(length).keys().toArray()
 }
+
+
+export const formatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 2,
+})
+
+
+const GIFT_CARD_REGEX = /^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/
+
+export const formatGiftCard = (giftCard: string) => {
+  const cleaned = giftCard.replace(/[^A-Za-z0-9]/g, "")
+  const capitalized = cleaned.toUpperCase()
+  let i = 4
+  let result = capitalized.slice(0, i)
+  for (; i < capitalized.length; i += 4) {
+    if (GIFT_CARD_REGEX.test(result)) break
+
+    result += "-" + capitalized.slice(i, i + 4)
+  }
+  return result
+}

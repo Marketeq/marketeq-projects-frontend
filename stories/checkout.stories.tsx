@@ -141,6 +141,7 @@ const meta: Meta = {
 
 export default meta
 
+
 export const StepIndicator = ({ disabled }: { disabled?: boolean }) => {
   return (
     <button

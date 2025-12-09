@@ -120,7 +120,7 @@ export const CreditDebitSelected = ({
   action,
   onRemove,
 }: {
-  cardNumber: string
+  cardNumber?: string
   amount?: number
   onAmountChange?: (value: string | undefined) => void
   defaultAmount?: number
