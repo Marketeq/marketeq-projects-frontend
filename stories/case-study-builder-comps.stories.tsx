@@ -193,6 +193,7 @@ export const BlockToolbar = ({
   canDuplicate?: boolean
   canHide?: boolean
 }) => {
+  const [open, setOpen] = useState(false)
   return (
     <div
       className={cn(
@@ -264,7 +265,7 @@ export const BlockToolbar = ({
         <TooltipProvider delayDuration={75}>
           <Tooltip>
             <TooltipTrigger
-              onClick={onRemove}
+              onClick={() => setOpen(true)}
               className="first:rounded-l-[5px] last:rounded-r-[5px] focus-visible:outline-none inline-flex items-center size-9 shrink-0 text-error-500 justify-center hover:bg-error-100 hover:text-error-600"
             >
               <Trash01 className="size-4" />
@@ -273,6 +274,33 @@ export const BlockToolbar = ({
           </Tooltip>
         </TooltipProvider>
       )}
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-[409px] p-0">
+          <div className="p-6">
+            <DialogTitle className="text-dark-blue-400">
+              Delete this column?
+            </DialogTitle>
+            <DialogDescription className="text-dark-blue-400 mt-2">
+              The column will be removed permanently.
+            </DialogDescription>
+          </div>
+
+          <div className="border-t rounded-b-xl flex items-center justify-between border-gray-200 bg-gray-25 py-4 px-6">
+            <DialogClose asChild>
+              <Button variant="link" visual="gray">
+                <X className="size-[15px]" /> Cancel
+              </Button>
+            </DialogClose>
+
+            <DialogClose onClick={onRemove} asChild>
+              <Button variant="outlined" visual="gray">
+                Yes, Delete
+              </Button>
+            </DialogClose>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
@@ -3052,9 +3080,32 @@ const ImageText = () => {
   )
 }
 
-const BigImage = () => {
+const Gallery = () => {
   return (
-    <div className="relative h-[498.2px] flex flex-col justify-end bg-gray-100 rounded-lg overflow-hidden">
+    <div className="p-[50px] mt-[100px] rounded-[10px] bg-gray-100">
+      <BigImage className="bg-gray-50" />
+
+      <div className="flex mt-6 gap-x-6 items-center">
+        <button
+          data-state="active"
+          className="h-[55px] w-[82px] hover:border-primary-500 hover:ring hover:ring-primary-500 data-[state=active]:border-primary-500 border border-gray-200 data-[state=active]:ring-primary-500 data-[state=active]:ring bg-white inline-flex items-center shrink-0 rounded-[5px] justify-center"
+        ></button>
+        <button className="h-[55px] w-[82px] hover:border-primary-500 hover:ring hover:ring-primary-500 data-[state=active]:border-primary-500 border border-gray-200 data-[state=active]:ring-primary-500 data-[state=active]:ring bg-white shrink-0 rounded-[5px] inline-flex items-center justify-center">
+          <Plus className="size-6 text-gray-500" />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+const BigImage = ({ className }: { className?: string }) => {
+  return (
+    <div
+      className={cn(
+        "relative mt-[100px] h-[498.2px] flex flex-col justify-end bg-gray-100 rounded-lg overflow-hidden",
+        className
+      )}
+    >
       <PictureEditor
         startingPoint={({ dataUrl, open, style, onRemove, onEdit }) => (
           <div className="group-data-[state=dragged]/article:pointer-events-none overflow-hidden absolute inset-0 group/image size-full grid rounded-lg place-items-center hover:bg-black/20 hover:ring-2 hover:ring-primary-500 transition duration-300">
@@ -3240,6 +3291,9 @@ const Region = ({
     case "big-image":
       return <BigImage />
 
+    case "gallery":
+      return <Gallery />
+
     default:
       throw new Error("The provide `type` does not exist in the union")
   }
@@ -3389,7 +3443,7 @@ export const EditingPlayground = () => {
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent
               dialogOverlay={<DialogOverlay className="blur-lg" />}
-              className="max-w-[875px] p-0"
+              className="max-w-[597px] p-0"
             >
               <div className="pl-6 p-3 flex items-center justify-between border-b border-gray-200">
                 <h1 className="text-lg leading-7 font-semibold text-dark-blue-400">
@@ -3406,29 +3460,14 @@ export const EditingPlayground = () => {
                   </IconButton>
                 </DialogClose>
               </div>
-              <div className="p-6 grid grid-cols-4 gap-3">
+              <div className="p-6 grid grid-cols-3 gap-3">
                 <button
                   onClick={() => dispatch({ type: "introduction" })}
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
                   <File02 className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
-                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none">
+                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Introduction
-                  </span>
-                </button>
-                <button
-                  onClick={() => dispatch({ type: "bold-statement" })}
-                  className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
-                >
-                  <Type02 className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
-                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none">
-                    Bold Statement
-                  </span>
-                </button>
-                <button className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500">
-                  <Picture className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
-                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none">
-                    Gallery
                   </span>
                 </button>
                 <button
@@ -3436,17 +3475,17 @@ export const EditingPlayground = () => {
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
                   <List className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
-                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none">
+                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Challenges
                   </span>
                 </button>
                 <button
-                  onClick={() => dispatch({ type: "process" })}
+                  onClick={() => dispatch({ type: "image-text" })}
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
-                  <Dataflow02 className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
-                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none">
-                    Process
+                  <ImageIcon className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
+                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
+                    Image & Text
                   </span>
                 </button>
                 <button
@@ -3454,8 +3493,26 @@ export const EditingPlayground = () => {
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
                   <ImageIcon className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
-                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none">
+                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Big Image
+                  </span>
+                </button>
+                <button
+                  onClick={() => dispatch({ type: "bold-statement" })}
+                  className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
+                >
+                  <Type02 className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
+                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
+                    Bold Statement
+                  </span>
+                </button>
+                <button
+                  onClick={() => dispatch({ type: "process" })}
+                  className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
+                >
+                  <Dataflow02 className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
+                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
+                    Process
                   </span>
                 </button>
                 <button
@@ -3463,7 +3520,7 @@ export const EditingPlayground = () => {
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
                   <Mic className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
-                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none">
+                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Interview
                   </span>
                 </button>
@@ -3472,20 +3529,8 @@ export const EditingPlayground = () => {
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
                   <Users03 className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
-                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none">
+                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Personas
-                  </span>
-                </button>
-                <button className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500">
-                  <PlaySquare className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
-                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none">
-                    Video
-                  </span>
-                </button>
-                <button className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500">
-                  <Dataflow03 className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
-                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none">
-                    Customer Journey
                   </span>
                 </button>
                 <button
@@ -3493,52 +3538,69 @@ export const EditingPlayground = () => {
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
                   <MessageSquare className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
-                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none">
+                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Testimonial
                   </span>
                 </button>
                 <button
-                  onClick={() => dispatch({ type: "image-text" })}
+                  onClick={() => dispatch({ type: "gallery" })}
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
-                  <ImageIcon className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
-                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none">
-                    Image & Text
+                  <Picture className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
+                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
+                    Gallery
                   </span>
                 </button>
+
                 <button
                   onClick={() => dispatch({ type: "results-metrics" })}
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
                   <BarChart10 className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
-                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none">
+                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Result Metrics
                   </span>
                 </button>
-                <button className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500">
-                  <Monitor02 className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
-                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none">
-                    Prototype
-                  </span>
-                </button>
+
                 <button
                   onClick={() => dispatch({ type: "conclusion" })}
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
                   <File06 className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
-                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none">
+                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Conclusion
                   </span>
                 </button>
+
+                {/* <button className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500">
+                  <PlaySquare className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
+                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
+                    Video
+                  </span>
+                </button>
+                <button className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500">
+                  <Dataflow03 className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
+                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
+                    Customer Journey
+                  </span>
+                </button>
+
+                <button className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500">
+                  <Monitor02 className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
+                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
+                    Prototype
+                  </span>
+                </button>
+               
                 <button
                   onClick={() => dispatch({ type: "custom-columns" })}
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
                   <Columns03 className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
-                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none">
+                  <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Custom Columns
                   </span>
-                </button>
+                </button> */}
               </div>
             </DialogContent>
           </Dialog>
