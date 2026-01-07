@@ -484,7 +484,7 @@ export default function MarketPlaceLayout({
 }) {
   return (
     <>
-      <AuthenticatedRoute>
+      {/* <AuthenticatedRoute> */}
         <div className="px-3.5 md:px-6 lg:px-[50px] bg-white shadow-[0px_1px_3px_0px_rgba(16,24,40,.1)] xs:max-md:hidden">
           <div className="pt-0.5 pb-3.5 lg:py-3 flex items-end gap-x-6 lg:justify-between lg:gap-x-[30px] ">
             <div className="flex flex-col">
@@ -597,7 +597,7 @@ export default function MarketPlaceLayout({
 
         {children}
         <Footer />
-      </AuthenticatedRoute>
+      {/* </AuthenticatedRoute> */}
     </>
   )
 }

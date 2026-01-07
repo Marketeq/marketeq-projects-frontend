@@ -47,7 +47,7 @@ export const YourJobTitle = ({ value, onValueChange, invalid }: Props) => {
     const loadJobTitles = async () => {
       try {
         const res = await fetch(
-          "http://localhost:3000/talent/autocomplete?type=job-title"
+          "http://localhost:3002/talent/autocomplete?type=job-title"
         )
         const data = await res.json()
         const dynamic = data.map((entry: any) => entry.value)

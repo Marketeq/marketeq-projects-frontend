@@ -1,3 +1,5 @@
+'use client'
+
 import {
   ArrowRight,
   Check,
@@ -12,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs"
 import { Money } from "@/components/money"
 import NextImage from "@/components/next-image"
 import NextLink from "@/components/next-link"
+import { buildProjectUrl } from "../../../../../src/lib/urlHelpers"
 import {
   Avatar,
   AvatarFallback,
@@ -31,9 +34,118 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui"
+} from "@/components/ui";
 
-export default function Services() {
+import { useState, useEffect } from 'react';
+import { getCategoryPage, type BlockItem } from '../../../../../src/lib/api/category-pages';
+import { addFavorite, removeFavorite, findFavoriteByItemId } from '../../../../../src/lib/api/favorites';
+
+// Interface for project items
+interface ProjectItem extends BlockItem {
+  featured?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  rating?: number;
+  reviewCount?: number;
+  reviews?: number;
+  coverImage?: string;
+  summary?: string;
+  role?: string;
+  scopeTotal?: {
+    timeline?: string;
+    budget?: number | string;
+  };
+}
+
+export default function Projects() {
+  // State management
+  const [allProjects, setAllProjects] = useState<ProjectItem[]>([]);
+  const [displayedProjects, setDisplayedProjects] = useState<ProjectItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('Featured');
+  const [pageData, setPageData] = useState<any>(null); // ✅ ADD THIS LINE
+
+  // Fetch data from backend
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setIsLoading(true);
+        const data = await getCategoryPage('creative');
+        setPageData(data);
+        if (data?.blocks) {
+          const allItems: any[] = [];
+
+          // Filter to only get projects, not talent
+          data.blocks.forEach((block: any) => {
+            if (block.entity === 'projects' && block.items) {
+              allItems.push(...block.items);
+            }
+          });
+
+          setAllProjects(allItems);
+          setDisplayedProjects(allItems);
+        }
+      } catch (error) {
+        console.error('Failed to fetch:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  // Sort projects when tab changes
+  useEffect(() => {
+    if (allProjects.length === 0) return;
+
+    let sorted = [...allProjects];
+
+    switch (activeTab) {
+      case 'Featured':
+        sorted = sorted.sort((a: any, b: any) => {
+          if (a.featured && !b.featured) return -1;
+          if (!a.featured && b.featured) return 1;
+          return 0;
+        });
+        break;
+
+      case 'Newest':
+        sorted = sorted.sort((a: any, b: any) => {
+          const dateA = new Date(a.createdAt || 0).getTime();
+          const dateB = new Date(b.createdAt || 0).getTime();
+          return dateB - dateA;
+        });
+        break;
+
+      case 'Most Popular':
+        sorted = sorted.sort((a: any, b: any) => {
+          const reviewsA = a.reviewCount || a.reviews || 0;
+          const reviewsB = b.reviewCount || b.reviews || 0;
+          return reviewsB - reviewsA;
+        });
+        break;
+
+      case 'Trending':
+        sorted = sorted.sort((a: any, b: any) => {
+          const dateA = new Date(a.updatedAt || 0).getTime();
+          const dateB = new Date(b.updatedAt || 0).getTime();
+          return dateB - dateA;
+        });
+        break;
+
+      case 'Top-Rated':
+        sorted = sorted.sort((a: any, b: any) => {
+          const ratingA = a.rating || 0;
+          const ratingB = b.rating || 0;
+          return ratingB - ratingA;
+        });
+        break;
+    }
+
+    setDisplayedProjects(sorted);
+  }, [activeTab, allProjects]);
+  const categorySlugPath = pageData?.breadcrumbs.map(b => b.slug) || ["creative"]
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <div className="py-[50px]">
@@ -63,7 +175,7 @@ export default function Services() {
                     /
                   </span>
                   <span className="text-xs leading-6 font-semibold text-white opacity-60">
-                    Services
+                    Projects
                   </span>
                 </div>
               </div>
@@ -83,7 +195,7 @@ export default function Services() {
           <div className="mt-[50px]">
             <div className="flex items-center justify-between">
               <h1 className="text-[28px] leading-none font-bold text-dark-blue-400">
-                Browse Services by Category
+                Browse Projects by Category
               </h1>
 
               <div className="flex items-center gap-x-3">
@@ -168,10 +280,11 @@ export default function Services() {
             </div>
           </div>
 
+          {/* MAIN SECTION - Top Software Development Projects */}
           <div className="mt-[50px]">
-            <Tabs defaultValue="Featured">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
               <h1 className="text-[28px] leading-none font-bold text-dark-blue-400">
-                Top Software Development Services
+                Top Software Development Projects
               </h1>
               <div className="mt-6 flex justify-between items-center">
                 <TabsList className="flex items-center gap-x-3">
@@ -222,282 +335,144 @@ export default function Services() {
                   </Badge>
                 </TabsList>
 
-                <Button
-                  variant="link"
-                  visual="gray"
-                  size="lg"
-                  className="underline"
-                >
-                  Explore More Projects
-                </Button>
+                <NextLink href="../../level-3/projects">
+                  <Button variant="link" visual="gray" size="lg" className="underline">
+                    Explore More Projects
+                  </Button>
+                </NextLink>
               </div>
 
               <div className="mt-6">
-                <TabsContent
-                  className="gap-5 grid grid-cols-4"
-                  value="Featured"
-                >
-                  {Array(8)
-                    .fill(0)
-                    .map((_, index) => (
+                <TabsContent className="gap-5 grid grid-cols-4" value={activeTab}>
+                  {isLoading ? (
+                    Array(8).fill(0).map((_, index) => (
+                      <article key={index} className="p-5 bg-white border rounded-lg animate-pulse">
+                        <div className="h-[169px] bg-gray-200 rounded-[6px]"></div>
+                        <div className="mt-3 h-4 bg-gray-200 rounded"></div>
+                        <div className="mt-3 h-3 bg-gray-200 rounded"></div>
+                      </article>
+                    ))
+                  ) : displayedProjects.length > 0 ? (
+                    displayedProjects.slice(0, 8).map((project) => (
                       <article
-                        key={index}
-                        className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]"
+                        key={project.id}
+                        className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] flex flex-col"
                       >
+                        {/* Image */}
                         <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                           <NextImage
                             className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
-                            src="/dashboard.png"
-                            alt="Dashboard"
+                            src={project.coverImage || project.thumbnail || "/dashboard.png"}
+                            alt={project.title || "Project"}
                             fill
                             sizes="33vw"
                           />
                         </div>
 
+                        {/* Title and Rating */}
                         <div className="mt-3 flex items-start gap-x-3">
                           <NextLink
-                            href="#"
+                            href={buildProjectUrl(categorySlugPath, project.slug, project.id)}
                             className="focus-visible:outline-none font-bold flex-auto text-base leading-none text-dark-blue-400 hover:underline"
                           >
-                            The Ultimate Mobile App Experience
+                            {project.title}
                           </NextLink>
 
-                          <div className="inline-flex items-center gap-x-1">
-                            <Star className="size-[15px] text-primary-500 fill-primary-500" />
-                            <span className="inline-flex items-center gap-x-1 text-sm leading-none text-dark-blue-400 font-medium">
-                              4.9 <span className="font-extralight">(5)</span>
-                            </span>
-                          </div>
+                          {/* Only show rating if reviews exist */}
+                          {project.rating && project.reviewCount > 0 && (
+                            <div className="inline-flex items-center gap-x-1">
+                              <Star className="size-[15px] text-primary-500 fill-primary-500" />
+                              <span className="inline-flex items-center gap-x-1 text-sm leading-none text-dark-blue-400 font-medium">
+                                {project.rating} <span className="font-extralight">({project.reviewCount})</span>
+                              </span>
+                            </div>
+                          )}
                         </div>
 
-                        <p className="mt-3 text-sm leading-none font-extralight text-dark-blue-400">
-                          Brief Description of the project. Lorem ipsum dolor
-                          sit amet, consectetur adipiscing elit, sed do eiusmod
-                          tempor incididunt.
+                        {/* Description - 3 lines truncated */}
+                        <p className="mt-3 text-sm leading-[1.4] font-extralight text-dark-blue-400 line-clamp-3">
+                          {project.summary || project.description || "No description available"}
                         </p>
 
+                        {/* Timeline and Budget from scopeTotal */}
                         <div className="mt-[14.5px] flex flex-col gap-y-3">
                           <div className="flex items-center gap-x-[6.4px]">
                             <Clock className="size-[18px] shrink-0 text-primary-500" />
-
                             <span className="font-medium text-sm leading-none text-dark-blue-400">
-                              Starting from 12 weeks
+                              Starting from {project.scopeTotal?.timeline || '12 weeks'}
                             </span>
                           </div>
 
                           <div className="flex items-center gap-x-[6.4px]">
                             <Money className="size-[18px] shrink-0 text-primary-500" />
-
                             <span className="font-medium text-sm leading-none text-dark-blue-400">
-                              $50,000 budget
+                              ${project.scopeTotal?.budget || project.price || '50,000'} budget
                             </span>
                           </div>
                         </div>
 
-                        <div className="mt-5 flex items-end justify-between">
+                        {/* Pinned to bottom with mt-auto */}
+                        <div className="mt-auto pt-5 flex items-end justify-between">
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <AvatarGroup
-                                  max={5}
-                                  size="sm"
-                                  excess
-                                  excessClassName="border-gray-300 text-gray-500"
-                                >
-                                  <Avatar
-                                    size="sm"
-                                    className="border-2 border-white hover:ring-0 active:ring-0"
-                                  >
-                                    <AvatarImage src="/woman.jpg" alt="Woman" />
-                                    <AvatarFallback>W</AvatarFallback>
-                                  </Avatar>
-                                  <Avatar
-                                    size="sm"
-                                    className="border-2 border-white hover:ring-0 active:ring-0"
-                                  >
-                                    <AvatarImage src="/woman.jpg" alt="Woman" />
-                                    <AvatarFallback>W</AvatarFallback>
-                                  </Avatar>
-                                  <Avatar
-                                    size="sm"
-                                    className="border-2 border-white hover:ring-0 active:ring-0"
-                                  >
-                                    <AvatarImage src="/woman.jpg" alt="Woman" />
-                                    <AvatarFallback>W</AvatarFallback>
-                                  </Avatar>
-                                  <Avatar
-                                    size="sm"
-                                    className="border-2 border-white hover:ring-0 active:ring-0"
-                                  >
-                                    <AvatarImage src="/woman.jpg" alt="Woman" />
-                                    <AvatarFallback>W</AvatarFallback>
-                                  </Avatar>
-                                  <Avatar
-                                    size="sm"
-                                    className="border-2 border-white hover:ring-0 active:ring-0"
-                                  >
-                                    <AvatarImage src="/woman.jpg" alt="Woman" />
-                                    <AvatarFallback>W</AvatarFallback>
-                                  </Avatar>
-                                  <Avatar
-                                    size="sm"
-                                    className="border-2 border-white hover:ring-0 active:ring-0"
-                                  >
-                                    <AvatarImage src="/woman.jpg" alt="Woman" />
-                                    <AvatarFallback>W</AvatarFallback>
-                                  </Avatar>
+                                <AvatarGroup max={5} size="sm" excess excessClassName="border-gray-300 text-gray-500">
+                                  {Array(3).fill(0).map((_, i) => (
+                                    <Avatar key={i} size="sm" className="border-2 border-white hover:ring-0 active:ring-0">
+                                      <AvatarImage src="/woman.jpg" alt="Team member" />
+                                      <AvatarFallback>U</AvatarFallback>
+                                    </Avatar>
+                                  ))}
                                 </AvatarGroup>
                               </TooltipTrigger>
-
-                              <TooltipContent
-                                className="p-0 max-w-[262px]"
-                                size="md"
-                              >
-                                <ScrollArea
-                                  className="h-[192px] p-3"
-                                  scrollBar={
-                                    <ScrollBar
-                                      className="w-4 p-1"
-                                      thumbClassName="bg-white/20"
-                                    />
-                                  }
-                                >
+                              <TooltipContent className="p-0 max-w-[262px]" size="md">
+                                <ScrollArea className="h-[192px] p-3" scrollBar={<ScrollBar className="w-4 p-1" thumbClassName="bg-white/20" />}>
                                   <div className="space-y-3 pr-5">
-                                    <div className="flex items-center gap-x-[18px]">
-                                      <div className="flex items-center gap-x-2 flex-auto">
-                                        <Avatar>
-                                          <AvatarImage
-                                            src="/woman.jpg"
-                                            alt="Woman"
-                                          />
-                                          <AvatarFallback>W</AvatarFallback>
-                                        </Avatar>
-
-                                        <div className="flex flex-col flex-auto">
-                                          <div className="flex items-center gap-x-0.5">
-                                            <span className="text-xs leading-5 font-semibold text-white">
-                                              Sevil
-                                            </span>
-                                            <span className="text-[10px] leading-none font-light text-white">
-                                              @designsuperstar23
-                                            </span>
+                                    {Array(4).fill(0).map((_, i) => (
+                                      <div key={i} className="flex items-center gap-x-[18px]">
+                                        <div className="flex items-center gap-x-2 flex-auto">
+                                          <Avatar>
+                                            <AvatarImage src="/woman.jpg" alt="Team member" />
+                                            <AvatarFallback>U</AvatarFallback>
+                                          </Avatar>
+                                          <div className="flex flex-col flex-auto">
+                                            <div className="flex items-center gap-x-0.5">
+                                              <span className="text-xs leading-5 font-semibold text-white">Sevil</span>
+                                              <span className="text-[10px] leading-none font-light text-white">@designsuperstar23</span>
+                                            </div>
+                                            <span className="text-[10px] font-light text-white">Full-stack Developer</span>
                                           </div>
-                                          <span className="text-[10px] font-light text-white">
-                                            Full-stack Developer
-                                          </span>
                                         </div>
-                                      </div>
-
-                                      <span className="text-sm font-semibold text-white leading-5">
-                                        $75{" "}
-                                        <span className="text-[10px] font-light leading-5">
-                                          /hr
+                                        <span className="text-sm font-semibold text-white leading-5">
+                                          $75 <span className="text-[10px] font-light leading-5">/hr</span>
                                         </span>
-                                      </span>
-                                    </div>
-                                    <div className="flex items-center gap-x-[18px]">
-                                      <div className="flex items-center gap-x-2 flex-auto">
-                                        <Avatar>
-                                          <AvatarImage
-                                            src="/woman.jpg"
-                                            alt="Woman"
-                                          />
-                                          <AvatarFallback>W</AvatarFallback>
-                                        </Avatar>
-
-                                        <div className="flex flex-col flex-auto">
-                                          <div className="flex items-center gap-x-0.5">
-                                            <span className="text-xs leading-5 font-semibold text-white">
-                                              Sevil
-                                            </span>
-                                            <span className="text-[10px] leading-none font-light text-white">
-                                              @designsuperstar23
-                                            </span>
-                                          </div>
-                                          <span className="text-[10px] font-light text-white">
-                                            Full-stack Developer
-                                          </span>
-                                        </div>
                                       </div>
-
-                                      <span className="text-sm font-semibold text-white leading-5">
-                                        $75{" "}
-                                        <span className="text-[10px] font-light leading-5">
-                                          /hr
-                                        </span>
-                                      </span>
-                                    </div>
-                                    <div className="flex items-center gap-x-[18px]">
-                                      <div className="flex items-center gap-x-2 flex-auto">
-                                        <Avatar>
-                                          <AvatarImage
-                                            src="/woman.jpg"
-                                            alt="Woman"
-                                          />
-                                          <AvatarFallback>W</AvatarFallback>
-                                        </Avatar>
-
-                                        <div className="flex flex-col flex-auto">
-                                          <div className="flex items-center gap-x-0.5">
-                                            <span className="text-xs leading-5 font-semibold text-white">
-                                              Sevil
-                                            </span>
-                                            <span className="text-[10px] leading-none font-light text-white">
-                                              @designsuperstar23
-                                            </span>
-                                          </div>
-                                          <span className="text-[10px] font-light text-white">
-                                            Full-stack Developer
-                                          </span>
-                                        </div>
-                                      </div>
-
-                                      <span className="text-sm font-semibold text-white leading-5">
-                                        $75{" "}
-                                        <span className="text-[10px] font-light leading-5">
-                                          /hr
-                                        </span>
-                                      </span>
-                                    </div>
-                                    <div className="flex items-center gap-x-[18px]">
-                                      <div className="flex items-center gap-x-2 flex-auto">
-                                        <Avatar>
-                                          <AvatarImage
-                                            src="/woman.jpg"
-                                            alt="Woman"
-                                          />
-                                          <AvatarFallback>W</AvatarFallback>
-                                        </Avatar>
-
-                                        <div className="flex flex-col flex-auto">
-                                          <div className="flex items-center gap-x-0.5">
-                                            <span className="text-xs leading-5 font-semibold text-white">
-                                              Sevil
-                                            </span>
-                                            <span className="text-[10px] leading-none font-light text-white">
-                                              @designsuperstar23
-                                            </span>
-                                          </div>
-                                          <span className="text-[10px] font-light text-white">
-                                            Full-stack Developer
-                                          </span>
-                                        </div>
-                                      </div>
-
-                                      <span className="text-sm font-semibold text-white leading-5">
-                                        $75{" "}
-                                        <span className="text-[10px] font-light leading-5">
-                                          /hr
-                                        </span>
-                                      </span>
-                                    </div>
+                                    ))}
                                   </div>
                                 </ScrollArea>
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
 
-                          <FavoriteRoot>
+                          <FavoriteRoot
+                            onPressedChange={async (pressed) => {
+                              if (pressed) {
+                                // Add to favorites
+                                const result = await addFavorite({
+                                  type: 'project',
+                                  itemId: project.id,
+                                });
+                                console.log('Added to favorites:', result);
+                              } else {
+                                // Remove from favorites
+                                const favorite = await findFavoriteByItemId(project.id);
+                                if (favorite) {
+                                  const success = await removeFavorite(favorite.id);
+                                  console.log('Removed from favorites:', success);
+                                }
+                              }
+                            }}
+                          >
                             {({ pressed }) => (
                               <TooltipProvider delayDuration={75}>
                                 <Tooltip>
@@ -522,7 +497,12 @@ export default function Services() {
                           </FavoriteRoot>
                         </div>
                       </article>
-                    ))}
+                    ))
+                  ) : (
+                    <div className="col-span-4 text-center py-12">
+                      <p className="text-dark-blue-400">No projects found</p>
+                    </div>
+                  )}
                 </TabsContent>
               </div>
             </Tabs>
@@ -881,7 +861,7 @@ export default function Services() {
                     .map((_, index) => (
                       <article
                         key={index}
-                        className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]"
+                        className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] flex flex-col"
                       >
                         <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
                           <NextImage
@@ -909,7 +889,7 @@ export default function Services() {
                           </div>
                         </div>
 
-                        <p className="mt-3 text-sm leading-none font-extralight text-dark-blue-400">
+                        <p className="mt-3 text-sm leading-[1.4] font-extralight text-dark-blue-400 line-clamp-3">
                           Brief Description of the project. Lorem ipsum dolor
                           sit amet, consectetur adipiscing elit, sed do eiusmod
                           tempor incididunt.
@@ -933,7 +913,7 @@ export default function Services() {
                           </div>
                         </div>
 
-                        <div className="mt-5 flex items-end justify-between">
+                        <div className="mt-auto pt-5 flex items-end justify-between">
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
@@ -1456,7 +1436,7 @@ export default function Services() {
 
           <div className="mt-3 max-w-[346px] text-xs leading-[19px] text-center mx-auto">
             You may unsubscribe at any time. By signing up, you agree to
-            Marketeq’s <span className="underline">Privacy Policy</span> and{" "}
+            Marketeq's <span className="underline">Privacy Policy</span> and{" "}
             <span className="underline">Terms of Use</span>.
           </div>
         </div>

@@ -14,6 +14,7 @@ import { NProgressBar } from "@/components/n-progress-bar"
 import { Toaster } from "@/components/ui"
 import "@/styles/globals.css"
 import "@/styles/nprogress.css"
+import QueryProvider from "../src/features/shared/query-provider"
 
 export const metadata: Metadata = {
   title: "Marketeq",
@@ -35,14 +36,16 @@ export default function RootLayout({
       <body>
         <GoogleOAuthProvider clientId="732482504050-vudnbrq9j0j6ebropkvbtnjjk53hmfjv.apps.googleusercontent.com">
           <AuthProvider>
-            <div className="min-h-screen flex flex-col bg-gray-50">
-              {children}
-            </div>
-            <Suspense fallback={null}>
-              <NProgressBar />
-            </Suspense>
-            <Toaster />
-            <InviteWindow />
+            <QueryProvider>
+              <div className="min-h-screen flex flex-col bg-gray-50">
+                {children}
+              </div>
+              <Suspense fallback={null}>
+                <NProgressBar />
+              </Suspense>
+              <Toaster />
+              <InviteWindow />
+            </QueryProvider>
           </AuthProvider>
         </GoogleOAuthProvider>
       </body>
