@@ -1,3 +1,4 @@
+'use client'
 import {
   ArrowRight,
   Check,
@@ -6,8 +7,10 @@ import {
   Clock,
   Home03,
   Mail,
+  MarkerPin02,
   Star,
 } from "@blend-metrics/icons"
+import { AdobeBrand } from "@blend-metrics/icons/brands"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs"
 import { Money } from "@/components/money"
 import NextImage from "@/components/next-image"
@@ -33,7 +36,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui"
 
-export default function Projects() {
+export default function Teams() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <div className="py-[50px]">
@@ -63,7 +66,7 @@ export default function Projects() {
                     /
                   </span>
                   <span className="text-xs leading-6 font-semibold text-white opacity-60">
-                    Projects
+                    Services
                   </span>
                 </div>
               </div>
@@ -83,7 +86,7 @@ export default function Projects() {
           <div className="mt-[50px]">
             <div className="flex items-center justify-between">
               <h1 className="text-[28px] leading-none font-bold text-dark-blue-400">
-                Browse Projects by Category
+                Browse Services by Category
               </h1>
 
               <div className="flex items-center gap-x-3">
@@ -170,9 +173,10 @@ export default function Projects() {
 
           <div className="mt-[50px]">
             <Tabs defaultValue="Featured">
-              <h1 className="text-[28px] leading-none font-bold text-dark-blue-400">
-                Top Software Development Projects
+              <h1 className="text-[28px] leading-none text-dark-blue-400 font-bold">
+                Top Software Development Teams
               </h1>
+
               <div className="mt-6 flex justify-between items-center">
                 <TabsList className="flex items-center gap-x-3">
                   <Badge
@@ -222,19 +226,38 @@ export default function Projects() {
                   </Badge>
                 </TabsList>
 
-                <Button
-                  variant="link"
-                  visual="gray"
-                  size="lg"
-                  className="underline"
-                >
-                  Explore More Projects
-                </Button>
+                <div className="flex items-center gap-x-8">
+                  <Button
+                    variant="link"
+                    visual="gray"
+                    size="lg"
+                    className="underline"
+                  >
+                    Explore More Projects
+                  </Button>
+
+                  <div className="flex items-center gap-x-3">
+                    <IconButton
+                      className="rounded-full border-dark-blue-400 text-dark-blue-400 opacity-[.19] size-8"
+                      visual="gray"
+                      variant="outlined"
+                    >
+                      <ChevronLeft className="size-[18px]" />
+                    </IconButton>
+                    <IconButton
+                      className="rounded-full border-dark-blue-400 text-dark-blue-400 opacity-[.19] size-8"
+                      visual="gray"
+                      variant="outlined"
+                    >
+                      <ChevronRight className="size-[18px]" />
+                    </IconButton>
+                  </div>
+                </div>
               </div>
 
               <div className="mt-6">
                 <TabsContent
-                  className="gap-5 grid grid-cols-4"
+                  className="gap-x-5 gap-y-6 grid grid-cols-4"
                   value="Featured"
                 >
                   {Array(8)
@@ -242,105 +265,55 @@ export default function Projects() {
                     .map((_, index) => (
                       <article
                         key={index}
-                        className="p-5 bg-white border rounded-lg border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)]"
+                        className="p-5 border border-gray-200 shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] rounded-lg bg-white"
                       >
-                        <div className="h-[169px] rounded-[6px] overflow-hidden bg-white relative group border border-black/15">
-                          <NextImage
-                            className="object-cover group-hover:scale-150 transition [transition-duration:3000ms]"
-                            src="/dashboard.png"
-                            alt="Dashboard"
-                            fill
-                            sizes="33vw"
-                          />
-                        </div>
-
-                        <div className="mt-3 flex items-start gap-x-3">
-                          <NextLink
-                            href="#"
-                            className="focus-visible:outline-none font-bold flex-auto text-base leading-none text-dark-blue-400 hover:underline"
-                          >
-                            The Ultimate Mobile App Experience
-                          </NextLink>
-
-                          <div className="inline-flex items-center gap-x-1">
-                            <Star className="size-[15px] text-primary-500 fill-primary-500" />
-                            <span className="inline-flex items-center gap-x-1 text-sm leading-none text-dark-blue-400 font-medium">
-                              4.9 <span className="font-extralight">(5)</span>
-                            </span>
-                          </div>
-                        </div>
-
-                        <p className="mt-3 text-sm leading-none font-extralight text-dark-blue-400">
-                          Brief Description of the project. Lorem ipsum dolor
-                          sit amet, consectetur adipiscing elit, sed do eiusmod
-                          tempor incididunt.
-                        </p>
-
-                        <div className="mt-[14.5px] flex flex-col gap-y-3">
-                          <div className="flex items-center gap-x-[6.4px]">
-                            <Clock className="size-[18px] shrink-0 text-primary-500" />
-
-                            <span className="font-medium text-sm leading-none text-dark-blue-400">
-                              Starting from 12 weeks
-                            </span>
-                          </div>
-
-                          <div className="flex items-center gap-x-[6.4px]">
-                            <Money className="size-[18px] shrink-0 text-primary-500" />
-
-                            <span className="font-medium text-sm leading-none text-dark-blue-400">
-                              $50,000 budget
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="mt-5 flex items-end justify-between">
+                        <div className="flex items-start justify-between">
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <AvatarGroup
-                                  max={5}
-                                  size="sm"
+                                  max={3}
+                                  size="md"
                                   excess
                                   excessClassName="border-gray-300 text-gray-500"
                                 >
                                   <Avatar
-                                    size="sm"
+                                    size="md"
                                     className="border-2 border-white hover:ring-0 active:ring-0"
                                   >
                                     <AvatarImage src="/woman.jpg" alt="Woman" />
                                     <AvatarFallback>W</AvatarFallback>
                                   </Avatar>
                                   <Avatar
-                                    size="sm"
+                                    size="md"
                                     className="border-2 border-white hover:ring-0 active:ring-0"
                                   >
                                     <AvatarImage src="/woman.jpg" alt="Woman" />
                                     <AvatarFallback>W</AvatarFallback>
                                   </Avatar>
                                   <Avatar
-                                    size="sm"
+                                    size="md"
                                     className="border-2 border-white hover:ring-0 active:ring-0"
                                   >
                                     <AvatarImage src="/woman.jpg" alt="Woman" />
                                     <AvatarFallback>W</AvatarFallback>
                                   </Avatar>
                                   <Avatar
-                                    size="sm"
+                                    size="md"
                                     className="border-2 border-white hover:ring-0 active:ring-0"
                                   >
                                     <AvatarImage src="/woman.jpg" alt="Woman" />
                                     <AvatarFallback>W</AvatarFallback>
                                   </Avatar>
                                   <Avatar
-                                    size="sm"
+                                    size="md"
                                     className="border-2 border-white hover:ring-0 active:ring-0"
                                   >
                                     <AvatarImage src="/woman.jpg" alt="Woman" />
                                     <AvatarFallback>W</AvatarFallback>
                                   </Avatar>
                                   <Avatar
-                                    size="sm"
+                                    size="md"
                                     className="border-2 border-white hover:ring-0 active:ring-0"
                                   >
                                     <AvatarImage src="/woman.jpg" alt="Woman" />
@@ -520,6 +493,88 @@ export default function Projects() {
                               </TooltipProvider>
                             )}
                           </FavoriteRoot>
+                        </div>
+
+                        <div className="mt-5 flex items-center">
+                          <span className="text-sm font-bold text-dark-blue-400 leading-none">
+                            $85 - $120
+                          </span>
+                          <span className="text-[10px] text-dark-blue-400 leading-none font-light">
+                            /hr
+                          </span>
+                        </div>
+
+                        <div className="mt-5">
+                          <h1 className="text-base leading-none text-dark-blue-400 font-bold">
+                            Team Name{" "}
+                            <span className="font-light text-gray-500">
+                              @Tech Sential
+                            </span>
+                          </h1>
+                          <h3 className="mt-0.5 text-xs font-medium text-dark-blue-400 leading-none">
+                            Development team
+                          </h3>
+
+                          <p className="mt-2 text-[11px] font-light leading-none text-dark-blue-400">
+                            Average 10 years of experience
+                          </p>
+
+                          <div className="mt-3.5 flex items-center gap-x-1">
+                            <MarkerPin02 className="size-3 text-gray-500" />
+
+                            <span className="leading-4 text-[10px] font-medium text-gray-500">
+                              UK, USA, Brazil, Philippines, more...
+                            </span>
+                          </div>
+
+                          <div className="mt-3.5 flex items-center gap-x-2">
+                            <div className="flex items-center gap-x-2">
+                              <div className="flex items-center gap-x-[5px] py-[3px] px-1.5 rounded-[3.03px] bg-gray-50 shadow-[0px_0.57px_1.14px_0px_rgba(16,24,40,.05)]">
+                                <div className="flex items-center gap-x-[3px]">
+                                  <Star className="size-3 text-primary-500 fill-primary-500 shrink-0" />
+                                  <Star className="size-3 text-primary-500 fill-primary-500 shrink-0" />
+                                  <Star className="size-3 text-primary-500 fill-primary-500 shrink-0" />
+                                  <Star className="size-3 text-primary-500 fill-primary-500 shrink-0" />
+                                  <Star className="size-3 text-primary-500 fill-primary-500 shrink-0" />
+                                </div>
+                              </div>
+                              <span className="text-xs font-semibold leading-none text-dark-blue-400">
+                                4.7
+                              </span>
+                            </div>
+                            <span className="text-xs font-semibold leading-none text-dark-blue-400">
+                              2 Projects
+                            </span>
+                          </div>
+
+                          <div className="mt-5 flex gap-2 flex-wrap">
+                            <Badge className="bg-transparent" visual="gray">
+                              iOS
+                            </Badge>
+                            <Badge className="bg-transparent" visual="gray">
+                              iOS
+                            </Badge>
+                            <Badge className="bg-transparent" visual="gray">
+                              iOS
+                            </Badge>
+                          </div>
+
+                          <div className="mt-5 space-y-2">
+                            <span className="block text-[11px] font-light text-dark-blue-400">
+                              Previous clients
+                            </span>
+                            <div className="mt-2 flex items-center flex-wrap gap-3">
+                              <div className="size-[25px] rounded-full shrink-0 relative bg-gray-50">
+                                <AdobeBrand className="size-7" />
+                              </div>
+                              <div className="size-[25px] rounded-full shrink-0 relative bg-gray-50">
+                                <AdobeBrand className="size-7" />
+                              </div>
+                              <div className="size-[25px] rounded-full shrink-0 relative bg-gray-50">
+                                <AdobeBrand className="size-7" />
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </article>
                     ))}

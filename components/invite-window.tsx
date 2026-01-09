@@ -88,7 +88,8 @@ export const InviteWindowTrigger = React.forwardRef<
 InviteWindowTrigger.displayName = "InviteWindowTrigger"
 
 export const InviteWindow = () => {
-  const [selected, setSelected] = React.useState<Invitees>()
+  return null
+  /* const [selected, setSelected] = React.useState<Invitees>()
   const [inputValue, setInputValue] = React.useState("")
   const { open, toggle: toggleInviteWindow } = useInviteWindowStore()
 
@@ -387,4 +388,5 @@ export const InviteWindow = () => {
       </DialogContent>
     </Dialog>
   )
+    */
 }

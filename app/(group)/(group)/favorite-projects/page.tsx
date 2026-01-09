@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { getFirstItem } from "@/utils/functions"
 import {
   Copy,
@@ -14,6 +14,7 @@ import {
 import { ToggleGroupItem, ToggleGroupRoot } from "@/components/ui/toggle-group"
 import { Grid, List, SortAs } from "@/components/icons"
 import NextImage from "@/components/next-image"
+import NextLink from "@/components/next-link"
 import {
   Button,
   Dialog,
@@ -31,11 +32,17 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui"
+import { getProjectFavorites, type Favorite } from "../../../../src/lib/api/favorites"
 
 const GRID_LAYOUT = "GRID"
 const LIST_LAYOUT = "LIST"
 
-const Card = () => {
+interface CardProps {
+  favorite: Favorite;
+  itemCount: number;
+}
+
+const Card = ({ favorite, itemCount }: CardProps) => {
   return (
     <article className="bg-white border rounded-lg border-gray-200">
       <div className="h-[163px] lg:h-[222px] grid grid-cols-2 grid-rows-3 bg-gray-50">
@@ -98,7 +105,7 @@ const Card = () => {
       <div className="relative pt-[30px] lg:pt-[47px] p-5 lg:p-[25px]">
         <div className="size-11 lg:size-[61px] bg-white absolute rounded-full -top-[22px] lg:-top-[30.5px] left-1/2 border border-gray-300 inline-flex flex-col shrink-0 justify-center items-center -translate-x-1/2">
           <span className="text-xs leading-[14.52px] lg:text-base font-semibold lg:leading-[19.36px] text-dark-blue-400">
-            42
+            {itemCount}
           </span>
           <span className="text-[9px] leading-[10.89px] lg:text-xs font-light lg:leading-[14.52px] text-dark-blue-400">
             Saved
@@ -132,26 +139,30 @@ const Card = () => {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <h1 className="text-[11px] leading-[13.31px] lg:text-base text-center lg:leading-[21.79px] font-bold text-dark-blue-400">
-          Sales Funnels
-        </h1>
+        <NextLink href={`/project-details/${favorite.itemId}`}>
+          <h1 className="text-[11px] leading-[13.31px] lg:text-base text-center lg:leading-[21.79px] font-bold text-dark-blue-400 hover:underline">
+            Project {favorite.itemId}
+          </h1>
+        </NextLink>
         <p className="text-[9px] leading-[10.89px] lg:text-sm text-center lg:leading-[19.07px] font-light text-[#585C65] xs:max-lg:mt-0.5">
-          Created Jan 2024
+          Saved {new Date(favorite.createdAt).toLocaleDateString()}
         </p>
       </div>
     </article>
   )
 }
 
-const ListCard = () => {
+const ListCard = ({ favorite, itemCount }: CardProps) => {
   return (
     <div className="flex md:flex-row flex-col md:gap-x-10 border overflow-hidden bg-white border-gray-200 shadow-[0px_2px_5px_0px_theme(colors.black/[.04])] rounded-lg">
       <div className="py-3.5 lg:py-[16.5px] space-y-0.5 pl-5">
-        <h1 className="text-[11px] leading-[13.31px] lg:text-base lg:leading-[19.36px] font-bold text-dark-blue-400">
-          Web3
-        </h1>
+        <NextLink href={`/projects/${favorite.itemId}`}>
+          <h1 className="text-[11px] leading-[13.31px] lg:text-base lg:leading-[19.36px] font-bold text-dark-blue-400 hover:underline">
+            Project {favorite.itemId}
+          </h1>
+        </NextLink>
         <p className="text-[9px] leading-[10.89px] lg:text-sm lg:leading-[16.94px] font-light text-[#585C65]">
-          Created Jan 2024
+          Saved {new Date(favorite.createdAt).toLocaleDateString()}
         </p>
       </div>
 
@@ -159,7 +170,7 @@ const ListCard = () => {
         <div className="md:py-[4.53px] lg:py-[10.59px]">
           <div className="inline-flex absolute xs:max-md:-top-[22.5px] xs:max-md:right-3.5 md:relative z-10 flex-col shrink-0 size-[45px] lg:size-[50px] rounded-full justify-center items-center bg-white border-[.74px] lg:border-[.82px] border-gray-200 shadow-[0px_1.64px_4.1px_0px_theme(colors.black/.04)]">
             <span className="text-[12.01px] leading-[14.54px] lg:text-sm lg:leading-[16.94px] font-semibold text-dark-blue-400">
-              3
+              {itemCount}
             </span>
             <span className="text-[9.01px] leading-[10.9px] lg:text-[10px] font-light lg:leading-[12.1px] text-dark-blue-400">
               saved
@@ -271,6 +282,25 @@ const Modal = () => {
 
 export default function FavoriteProjects() {
   const [value, setValue] = useState([GRID_LAYOUT])
+  const [favorites, setFavorites] = useState<Favorite[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadFavorites() {
+      try {
+        setIsLoading(true)
+        const projectFavs = await getProjectFavorites()
+        setFavorites(projectFavs)
+      } catch (error) {
+        console.error('Failed to load favorites:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadFavorites()
+  }, [])
+
   return (
     <div className="p-3.5 md:p-10 lg:py-[100px] lg:px-[200px]">
       <div className="flex items-center justify-between">
@@ -307,7 +337,7 @@ export default function FavoriteProjects() {
       </div>
 
       <h1 className="mt-6 text-lg leading-[21.78px] lg:text-[28px] lg:leading-[33.89px] font-bold text-dark-blue-400 lg:hidden">
-        My Favorites
+        My Favorites ({favorites.length})
       </h1>
 
       <Tabs className="mt-6 lg:mt-[19px]" defaultValue="All">
@@ -327,13 +357,13 @@ export default function FavoriteProjects() {
                 className="xs:max-lg:text-xs xs:max-lg:leading-5"
                 value="All"
               >
-                Talent Network
+                All Projects
               </TabsTrigger>
               <TabsTrigger
                 className="xs:max-lg:text-xs xs:max-lg:leading-5"
-                value="Projects"
+                value="Recent"
               >
-                Projects
+                Recent
               </TabsTrigger>
             </TabsList>
           </div>
@@ -367,22 +397,50 @@ export default function FavoriteProjects() {
           </div>
         </div>
         <TabsContent value="All">
-          {getFirstItem(value) === GRID_LAYOUT ? (
+          {isLoading ? (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-3 gap-y-3.5 lg:gap-6 pt-3.5 lg:pt-6">
-              <Card />
-              <Card />
-              <Card />
-              <Card />
-              <Card />
-              <Card />
-              <Card />
-              <Card />
+              {Array(8).fill(0).map((_, i) => (
+                <div key={i} className="bg-white border rounded-lg h-[300px] animate-pulse" />
+              ))}
+            </div>
+          ) : favorites.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-dark-blue-400 mb-4">No favorites yet</p>
+              <NextLink href="/creative/projects">
+                <Button>Explore Projects</Button>
+              </NextLink>
+            </div>
+          ) : getFirstItem(value) === GRID_LAYOUT ? (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-3 gap-y-3.5 lg:gap-6 pt-3.5 lg:pt-6">
+              {favorites.map((fav) => (
+                <Card key={fav.id} favorite={fav} itemCount={favorites.length} />
+              ))}
             </div>
           ) : (
             <div className="grid gap-y-3 pt-3.5 lg:pt-6">
-              <ListCard />
-              <ListCard />
-              <ListCard />
+              {favorites.map((fav) => (
+                <ListCard key={fav.id} favorite={fav} itemCount={favorites.length} />
+              ))}
+            </div>
+          )}
+        </TabsContent>
+        <TabsContent value="Recent">
+          {/* Same as All tab but sorted by date */}
+          {getFirstItem(value) === GRID_LAYOUT ? (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-3 gap-y-3.5 lg:gap-6 pt-3.5 lg:pt-6">
+              {favorites
+                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                .map((fav) => (
+                  <Card key={fav.id} favorite={fav} itemCount={favorites.length} />
+                ))}
+            </div>
+          ) : (
+            <div className="grid gap-y-3 pt-3.5 lg:pt-6">
+              {favorites
+                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                .map((fav) => (
+                  <ListCard key={fav.id} favorite={fav} itemCount={favorites.length} />
+                ))}
             </div>
           )}
         </TabsContent>

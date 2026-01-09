@@ -3,6 +3,9 @@
 import * as React from "react"
 import { cn, noop, toPxIfNumber } from "@/utils/functions"
 import { useControllableState, useMakeFixedBehaveSticky } from "@/utils/hooks"
+import { useEffect, useState } from "react"
+import { useRouter, useParams } from "next/navigation"
+import { extractIdFromSlug } from "../../../../../src/lib/urlHelpers"
 import {
   AlertCircle,
   ArrowLeft,
@@ -444,8 +447,53 @@ const CarouselNextTrigger = () => {
 }
 
 export default function ProjectDetails() {
+  const params = useParams()
+  const router = useRouter()
+  const [project, setProject] = React.useState<any>(null)
+  const [loading, setLoading] = React.useState(true)
   const [selected, setSelected] = React.useState<string>("Details")
   const [tabsRef, isSticky] = useMakeFixedBehaveSticky<HTMLDivElement>()
+
+  React.useEffect(() => {
+    async function fetchProject() {
+      try {
+        const slug = params.slug as string
+        const projectId = slug.split('-').pop() // Extract ID from slug
+
+        // Fetch from category page
+        const res = await fetch(`http://localhost:3002/api/category-pages/creative`)
+        const data = await res.json()
+
+        // Find project in blocks
+        const projectsBlock = data.blocks?.find((b: any) => b.entity === 'projects')
+        const foundProject = projectsBlock?.items?.find((p: any) => p.id === parseInt(projectId || '0'))
+
+        if (!foundProject) {
+          router.push('/404')
+          return
+        }
+
+        setProject(foundProject)
+      } catch (err) {
+        console.error(err)
+        router.push('/404')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProject()
+  }, [params.slug, router])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+      </div>
+    )
+  }
+
+  if (!project) return null
 
   return (
     <div className="px-[100px] relative bg-white">
@@ -472,7 +520,7 @@ export default function ProjectDetails() {
                     /
                   </span>
                   <span className="text-xs leading-6 text-gray-500/50 hover:text-gray-500 font-semibold hover:underline cursor-pointer transition duration-300">
-                    Mobile Applications
+                    {project.role}
                   </span>
                 </div>
 
@@ -501,7 +549,7 @@ export default function ProjectDetails() {
                     Mobile Application
                   </Badge>
                   <h1 className="text-[28px] leading-none font-bold text-dark-blue-400">
-                    The Ultimate Mobile App Experience
+                    {project.title}
                   </h1>
 
                   <div className="flex items-center gap-x-2">
@@ -514,7 +562,7 @@ export default function ProjectDetails() {
                         <Star className="shrink-0 size-4 text-primary-500" />
                       </div>
                       <span className="text-sm leading-none font-semibold text-dark-blue-400">
-                        4.9 <span className="font-medium">(14 ratings)</span>
+                        {project.rating || '4.9'} <span className="font-medium">({project.reviewCount || 14} ratings)</span>
                       </span>
                     </div>
 
@@ -553,17 +601,7 @@ export default function ProjectDetails() {
 
               <div className="mt-3 relative">
                 <p className="text-sm font-extralight text-dark-blue-400">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                  laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-                  irure dolor in reprehenderit in voluptate velit esse cillum
-                  dolore eu fugiat nulla pariatur. Ut enim ad minim veniam, quis
-                  nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                  commodo consequat. Duis aute irure dolor in reprehenderit in
-                  voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                  Excepteur sint occaecat cupidatat non proident, sunt in culpa
-                  qui officia deserunt mollit anim id est laborum.{" "}
+                  {project.summary}
                 </p>
               </div>
             </div>
@@ -665,9 +703,9 @@ export default function ProjectDetails() {
                           </div>
 
                           <div className="flex flex-col items-start gap-y-0.5">
-                            <Badge visual="gray">Mobile Application</Badge>
+                            <Badge visual="gray">{project.role}</Badge>
                             <h3 className="text-lg leading-none font-bold text-dark-blue-400">
-                              The Ultimate Mobile App Experience
+                              {project.title}
                             </h3>
                           </div>
                         </div>
