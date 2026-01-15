@@ -39,6 +39,7 @@ import {
   Users03,
   X,
 } from "@blend-metrics/icons"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Meta } from "@storybook/react"
 import {
   DragControls,
@@ -51,7 +52,9 @@ import {
   useMotionValue,
 } from "framer-motion"
 import { useDrag } from "react-aria"
+import { Controller, SubmitHandler, useForm } from "react-hook-form"
 import { useMotion } from "react-use"
+import { z } from "zod"
 import {
   Bold,
   Italic,
@@ -1738,7 +1741,7 @@ export const ClientView = () => {
 
 const BoldStatement = () => {
   return (
-    <div className="mt-[100px]">
+    <div className=" relative group">
       <h1 className="relative group/block">
         <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
           <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
@@ -1771,7 +1774,7 @@ const Process = () => {
   const [items, setItems] = useState([0, 1, 2])
   const len = items.length
   return (
-    <div className="mt-[100px]">
+    <div className=" relative group">
       <h1 className="relative group/block">
         <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
           <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
@@ -1948,7 +1951,7 @@ const Process = () => {
 
 const InterviewPointers = () => {
   return (
-    <div className="mt-[100px]">
+    <div className=" group relative">
       <h1 className="relative group/block">
         <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
           <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
@@ -2147,7 +2150,7 @@ const InterviewPointers = () => {
 
 const Personas = () => {
   return (
-    <div className="grid grid-cols-2 border border-gray-200 rounded-lg mt-[100px]">
+    <div className="grid grid-cols-2 border border-gray-200 rounded-lg  relative group">
       <div className="group/column relative rounded-l-lg flex flex-col justify-end">
         <PictureEditor
           startingPoint={({ dataUrl, open, style, onRemove, onEdit }) => (
@@ -2385,7 +2388,7 @@ const ResultMetrics = () => {
   const [items, setItems] = useState([0, 1, 2, 3])
   const len = items.length
   return (
-    <div className="mt-[100px] border rounded-lg bg-border-200 gap-x-[53.33px] p-[50px]">
+    <div className=" border rounded-lg bg-border-200 gap-x-[53.33px] p-[50px] group relative">
       <Reorder.Group
         as="div"
         className="isolate relative grid grid-cols-[repeat(var(--cols),minmax(0,1fr))] gap-x-[--gap] [--gap:53.33px]"
@@ -2488,7 +2491,7 @@ const Testimonials = () => {
   const [items, setItems] = useState([0, 1])
   const len = items.length
   return (
-    <div className="mt-[100px]">
+    <div className=" group relative">
       <h1 className="relative group/block">
         <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
           <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
@@ -2671,7 +2674,7 @@ const Testimonials = () => {
 
 const Conclusion = () => {
   return (
-    <div className="mt-[100px]">
+    <div className=" group relative">
       <h1 className="relative group/block">
         <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
           <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
@@ -2911,9 +2914,31 @@ const Columns = () => {
   )
 }
 
+const introductionSchema = z.object({
+  title: z.string().min(1, "Please enter at least 1 character(s)"),
+  subTitle: z.string().min(1, "Please enter at least 1 character(s)"),
+  files: z.array(z.instanceof(File)),
+})
+
+type IntroductionFormValues = z.infer<typeof introductionSchema>
+
 const Introduction = () => {
+  const { handleSubmit, control } = useForm<IntroductionFormValues>({
+    resolver: zodResolver(introductionSchema),
+    defaultValues: {
+      title: "This is your introduction",
+      subTitle:
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    },
+  })
+
+  const onSubmit: SubmitHandler<IntroductionFormValues> = (values) => {}
+
   return (
-    <div className="mt-[100px] grid grid-cols-2 gap-x-[50px]">
+    <form
+      className=" grid grid-cols-2 gap-x-[50px] group relative"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="py-[52px]">
         <h1 className="relative group/block">
           <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
@@ -2923,21 +2948,28 @@ const Introduction = () => {
             {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
             <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
           </span>
-          <EditableRoot
-            className="relative"
-            defaultValue="This is your introduction"
-          >
-            <EditableLabel>Title</EditableLabel>
-            <EditableArea>
-              <EditableInput
-                asChild
-                className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[40px] [field-sizing:content] resize-none scrollbar-none text-[40px] leading-none font-semibold text-dark-blue-400"
+          <Controller
+            control={control}
+            name="title"
+            render={({ field: { value, onChange } }) => (
+              <EditableRoot
+                className="relative"
+                value={value}
+                onChange={onChange}
               >
-                <textarea />
-              </EditableInput>
-              <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-[40px] leading-none font-semibold text-dark-blue-400" />
-            </EditableArea>
-          </EditableRoot>
+                <EditableLabel>Title</EditableLabel>
+                <EditableArea>
+                  <EditableInput
+                    asChild
+                    className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[40px] [field-sizing:content] resize-none scrollbar-none text-[40px] leading-none font-semibold text-dark-blue-400"
+                  >
+                    <textarea />
+                  </EditableInput>
+                  <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-[40px] leading-none font-semibold text-dark-blue-400" />
+                </EditableArea>
+              </EditableRoot>
+            )}
+          />
         </h1>
         <p className="group/block relative mt-5">
           <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
@@ -2947,59 +2979,95 @@ const Introduction = () => {
             {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
             <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
           </span>
-          <EditableRoot
-            className="relative"
-            defaultValue="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
-          >
-            <EditableLabel>Sub Title</EditableLabel>
-            <EditableArea>
-              <EditableInput
-                asChild
-                className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-2xl leading-none font-light text-dark-blue-400"
+          <Controller
+            control={control}
+            name="subTitle"
+            render={({ field: { value, onChange } }) => (
+              <EditableRoot
+                className="relative"
+                value={value}
+                onChange={onChange}
               >
-                <textarea />
-              </EditableInput>
-              <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-2xl leading-none font-light text-dark-blue-400" />
-            </EditableArea>
-          </EditableRoot>
+                <EditableLabel>Sub Title</EditableLabel>
+                <EditableArea>
+                  <EditableInput
+                    asChild
+                    className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-2xl leading-none font-light text-dark-blue-400"
+                  >
+                    <textarea />
+                  </EditableInput>
+                  <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-2xl leading-none font-light text-dark-blue-400" />
+                </EditableArea>
+              </EditableRoot>
+            )}
+          />
         </p>
       </div>
       <div className="relative">
-        <PictureEditor
-          startingPoint={({ dataUrl, open, style, onRemove, onEdit }) => (
-            <div className="group-data-[state=dragged]/article:pointer-events-none overflow-hidden relative group/image size-full bg-gray-100 grid rounded-lg place-items-center hover:bg-black/20 hover:ring-2 hover:ring-primary-500 transition duration-300">
-              {dataUrl ? (
-                <div className="size-full rounded-lg transform" style={style}>
-                  <img
-                    src={dataUrl}
-                    aria-label="Picture"
-                    className="absolute object-contain rounded-lg"
+        <Controller
+          control={control}
+          name="files"
+          render={({ field: { onChange } }) => (
+            <PictureEditor
+              onValueChange={onChange}
+              startingPoint={({ dataUrl, open, style, onRemove, onEdit }) => (
+                <div className="group-data-[state=dragged]/article:pointer-events-none overflow-hidden relative group/image size-full bg-gray-100 grid rounded-lg place-items-center hover:bg-black/20 hover:ring-2 hover:ring-primary-500 transition duration-300">
+                  {dataUrl ? (
+                    <div
+                      className="size-full rounded-lg transform"
+                      style={style}
+                    >
+                      <img
+                        src={dataUrl}
+                        aria-label="Picture"
+                        className="absolute object-contain rounded-lg"
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <Picture className="w-[84px] shrink-0 h-[76px] text-gray-300 group-hover/image:text-white" />
+                    </>
+                  )}
+                  <BlockImageToolbar
+                    className="top-5 left-5 absolute hidden opacity-0 group-hover/image:inline-flex group-hover/image:opacity-100 transition duration-300"
+                    onAddImage={open}
+                    onRemove={onRemove}
+                    onEdit={onEdit}
+                    enableEdit={!!dataUrl}
+                    enableRemove={!!dataUrl}
                   />
                 </div>
-              ) : (
-                <>
-                  <Picture className="w-[84px] shrink-0 h-[76px] text-gray-300 group-hover/image:text-white" />
-                </>
               )}
-              <BlockImageToolbar
-                className="top-5 left-5 absolute hidden opacity-0 group-hover/image:inline-flex group-hover/image:opacity-100 transition duration-300"
-                onAddImage={open}
-                onRemove={onRemove}
-                onEdit={onEdit}
-                enableEdit={!!dataUrl}
-                enableRemove={!!dataUrl}
-              />
-            </div>
+            />
           )}
         />
       </div>
-    </div>
+    </form>
   )
 }
 
+const ImageTextSchema = z.object({
+  title: z.string().min(1, "Please enter at least 1 character(s)"),
+  subTitle: z.string().min(1, "Please enter at least 1 character(s)"),
+  files: z.array(z.instanceof(File)),
+})
+
+type ImageTextFormValues = z.infer<typeof ImageTextSchema>
+
 const ImageText = () => {
+  const { handleSubmit, control } = useForm<ImageTextFormValues>({
+    resolver: zodResolver(ImageTextSchema),
+    defaultValues: {
+      title: "This is your introduction",
+      subTitle:
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    },
+  })
+
+  const onSubmit: SubmitHandler<ImageTextFormValues> = (values) => {}
+
   return (
-    <div className="mt-[100px] grid grid-cols-2 gap-x-[50px]">
+    <form className=" grid grid-cols-2 gap-x-[50px] relative group">
       <div className="py-[66.5px]">
         <h1 className="relative group/block">
           <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
@@ -3009,18 +3077,28 @@ const ImageText = () => {
             {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
             <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
           </span>
-          <EditableRoot className="relative" defaultValue="Image & Text">
-            <EditableLabel>Title</EditableLabel>
-            <EditableArea>
-              <EditableInput
-                asChild
-                className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[40px] [field-sizing:content] resize-none scrollbar-none text-[40px] leading-none font-semibold text-dark-blue-400"
+          <Controller
+            control={control}
+            name="title"
+            render={({ field: { value, onChange } }) => (
+              <EditableRoot
+                className="relative"
+                value={value}
+                onChange={onChange}
               >
-                <textarea />
-              </EditableInput>
-              <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-[40px] leading-none font-semibold text-dark-blue-400" />
-            </EditableArea>
-          </EditableRoot>
+                <EditableLabel>Title</EditableLabel>
+                <EditableArea>
+                  <EditableInput
+                    asChild
+                    className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[40px] [field-sizing:content] resize-none scrollbar-none text-[40px] leading-none font-semibold text-dark-blue-400"
+                  >
+                    <textarea />
+                  </EditableInput>
+                  <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-[40px] leading-none font-semibold text-dark-blue-400" />
+                </EditableArea>
+              </EditableRoot>
+            )}
+          />
         </h1>
         <p className="group/block relative mt-5">
           <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
@@ -3030,60 +3108,77 @@ const ImageText = () => {
             {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
             <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
           </span>
-          <EditableRoot
-            className="relative"
-            defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-          >
-            <EditableLabel>Sub Title</EditableLabel>
-            <EditableArea>
-              <EditableInput
-                asChild
-                className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-2xl leading-none font-light text-dark-blue-400"
+          <Controller
+            control={control}
+            name="subTitle"
+            render={({ field: { value, onChange } }) => (
+              <EditableRoot
+                className="relative"
+                value={value}
+                onChange={onChange}
               >
-                <textarea />
-              </EditableInput>
-              <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-2xl leading-none font-light text-dark-blue-400" />
-            </EditableArea>
-          </EditableRoot>
+                <EditableLabel>Sub Title</EditableLabel>
+                <EditableArea>
+                  <EditableInput
+                    asChild
+                    className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-2xl leading-none font-light text-dark-blue-400"
+                  >
+                    <textarea />
+                  </EditableInput>
+                  <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-2xl leading-none font-light text-dark-blue-400" />
+                </EditableArea>
+              </EditableRoot>
+            )}
+          />
         </p>
       </div>
       <div className="relative">
-        <PictureEditor
-          startingPoint={({ dataUrl, open, style, onRemove, onEdit }) => (
-            <div className="group-data-[state=dragged]/article:pointer-events-none overflow-hidden relative group/image size-full bg-gray-100 grid rounded-lg place-items-center hover:bg-black/20 hover:ring-2 hover:ring-primary-500 transition duration-300">
-              {dataUrl ? (
-                <div className="size-full rounded-lg transform" style={style}>
-                  <img
-                    src={dataUrl}
-                    aria-label="Picture"
-                    className="absolute object-contain rounded-lg"
+        <Controller
+          control={control}
+          name="files"
+          render={({ field: { onChange } }) => (
+            <PictureEditor
+              onValueChange={onChange}
+              startingPoint={({ dataUrl, open, style, onRemove, onEdit }) => (
+                <div className="group-data-[state=dragged]/article:pointer-events-none overflow-hidden relative group/image size-full bg-gray-100 grid rounded-lg place-items-center hover:bg-black/20 hover:ring-2 hover:ring-primary-500 transition duration-300">
+                  {dataUrl ? (
+                    <div
+                      className="size-full rounded-lg transform"
+                      style={style}
+                    >
+                      <img
+                        src={dataUrl}
+                        aria-label="Picture"
+                        className="absolute object-contain rounded-lg"
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <Picture className="w-[84px] shrink-0 h-[76px] text-gray-300 group-hover/image:text-white" />
+                    </>
+                  )}
+                  <BlockImageToolbar
+                    className="top-5 left-5 absolute hidden opacity-0 group-hover/image:inline-flex group-hover/image:opacity-100 transition duration-300"
+                    onAddImage={open}
+                    onRemove={onRemove}
+                    onEdit={onEdit}
+                    enableEdit={!!dataUrl}
+                    enableRemove={!!dataUrl}
                   />
                 </div>
-              ) : (
-                <>
-                  <Picture className="w-[84px] shrink-0 h-[76px] text-gray-300 group-hover/image:text-white" />
-                </>
               )}
-              <BlockImageToolbar
-                className="top-5 left-5 absolute hidden opacity-0 group-hover/image:inline-flex group-hover/image:opacity-100 transition duration-300"
-                onAddImage={open}
-                onRemove={onRemove}
-                onEdit={onEdit}
-                enableEdit={!!dataUrl}
-                enableRemove={!!dataUrl}
-              />
-            </div>
+            />
           )}
         />
       </div>
-    </div>
+    </form>
   )
 }
 
 const Gallery = () => {
   return (
-    <div className="p-[50px] mt-[100px] rounded-[10px] bg-gray-100">
-      <BigImage className="bg-gray-50" />
+    <div className="p-[50px]  rounded-[10px] bg-gray-100 group relative">
+      <BigImage className="bg-gray-50 mt-0 static" />
 
       <div className="flex mt-6 gap-x-6 items-center">
         <button
@@ -3098,98 +3193,162 @@ const Gallery = () => {
   )
 }
 
-const BigImage = ({ className }: { className?: string }) => {
-  return (
-    <div
-      className={cn(
-        "relative mt-[100px] h-[498.2px] flex flex-col justify-end bg-gray-100 rounded-lg overflow-hidden",
-        className
-      )}
-    >
-      <PictureEditor
-        startingPoint={({ dataUrl, open, style, onRemove, onEdit }) => (
-          <div className="group-data-[state=dragged]/article:pointer-events-none overflow-hidden absolute inset-0 group/image size-full grid rounded-lg place-items-center hover:bg-black/20 hover:ring-2 hover:ring-primary-500 transition duration-300">
-            {dataUrl ? (
-              <div className="size-full rounded-lg transform" style={style}>
-                <img
-                  src={dataUrl}
-                  aria-label="Picture"
-                  className="object-conver size-full rounded-lg"
-                />
-              </div>
-            ) : (
-              <>
-                <Picture className="w-[84px] shrink-0 h-[76px] text-gray-300 group-hover/image:text-white" />
-              </>
-            )}
-            <BlockImageToolbar
-              className="top-5 left-5 absolute hidden opacity-0 group-hover/image:inline-flex group-hover/image:opacity-100 transition duration-300"
-              onAddImage={open}
-              onRemove={onRemove}
-              onEdit={onEdit}
-              enableEdit={!!dataUrl}
-              enableRemove={!!dataUrl}
-            />
-          </div>
-        )}
-      />
+const bigImageSchema = z.object({
+  caption: z.string().min(1, "Please enter at least 1 character(s)"),
+  files: z.array(z.instanceof(File)),
+})
 
-      <div className="p-8 rounded-b-lg relative">
-        <h1 className="relative group/block">
-          <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
-            <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
-              Text
+type BigImageFormValues = z.infer<typeof bigImageSchema>
+
+const BigImage = ({ className }: { className?: string }) => {
+  const { handleSubmit, control } = useForm<BigImageFormValues>({
+    resolver: zodResolver(introductionSchema),
+    defaultValues: {
+      caption: "Image Title",
+    },
+  })
+
+  const onSubmit: SubmitHandler<BigImageFormValues> = (values) => {}
+
+  return (
+    <form
+      className={cn("relative  bg-gray-100 rounded-lg group", className)}
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <div className="relative h-[498.2px] flex flex-col justify-end overflow-hidden">
+        <Controller
+          control={control}
+          name="files"
+          render={({ field: { onChange } }) => (
+            <PictureEditor
+              onValueChange={onChange}
+              startingPoint={({ dataUrl, open, style, onRemove, onEdit }) => (
+                <div className="group-data-[state=dragged]/article:pointer-events-none overflow-hidden absolute inset-0 group/image size-full grid rounded-lg place-items-center hover:bg-black/20 transition duration-300">
+                  {dataUrl ? (
+                    <div
+                      className="size-full rounded-lg transform"
+                      style={style}
+                    >
+                      <img
+                        src={dataUrl}
+                        aria-label="Picture"
+                        className="object-conver size-full rounded-lg"
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <Picture className="w-[84px] shrink-0 h-[76px] text-gray-300 group-hover/image:text-white" />
+                    </>
+                  )}
+                  <BlockImageToolbar
+                    className="top-5 left-5 absolute hidden opacity-0 group-hover/image:inline-flex group-hover/image:opacity-100 transition duration-300"
+                    onAddImage={open}
+                    onRemove={onRemove}
+                    onEdit={onEdit}
+                    enableEdit={!!dataUrl}
+                    enableRemove={!!dataUrl}
+                  />
+                </div>
+              )}
+            />
+          )}
+        />
+
+        <div className="p-8 rounded-b-lg relative">
+          <h1 className="relative group/block">
+            <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
+              <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
+                Text
+              </span>
+              {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
+              <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
             </span>
-            {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
-            <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-          </span>
-          <EditableRoot className="relative" defaultValue="Image Title">
-            <EditableLabel>Title</EditableLabel>
-            <EditableArea>
-              <EditableInput
-                asChild
-                className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-gray-500 group-data-[placeholder-shown]/area:text-gray-500 min-h-4 [field-sizing:content] resize-none scrollbar-none text-4 leading-none font-semibold text-gray-500"
-              >
-                <textarea />
-              </EditableInput>
-              <EditablePreview className=" group-data-[placeholder-shown]/area:text-gray-500 text-4 leading-none font-semibold text-gray-500" />
-            </EditableArea>
-          </EditableRoot>
-        </h1>
+            <Controller
+              control={control}
+              name="caption"
+              render={({ field: { value, onChange } }) => (
+                <EditableRoot className="relative" defaultValue="Image Title">
+                  <EditableLabel>Title</EditableLabel>
+                  <EditableArea>
+                    <EditableInput
+                      asChild
+                      className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-gray-500 group-data-[placeholder-shown]/area:text-gray-500 min-h-4 [field-sizing:content] resize-none scrollbar-none text-4 leading-none font-semibold text-gray-500"
+                    >
+                      <textarea />
+                    </EditableInput>
+                    <EditablePreview className=" group-data-[placeholder-shown]/area:text-gray-500 text-4 leading-none font-semibold text-gray-500" />
+                  </EditableArea>
+                </EditableRoot>
+              )}
+            />
+          </h1>
+        </div>
       </div>
-    </div>
+    </form>
   )
 }
 
+const challengesSchema = z.object({
+  title: z.string().min(1, "Please enter at least 1 character(s)"),
+  subTitle: z.string().min(1, "Please enter at least 1 character(s)"),
+  files: z.array(z.instanceof(File)),
+})
+
+type ChallengesFormValues = z.infer<typeof challengesSchema>
+
 const Challenges = () => {
+  const { handleSubmit, control } = useForm<ChallengesFormValues>({
+    resolver: zodResolver(challengesSchema),
+    defaultValues: {
+      title: "This is your introduction",
+      subTitle:
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    },
+  })
+
+  const onSubmit: SubmitHandler<ChallengesFormValues> = (values) => {}
+
   return (
-    <div className="mt-[100px] grid grid-cols-2 gap-x-[50px]">
+    <form
+      className=" grid grid-cols-2 gap-x-[50px] group relative"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="relative">
-        <PictureEditor
-          startingPoint={({ dataUrl, open, style, onRemove, onEdit }) => (
-            <div className="group-data-[state=dragged]/article:pointer-events-none overflow-hidden relative group/image size-full bg-gray-100 grid rounded-lg place-items-center hover:bg-black/20 hover:ring-2 hover:ring-primary-500 transition duration-300">
-              {dataUrl ? (
-                <div className="size-full rounded-lg transform" style={style}>
-                  <img
-                    src={dataUrl}
-                    aria-label="Picture"
-                    className="absolute object-contain rounded-lg"
+        <Controller
+          control={control}
+          name="files"
+          render={({ field: { onChange } }) => (
+            <PictureEditor
+              onValueChange={onChange}
+              startingPoint={({ dataUrl, open, style, onRemove, onEdit }) => (
+                <div className="group-data-[state=dragged]/article:pointer-events-none overflow-hidden relative group/image size-full bg-gray-100 grid rounded-lg place-items-center hover:bg-black/20 hover:ring-2 hover:ring-primary-500 transition duration-300">
+                  {dataUrl ? (
+                    <div
+                      className="size-full rounded-lg transform"
+                      style={style}
+                    >
+                      <img
+                        src={dataUrl}
+                        aria-label="Picture"
+                        className="absolute object-contain rounded-lg"
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <Picture className="w-[84px] shrink-0 h-[76px] text-gray-300 group-hover/image:text-white" />
+                    </>
+                  )}
+                  <BlockImageToolbar
+                    className="top-5 left-5 absolute hidden opacity-0 group-hover/image:inline-flex group-hover/image:opacity-100 transition duration-300"
+                    onAddImage={open}
+                    onRemove={onRemove}
+                    onEdit={onEdit}
+                    enableEdit={!!dataUrl}
+                    enableRemove={!!dataUrl}
                   />
                 </div>
-              ) : (
-                <>
-                  <Picture className="w-[84px] shrink-0 h-[76px] text-gray-300 group-hover/image:text-white" />
-                </>
               )}
-              <BlockImageToolbar
-                className="top-5 left-5 absolute hidden opacity-0 group-hover/image:inline-flex group-hover/image:opacity-100 transition duration-300"
-                onAddImage={open}
-                onRemove={onRemove}
-                onEdit={onEdit}
-                enableEdit={!!dataUrl}
-                enableRemove={!!dataUrl}
-              />
-            </div>
+            />
           )}
         />
       </div>
@@ -3203,21 +3362,28 @@ const Challenges = () => {
             {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
             <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
           </span>
-          <EditableRoot
-            className="relative"
-            defaultValue="These are your challenges"
-          >
-            <EditableLabel>Title</EditableLabel>
-            <EditableArea>
-              <EditableInput
-                asChild
-                className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[40px] [field-sizing:content] resize-none scrollbar-none text-[40px] leading-none font-semibold text-dark-blue-400"
+          <Controller
+            control={control}
+            name="title"
+            render={({ field: { value, onChange } }) => (
+              <EditableRoot
+                className="relative"
+                value={value}
+                onChange={onChange}
               >
-                <textarea />
-              </EditableInput>
-              <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-[40px] leading-none font-semibold text-dark-blue-400" />
-            </EditableArea>
-          </EditableRoot>
+                <EditableLabel>Title</EditableLabel>
+                <EditableArea>
+                  <EditableInput
+                    asChild
+                    className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[40px] [field-sizing:content] resize-none scrollbar-none text-[40px] leading-none font-semibold text-dark-blue-400"
+                  >
+                    <textarea />
+                  </EditableInput>
+                  <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-[40px] leading-none font-semibold text-dark-blue-400" />
+                </EditableArea>
+              </EditableRoot>
+            )}
+          />
         </h1>
         <p className="group/block relative mt-5">
           <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
@@ -3227,24 +3393,76 @@ const Challenges = () => {
             {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
             <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
           </span>
-          <EditableRoot
-            className="relative"
-            defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-          >
-            <EditableLabel>Sub Title</EditableLabel>
-            <EditableArea>
-              <EditableInput
-                asChild
-                className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-2xl leading-none font-light text-dark-blue-400"
+          <Controller
+            control={control}
+            name="subTitle"
+            render={({ field: { value, onChange } }) => (
+              <EditableRoot
+                className="relative"
+                value={value}
+                onChange={onChange}
               >
-                <textarea />
-              </EditableInput>
-              <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-2xl leading-none font-light text-dark-blue-400" />
-            </EditableArea>
-          </EditableRoot>
+                <EditableLabel>Sub Title</EditableLabel>
+                <EditableArea>
+                  <EditableInput
+                    asChild
+                    className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-2xl leading-none font-light text-dark-blue-400"
+                  >
+                    <textarea />
+                  </EditableInput>
+                  <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-2xl leading-none font-light text-dark-blue-400" />
+                </EditableArea>
+              </EditableRoot>
+            )}
+          />
         </p>
       </div>
-    </div>
+    </form>
+  )
+}
+
+const BlockRoot = ({
+  children,
+  value,
+}: {
+  children?: React.ReactNode
+  value: number
+}) => {
+  const y = useMotionValue(0)
+  const boxShadow = useRaisedShadow(y)
+  const dragControls = useDragControls()
+
+  return (
+    <Reorder.Item
+      value={value}
+      as="div"
+      className="mt-[100px] group relative"
+      style={{
+        y,
+      }}
+      dragControls={dragControls}
+      dragListener={false}
+    >
+      <motion.div
+        className="absolute rounded-lg border-2 -inset-5 bg-white border-primary-500 hidden group-hover/article:block"
+        style={{ boxShadow }}
+      />
+
+      <span className="absolute -inset-5 group-hover:inline-block group-focus-within:inline-block opacity-0 hidden group-hover:opacity-100 group-focus-within:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover:bg-primary-500/5 group-focus-within:bg-transparent group-hover:group-focus-within:bg-transparent group-hover:border-primary-200">
+        <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within:invisible group-hover:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover:group-focus-within:invisible">
+          Block
+        </span>
+        <BlockToolbar
+          className="group-hover:opacity-100 group-hover:inline-flex hidden opacity-0 transition duration-300 -top-[20px] -right-[17px] absolute z-10"
+          canRemove
+          canDuplicate
+          onDrag={(event) => dragControls.start(event)}
+        />
+        {/* <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" /> */}
+      </span>
+
+      <div className="relative">{children}</div>
+    </Reorder.Item>
   )
 }
 
@@ -3322,10 +3540,11 @@ interface State {
   }[]
 }
 
-const reducer = (
-  state: State,
-  action: { type: State["regions"][number]["region"] }
-) => {
+type Action =
+  | { type: State["regions"][number]["region"] }
+  | { type: "reorder"; payload: State["regions"] }
+
+const reducer = (state: State, action: Action) => {
   switch (action.type) {
     case "introduction":
     case "bold-statement":
@@ -3348,12 +3567,37 @@ const reducer = (
         regions: [...state.regions, { id: getId(), region: action.type }],
       }
 
+    case "reorder":
+      console.log(action.payload)
+      return {
+        ...state,
+        regions: action.payload,
+      }
+
     default:
       return state
   }
 }
 
 const defaultValue = { regions: [] }
+
+const GalleryIcon = ({ className, ...props }: SVGProps<SVGSVGElement>) => (
+  <svg
+    className={cn("size-[26px]", className)}
+    viewBox="0 0 26 26"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="m4.485 21.765 6.927-6.927c.415-.415.623-.623.863-.701a1.05 1.05 0 0 1 .65 0c.239.078.447.285.862.701l6.88 6.88M14.7 15.75l3.012-3.012c.416-.415.623-.623.863-.701a1.05 1.05 0 0 1 .65 0c.239.078.447.285.862.701L23.1 15.75m-12.6-6.3a2.1 2.1 0 1 1-4.2 0 2.1 2.1 0 0 1 4.2 0m-3.36 12.6h10.92c1.764 0 2.646 0 3.32-.343a3.15 3.15 0 0 0 1.376-1.376c.344-.674.344-1.556.344-3.32V8.19c0-1.765 0-2.647-.344-3.32a3.15 3.15 0 0 0-1.376-1.377c-.674-.344-1.556-.344-3.32-.344H7.14c-1.765 0-2.647 0-3.32.344A3.15 3.15 0 0 0 2.443 4.87C2.1 5.544 2.1 6.426 2.1 8.19v8.82c0 1.765 0 2.647.343 3.32a3.15 3.15 0 0 0 1.377 1.377c.673.343 1.555.343 3.32.343"
+      stroke="#667085"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+)
 
 export const EditingPlayground = () => {
   const [state, dispatch] = useReducer(reducer, defaultValue)
@@ -3363,24 +3607,77 @@ export const EditingPlayground = () => {
       <nav className="h-[68px] flex items-center justify-between px-3 bg-white border-b border-gray-200 shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
         <div className="flex items-center gap-x-6">
           <div className="inline-flex items-center gap-x-1">
-            <IconButton className="text-gray-500" variant="ghost" visual="gray">
-              <ReverseLeft className="size-[18px]" />
-            </IconButton>
-            <IconButton className="text-gray-500" variant="ghost" visual="gray">
-              <ReverseRight className="size-[18px]" />
-            </IconButton>
+            <TooltipProvider delayDuration={75}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <IconButton
+                    className="text-gray-500"
+                    variant="ghost"
+                    visual="gray"
+                  >
+                    <ReverseLeft className="size-[18px]" />
+                  </IconButton>
+                </TooltipTrigger>
+                <TooltipContent sideOffset={9} visual="gray" side="bottom">
+                  Undo
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider delayDuration={75}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <IconButton
+                    className="text-gray-500"
+                    variant="ghost"
+                    visual="gray"
+                  >
+                    <ReverseRight className="size-[18px]" />
+                  </IconButton>
+                </TooltipTrigger>
+                <TooltipContent sideOffset={9} visual="gray" side="bottom">
+                  Redo
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
 
-          <h3 className="text-base leading-6 font-semibold text-gray-500">
-            Your case study’s title
-          </h3>
+          <TooltipProvider delayDuration={75}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <EditableRoot placeholder="Your case study’s title">
+                  <EditableLabel>Title</EditableLabel>
+                  <EditableArea>
+                    <EditableInput className="text-base leading-6 font-semibold" />
+                    <EditablePreview className="text-base leading-6 font-semibold" />
+                  </EditableArea>
+                </EditableRoot>
+              </TooltipTrigger>
+              <TooltipContent sideOffset={9} visual="gray" side="bottom">
+                Rename
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         <div className="flex items-center gap-x-6">
           <div className="inline-flex items-center gap-x-3">
-            <Button className="text-gray-500" visual="gray" variant="ghost">
-              <Clock className="size-[15px]" /> Saved at 10:38AM
-            </Button>
+            <TooltipProvider delayDuration={75}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="text-gray-500"
+                    visual="gray"
+                    variant="ghost"
+                  >
+                    <Clock className="size-[15px]" /> Saved at 10:38AM
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent sideOffset={9} visual="gray" side="bottom">
+                  Edited 5 mins ago
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
 
             <IconButton className="bg-primary-50 hover:bg-primary-500 text-primary-500 hover:text-white">
               <Eye className="size-3" />
@@ -3389,29 +3686,79 @@ export const EditingPlayground = () => {
             <Button>Publish</Button>
           </div>
 
-          <Button
-            className="text-gray-500"
-            variant="ghost"
-            visual="gray"
-            size="lg"
-          >
+          <IconButton className="text-gray-500" variant="ghost" visual="gray">
             <X className="size-6" />
-          </Button>
+          </IconButton>
         </div>
       </nav>
 
       <div className="p-[100px]">
         <div className="border border-gray-200 bg-white rounded-[10px] p-[100px]">
-          <h1 className="text-[64px] leading-none font-semibold text-dark-blue-400">
-            Your Case Study Title
+          <h1 className="relative group/block">
+            <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
+              <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
+                Text
+              </span>
+              {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
+              <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
+            </span>
+            <EditableRoot
+              className="relative"
+              defaultValue="Your Case Study Title"
+            >
+              <EditableLabel>Title</EditableLabel>
+              <EditableArea>
+                <EditableInput
+                  asChild
+                  className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[64px] [field-sizing:content] resize-none scrollbar-none text-[64px] leading-none font-semibold text-dark-blue-400"
+                >
+                  <textarea />
+                </EditableInput>
+                <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-[64px] leading-none font-semibold text-dark-blue-400" />
+              </EditableArea>
+            </EditableRoot>
           </h1>
-          <p className="text-2xl mt-3 leading-none font-light text-dark-blue-400">
-            Write what into this design or add any details you want to mention
+          <p className="group/block relative mt-3">
+            <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
+              <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
+                Text
+              </span>
+              {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
+              <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
+            </span>
+            <EditableRoot
+              className="relative"
+              defaultValue="Write what into this design or add any details you want to mention"
+            >
+              <EditableLabel>Sub Title</EditableLabel>
+              <EditableArea>
+                <EditableInput
+                  asChild
+                  className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-2xl leading-none font-light text-dark-blue-400"
+                >
+                  <textarea />
+                </EditableInput>
+                <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-2xl leading-none font-light text-dark-blue-400" />
+              </EditableArea>
+            </EditableRoot>
           </p>
 
-          {state.regions.map((region) => (
-            <Region key={region.id} {...region} />
-          ))}
+          <Reorder.Group
+            as="div"
+            className="isolate relative"
+            axis="y"
+            values={state.regions}
+            onReorder={(newRegions) => {
+              console.log("onReorder", newRegions)
+              dispatch({ type: "reorder", payload: newRegions })
+            }}
+          >
+            {state.regions.map((region) => (
+              <BlockRoot key={region.id} value={region.id}>
+                <Region {...region} />
+              </BlockRoot>
+            ))}
+          </Reorder.Group>
 
           <div className="mt-[100px]">
             {state.regions.length ? (
@@ -3432,6 +3779,7 @@ export const EditingPlayground = () => {
                     onClick={() => setOpen(true)}
                     variant="outlined"
                     visual="gray"
+                    className="hover:bg-white"
                   >
                     <Plus className="size-[15px]" /> Add New Block
                   </Button>
@@ -3461,7 +3809,7 @@ export const EditingPlayground = () => {
                 </DialogClose>
               </div>
               <div className="p-6 grid grid-cols-3 gap-3">
-                <button
+                <DialogClose
                   onClick={() => dispatch({ type: "introduction" })}
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
@@ -3469,8 +3817,8 @@ export const EditingPlayground = () => {
                   <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Introduction
                   </span>
-                </button>
-                <button
+                </DialogClose>
+                <DialogClose
                   onClick={() => dispatch({ type: "challenges" })}
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
@@ -3478,8 +3826,8 @@ export const EditingPlayground = () => {
                   <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Challenges
                   </span>
-                </button>
-                <button
+                </DialogClose>
+                <DialogClose
                   onClick={() => dispatch({ type: "image-text" })}
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
@@ -3487,8 +3835,8 @@ export const EditingPlayground = () => {
                   <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Image & Text
                   </span>
-                </button>
-                <button
+                </DialogClose>
+                <DialogClose
                   onClick={() => dispatch({ type: "big-image" })}
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
@@ -3496,8 +3844,8 @@ export const EditingPlayground = () => {
                   <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Big Image
                   </span>
-                </button>
-                <button
+                </DialogClose>
+                <DialogClose
                   onClick={() => dispatch({ type: "bold-statement" })}
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
@@ -3505,8 +3853,8 @@ export const EditingPlayground = () => {
                   <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Bold Statement
                   </span>
-                </button>
-                <button
+                </DialogClose>
+                <DialogClose
                   onClick={() => dispatch({ type: "process" })}
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
@@ -3514,8 +3862,8 @@ export const EditingPlayground = () => {
                   <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Process
                   </span>
-                </button>
-                <button
+                </DialogClose>
+                <DialogClose
                   onClick={() => dispatch({ type: "interview" })}
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
@@ -3523,8 +3871,8 @@ export const EditingPlayground = () => {
                   <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Interview
                   </span>
-                </button>
-                <button
+                </DialogClose>
+                <DialogClose
                   onClick={() => dispatch({ type: "personas" })}
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
@@ -3532,8 +3880,8 @@ export const EditingPlayground = () => {
                   <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Personas
                   </span>
-                </button>
-                <button
+                </DialogClose>
+                <DialogClose
                   onClick={() => dispatch({ type: "testimonial" })}
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
@@ -3541,18 +3889,18 @@ export const EditingPlayground = () => {
                   <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Testimonial
                   </span>
-                </button>
-                <button
+                </DialogClose>
+                <DialogClose
                   onClick={() => dispatch({ type: "gallery" })}
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
-                  <Picture className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
+                  <GalleryIcon className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
                   <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Gallery
                   </span>
-                </button>
+                </DialogClose>
 
-                <button
+                <DialogClose
                   onClick={() => dispatch({ type: "results-metrics" })}
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
@@ -3560,9 +3908,9 @@ export const EditingPlayground = () => {
                   <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Result Metrics
                   </span>
-                </button>
+                </DialogClose>
 
-                <button
+                <DialogClose
                   onClick={() => dispatch({ type: "conclusion" })}
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
@@ -3570,29 +3918,29 @@ export const EditingPlayground = () => {
                   <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Conclusion
                   </span>
-                </button>
+                </DialogClose>
 
-                {/* <button className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500">
+                {/* <DialogClose className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500">
                   <PlaySquare className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
                   <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Video
                   </span>
-                </button>
-                <button className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500">
+                </DialogClose>
+                <DialogClose className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500">
                   <Dataflow03 className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
                   <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Customer Journey
                   </span>
-                </button>
+                </DialogClose>
 
-                <button className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500">
+                <DialogClose className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500">
                   <Monitor02 className="size-[25.2px] text-gray-500 group-hover:text-primary-500 shrink-0" />
                   <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Prototype
                   </span>
-                </button>
+                </DialogClose>
                
-                <button
+                <DialogClose
                   onClick={() => dispatch({ type: "custom-columns" })}
                   className="group p-5 focus-visible:outline-none flex flex-col items-center gap-y-3 rounded-lg border-2 border-transparent transition duration-300 hover:bg-primary-25 hover:border-primary-500"
                 >
@@ -3600,7 +3948,7 @@ export const EditingPlayground = () => {
                   <span className="inline-block text-[17.74px] text-gray-500 group-hover:text-primary-500 font-medium leading-none whitespace-nowrap">
                     Custom Columns
                   </span>
-                </button> */}
+                </DialogClose> */}
               </div>
             </DialogContent>
           </Dialog>
