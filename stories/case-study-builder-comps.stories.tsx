@@ -52,7 +52,12 @@ import {
   useMotionValue,
 } from "framer-motion"
 import { useDrag } from "react-aria"
-import { Controller, SubmitHandler, useForm } from "react-hook-form"
+import {
+  Controller,
+  SubmitHandler,
+  useFieldArray,
+  useForm,
+} from "react-hook-form"
 import { useMotion } from "react-use"
 import { z } from "zod"
 import {
@@ -183,6 +188,8 @@ export const BlockToolbar = ({
   canDuplicate,
   canRemove,
   canHide,
+  canMoveDown,
+  canMoveUp,
 }: {
   className?: string
   onDrag?: (event: React.PointerEvent<HTMLElement>) => void
@@ -195,6 +202,8 @@ export const BlockToolbar = ({
   onDuplicate?: () => void
   canDuplicate?: boolean
   canHide?: boolean
+  canMoveDown?: boolean
+  canMoveUp?: boolean
 }) => {
   const [open, setOpen] = useState(false)
   return (
@@ -225,6 +234,26 @@ export const BlockToolbar = ({
               <ArrowRight className="size-4" />
             </TooltipTrigger>
             <TooltipContent visual="white">Move Right</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+      {canMoveDown && (
+        <TooltipProvider delayDuration={75}>
+          <Tooltip>
+            <TooltipTrigger className="first:rounded-l-[5px] last:rounded-r-[5px] focus-visible:outline-none inline-flex items-center size-9 shrink-0 text-gray-500 justify-center hover:bg-gray-100 hover:text-gray-950">
+              <ArrowDown className="size-4" />
+            </TooltipTrigger>
+            <TooltipContent visual="white">Move Down</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+      {canMoveUp && (
+        <TooltipProvider delayDuration={75}>
+          <Tooltip>
+            <TooltipTrigger className="first:rounded-l-[5px] last:rounded-r-[5px] focus-visible:outline-none inline-flex items-center size-9 shrink-0 text-gray-500 justify-center hover:bg-gray-100 hover:text-gray-950">
+              <ArrowUp className="size-4" />
+            </TooltipTrigger>
+            <TooltipContent visual="white">Move Up</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       )}
@@ -393,7 +422,7 @@ export const BlockImageToolbar = ({
 
 export const ToBeAdded = ({ onPlus }: { onPlus?: () => void }) => {
   return (
-    <div className="flex items-center">
+    <div className="flex items-center flex-auto">
       <div className="h-0.5 flex-auto bg-gray-200" />
       <button
         onClick={onPlus}
@@ -1739,9 +1768,25 @@ export const ClientView = () => {
   )
 }
 
+const boldStatementSchema = z.object({
+  statement: z.string().min(1, "Must contain at least 1 character(s)"),
+})
+
+type BoldStatementFormValues = z.infer<typeof boldStatementSchema>
+
 const BoldStatement = () => {
+  const { handleSubmit, control } = useForm<BoldStatementFormValues>({
+    resolver: zodResolver(boldStatementSchema),
+    defaultValues: {
+      statement:
+        "This is your sample bold statement, you can use this as your heading too.",
+    },
+  })
+
+  const onSubmit: SubmitHandler<BoldStatementFormValues> = (values) => {}
+
   return (
-    <div className=" relative group">
+    <form className=" relative group" onSubmit={handleSubmit(onSubmit)}>
       <h1 className="relative group/block">
         <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
           <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
@@ -1750,23 +1795,30 @@ const BoldStatement = () => {
           {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
           <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
         </span>
-        <EditableRoot
-          className="relative"
-          defaultValue="This is your sample bold statement, you can use this as your heading too."
-        >
-          <EditableLabel>Bold Statement</EditableLabel>
-          <EditableArea>
-            <EditableInput
-              asChild
-              className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[64px] [field-sizing:content] resize-none scrollbar-none text-[64px] leading-none font-bold text-dark-blue-400"
+        <Controller
+          control={control}
+          name="statement"
+          render={({ field: { value, onChange } }) => (
+            <EditableRoot
+              className="relative"
+              value={value}
+              onChange={onChange}
             >
-              <textarea />
-            </EditableInput>
-            <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-[64px] leading-none font-semibold text-dark-blue-400" />
-          </EditableArea>
-        </EditableRoot>
+              <EditableLabel>Bold Statement</EditableLabel>
+              <EditableArea>
+                <EditableInput
+                  asChild
+                  className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[64px] [field-sizing:content] resize-none scrollbar-none text-[64px] leading-none font-bold text-dark-blue-400"
+                >
+                  <textarea />
+                </EditableInput>
+                <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-[64px] leading-none font-semibold text-dark-blue-400" />
+              </EditableArea>
+            </EditableRoot>
+          )}
+        />
       </h1>
-    </div>
+    </form>
   )
 }
 
@@ -1949,9 +2001,43 @@ const Process = () => {
   )
 }
 
+const interviewPointsFormSchema = z.object({
+  title: z.string().min(1, "Please enter at least 1 character(s)"),
+  subTitle: z.string().min(1, "Please enter at least 1 character(s)"),
+  points: z.array(
+    z.object({
+      title: z.string().min(1, "Please enter at least 1 character(s)"),
+      subTitle: z.string().min(1, "Please enter at least 1 character(s)"),
+    })
+  ),
+})
+
+type InterviewPointsFormValues = z.infer<typeof interviewPointsFormSchema>
+
 const InterviewPointers = () => {
+  const { handleSubmit, control } = useForm<InterviewPointsFormValues>({
+    resolver: zodResolver(interviewPointsFormSchema),
+    defaultValues: {
+      title: "This is your introduction",
+      subTitle:
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+      points: [
+        { title: "Bullet Point 1", subTitle: "Lorem ipsum donar solar" },
+        { title: "Bullet Point 2", subTitle: "Lorem ipsum donar solar" },
+        { title: "Bullet Point 3", subTitle: "Lorem ipsum donar solar" },
+      ],
+    },
+  })
+
+  const { fields } = useFieldArray({
+    control,
+    name: "points",
+  })
+
+  const onSubmit: SubmitHandler<InterviewPointsFormValues> = (values) => {}
+
   return (
-    <div className=" group relative">
+    <form className=" group relative" onSubmit={handleSubmit(onSubmit)}>
       <h1 className="relative group/block">
         <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
           <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
@@ -1960,18 +2046,28 @@ const InterviewPointers = () => {
           {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
           <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
         </span>
-        <EditableRoot className="relative" defaultValue="Interview Pointers">
-          <EditableLabel>Title</EditableLabel>
-          <EditableArea>
-            <EditableInput
-              asChild
-              className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[40px] [field-sizing:content] resize-none scrollbar-none text-[40px] leading-none font-semibold text-dark-blue-400"
+        <Controller
+          control={control}
+          name="title"
+          render={({ field: { value, onChange } }) => (
+            <EditableRoot
+              className="relative"
+              value={value}
+              onChange={onChange}
             >
-              <textarea />
-            </EditableInput>
-            <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-[40px] leading-none font-semibold text-dark-blue-400" />
-          </EditableArea>
-        </EditableRoot>
+              <EditableLabel>Title</EditableLabel>
+              <EditableArea>
+                <EditableInput
+                  asChild
+                  className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[40px] [field-sizing:content] resize-none scrollbar-none text-[40px] leading-none font-semibold text-dark-blue-400"
+                >
+                  <textarea />
+                </EditableInput>
+                <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-[40px] leading-none font-semibold text-dark-blue-400" />
+              </EditableArea>
+            </EditableRoot>
+          )}
+        />
       </h1>
 
       <div className="mt-6">
@@ -1983,168 +2079,101 @@ const InterviewPointers = () => {
             {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
             <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
           </span>
-          <EditableRoot
-            className="relative"
-            defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-          >
-            <EditableLabel>Sub Title</EditableLabel>
-            <EditableArea>
-              <EditableInput
-                asChild
-                className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-2xl leading-none font-light text-dark-blue-400"
+          <Controller
+            control={control}
+            name="subTitle"
+            render={({ field: { value, onChange } }) => (
+              <EditableRoot
+                className="relative"
+                value={value}
+                onChange={onChange}
               >
-                <textarea />
-              </EditableInput>
-              <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-2xl leading-none font-light text-dark-blue-400" />
-            </EditableArea>
-          </EditableRoot>
+                <EditableLabel>Sub Title</EditableLabel>
+                <EditableArea>
+                  <EditableInput
+                    asChild
+                    className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-2xl leading-none font-light text-dark-blue-400"
+                  >
+                    <textarea />
+                  </EditableInput>
+                  <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-2xl leading-none font-light text-dark-blue-400" />
+                </EditableArea>
+              </EditableRoot>
+            )}
+          />
         </p>
 
         <ul className="mt-4 list-disc">
-          <li className="relative group/block block first:mt-0 mt-5">
-            <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
-              <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
-                Text
-              </span>
-              {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
-              <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-            </span>
-            <EditableRoot className="relative" defaultValue="Bullet Point 1:">
-              <EditableLabel>List Item</EditableLabel>
-              <EditableArea>
-                <EditableInput
-                  asChild
-                  className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-[24px] leading-none font-bold text-dark-blue-400"
-                >
-                  <textarea />
-                </EditableInput>
-                <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-[24px] leading-none font-bold text-dark-blue-400" />
-              </EditableArea>
-            </EditableRoot>
-          </li>
+          {fields.map((field, index) => (
+            <React.Fragment key={field.id}>
+              <li className="relative group/block block first:mt-0 mt-5">
+                <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
+                  <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
+                    Text
+                  </span>
+                  {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
+                  <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
+                </span>
+                <Controller
+                  control={control}
+                  name={`points.${index}.title`}
+                  render={({ field: { value, onChange } }) => (
+                    <EditableRoot
+                      className="relative"
+                      value={value}
+                      onChange={onChange}
+                    >
+                      <EditableLabel>List Item</EditableLabel>
+                      <EditableArea>
+                        <EditableInput
+                          asChild
+                          className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-[24px] leading-none font-bold text-dark-blue-400"
+                        >
+                          <textarea />
+                        </EditableInput>
+                        <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-[24px] leading-none font-bold text-dark-blue-400" />
+                      </EditableArea>
+                    </EditableRoot>
+                  )}
+                />
+              </li>
 
-          <span className="relative group/block block mt-2">
-            <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
-              <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
-                Text
+              <span className="relative group/block block mt-2">
+                <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
+                  <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
+                    Text
+                  </span>
+                  {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
+                  <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
+                </span>
+                <Controller
+                  control={control}
+                  name={`points.${index}.subTitle`}
+                  render={({ field: { value, onChange } }) => (
+                    <EditableRoot
+                      className="relative"
+                      value={value}
+                      onChange={onChange}
+                    >
+                      <EditableLabel>List Item Description</EditableLabel>
+                      <EditableArea>
+                        <EditableInput
+                          asChild
+                          className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-[24px] leading-none font-light text-dark-blue-400"
+                        >
+                          <textarea />
+                        </EditableInput>
+                        <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-[24px] leading-none font-light text-dark-blue-400" />
+                      </EditableArea>
+                    </EditableRoot>
+                  )}
+                />
               </span>
-              {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
-              <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-            </span>
-
-            <EditableRoot
-              className="relative"
-              defaultValue="Lorem ipsum dolor sit."
-            >
-              <EditableLabel>List Item Description</EditableLabel>
-              <EditableArea>
-                <EditableInput
-                  asChild
-                  className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-[24px] leading-none font-light text-dark-blue-400"
-                >
-                  <textarea />
-                </EditableInput>
-                <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-[24px] leading-none font-light text-dark-blue-400" />
-              </EditableArea>
-            </EditableRoot>
-          </span>
-
-          <li className="relative group/block block first:mt-0 mt-5">
-            <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
-              <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
-                Text
-              </span>
-              {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
-              <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-            </span>
-            <EditableRoot className="relative" defaultValue="Bullet Point 2:">
-              <EditableLabel>List Item</EditableLabel>
-              <EditableArea>
-                <EditableInput
-                  asChild
-                  className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-[24px] leading-none font-bold text-dark-blue-400"
-                >
-                  <textarea />
-                </EditableInput>
-                <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-[24px] leading-none font-bold text-dark-blue-400" />
-              </EditableArea>
-            </EditableRoot>
-          </li>
-
-          <span className="relative group/block block mt-2">
-            <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
-              <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
-                Text
-              </span>
-              {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
-              <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-            </span>
-            <EditableRoot
-              className="relative"
-              defaultValue="Lorem ipsum dolor sit."
-            >
-              <EditableLabel>List Item Description</EditableLabel>
-              <EditableArea>
-                <EditableInput
-                  asChild
-                  className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-[24px] leading-none font-light text-dark-blue-400"
-                >
-                  <textarea />
-                </EditableInput>
-                <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-[24px] leading-none font-light text-dark-blue-400" />
-              </EditableArea>
-            </EditableRoot>
-          </span>
-
-          <li className="relative group/block block first:mt-0 mt-5">
-            <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
-              <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
-                Text
-              </span>
-              {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
-              <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-            </span>
-            <EditableRoot className="relative" defaultValue="Bullet Point 3:">
-              <EditableLabel>List Item</EditableLabel>
-              <EditableArea>
-                <EditableInput
-                  asChild
-                  className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-[24px] leading-none font-bold text-dark-blue-400"
-                >
-                  <textarea />
-                </EditableInput>
-                <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-[24px] leading-none font-bold text-dark-blue-400" />
-              </EditableArea>
-            </EditableRoot>
-          </li>
-
-          <span className="relative group/block block mt-2">
-            <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
-              <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
-                Text
-              </span>
-              {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
-              <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-            </span>
-            <EditableRoot
-              className="relative"
-              defaultValue="Lorem ipsum dolor sit."
-            >
-              <EditableLabel>List Item Description</EditableLabel>
-              <EditableArea>
-                <EditableInput
-                  asChild
-                  className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-[24px] leading-none font-light text-dark-blue-400"
-                >
-                  <textarea />
-                </EditableInput>
-                <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-[24px] leading-none font-light text-dark-blue-400" />
-              </EditableArea>
-            </EditableRoot>
-          </span>
+            </React.Fragment>
+          ))}
         </ul>
       </div>
-    </div>
+    </form>
   )
 }
 
@@ -2154,7 +2183,7 @@ const Personas = () => {
       <div className="group/column relative rounded-l-lg flex flex-col justify-end">
         <PictureEditor
           startingPoint={({ dataUrl, open, style, onRemove, onEdit }) => (
-            <div className="group/image absolute inset-0 bg-gray-100 grid rounded-l-lg place-items-center hover:bg-black/20 hover:ring-2 hover:ring-primary-500 transition duration-300">
+            <div className="group/image absolute inset-0 bg-gray-100 grid rounded-l-lg place-items-center hover:bg-primary-50 group-hover:bg-primary-50 group-hover:group-focus-within:bg-gray-100 hover:ring-2 hover:ring-primary-500 transition duration-300">
               {dataUrl ? (
                 <div
                   className="size-full relative rounded-l-lg overflow-hidden transform"
@@ -2672,9 +2701,27 @@ const Testimonials = () => {
   )
 }
 
+const conclusionSchema = z.object({
+  title: z.string().min(1, "Please enter at least 1 character(s)"),
+  subTitle: z.string().min(1, "Please enter at least 1 character(s)"),
+})
+
+type ConclusionFormValues = z.infer<typeof conclusionSchema>
+
 const Conclusion = () => {
+  const { handleSubmit, control } = useForm<ConclusionFormValues>({
+    resolver: zodResolver(conclusionSchema),
+    defaultValues: {
+      title: "This is your Conclusion",
+      subTitle:
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    },
+  })
+
+  const onSubmit: SubmitHandler<ConclusionFormValues> = (values) => {}
+
   return (
-    <div className=" group relative">
+    <form className=" group relative" onSubmit={handleSubmit(onSubmit)}>
       <h1 className="relative group/block">
         <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
           <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
@@ -2683,21 +2730,28 @@ const Conclusion = () => {
           {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
           <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
         </span>
-        <EditableRoot
-          className="relative"
-          defaultValue="This is your Conclusion"
-        >
-          <EditableLabel>Title</EditableLabel>
-          <EditableArea>
-            <EditableInput
-              asChild
-              className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[40px] [field-sizing:content] resize-none scrollbar-none text-[40px] leading-none font-semibold text-dark-blue-400"
+        <Controller
+          control={control}
+          name="title"
+          render={({ field: { value, onChange } }) => (
+            <EditableRoot
+              className="relative"
+              value={value}
+              onChange={onChange}
             >
-              <textarea />
-            </EditableInput>
-            <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-[40px] leading-none font-semibold text-dark-blue-400" />
-          </EditableArea>
-        </EditableRoot>
+              <EditableLabel>Title</EditableLabel>
+              <EditableArea>
+                <EditableInput
+                  asChild
+                  className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[40px] [field-sizing:content] resize-none scrollbar-none text-[40px] leading-none font-semibold text-dark-blue-400"
+                >
+                  <textarea />
+                </EditableInput>
+                <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-[40px] leading-none font-semibold text-dark-blue-400" />
+              </EditableArea>
+            </EditableRoot>
+          )}
+        />
       </h1>
       <p className="group/block relative mt-6">
         <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
@@ -2707,23 +2761,30 @@ const Conclusion = () => {
           {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
           <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
         </span>
-        <EditableRoot
-          className="relative"
-          defaultValue="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
-        >
-          <EditableLabel>Sub Title</EditableLabel>
-          <EditableArea>
-            <EditableInput
-              asChild
-              className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-2xl leading-none font-light text-dark-blue-400"
+        <Controller
+          control={control}
+          name="subTitle"
+          render={({ field: { value, onChange } }) => (
+            <EditableRoot
+              className="relative"
+              value={value}
+              onChange={onChange}
             >
-              <textarea />
-            </EditableInput>
-            <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-2xl leading-none font-light text-dark-blue-400" />
-          </EditableArea>
-        </EditableRoot>
+              <EditableLabel>Sub Title</EditableLabel>
+              <EditableArea>
+                <EditableInput
+                  asChild
+                  className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-dark-blue-400 group-data-[placeholder-shown]/area:text-dark-blue-400 min-h-[24px] [field-sizing:content] resize-none scrollbar-none text-2xl leading-none font-light text-dark-blue-400"
+                >
+                  <textarea />
+                </EditableInput>
+                <EditablePreview className=" group-data-[placeholder-shown]/area:text-dark-blue-400 text-2xl leading-none font-light text-dark-blue-400" />
+              </EditableArea>
+            </EditableRoot>
+          )}
+        />
       </p>
-    </div>
+    </form>
   )
 }
 
@@ -3011,7 +3072,7 @@ const Introduction = () => {
             <PictureEditor
               onValueChange={onChange}
               startingPoint={({ dataUrl, open, style, onRemove, onEdit }) => (
-                <div className="group-data-[state=dragged]/article:pointer-events-none overflow-hidden relative group/image size-full bg-gray-100 grid rounded-lg place-items-center hover:bg-black/20 hover:ring-2 hover:ring-primary-500 transition duration-300">
+                <div className="group-data-[state=dragged]/article:pointer-events-none overflow-hidden relative group/image size-full bg-gray-100 grid rounded-lg place-items-center hover:bg-primary-50 group-hover:bg-primary-50 group-hover:group-focus-within:bg-gray-100 hover:ring-2 hover:ring-primary-500 transition duration-300">
                   {dataUrl ? (
                     <div
                       className="size-full rounded-lg transform"
@@ -3025,7 +3086,7 @@ const Introduction = () => {
                     </div>
                   ) : (
                     <>
-                      <Picture className="w-[84px] shrink-0 h-[76px] text-gray-300 group-hover/image:text-white" />
+                      <Picture className="w-[84px] shrink-0 h-[76px] text-gray-300 group-hover/image:text-primary-300 group-hover:text-primary-300 group-hover:group-focus-within:text-gray-300" />
                     </>
                   )}
                   <BlockImageToolbar
@@ -3067,7 +3128,10 @@ const ImageText = () => {
   const onSubmit: SubmitHandler<ImageTextFormValues> = (values) => {}
 
   return (
-    <form className=" grid grid-cols-2 gap-x-[50px] relative group">
+    <form
+      className=" grid grid-cols-2 gap-x-[50px] relative group"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="py-[66.5px]">
         <h1 className="relative group/block">
           <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
@@ -3140,7 +3204,7 @@ const ImageText = () => {
             <PictureEditor
               onValueChange={onChange}
               startingPoint={({ dataUrl, open, style, onRemove, onEdit }) => (
-                <div className="group-data-[state=dragged]/article:pointer-events-none overflow-hidden relative group/image size-full bg-gray-100 grid rounded-lg place-items-center hover:bg-black/20 hover:ring-2 hover:ring-primary-500 transition duration-300">
+                <div className="group-data-[state=dragged]/article:pointer-events-none overflow-hidden relative group/image size-full bg-gray-100 grid rounded-lg place-items-center hover:bg-primary-50 group-hover:bg-primary-50 group-hover:group-focus-within:bg-gray-100 hover:ring-2 hover:ring-primary-500 transition duration-300">
                   {dataUrl ? (
                     <div
                       className="size-full rounded-lg transform"
@@ -3154,7 +3218,7 @@ const ImageText = () => {
                     </div>
                   ) : (
                     <>
-                      <Picture className="w-[84px] shrink-0 h-[76px] text-gray-300 group-hover/image:text-white" />
+                      <Picture className="w-[84px] shrink-0 h-[76px] text-gray-300 group-hover/image:text-primary-300 group-hover:text-primary-300 group-hover:group-focus-within:text-gray-300" />
                     </>
                   )}
                   <BlockImageToolbar
@@ -3202,9 +3266,9 @@ type BigImageFormValues = z.infer<typeof bigImageSchema>
 
 const BigImage = ({ className }: { className?: string }) => {
   const { handleSubmit, control } = useForm<BigImageFormValues>({
-    resolver: zodResolver(introductionSchema),
+    resolver: zodResolver(bigImageSchema),
     defaultValues: {
-      caption: "Image Title",
+      caption: "",
     },
   })
 
@@ -3212,7 +3276,7 @@ const BigImage = ({ className }: { className?: string }) => {
 
   return (
     <form
-      className={cn("relative  bg-gray-100 rounded-lg group", className)}
+      className={cn("relative  bg-gray-50 rounded-lg group", className)}
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="relative h-[498.2px] flex flex-col justify-end overflow-hidden">
@@ -3223,7 +3287,7 @@ const BigImage = ({ className }: { className?: string }) => {
             <PictureEditor
               onValueChange={onChange}
               startingPoint={({ dataUrl, open, style, onRemove, onEdit }) => (
-                <div className="group-data-[state=dragged]/article:pointer-events-none overflow-hidden absolute inset-0 group/image size-full grid rounded-lg place-items-center hover:bg-black/20 transition duration-300">
+                <div className="group-data-[state=dragged]/article:pointer-events-none overflow-hidden absolute inset-0 group/image size-full grid rounded-lg place-items-center group-hover:bg-primary-50 transition duration-300">
                   {dataUrl ? (
                     <div
                       className="size-full rounded-lg transform"
@@ -3237,11 +3301,11 @@ const BigImage = ({ className }: { className?: string }) => {
                     </div>
                   ) : (
                     <>
-                      <Picture className="w-[84px] shrink-0 h-[76px] text-gray-300 group-hover/image:text-white" />
+                      <Picture className="w-[84px] shrink-0 h-[76px] text-gray-300 group-hover:text-white" />
                     </>
                   )}
                   <BlockImageToolbar
-                    className="top-5 left-5 absolute hidden opacity-0 group-hover/image:inline-flex group-hover/image:opacity-100 transition duration-300"
+                    className="top-5 left-5 absolute hidden opacity-0 group-hover:inline-flex group-hover:opacity-100 transition duration-300"
                     onAddImage={open}
                     onRemove={onRemove}
                     onEdit={onEdit}
@@ -3254,34 +3318,24 @@ const BigImage = ({ className }: { className?: string }) => {
           )}
         />
 
-        <div className="p-8 rounded-b-lg relative">
-          <h1 className="relative group/block">
-            <span className="absolute -inset-x-2.5 inset-0 group-hover/block:inline-block group-focus-within/block:inline-block opacity-0 hidden group-hover/block:opacity-100 group-focus-within/block:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover/block:bg-primary-500/5 group-focus-within/block:bg-transparent group-hover/block:group-focus-within/block:bg-transparent group-hover/block:border-primary-200">
-              <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within/block:invisible group-hover/block:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover/block:group-focus-within/block:invisible">
-                Text
-              </span>
-              {/*<BlockToolbar className="-top-[46px] -right-[17px] absolute group-focus-within/block:visible invisible transition-[visibility] duration-300" />*/}
-              <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" />
-            </span>
-            <Controller
-              control={control}
-              name="caption"
-              render={({ field: { value, onChange } }) => (
-                <EditableRoot className="relative" defaultValue="Image Title">
-                  <EditableLabel>Title</EditableLabel>
-                  <EditableArea>
-                    <EditableInput
-                      asChild
-                      className="bg-transparent py-2 w-full first-line:inline-block placeholder:text-gray-500 group-data-[placeholder-shown]/area:text-gray-500 min-h-4 [field-sizing:content] resize-none scrollbar-none text-4 leading-none font-semibold text-gray-500"
-                    >
-                      <textarea />
-                    </EditableInput>
-                    <EditablePreview className=" group-data-[placeholder-shown]/area:text-gray-500 text-4 leading-none font-semibold text-gray-500" />
-                  </EditableArea>
-                </EditableRoot>
-              )}
-            />
-          </h1>
+        <div className="p-8 rounded-b-lg relative bg-[linear-gradient(180deg,rgba(48,108,254,0)_0%,rgba(48,108,254,.296)_100%)]">
+          <Controller
+            control={control}
+            name="caption"
+            render={({ field: { value, onChange } }) => (
+              <EditableRoot
+                value={value}
+                onChange={onChange}
+                placeholder="Image Title"
+              >
+                <EditableLabel>Image Title</EditableLabel>
+                <EditableArea>
+                  <EditableInput className="bg-transparent" />
+                  <EditablePreview className="group-hover:text-primary-500 text-white group-data-[placeholder-shown]/area:text-gray-500" />
+                </EditableArea>
+              </EditableRoot>
+            )}
+          />
         </div>
       </div>
     </form>
@@ -3310,7 +3364,7 @@ const Challenges = () => {
 
   return (
     <form
-      className=" grid grid-cols-2 gap-x-[50px] group relative"
+      className="grid grid-cols-2 gap-x-[50px] group relative"
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="relative">
@@ -3321,7 +3375,7 @@ const Challenges = () => {
             <PictureEditor
               onValueChange={onChange}
               startingPoint={({ dataUrl, open, style, onRemove, onEdit }) => (
-                <div className="group-data-[state=dragged]/article:pointer-events-none overflow-hidden relative group/image size-full bg-gray-100 grid rounded-lg place-items-center hover:bg-black/20 hover:ring-2 hover:ring-primary-500 transition duration-300">
+                <div className="group-data-[state=dragged]/article:pointer-events-none overflow-hidden relative group/image size-full bg-gray-100 grid rounded-lg place-items-center hover:bg-primary-50 group-hover:bg-primary-50 group-hover:group-focus-within:bg-gray-100 hover:ring-2 hover:ring-primary-500 transition duration-300">
                   {dataUrl ? (
                     <div
                       className="size-full rounded-lg transform"
@@ -3335,7 +3389,7 @@ const Challenges = () => {
                     </div>
                   ) : (
                     <>
-                      <Picture className="w-[84px] shrink-0 h-[76px] text-gray-300 group-hover/image:text-white" />
+                      <Picture className="w-[84px] shrink-0 h-[76px] text-gray-300 group-hover/image:text-primary-300 group-hover:text-primary-300 group-hover:group-focus-within:text-gray-300" />
                     </>
                   )}
                   <BlockImageToolbar
@@ -3424,9 +3478,11 @@ const Challenges = () => {
 const BlockRoot = ({
   children,
   value,
+  onAdd,
 }: {
   children?: React.ReactNode
   value: number
+  onAdd?: () => void
 }) => {
   const y = useMotionValue(0)
   const boxShadow = useRaisedShadow(y)
@@ -3443,12 +3499,17 @@ const BlockRoot = ({
       dragControls={dragControls}
       dragListener={false}
     >
+      <div className="-top-[100px] h-[100px] flex flex-col justify-center inset-x-0 absolute group/spacer">
+        <div className="group-hover/spacer:visible invisible">
+          <ToBeAdded onPlus={onAdd} />
+        </div>
+      </div>
       <motion.div
-        className="absolute rounded-lg border-2 -inset-5 bg-white border-primary-500 hidden group-hover/article:block"
+        className="absolute rounded-lg border-2 -inset-5 bg-white border-primary-500 hidden group-hover:block group-hover:group-focus-within:opacity-0 group-hover:group-focus-within:hidden"
         style={{ boxShadow }}
       />
 
-      <span className="absolute -inset-5 group-hover:inline-block group-focus-within:inline-block opacity-0 hidden group-hover:opacity-100 group-focus-within:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover:bg-primary-500/5 group-focus-within:bg-transparent group-hover:group-focus-within:bg-transparent group-hover:border-primary-200">
+      <span className="absolute -inset-5 group-hover:inline-block opacity-0 hidden group-focus-within:opacity-0 group-hover:group-focus-within:opacity-0 group-focus-within:hidden group-hover:group-focus-within:hidden group-hover:opacity-100 transition duration-300 border-2 rounded-lg border-primary-500 group-hover:bg-primary-500/5 group-focus-within:bg-transparent group-hover:group-focus-within:bg-transparent group-hover:border-primary-200">
         <span className="absolute left-0 invisible transition-[visibility] duration-300 group-focus-within:invisible group-hover:visible -top-[22px] text-xs text-primary-500 leading-none font-medium group-hover:group-focus-within:invisible">
           Block
         </span>
@@ -3457,6 +3518,8 @@ const BlockRoot = ({
           canRemove
           canDuplicate
           onDrag={(event) => dragControls.start(event)}
+          canMoveDown
+          canMoveUp
         />
         {/* <FlexibleToolbar className="absolute left-0 -top-[51px] group-focus-within/block:visible invisible transition-[visibility] duration-300" /> */}
       </span>
@@ -3754,7 +3817,11 @@ export const EditingPlayground = () => {
             }}
           >
             {state.regions.map((region) => (
-              <BlockRoot key={region.id} value={region.id}>
+              <BlockRoot
+                key={region.id}
+                value={region.id}
+                onAdd={() => setOpen(true)}
+              >
                 <Region {...region} />
               </BlockRoot>
             ))}
