@@ -18,6 +18,22 @@ import {
   TabsTrigger,
 } from "@/components/ui"
 
+const swiperBaseConfig = {
+  slidesPerView: 1,
+  spaceBetween: 20,
+  observer: true,
+  observeParents: true,
+  resizeObserver: true,
+  breakpoints: {
+    1200: {
+      slidesPerView: 5,
+    },
+    768: {
+      slidesPerView: 3,
+    },
+  },
+}
+
 const Hero = () => {
   return (
     <div className="relative bg-[#313237]">
@@ -48,6 +64,38 @@ const Hero = () => {
         </div>
       </div>
     </div>
+  )
+}
+
+const useMounted = () => {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+  return mounted
+}
+
+const ClientOnlySwiper = ({
+  children,
+  onInit,
+}: {
+  children: React.ReactNode
+  onInit: (swiper: Swiper) => void
+}) => {
+  const mounted = useMounted()
+
+  if (!mounted) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-5">
+        {children}
+      </div>
+    )
+  }
+
+  return (
+    <SwiperRoot {...swiperBaseConfig} onInit={onInit}>
+      {children}
+    </SwiperRoot>
   )
 }
 
@@ -110,19 +158,7 @@ const FavoriteProjects = () => {
           </button>
         )}
 
-        <SwiperRoot
-          slidesPerView={1}
-          breakpoints={{
-            1200: {
-              slidesPerView: 5,
-            },
-            768: {
-              slidesPerView: 3,
-            },
-          }}
-          onInit={setController}
-          spaceBetween={20}
-        >
+        <ClientOnlySwiper onInit={setController}>
           <SwiperSlide>
             <FavoriteProjectCard />
           </SwiperSlide>
@@ -144,7 +180,7 @@ const FavoriteProjects = () => {
           <SwiperSlide>
             <FavoriteProjectCard />
           </SwiperSlide>
-        </SwiperRoot>
+        </ClientOnlySwiper>
 
         {controller?.allowSlideNext && (
           <button
@@ -329,19 +365,7 @@ const OnlineSalesFunnels = () => {
             <ChevronLeft className="size-[55px]" />
           </button>
         )}
-        <SwiperRoot
-          slidesPerView={1}
-          breakpoints={{
-            1200: {
-              slidesPerView: 5,
-            },
-            768: {
-              slidesPerView: 3,
-            },
-          }}
-          onInit={setController}
-          spaceBetween={20}
-        >
+        <ClientOnlySwiper onInit={setController}>
           <SwiperSlide>
             <FavoriteProjectCard />
           </SwiperSlide>
@@ -363,7 +387,7 @@ const OnlineSalesFunnels = () => {
           <SwiperSlide>
             <FavoriteProjectCard />
           </SwiperSlide>
-        </SwiperRoot>
+        </ClientOnlySwiper>
 
         {controller?.allowSlideNext && (
           <button
@@ -413,19 +437,7 @@ const CustomerServiceSolutions = () => {
           </button>
         )}
 
-        <SwiperRoot
-          slidesPerView={1}
-          breakpoints={{
-            1200: {
-              slidesPerView: 5,
-            },
-            768: {
-              slidesPerView: 3,
-            },
-          }}
-          onInit={setController}
-          spaceBetween={20}
-        >
+        <ClientOnlySwiper onInit={setController}>
           <SwiperSlide>
             <FavoriteProjectCard />
           </SwiperSlide>
@@ -447,7 +459,7 @@ const CustomerServiceSolutions = () => {
           <SwiperSlide>
             <FavoriteProjectCard />
           </SwiperSlide>
-        </SwiperRoot>
+        </ClientOnlySwiper>
 
         {controller?.allowSlideNext && (
           <button
@@ -497,19 +509,7 @@ const MarketingAutomationCampaigns = () => {
           </button>
         )}
 
-        <SwiperRoot
-          slidesPerView={1}
-          breakpoints={{
-            1200: {
-              slidesPerView: 5,
-            },
-            768: {
-              slidesPerView: 3,
-            },
-          }}
-          onInit={setController}
-          spaceBetween={20}
-        >
+        <ClientOnlySwiper onInit={setController}>
           <SwiperSlide>
             <FavoriteProjectCard />
           </SwiperSlide>
@@ -531,7 +531,7 @@ const MarketingAutomationCampaigns = () => {
           <SwiperSlide>
             <FavoriteProjectCard />
           </SwiperSlide>
-        </SwiperRoot>
+        </ClientOnlySwiper>
 
         {controller?.allowSlideNext && (
           <button

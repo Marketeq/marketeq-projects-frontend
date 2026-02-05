@@ -204,6 +204,12 @@ const TabsContent = React.forwardRef<
     ref
   ) => {
     const ctx = useTabsContext()
+    const [mounted, setMounted] = React.useState(false)
+
+    React.useEffect(() => {
+      setMounted(true)
+    }, [])
+
     return (
       <AnimatePresence>
         {ctx.value === value && (
@@ -216,8 +222,10 @@ const TabsContent = React.forwardRef<
             {...props}
           >
             <motion.div
-              initial={ctx.unanimated ? undefined : "enter"}
-              animate={ctx.unanimated ? undefined : "ideal"}
+              initial={
+                ctx.unanimated ? false : mounted ? "enter" : false
+              }
+              animate={ctx.unanimated ? false : "ideal"}
               variants={contentVariants}
               transition={contentTransition}
             >
