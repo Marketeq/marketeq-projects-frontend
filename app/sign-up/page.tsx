@@ -66,7 +66,7 @@ export default function SignUp() {
       .then((response) => {
         if (
           response?.status === 201 &&
-          response?.data?.accessToken &&
+          response?.data?.access_token &&
           response?.data?.user
         ) {
           Cookies.set("accessToken", response?.data?.accessToken)

@@ -8,13 +8,26 @@ import {
 } from "@/types/auth"
 import AxiosRequest from ".."
 
+const API_BASE = "http://localhost:3002"
 export const AuthAPI = {
   SignUpWithEmail: (data: SignUpParams) => {
-    return AxiosRequest.post("/auth/signup", data)
+    if (data.password) {
+      // full signup
+      return AxiosRequest.post(`${API_BASE}/auth/register`, {
+        email: data.email,
+        password: data.password,
+        username: data.email.split("@")[0],
+      })
+    }
+
+    // email-only signup
+    return AxiosRequest.post(`${API_BASE}/auth/register-email`, {
+      email: data.email,
+    })
   },
 
   LoginWithEmail: (data: LoginParams) => {
-    return AxiosRequest.post("/auth/login", data)
+    return AxiosRequest.post(`${API_BASE}/auth/login`, data)
   },
 
   LoginWithGoogle: (data: GoogleLoginParams) => {
