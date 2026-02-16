@@ -1766,7 +1766,7 @@ const SetYourPreferences = ({
       formData.append("projectTypes", item)
     })
 
-    formData.append("isStudent", stepData?.isStudent?.toString() || "false")
+    // formData.append("isStudent", stepData?.isStudent?.toString() || "false")
 
     formData.append("availability", availability || "")
 
@@ -1787,6 +1787,7 @@ const SetYourPreferences = ({
           nextStep()
           setStepData(null)
           setTalentUser(response?.data?.user)
+          console.log(response.data)
         }
       })
       .catch((error) => {
