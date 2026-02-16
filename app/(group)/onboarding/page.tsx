@@ -69,7 +69,7 @@ export default function Onboarding() {
 
                 <div className="flex-auto">
                   <h1 className="text-lg leading-[21.78px] font-semibold text-dark-blue-400">
-                    I’m want to hire
+                    I want to hire
                   </h1>
                   <p className="text-base mt-2 leading-[19.36px] font-light text-dark-blue-400">
                     Discover the right experts ready to deliver what you need.
