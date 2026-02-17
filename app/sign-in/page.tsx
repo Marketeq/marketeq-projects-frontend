@@ -73,10 +73,10 @@ export default function SignIn() {
       .then((response) => {
         if (
           response?.status === 200 &&
-          response?.data?.accessToken &&
+          response?.data?.access_token &&
           response?.data?.user
         ) {
-          Cookies.set("accessToken", response?.data?.accessToken)
+          Cookies.set("access_token", response?.data?.access_token)
           setUser(response?.data?.user)
 
           router.push("/")

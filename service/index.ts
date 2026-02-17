@@ -20,8 +20,8 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
-    const accessToken = Cookies.get("accessToken")
-    config.headers.Authorization = accessToken ? `Bearer ${accessToken}` : ""
+    const access_token = Cookies.get("access_token")
+    config.headers.Authorization = access_token ? `Bearer ${access_token}` : ""
 
     return Promise.resolve(config)
   },
