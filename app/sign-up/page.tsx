@@ -71,6 +71,7 @@ export default function SignUp() {
         ) {
           console.log(response?.data?.user)
           Cookies.set("access_token", response?.data?.access_token)
+          console.log("token", Cookies.get("access_token"))
           setUser(response?.data?.user)
           router.push("/onboarding")
           reset()

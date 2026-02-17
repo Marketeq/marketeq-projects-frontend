@@ -13,6 +13,7 @@ import { AuthAPI } from "@/service/http/auth"
 import { UserAPI } from "@/service/http/user"
 import { User } from "@/types/user"
 import { useToast } from "@/components/ui"
+import Cookies from "js-cookie"
 
 interface AuthContextType {
   isLoading: boolean
@@ -41,14 +42,32 @@ function useProvideAuth() {
   const getUser = () => {
     setIsLoading(true)
 
+    const accessToken = Cookies.get("access_token")
+    if (!accessToken) {
+      setUser(null)
+      setIsAuthChecked(true)
+      setIsLoading(false)
+      return
+    }
+
     UserAPI.me()
       .then((response) => {
-        if (response?.status === 200 && response?.data?.user) {
-          setUser(response.data.user)
+        if (response?.status === 200) {
+          const nextUser =
+            response?.data?.user ??
+            response?.data?.data?.user ??
+            response?.data
+
+          if (nextUser && typeof nextUser === "object") {
+            setUser(nextUser)
+          }
         }
       })
-      .catch(() => {
-        setUser(null)
+      .catch((error) => {
+        const status = error?.response?.status
+        if (status === 401 || status === 403) {
+          setUser(null)
+        }
         setIsAuthChecked(true)
         setIsLoading(false)
       })
@@ -61,7 +80,10 @@ function useProvideAuth() {
   const logoutHandler = async () => {
     try {
       await AuthAPI.Logout()
-      document.cookie = "accessToken=; Path=/; Max-Age=0; SameSite=None; Secure"
+      document.cookie =
+        "access_token=; Path=/; Max-Age=0; SameSite=None; Secure"
+      document.cookie =
+        "accessToken=; Path=/; Max-Age=0; SameSite=None; Secure"
     } catch (err: any) {
       toast({
         title:
