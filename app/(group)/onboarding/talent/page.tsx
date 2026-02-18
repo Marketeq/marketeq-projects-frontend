@@ -1769,7 +1769,7 @@ const SetYourPreferences = ({
       formData.append("projectTypes", item)
     })
 
-    formData.append("isStudent", stepData?.isStudent?.toString() || "false")
+    // formData.append("isStudent", stepData?.isStudent?.toString() || "false")
 
     formData.append("availability", availability || "")
 
@@ -2033,19 +2033,44 @@ const DoNext = ({
   talentUser: User | null
 }) => {
   const router = useRouter()
-  const { setUser } = useAuth()
+  const { setUser, user } = useAuth()
   const [isLoading, setIsLoading] = React.useState(false)
   const handleFinish = async () => {
     try {
       setIsLoading(true)
       const response = await UserAPI.handleSkip({ role: ROLE.TALENT })
-      const userResponse = await UserAPI.me()
-      setUser(userResponse.data.user)
-      setIsLoading(false)
+
+      let nextUser = response?.data?.user as User | undefined
+      if (!nextUser) {
+        const fallbackUser = talentUser ?? user
+        if (fallbackUser) {
+          nextUser = {
+            ...fallbackUser,
+            onboardingDismissed: true,
+            role: fallbackUser.role ?? ROLE.TALENT,
+          }
+        }
+      }
+
+      if (nextUser) {
+        setUser(nextUser)
+      }
+
+      try {
+        const userResponse = await UserAPI.me()
+        if (userResponse?.data?.user) {
+          setUser(userResponse.data.user)
+        }
+      } catch (error) {
+        console.error("Failed to refresh user after onboarding", error)
+      }
+
       router.push("/talent-dashboard")
     } catch (error) {
       console.error("Failed to complete onboarding", error)
       // Show error toast if needed
+    } finally {
+      setIsLoading(false)
     }
   }
 

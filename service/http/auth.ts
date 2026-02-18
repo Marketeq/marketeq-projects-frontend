@@ -8,18 +8,10 @@ import {
 } from "@/types/auth"
 import AxiosRequest from ".."
 
-const API_BASE = "http://localhost:3001"
+const API_BASE = process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:3001"
 export const AuthAPI = {
   SignUpWithEmail: (data: SignUpParams) => {
-    if (data.password) {
-      // full signup
-      return AxiosRequest.post(`${API_BASE}/auth/register`, {
-        email: data.email,
-        password: data.password,
-        username: data.email.split("@")[0],
-      })
-    }
-
+ 
     // email-only signup
     return AxiosRequest.post(`${API_BASE}/auth/register-email`, {
       email: data.email,
@@ -39,7 +31,7 @@ export const AuthAPI = {
   },
 
   CheckUsername: (data: CheckUsernameParams) => {
-    return AxiosRequest.post("/auth/check-username", data)
+    return AxiosRequest.post(`${API_BASE}/auth/check-username`, data)
   },
 
   CreatePassword: (data: CreatePasswordParams) => {
@@ -47,8 +39,9 @@ export const AuthAPI = {
   },
 
   Logout: () => {
-    return AxiosRequest.post("/auth/logout", null, {
+    return AxiosRequest.post(`${API_BASE}/auth/logout`, null, {
       withCredentials: true,
     })
   },
 }
+

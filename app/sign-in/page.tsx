@@ -72,7 +72,7 @@ export default function SignIn() {
     AuthAPI.LoginWithEmail({ email, password })
       .then((response) => {
         if (response?.status === 200 && response?.data?.access_token) {
-          Cookies.set("accessToken", response.data.access_token)
+          Cookies.set("access_token", response?.data?.access_token)
 
           // fetch user after token is saved
           UserAPI.me().then((meRes) => {
@@ -342,3 +342,4 @@ export default function SignIn() {
     </UnauthenticatedRoute>
   )
 }
+
