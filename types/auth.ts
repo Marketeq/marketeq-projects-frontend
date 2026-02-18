@@ -9,7 +9,7 @@ export type LoginParams = {
 }
 
 export type GoogleLoginParams = {
-  accessToken: string
+  access_token: string
 }
 
 export type LinkedInLoginParams = {

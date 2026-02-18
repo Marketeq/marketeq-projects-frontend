@@ -23,7 +23,7 @@ export const AuthAPI = {
   },
 
   LoginWithGoogle: (data: GoogleLoginParams) => {
-    return AxiosRequest.post("/auth/google/login", data)
+    return AxiosRequest.post(`${API_BASE}/auth/google`, data)
   },
 
   LoginWithLinkedIn: (data: LinkedInLoginParams) => {

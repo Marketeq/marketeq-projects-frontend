@@ -34,7 +34,7 @@ export default function RootLayout({
   return (
     <html className={`scroll-smooth ${font.variable}`} lang="en">
       <body>
-        <GoogleOAuthProvider clientId="732482504050-vudnbrq9j0j6ebropkvbtnjjk53hmfjv.apps.googleusercontent.com">
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
           <AuthProvider>
             <QueryProvider>
               <div className="min-h-screen flex flex-col bg-gray-50">
