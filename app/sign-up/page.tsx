@@ -69,7 +69,7 @@ export default function SignUp() {
           response?.data?.access_token &&
           response?.data?.user
         ) {
-          Cookies.set("accessToken", response?.data?.accessToken)
+          Cookies.set("access_token", response?.data?.access_token)
           setUser(response?.data?.user)
           router.push("/onboarding")
           reset()
@@ -134,14 +134,17 @@ export default function SignUp() {
           <MarketeqIcon1 className="absolute -bottom-[36.41px] left-[41.11px]" />
 
           <div className="flex items-start gap-y-5 flex-col relative">
-            <Button
+            {/* <Button
               className="text-white"
               visual="gray"
               variant="link"
               size="md"
             >
               Don’t have an account?
-            </Button>
+            </Button> */}
+            <p className="text-white text-sm font-medium">
+              Don’t have an account?
+            </p>
 
             <div className="inline-block relative">
               <Button
@@ -276,7 +279,7 @@ export default function SignUp() {
                   href="/sign-in"
                   className="underline font-normal text-blue-500 text-sm leading-6"
                 >
-                  Sign in?
+                  Sign in
                 </NextLink>
               </div>
             </form>

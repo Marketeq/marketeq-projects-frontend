@@ -22,8 +22,11 @@ import {
   Briefcase02,
   Check,
   ChevronRight,
+  File02,
   Home03,
   Plus,
+  RefreshCw01,
+  SearchLg,
   Trash03,
   Upload,
   Users03,
@@ -2071,7 +2074,7 @@ const DoNext = ({
             >
               <div className="flex items-center gap-x-3">
                 <div className="size-11 rounded-lg border-[1.5px] shrink-0 inline-flex items-center justify-center border-[#EAECF0] text-primary-500">
-                  <Briefcase02 className="size-5" />
+                  <SearchLg className="size-5" />
                 </div>
                 <span className="text-sm leading-[16.94px] inline-block font-medium text-gray-900">
                   Find open projects
@@ -2081,42 +2084,44 @@ const DoNext = ({
               <ChevronRight className="shrink-0 size-5" />
             </div>
 
-            {/* <div className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300">
+            <div className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300">
               <div className="flex items-center gap-x-3">
                 <div className="size-11 rounded-lg border-[1.5px] shrink-0 inline-flex items-center justify-center border-[#EAECF0] text-primary-500">
                   <Users03 className="size-5" />
                 </div>
                 <span className="text-sm leading-[16.94px] inline-block font-medium text-gray-900">
-                  Browse Teams
+                  Join a Team
                 </span>
               </div>
 
               <ChevronRight className="shrink-0 size-5" />
             </div>
+
             <div className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300">
               <div className="flex items-center gap-x-3">
                 <div className="size-11 rounded-lg border-[1.5px] shrink-0 inline-flex items-center justify-center border-[#EAECF0] text-primary-500">
-                  <Briefcase02 className="size-5" />
+                  <File02 className="size-5" />
                 </div>
                 <span className="text-sm leading-[16.94px] inline-block font-medium text-gray-900">
-                  Find Talent
+                  Create a new project
                 </span>
               </div>
 
               <ChevronRight className="shrink-0 size-5" />
             </div>
+
             <div className="p-3 flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-[0px_1px_5px_0px_rgba(16,24,40,.02)] hover:ring-1 hover:ring-gray-300 hover:border-gray-300 cursor-pointer transition duration-300">
               <div className="flex items-center gap-x-3">
                 <div className="size-11 rounded-lg border-[1.5px] shrink-0 inline-flex items-center justify-center border-[#EAECF0] text-primary-500">
-                  <Briefcase02 className="size-5" />
+                  <RefreshCw01 className="size-5" />
                 </div>
                 <span className="text-sm leading-[16.94px] inline-block font-medium text-gray-900">
-                  Browse Projects
+                  Launch a new service
                 </span>
               </div>
 
               <ChevronRight className="shrink-0 size-5" />
-            </div> */}
+            </div>
           </div>
         </div>
 
