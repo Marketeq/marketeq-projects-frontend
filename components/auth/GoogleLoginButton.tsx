@@ -21,40 +21,38 @@ const GoogleLoginButton = () => {
   // No safety check needed as the client ID is hardcoded in layout.tsx
 
   const handleLoginWithGoogle = useGoogleLogin({
-    onSuccess: (credentialResponse) => {
-      if (credentialResponse?.access_token) {
-        setIsLoading(true)
+  scope: "openid email profile",
+  onSuccess: (tokenResponse) => {
+    const accessToken = tokenResponse?.access_token
 
-        AuthAPI.LoginWithGoogle({
-          accessToken: credentialResponse?.access_token,
-        })
-          .then((response) => {
-            if (
-              response?.status === 200 &&
-              response?.data?.accessToken &&
-              response?.data?.user
-            ) {
-              Cookies.set("accessToken", response?.data?.accessToken)
-              setUser(response?.data?.user)
+    console.log("google tokenResponse", tokenResponse)
+    console.log("access_token", tokenResponse?.access_token)
 
-              router.push("/")
-            }
+    if (!accessToken) return
+
+    setIsLoading(true)
+
+    AuthAPI.LoginWithGoogle({ access_token: accessToken })
+      .then((response) => {
+        if (response?.status === 200 && response?.data?.access_token && response?.data?.user) {
+          Cookies.set("access_token", response.data.access_token)
+          setUser(response.data.user)
+          router.push("/")
+        }
+      })
+      .catch((error) => {
+        if (error?.response?.data?.errors?.message) {
+          toast({
+            title: error.response.data.errors.message,
+            variant: "destructive",
           })
-          .catch((error) => {
-            if (error?.response?.data?.errors?.message) {
-              toast({
-                title: error?.response?.data?.errors?.message,
-                variant: "destructive",
-              })
-            }
-          })
-          .finally(() => {
-            setIsLoading(false)
-          })
-      }
-    },
-    onError: () => {},
-  })
+        }
+      })
+      .finally(() => setIsLoading(false))
+  },
+  onError: () => {},
+})
+
 
   return (
     <Button
