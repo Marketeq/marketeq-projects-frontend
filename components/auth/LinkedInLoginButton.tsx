@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth"
 import { AuthAPI } from "@/service/http/auth"
+import { UserAPI } from "@/service/http/user"
 import { LinkedInDefault } from "@blend-metrics/icons/social"
 import Cookies from "js-cookie"
 import { Button, useToast } from "@/components/ui"
@@ -26,26 +27,26 @@ const LinkedInLogin = () => {
   }, [])
 
   const handleLoginWithLinkedIn = () => {
-    if (typeof window !== "undefined") {
-      const linkedin =
-        "https://www.linkedin.com/oauth/v2/authorization?response_type=code"
-      const clientId = process?.env?.NEXT_PUBLIC_LINKEDIN_CLIENT_ID || ""
-      const scope = "openid%20profile%20email"
-      const state = "1234"
-      const redirectUrl = `${window?.location?.origin}${pathName}`
+    if (typeof window === "undefined") return
 
-      const authUrl = `${linkedin}&client_id=${clientId}&scope=${scope}&state=${state}&redirect_uri=${redirectUrl}`
-      const width = 550
-      const height = 730
-      const left = window.screen.width / 2 - width / 2
-      const top = window.screen.height / 2 - height / 2
+    const clientId = process.env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID || ""
+    const redirectUrl = `${window.location.origin}${pathName}`
 
-      window.open(
-        authUrl,
-        "Linkedin",
-        `menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=${width},height=${height},top=${top},left=${left}`
-      )
-    }
+    const params = new URLSearchParams({
+      response_type: "code",
+      client_id: clientId,
+      redirect_uri: redirectUrl,
+      state: "1234",
+      scope: "openid profile email",
+    })
+
+    const authUrl = `https://www.linkedin.com/oauth/v2/authorization?${params.toString()}`
+
+    window.open(
+      authUrl,
+      "Linkedin",
+      "menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=550,height=730"
+    )
   }
 
   const handleLoginWithLinkedInApi = useCallback(
@@ -64,12 +65,21 @@ const LinkedInLogin = () => {
           .then((response) => {
             if (
               response?.status === 200 &&
-              response?.data?.accessToken &&
+              response?.data?.access_token &&
               response?.data?.user
             ) {
-              Cookies.set("accessToken", response?.data?.accessToken)
-              setUser(response?.data?.user)
-              router.push("/")
+              Cookies.set("access_token", response?.data?.access_token)
+              UserAPI.me().then((me) => {
+                if (me?.status === 200) {
+                  const user = me.data?.user ?? me.data
+                  if (user?.role) {
+                    setUser(user)
+                    router.push("/")
+                  } else {
+                    console.warn("User missing role", me.data)
+                  }
+                }
+              })
             }
           })
           .catch((error) => {
