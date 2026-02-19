@@ -27,7 +27,7 @@ export const AuthAPI = {
   },
 
   LoginWithLinkedIn: (data: LinkedInLoginParams) => {
-    return AxiosRequest.post("/auth/linkedin/login", data)
+    return AxiosRequest.post(`${API_BASE}/auth/linkedin`, data)
   },
 
   CheckUsername: (data: CheckUsernameParams) => {
