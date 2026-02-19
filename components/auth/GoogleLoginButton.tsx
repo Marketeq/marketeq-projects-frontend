@@ -9,6 +9,7 @@ import { useGoogleLogin } from "@react-oauth/google"
 import Cookies from "js-cookie"
 import { Button, useToast } from "@/components/ui"
 import { Spinner } from "../ui/spinner/spinner"
+import { UserAPI } from "@/service/http/user"
 
 const GoogleLoginButton = () => {
   const router = useRouter()
@@ -33,11 +34,14 @@ const GoogleLoginButton = () => {
     setIsLoading(true)
 
     AuthAPI.LoginWithGoogle({ access_token: accessToken })
-      .then((response) => {
+      .then(async(response) => {
         if (response?.status === 200 && response?.data?.access_token && response?.data?.user) {
           Cookies.set("access_token", response.data.access_token)
-          setUser(response.data.user)
-          router.push("/")
+          const me = await UserAPI.me()
+          if (me?.status === 200 && me?.data) {
+            setUser(me.data)
+            router.push("/")
+          }
         }
       })
       .catch((error) => {
