@@ -26,9 +26,6 @@ const GoogleLoginButton = () => {
   onSuccess: (tokenResponse) => {
     const accessToken = tokenResponse?.access_token
 
-    console.log("google tokenResponse", tokenResponse)
-    console.log("access_token", tokenResponse?.access_token)
-
     if (!accessToken) return
 
     setIsLoading(true)
@@ -37,11 +34,18 @@ const GoogleLoginButton = () => {
       .then(async(response) => {
         if (response?.status === 200 && response?.data?.access_token && response?.data?.user) {
           Cookies.set("access_token", response.data.access_token)
-          const me = await UserAPI.me()
-          if (me?.status === 200 && me?.data) {
-            setUser(me.data)
-            router.push("/")
+       
+          UserAPI.me().then((me) => {
+          if (me?.status === 200) {
+            const user = me.data?.user ?? me.data
+            if (user?.role) {
+              setUser(user)
+              router.push("/")
+            } else {
+              console.warn("User missing role", me.data)
+            }
           }
+        })
         }
       })
       .catch((error) => {
