@@ -74,6 +74,8 @@ import {
   EditablePreview,
   EditableRoot,
 } from "@/components/ui"
+import { useAuth } from "@/contexts/auth"
+
 
 export const MoneyDollarCircleFill = ({
   className,
@@ -912,12 +914,13 @@ export const StarsBFill = ({
 }
 
 export const Welcome = ({ onToggle }: { onToggle: () => void }) => {
+  const { user } = useAuth()
   return (
     <>
       <div className="md:contents flex flex-col gap-y-5">
         <div className="flex items-end justify-between">
           <h1 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
-            Welcome, Christopher!
+            Welcome, {user?.firstName}
           </h1>
 
           <div className="contents md:flex min-[768px]:flex-row-reverse min-[1024px]:flex-row items-center gap-x-3">

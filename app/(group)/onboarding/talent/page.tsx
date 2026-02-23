@@ -1749,7 +1749,9 @@ const SetYourPreferences = ({
 
     const formData = new FormData()
 
-    formData.append("avatar", stepData?.avatar || "")
+    if (stepData?.avatar instanceof File) {
+      formData.append("avatar", stepData.avatar)
+    }
     formData.append("username", stepData?.username || "")
     formData.append("firstName", stepData?.firstName || "")
     formData.append("lastName", stepData?.lastName || "")
@@ -1766,7 +1768,7 @@ const SetYourPreferences = ({
       formData.append("projectTypes", item)
     })
 
-    // formData.append("isStudent", stepData?.isStudent?.toString() || "false")
+    formData.append("isStudent", stepData?.isStudent?.toString() || "false")
 
     formData.append("availability", availability || "")
 
