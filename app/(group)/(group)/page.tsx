@@ -85,15 +85,28 @@ const ClientOnlySwiper = ({
   const mounted = useMounted()
 
   if (!mounted) {
+    const items = Array.isArray(children)
+      ? children
+      : React.Children.toArray(children)
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-5">
-        {children}
+      <div className="overflow-hidden">
+        <div className="flex flex-nowrap gap-5">
+          {items.map((child, index) => (
+            <div key={index} className="w-[280px] shrink-0">
+              {child}
+            </div>
+          ))}
+        </div>
       </div>
     )
   }
 
   return (
-    <SwiperRoot {...swiperBaseConfig} onInit={onInit}>
+    <SwiperRoot
+      {...swiperBaseConfig}
+      onInit={onInit}
+      className="!overflow-hidden"
+    >
       {children}
     </SwiperRoot>
   )
@@ -149,14 +162,13 @@ const FavoriteProjects = () => {
       </div>
 
       <div className="relative mt-5 lg:mt-[42px]">
-        {controller?.allowSlidePrev && (
-          <button
-            className="xs:max-lg:hidden focus-visible:outline-none absolute inset-y-0 my-auto -left-[71px] text-gray-300 hover:text-gray-500"
-            onClick={() => controller?.slidePrev()}
-          >
-            <ChevronLeft className="size-[55px]" />
-          </button>
-        )}
+        <button
+          className="xs:max-lg:hidden focus-visible:outline-none absolute inset-y-0 my-auto -left-[71px] text-gray-300 hover:text-gray-500 disabled:opacity-30 disabled:cursor-not-allowed"
+          onClick={() => controller?.slidePrev()}
+          disabled={!controller?.allowSlidePrev}
+        >
+          <ChevronLeft className="size-[55px]" />
+        </button>
 
         <ClientOnlySwiper onInit={setController}>
           <SwiperSlide>
@@ -182,14 +194,13 @@ const FavoriteProjects = () => {
           </SwiperSlide>
         </ClientOnlySwiper>
 
-        {controller?.allowSlideNext && (
-          <button
-            className="xs:max-lg:hidden focus-visible:outline-none absolute inset-y-0 my-auto -right-[71px] text-gray-300 hover:text-gray-500"
-            onClick={() => controller?.slideNext()}
-          >
-            <ChevronRight className="size-[55px]" />
-          </button>
-        )}
+        <button
+          className="xs:max-lg:hidden focus-visible:outline-none absolute inset-y-0 my-auto -right-[71px] text-gray-300 hover:text-gray-500 disabled:opacity-30 disabled:cursor-not-allowed"
+          onClick={() => controller?.slideNext()}
+          disabled={!controller?.allowSlideNext}
+        >
+          <ChevronRight className="size-[55px]" />
+        </button>
       </div>
 
       <div className="flex items-center mt-5 justify-center lg:hidden">

@@ -680,7 +680,7 @@ const ProjectInfoTip = ({
         <div className="flex items-center gap-x-3">
           <CheckCircle className="size-5 shrink-0 text-primary-500" />{" "}
           <span className="text-sm leading-5 font-semibold text-gray-700">
-            Focus on purpose
+            Focus on the purpose
           </span>
         </div>
 
@@ -696,7 +696,7 @@ const ProjectInfoTip = ({
         <div className="flex items-center gap-x-3">
           <CheckCircle className="size-5 shrink-0 text-primary-500" />{" "}
           <span className="text-sm leading-5 font-semibold text-gray-700">
-            Focus on purpose
+            Focus on the purpose
           </span>
         </div>
 
@@ -714,7 +714,7 @@ const ProjectInfoTip = ({
 const projectInfoSchema = z.object({
   title: z
     .string()
-    .min(10, "Please enter at least 10 character(s)")
+    .min(1, "Please enter at least 1 character(s)")
     .max(120, "Please do not enter more than 120 character(s)"),
   category: z
     .array(
@@ -723,15 +723,15 @@ const projectInfoSchema = z.object({
           .string({
             required_error: "Please enter/select a category",
           })
-          .min(1, "Please select at least 1 character(s)"),
+          .min(1, "Please enter/select a category"),
         subCategories: z
           .array(z.string(), {
             required_error: "Please enter/select at least 1 sub-category(s)",
           })
-          .min(1, "Please enter/select at least 1 category(s)"),
+          .min(1, "Please enter/select at least 1 sub-category(s)"),
       })
     )
-    .length(3, "Please enter/select all the categories and sub-categories"),
+    .min(1, "Please enter/select a category"),
   industry: z
     .array(z.string(), {
       required_error: "Please enter/select at least 1 industry(s)",
@@ -740,11 +740,11 @@ const projectInfoSchema = z.object({
     .max(5, "Please do not enter more than 5 industry(s)"),
   shortDescription: z
     .string()
-    .min(50, "Please enter at least 50 character(s)")
+    .min(1, "Please enter at least 1 character(s)")
     .max(300, "Please do not enter more than 300 character(s)"),
   fullDescription: z
     .string()
-    .min(100, "Please enter at least 100 character(s)")
+    .min(1, "Please enter at least 1 character(s)")
     .max(2_000, "Please do not enter more than 2,000 character(s)"),
   tags: z
     .array(z.string(), {
@@ -756,7 +756,7 @@ const projectInfoSchema = z.object({
     .array(z.string(), {
       required_error: "Please enter/select at least 1 skill(s)",
     })
-    .min(1, "Please enter/select at least 1 character(s)")
+    .min(1, "Please enter/select at least 1 skill(s)")
     .max(10, "Please do not enter/select more than 10 tag(s)"),
 })
 
@@ -777,7 +777,43 @@ const techDesignCategories = [
   "Cybersecurity",
 ]
 
-const skills = ["Node.js", "Javascript", "Wireframing"]
+const subCategoryOptions = options.value
+const industryOptions = [
+  "Technology",
+  "Healthcare",
+  "Finance",
+  "Education",
+  "Retail",
+  "Manufacturing",
+  "Media",
+  "Real Estate",
+  "Energy",
+  "Transportation",
+]
+const tagOptions = [
+  "Web App",
+  "Mobile App",
+  "AI",
+  "Blockchain",
+  "UI/UX",
+  "SaaS",
+  "Analytics",
+  "Security",
+  "E-commerce",
+  "Automation",
+]
+const skills = [
+  "Node.js",
+  "JavaScript",
+  "Wireframing",
+  "React",
+  "TypeScript",
+  "Figma",
+  "SQL",
+  "Python",
+  "UX Research",
+  "API Integration",
+]
 type ProjectInfoProps = {
   setProgress?: (val: number) => void
 }
@@ -802,48 +838,19 @@ const ProjectInfo = ({
     { category: "Data Science", subCategory: "Machine Learning" },
   ])
 
-  const [showSuggestions, setShowSuggestions] = useState(true)
+  const [showSuggestions] = useState(true)
+  const [activeCategoryIndex, setActiveCategoryIndex] = useState(0)
 
   useIsomorphicLayoutEffect(() => {
     toggleValidation(isValid)
   }, [isValid])
 
   const onSubmit: SubmitHandler<ProjectInfoFormValues> = (values) => {}
-  // Delay-hiding "Suggested Categories" after the 3rd slot is filled
-  const hideSuggestionsTimeoutRef = React.useRef<number | null>(null)
-
-  // Optional: clear any pending timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (hideSuggestionsTimeoutRef.current) {
-        clearTimeout(hideSuggestionsTimeoutRef.current)
-      }
-    }
-  }, [])
-
   const projectInfoValues = useWatch({ control: methods.control })
   const categoryValues = useWatch({
     control: methods.control,
     name: "category",
   })
-
-  useEffect(() => {
-    const allCategoriesFilled = Array.isArray(categoryValues)
-      ? categoryValues.every(
-          (cat) =>
-            cat &&
-            Array.isArray(cat.subCategories) &&
-            cat.subCategories.length > 0 &&
-            cat.subCategories.every((val) => val.trim?.() !== "")
-        )
-      : false
-
-    if (allCategoriesFilled) {
-      setShowSuggestions(false)
-    } else if (!allCategoriesFilled && suggested.length > 0) {
-      setShowSuggestions(true)
-    }
-  }, [categoryValues, suggested])
 
   const { error } = projectInfoSchema.safeParse(projectInfoValues)
   const totalFields = keys(methods.control._fields).length
@@ -859,11 +866,22 @@ const ProjectInfo = ({
   const suggestedSkills = skills.filter(
     (value) => !projectInfoValues.skills?.includes(value)
   )
+  const activeCategory = Array.isArray(categoryValues)
+    ? categoryValues[activeCategoryIndex]
+    : null
+  const suggestedForActiveCategory = suggested.filter(
+    ({ category, subCategory }) =>
+      !(
+        activeCategory?.category === category &&
+        Array.isArray(activeCategory?.subCategories) &&
+        activeCategory.subCategories.includes(subCategory)
+      )
+  )
 
   return (
     <form className="contents" onSubmit={methods.handleSubmit(onSubmit)}>
       <ScrollArea
-        className="h-[calc(theme(size.full)-148px)]"
+        className="h-[calc(theme(size.full)-148px)] overflow-x-hidden"
         scrollBar={<ScrollBar className="w-4 p-1" />}
       >
         <div className="py-10 px-5 md:px-10 min-[1024px]:py-[50px] min-[1024px]:px-[75px] flex flex-col min-[1024px]:flex-row gap-y-10 min-[1024px]:gap-x-[41.45px]">
@@ -910,7 +928,7 @@ const ProjectInfo = ({
             </div>
           </div>
 
-          <div className="flex-auto">
+          <div className="flex-auto min-w-0">
             <h1 className="text-xl leading-[30px] font-semibold text-dark-blue-400">
               Project Info
             </h1>
@@ -989,6 +1007,7 @@ const ProjectInfo = ({
                           <ListboxButton
                             placeholder="Add Category"
                             className="w-full max-w-[202px] h-[44px] px-[14px] py-[10px] flex items-center justify-start  border border-gray-300 rounded-[5px]"
+                            onFocus={() => setActiveCategoryIndex(0)}
                             {...field}
                           >
                             {({ value }) => (
@@ -1045,8 +1064,9 @@ const ProjectInfo = ({
                                 ))}
                                 <TagsInputInput
                                   placeholder="Add Sub-Category(s)"
-                                  options={options.value}
+                                  options={subCategoryOptions}
                                   className="flex-1 min-w-[100px] "
+                                  onFocus={() => setActiveCategoryIndex(0)}
                                 />
                                 <SearchMd className="size-4 shrink-0 absolute inset-y-0 right-3 my-auto text-gray-400" />
                               </TagsInputControl>
@@ -1086,6 +1106,7 @@ const ProjectInfo = ({
                           <ListboxButton
                             placeholder="Add Category"
                             className="w-full max-w-[202px] h-[44px] px-[14px] py-[10px] flex items-center justify-start  border border-gray-300 rounded-[5px]"
+                            onFocus={() => setActiveCategoryIndex(1)}
                             {...field}
                           >
                             {({ value }) => (
@@ -1145,9 +1166,10 @@ const ProjectInfo = ({
                                   </TagsInputItem>
                                 ))}
                                 <TagsInputInput
-                                  options={options.value}
+                                  options={subCategoryOptions}
                                   placeholder="Add Sub-Category(s)"
                                   className="flex-1 min-w-[100px]"
+                                  onFocus={() => setActiveCategoryIndex(1)}
                                 />
 
                                 <SearchMd className="size-4 shrink-0 absolute inset-y-0 right-3 my-auto text-gray-400" />
@@ -1188,6 +1210,7 @@ const ProjectInfo = ({
                           <ListboxButton
                             placeholder="Add Category"
                             className="w-full max-w-[202px] h-[44px] px-[14px] py-[10px] flex items-center justify-start  border border-gray-300 rounded-[5px]"
+                            onFocus={() => setActiveCategoryIndex(2)}
                             {...field}
                           >
                             {({ value }) => (
@@ -1247,9 +1270,10 @@ const ProjectInfo = ({
                                   </TagsInputItem>
                                 ))}
                                 <TagsInputInput
-                                  options={options.value}
+                                  options={subCategoryOptions}
                                   placeholder="Add Sub-Category(s)"
                                   className="flex-1 min-w-[100px]"
+                                  onFocus={() => setActiveCategoryIndex(2)}
                                 />
 
                                 <SearchMd className="size-4 shrink-0 absolute inset-y-0 right-3 my-auto text-gray-400" />
@@ -1282,8 +1306,8 @@ const ProjectInfo = ({
                   Suggested Categories
                 </span>
 
-                <div className="flex items-center gap-x-3">
-                  {suggested.map(({ category, subCategory }) => (
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 max-w-full">
+                  {suggestedForActiveCategory.map(({ category, subCategory }) => (
                     <Badge
                       size="md"
                       className="pr-2 focus-visible:outline-none text-primary-500 bg-primary-50"
@@ -1323,37 +1347,7 @@ const ProjectInfo = ({
                           // validate that slot
                           trigger(`category.${indexToUpdate}`)
 
-                          // remove the clicked suggestion immediately
-                          setSuggested((prev) =>
-                            prev.filter(
-                              (item) =>
-                                !(
-                                  item.category === category &&
-                                  item.subCategory === subCategory
-                                )
-                            )
-                          )
-
-                          // if all three slots are now filled, delay-hide suggestions in 3000ms
-                          const cats = getValues("category")
-                          const allThreeFilled = [0, 1, 2].every(
-                            (i) =>
-                              cats?.[i]?.category &&
-                              Array.isArray(cats?.[i]?.subCategories) &&
-                              cats[i].subCategories.length > 0
-                          )
-
-                          if (allThreeFilled) {
-                            // clear any previous timer, then schedule hide
-                            if (hideSuggestionsTimeoutRef.current) {
-                              clearTimeout(hideSuggestionsTimeoutRef.current)
-                            }
-                            hideSuggestionsTimeoutRef.current =
-                              window.setTimeout(() => {
-                                setShowSuggestions(false)
-                                hideSuggestionsTimeoutRef.current = null
-                              }, 3000)
-                          }
+                          // keep suggestions visible for subsequent category slots
                         }}
                       >
                         {category} / {subCategory}
@@ -1426,7 +1420,7 @@ const ProjectInfo = ({
                               </TagsInputItem>
                             ))}
                             <TagsInputInput
-                              options={options.value}
+                              options={industryOptions}
                               placeholder="Add Industries"
                             />
 
@@ -1471,7 +1465,7 @@ const ProjectInfo = ({
 
               <Textarea
                 id="short-description"
-                placeholder="Enter a short description..."
+                placeholder="Enter a short Description"
                 {...methods.register("shortDescription", {
                   onBlur: () => trigger("shortDescription"),
                 })}
@@ -1513,7 +1507,7 @@ const ProjectInfo = ({
 
               <Textarea
                 id="full-description"
-                placeholder="Enter a full description..."
+                placeholder="Enter a short Description"
                 {...methods.register("fullDescription", {
                   onBlur: () => trigger("fullDescription"),
                 })}
@@ -1595,8 +1589,8 @@ const ProjectInfo = ({
                               </TagsInputItem>
                             ))}
                             <TagsInputInput
-                              options={options.value}
-                              placeholder="Add tags"
+                              options={tagOptions}
+                              placeholder="Add Tags"
                             />
 
                             <SearchMd className="size-4 shrink-0 absolute inset-y-0 right-3 my-auto text-gray-400" />
@@ -1680,8 +1674,8 @@ const ProjectInfo = ({
                               </TagsInputItem>
                             ))}
                             <TagsInputInput
-                              options={options.value}
-                              placeholder="Add skills"
+                              options={skills}
+                              placeholder="Add Skills"
                             />
 
                             <SearchMd className="size-4 shrink-0 absolute inset-y-0 right-3 my-auto text-gray-400" />
@@ -1709,7 +1703,7 @@ const ProjectInfo = ({
                   Suggested Skills
                 </span>
 
-                <div className="flex items-center gap-x-3">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 max-w-full">
                   {suggestedSkills.map((suggestedSkill, index) => (
                     <Badge
                       size="md"
@@ -1741,7 +1735,7 @@ const ProjectInfo = ({
               </div>
             ) : null}
           </div>
-          <div className="pl-[17.45px] xs:max-[1024px]:hidden">
+          <div className="pl-[17.45px] xs:max-[1024px]:hidden shrink-0">
             <ProjectInfoTip showArrow />
           </div>
         </div>
@@ -2009,7 +2003,7 @@ const Media = ({ setProgress }: { setProgress?: (val: number) => void }) => {
   return (
     <form className="contents" onSubmit={handleSubmit(onSubmit)}>
       <ScrollArea
-        className="h-[calc(theme(size.full)-148px)]"
+        className="h-[calc(theme(size.full)-148px)] overflow-x-hidden"
         scrollBar={<ScrollBar className="w-4 p-1" />}
       >
         <div className="py-10 px-5 md:px-10 min-[1024px]:py-[50px] min-[1024px]:px-[75px] flex flex-col gap-y-10 min-[1024px]:flex-row min-[1024px]:gap-x-[41.45px]">
@@ -2055,7 +2049,7 @@ const Media = ({ setProgress }: { setProgress?: (val: number) => void }) => {
             </div>
           </div>
 
-          <div className="flex-auto">
+          <div className="flex-auto min-w-0">
             <h1 className="text-xl leading-[30px] font-semibold text-dark-blue-400">
               Media
             </h1>
@@ -2271,7 +2265,7 @@ const Media = ({ setProgress }: { setProgress?: (val: number) => void }) => {
             </div>
           </div>
 
-          <div className="pl-[17.45px] xs:max-[1024px]:hidden">
+          <div className="pl-[17.45px] xs:max-[1024px]:hidden shrink-0">
             <MediaTip />
           </div>
         </div>
@@ -3748,7 +3742,7 @@ const ProjectScope = ({
   return (
     <>
       <ScrollArea
-        className="h-[calc(theme(size.full)-148px)]"
+        className="h-[calc(theme(size.full)-148px)] overflow-x-hidden"
         scrollBar={<ScrollBar className="w-4 p-1" />}
       >
         <div className="py-10 px-5 md:px-10 min-[1024px]:py-[50px] min-[1024px]:px-[75px] min-[1024px]:flex space-y-10 min-[1024px]:space-y-0 min-[1024px]:flex-row min-[1024px]:gap-x-[41.45px]">
@@ -3795,7 +3789,7 @@ const ProjectScope = ({
             </div>
           </div>
 
-          <div className="space-y-6 flex-auto">
+          <div className="space-y-6 flex-auto min-w-0">
             <div className="flex md:flex-row flex-col gap-y-6 md:gap-y-0 md:items-center justify-between">
               <h1 className="text-xl leading-[30px] font-semibold text-dark-blue-400">
                 Project Scope
@@ -4086,7 +4080,7 @@ const ProjectScope = ({
             />
           </div>
 
-          <div className="pl-[17.45px] xs:max-[1024px]:hidden">
+          <div className="pl-[17.45px] xs:max-[1024px]:hidden shrink-0">
             <ProjectScopeTip showArrow />
           </div>
         </div>
@@ -4210,12 +4204,12 @@ function PublishProject({
   ) : (
     <StepperProvider value={stepperValue}>
       <StepRootProvider value={stepperRootValue}>
-        <div className="h-screen flex">
+        <div className="h-screen flex overflow-x-hidden">
           <ProjectInfoProvider value={projectInfoMethods}>
             <MediaProvider value={mediaMethods}>
               <ProjectScopeProvider value={projectScopeValue}>
                 <Sidebar />
-                <div className="flex-auto bg-white">
+                <div className="flex-auto bg-white min-w-0 overflow-x-hidden">
                   <Header onSaveExit={toggleIsSaveExitDialogOpen} />
                   <SaveExitDialog
                     open={isSaveExitDialogOpen}
