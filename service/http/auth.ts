@@ -8,38 +8,38 @@ import {
 } from "@/types/auth"
 import AxiosRequest from ".."
 
-const API_BASE = process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:3001"
+const AUTH_BASE = process.env.NEXT_PUBLIC_AUTH_URL ?? ""
 export const AuthAPI = {
   SignUpWithEmail: (data: SignUpParams) => {
  
     // email-only signup
-    return AxiosRequest.post(`${API_BASE}/auth/register-email`, {
+    return AxiosRequest.post(`${AUTH_BASE}/auth/register-email`, {
       email: data.email,
     })
   },
 
   LoginWithEmail: (data: LoginParams) => {
-    return AxiosRequest.post(`${API_BASE}/auth/login`, data)
+    return AxiosRequest.post(`${AUTH_BASE}/auth/login`, data)
   },
 
   LoginWithGoogle: (data: GoogleLoginParams) => {
-    return AxiosRequest.post(`${API_BASE}/auth/google`, data)
+    return AxiosRequest.post(`${AUTH_BASE}/auth/google`, data)
   },
 
   LoginWithLinkedIn: (data: LinkedInLoginParams) => {
-    return AxiosRequest.post(`${API_BASE}/auth/linkedin`, data)
+    return AxiosRequest.post(`${AUTH_BASE}/auth/linkedin`, data)
   },
 
   CheckUsername: (data: CheckUsernameParams) => {
-    return AxiosRequest.post(`${API_BASE}/auth/check-username`, data)
+    return AxiosRequest.post(`${AUTH_BASE}/auth/check-username`, data)
   },
 
   CreatePassword: (data: CreatePasswordParams) => {
-    return AxiosRequest.post("/auth/reset/new-password", data)
+    return AxiosRequest.post(`${AUTH_BASE}/auth/reset/new-password`, data)
   },
 
   Logout: () => {
-    return AxiosRequest.post(`${API_BASE}/auth/logout`, null, {
+    return AxiosRequest.post(`${AUTH_BASE}/auth/logout`, null, {
       withCredentials: true,
     })
   },
