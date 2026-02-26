@@ -8,7 +8,7 @@ import {
 } from "@/types/auth"
 import AxiosRequest from ".."
 
-const API_BASE = process.env.NEXT_PUBLIC_AUTH_URL
+const API_BASE = process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:3001"
 export const AuthAPI = {
   SignUpWithEmail: (data: SignUpParams) => {
  
@@ -44,3 +44,4 @@ export const AuthAPI = {
     })
   },
 }
+
