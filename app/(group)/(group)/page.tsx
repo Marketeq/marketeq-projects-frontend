@@ -677,14 +677,13 @@ export default function Marketplace() {
   useEffect(() => {
     const safeUser = user as {
       provider?: string
-      password?: string
+      hasPassword?: boolean
     }
 
-    const passwordIsEmpty =
-      typeof safeUser?.password !== "string" ||
-      safeUser.password.trim().length === 0
+    const needsPasswordSetup =
+      safeUser?.provider === "EMAIL" && !safeUser?.hasPassword
 
-    if (safeUser && safeUser.provider === "EMAIL" && passwordIsEmpty) {
+    if (safeUser && needsPasswordSetup) {
       setShowSecurityModal(true)
     }
   }, [user])

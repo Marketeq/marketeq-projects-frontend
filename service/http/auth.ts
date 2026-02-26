@@ -35,7 +35,7 @@ export const AuthAPI = {
   },
 
   CreatePassword: (data: CreatePasswordParams) => {
-    return AxiosRequest.post("/auth/reset/new-password", data)
+    return AxiosRequest.patch(`${API_BASE}/auth/set-password`, data)
   },
 
   Logout: () => {

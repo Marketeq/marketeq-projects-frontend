@@ -19,6 +19,7 @@ export type User = {
   avatarUrl?: string | null
   role: ROLE
   provider: AUTH_PROVIDERS
+  hasPassword?: boolean
   socialId?: string | null
   emailVerified: boolean
   onboardingDismissed: boolean

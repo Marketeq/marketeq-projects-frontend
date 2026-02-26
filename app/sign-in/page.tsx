@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useAuth } from "@/contexts/auth"
 import UnauthenticatedRoute from "@/hoc/UnauthenticatedRoute"
 import { AuthAPI } from "@/service/http/auth"
+import { UserAPI } from "@/service/http/user"
 import { containsOneLowerCaseLetter, hookFormHasError } from "@/utils/functions"
 import { Eye, EyeOff } from "@blend-metrics/icons"
 import { ErrorMessage as HookFormErrorMessage } from "@hookform/error-message"
@@ -70,14 +71,28 @@ export default function SignIn() {
     setIsLoading(true)
 
     AuthAPI.LoginWithEmail({ email, password })
-      .then((response) => {
-        if (
-          response?.status === 200 &&
-          response?.data?.access_token &&
-          response?.data?.user
-        ) {
+      .then(async (response) => {
+        if (response?.status === 200 && response?.data?.access_token) {
           Cookies.set("access_token", response?.data?.access_token)
-          setUser(response?.data?.user)
+
+          if (response?.data?.user) {
+            setUser(response?.data?.user)
+          } else {
+            try {
+              const meResponse = await UserAPI.me()
+              if (meResponse?.status === 200) {
+                const nextUser =
+                  meResponse?.data?.user ??
+                  meResponse?.data?.data?.user ??
+                  meResponse?.data
+                if (nextUser && typeof nextUser === "object") {
+                  setUser(nextUser)
+                }
+              }
+            } catch {
+              // noop: auth context will refresh user on load
+            }
+          }
 
           router.push("/")
           reset()

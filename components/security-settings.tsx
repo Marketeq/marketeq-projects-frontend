@@ -103,7 +103,11 @@ const Step1 = ({ formData, setFormData }: any) => {
   const onSubmit = async (data: SecureYourAccountFormValues) => {
     try {
       const response = await AuthAPI.CreatePassword({ password: data.password })
-      if (response?.status === 201) {
+      const isSuccess =
+        typeof response?.status === "number" &&
+        response.status >= 200 &&
+        response.status < 300
+      if (isSuccess) {
         setFormData((prev: any) => ({ ...prev, password: data.password }))
         setStep(1)
         reset()
