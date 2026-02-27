@@ -120,63 +120,102 @@ export const TagsInputInput = React.forwardRef<
   React.ElementRef<typeof TagsInput.Input>,
   React.ComponentPropsWithoutRef<typeof TagsInput.Input> & {
     options?: string[]
+    onInputValueChange?: (value: string) => void
+    allowCreateOption?: boolean
   }
->(({ className, options, ...props }, ref) => {
-  const { inputValue, setInputValue, focus } = useTagsInputContext()
-  const [open, { off, on }] = useToggle(false)
-  const isInputValueValid = inputValue !== ""
+>(
+  (
+    { className, options, onInputValueChange, allowCreateOption, ...props },
+    ref
+  ) => {
+    const { inputValue, setInputValue, addValue, clearInputValue, focus } =
+      useTagsInputContext()
+    const [open, { off, on }] = useToggle(false)
+    const isInputValueValid = inputValue !== ""
+    const normalizedInputValue = inputValue.trim()
+    const filteredOptions = options?.filter((option) =>
+      option.toLowerCase().includes(inputValue.toLowerCase())
+    )
+    const canCreateOption =
+      allowCreateOption &&
+      normalizedInputValue.length > 0 &&
+      !filteredOptions?.length &&
+      !options?.some(
+        (option) => option.toLowerCase() === normalizedInputValue.toLowerCase()
+      )
 
-  useUpdateEffect(() => {
-    isInputValueValid ? on() : off()
-  }, [isInputValueValid])
+    useUpdateEffect(() => {
+      isInputValueValid ? on() : off()
+    }, [isInputValueValid])
 
-  return (
-    <>
-      <div className="relative inline-block">
-        <TagsInput.Input
-          className={cn(
-            "text-base leading-6 grow text-gray-900 placeholder:text-gray-500 font-normal focus-visible:outline-none border-0 focus:ring-0 p-0 h-max",
-            className
-          )}
-          {...props}
-          ref={ref}
-        />
+    return (
+      <>
+        <div className="relative inline-block">
+          <TagsInput.Input
+            className={cn(
+              "text-base leading-6 grow text-gray-900 placeholder:text-gray-500 font-normal focus-visible:outline-none border-0 focus:ring-0 p-0 h-max",
+              className
+            )}
+            {...props}
+            ref={ref}
+          />
 
-        <ScaleOutIn show={open}>
-          <div className="absolute left-0 mt-2 w-[202px] px-0 pt-0 z-50 bg-white rounded-lg shadow-[0px_12px_16px_-4px_rgba(16,24,40,.08)]">
-            <Command>
-              <CommandInput
-                placeholder="Search"
-                containerClassName="sr-only"
-                className="h-9"
-                value={inputValue}
-                onValueChange={setInputValue}
-              />
-              <CommandList>
-                <CommandEmpty>No country found.</CommandEmpty>
-                <CommandGroup className="pt-0">
-                  {options?.map((option) => (
-                    <CommandItem
-                      key={option}
-                      value={option}
-                      onSelect={(currentValue) => {
-                        setInputValue(currentValue)
-                        focus()
-                        off()
-                      }}
-                    >
-                      {option}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </div>
-        </ScaleOutIn>
-      </div>
-    </>
-  )
-})
+          <ScaleOutIn show={open}>
+            <div className="absolute left-0 mt-2 w-[202px] px-0 pt-0 z-50 bg-white rounded-lg shadow-[0px_12px_16px_-4px_rgba(16,24,40,.08)]">
+              <Command>
+                <CommandInput
+                  placeholder="Search"
+                  containerClassName="sr-only"
+                  className="h-9"
+                  value={inputValue}
+                  onValueChange={(value) => {
+                    setInputValue(value)
+                    onInputValueChange?.(value)
+                  }}
+                />
+                <CommandList>
+                  {canCreateOption ? null : (
+                    <CommandEmpty>No results found.</CommandEmpty>
+                  )}
+                  <CommandGroup className="pt-0">
+                    {filteredOptions?.map((option) => (
+                      <CommandItem
+                        key={option}
+                        value={option}
+                        onSelect={(currentValue) => {
+                          addValue(currentValue)
+                          clearInputValue()
+                          focus()
+                          off()
+                        }}
+                      >
+                        {option}
+                      </CommandItem>
+                    ))}
+                    {canCreateOption ? (
+                      <CommandItem
+                        className="text-primary-500 font-semibold data-[selected=true]:text-primary-500 data-[selected=true]:bg-primary-50"
+                        value={normalizedInputValue}
+                        onSelect={(currentValue) => {
+                          addValue(currentValue)
+                          clearInputValue()
+                          focus()
+                          off()
+                        }}
+                      >
+                        {`Add "${normalizedInputValue}"`}
+                      </CommandItem>
+                    ) : null}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </div>
+          </ScaleOutIn>
+        </div>
+      </>
+    )
+  }
+)
 
 TagsInputInput.displayName = TagsInput.Input.displayName
 

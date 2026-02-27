@@ -289,15 +289,14 @@ export const Dropzone = ({
   const onRetry = React.useCallback(
     (index: number) => {
       onRetryPropRef()
-      setValue(
-        (prev) =>
-          prev?.reduce<DropzoneState>(
-            (prevValue, currentValue, currentIndex) =>
-              currentIndex == index
-                ? [...prevValue, { ...currentValue, hasError: false }]
-                : [...prevValue, currentValue],
-            []
-          )
+      setValue((prev) =>
+        prev?.reduce<DropzoneState>(
+          (prevValue, currentValue, currentIndex) =>
+            currentIndex == index
+              ? [...prevValue, { ...currentValue, hasError: false }]
+              : [...prevValue, currentValue],
+          []
+        )
       )
     },
     [onRetryPropRef, setValue]
@@ -557,9 +556,11 @@ export const Dropzone = ({
 const SquareShapeDropzoneSuccess = ({
   meta,
   onRemove,
+  open,
 }: {
   meta: File
   onRemove: () => void
+  open: () => void
 }) => {
   const [dataUrl, setDataUrl] = React.useState<string>()
   React.useEffect(() => {
@@ -583,6 +584,25 @@ const SquareShapeDropzoneSuccess = ({
           alt={getFileName(meta)}
         />
       ) : null}
+
+      <div className="absolute inset-0 bg-black/20 opacity-0 transition duration-300 group-hover:opacity-100">
+        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex items-center justify-center gap-x-2 px-2">
+          <button
+            className="hover:bg-black inline-flex text-xs items-center font-semibold text-white gap-x-1.5 py-1.5 px-2.5 rounded-[5px] bg-black/40 focus-visible:outline-none"
+            onClick={open}
+            type="button"
+          >
+            <Repeat04 className="size-3.5" /> Change Image
+          </button>
+          <button
+            className="hover:bg-black hover:text-error-500 inline-flex text-xs items-center font-semibold text-white gap-x-1.5 py-1.5 px-2.5 rounded-[5px] bg-black/40 focus-visible:outline-none"
+            onClick={onRemove}
+            type="button"
+          >
+            <Trash01 className="size-3.5" /> Remove
+          </button>
+        </div>
+      </div>
 
       <button
         className="absolute right-2.5 transition duration-300 group-hover:opacity-100 opacity-0 text-white hover:text-error-500 top-2.5 size-7 focus-visible:outline-none bg-black/20 hover:bg-black rounded-full inline-flex items-center justify-center"
@@ -726,15 +746,14 @@ export const SquareShapeDropzone = ({
   const onRetry = React.useCallback(
     (index: number) => {
       onRetryPropRef()
-      setValue(
-        (prev) =>
-          prev?.reduce<DropzoneState>(
-            (prevValue, currentValue, currentIndex) =>
-              currentIndex == index
-                ? [...prevValue, { ...currentValue, hasError: false }]
-                : [...prevValue, currentValue],
-            []
-          )
+      setValue((prev) =>
+        prev?.reduce<DropzoneState>(
+          (prevValue, currentValue, currentIndex) =>
+            currentIndex == index
+              ? [...prevValue, { ...currentValue, hasError: false }]
+              : [...prevValue, currentValue],
+          []
+        )
       )
     },
     [onRetryPropRef, setValue]
@@ -772,6 +791,7 @@ export const SquareShapeDropzone = ({
                       <SquareShapeDropzoneSuccess
                         meta={meta}
                         onRemove={() => onRemove(idx)}
+                        open={open}
                       />
                     ) : (
                       <div className="border-2 border-gray-300 border-dashed rounded-[5px] h-[100px]">

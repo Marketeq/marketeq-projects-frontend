@@ -1,8 +1,3 @@
-export type CategoryWithSubcategoriesType = {
-  category: string
-  subcategories: string[]
-}
-
 export type MediaType = {
   featuredImage?: File
   additionalImages?: File[]
@@ -27,14 +22,12 @@ export type ProjectScopePhaseType = {
 
 export type CreateProjectType = {
   title: string
-  shortDescription: string
-  longDescription: string
-  categoriesWithSubcategories: CategoryWithSubcategoriesType[]
+  categories?: string[]
+  subCategories?: string[]
   industries?: string[]
-  media?: MediaType
   tags?: string[]
   skills?: string[]
-  phases?: ProjectScopePhaseType[]
-  initialTeamBudget?: number
+  shortDescription: string
+  fullDescription: string
   userId: string
 }
