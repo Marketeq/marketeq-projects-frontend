@@ -66,7 +66,6 @@ export default function SignIn() {
       rememberMe: false,
     },
   })
-
   const onSubmit: SubmitHandler<SignInFormValues> = ({ email, password }) => {
     setIsLoading(true)
 
@@ -75,23 +74,23 @@ export default function SignIn() {
         if (response?.status === 200 && response?.data?.access_token) {
           Cookies.set("access_token", response?.data?.access_token)
 
-          if (response?.data?.user) {
-            setUser(response?.data?.user)
-          } else {
+          let nextUser = response?.data?.user
+          if (!nextUser) {
             try {
               const meResponse = await UserAPI.me()
               if (meResponse?.status === 200) {
-                const nextUser =
+                nextUser =
                   meResponse?.data?.user ??
                   meResponse?.data?.data?.user ??
                   meResponse?.data
-                if (nextUser && typeof nextUser === "object") {
-                  setUser(nextUser)
-                }
               }
             } catch {
               // noop: auth context will refresh user on load
             }
+          }
+
+          if (nextUser && typeof nextUser === "object") {
+            setUser(nextUser)
           }
 
           router.push("/")
@@ -111,6 +110,36 @@ export default function SignIn() {
       })
   }
 
+  // const onSubmit: SubmitHandler<SignInFormValues> = ({ email, password }) => {
+  //   setIsLoading(true)
+
+  //   AuthAPI.LoginWithEmail({ email, password })
+  //     .then((response) => {
+  //       if (
+  //         response?.status === 200 &&
+  //         response?.data?.access_token &&
+  //         response?.data?.user
+  //       ) {
+  //         Cookies.set("access_token", response?.data?.access_token)
+  //         setUser(response?.data?.user)
+
+  //         router.push("/")
+  //         reset()
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       if (error?.response?.data?.errors?.message) {
+  //         toast({
+  //           title: error?.response?.data?.errors?.message,
+  //           variant: "destructive",
+  //         })
+  //       }
+  //     })
+  //     .finally(() => {
+  //       setIsLoading(false)
+  //     })
+  // }
+
   return (
     <UnauthenticatedRoute>
       <div className="flex min-h-screen bg-white">
@@ -124,8 +153,7 @@ export default function SignIn() {
                 to life!
               </h1>
               <h1 className="text-2xl mt-[30px] leading-[29.05px] font-bold text-white line-clamp-1">
-                Welcome to the Marketeq Talent Network, Where tech projects come
-                to life!
+                You control the agency...
               </h1>
             </div>
           </div>
@@ -133,14 +161,17 @@ export default function SignIn() {
           <MarketeqIcon1 className="absolute -bottom-[36.41px] left-[41.11px]" />
 
           <div className="flex items-start gap-y-5 flex-col relative">
-            <Button
+            {/* <Button
               className="text-white"
               visual="gray"
-              variant="link"
+              variant="outline"
               size="md"
             >
-              Don’t have an account?
-            </Button>
+              Already have an account?
+            </Button> */}
+            <p className="text-white text-sm font-medium">
+              Already have an account?
+            </p>
 
             <div className="inline-block relative">
               <Button
@@ -149,7 +180,7 @@ export default function SignIn() {
                 variant="outlined"
                 size="lg"
               >
-                Join Us For Free
+                Sign In
               </Button>
               <svg
                 className="size-[23px] absolute right-[15.33px] top-[34px] text-primary-500"
@@ -314,7 +345,7 @@ export default function SignIn() {
                   href="/sign-up"
                   className="underline font-normal text-blue-500 text-sm leading-6"
                 >
-                  Sign up?
+                  Sign up
                 </NextLink>
               </div>
             </form>
@@ -324,3 +355,4 @@ export default function SignIn() {
     </UnauthenticatedRoute>
   )
 }
+
