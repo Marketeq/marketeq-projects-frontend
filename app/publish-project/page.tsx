@@ -15,6 +15,11 @@ import React from "react"
 import dynamic from "next/dynamic"
 import { useAuth } from "@/contexts/auth"
 import options from "@/public/mock/options.json"
+import {
+  AutocompleteAPI,
+  type AutocompleteCategorySuggestion,
+  type AutocompleteTypeSuggestion,
+} from "@/service/http/autocomplete"
 import { ProjectAPI } from "@/service/http/project"
 import { HTTPS, ONE_SECOND } from "@/utils/constants"
 import {
@@ -201,6 +206,8 @@ type ProgressProps = {
 }
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false })
+const PROJECT_SCOPE_TIP_VIDEO_URL =
+  process.env.NEXT_PUBLIC_PROJECT_SCOPE_TIP_VIDEO_URL ?? ""
 
 declare module "@tanstack/react-table" {
   // @ts-expect-error
@@ -211,42 +218,124 @@ declare module "@tanstack/react-table" {
   }
 }
 
-export const Empty = () => {
+type SubmissionStatus = "in_review" | "published" | "needs_update"
+
+type SubmissionOutcome = {
+  status: SubmissionStatus
+  projectId?: string
+  projectSlug?: string
+}
+
+const Empty = ({ outcome }: { outcome?: SubmissionOutcome }) => {
+  const status = outcome?.status ?? "in_review"
+  const marketplaceHref = outcome?.projectSlug
+    ? `/project/${outcome.projectSlug}`
+    : "/marketplace"
+  const myProjectsHref = "/my-projects"
+
   return (
     <div className="grid flex-auto place-items-center">
       <div className="flex flex-col max-w-[440px] items-center justify-between">
-        <div className="size-[56px] shrink-0 rounded-full inline-flex items-center justify-center bg-primary-50 text-primary-500">
-          <Send className="size-7" />
-        </div>
+        {status === "needs_update" ? (
+          <div className="size-[56px] shrink-0 rounded-full inline-flex items-center justify-center bg-warning-50 text-warning-500">
+            <AlertTriangle className="size-7" />
+          </div>
+        ) : (
+          <div className="size-[56px] shrink-0 rounded-full inline-flex items-center justify-center bg-primary-50 text-primary-500">
+            <Send className="size-7" />
+          </div>
+        )}
 
         <h1 className="mt-8 text-xl text-center text-gray-800 leading-[30px] font-semibold">
-          Your Project Has Been Submitted for a Review!
+          {status === "published"
+            ? "Your Project has been successfully published!"
+            : status === "needs_update"
+              ? "Please update your project to meet community guidelines."
+              : "Your Project has been submitted for a review!"}
         </h1>
 
         <p className="mt-6 text-sm leading-[16.94px] text-center text-gray-500">
-          Our team will review your project over the next few days and will get
-          back to you if there are any changes to be made.
+          {status === "published"
+            ? "Project is live in the marketplace and available for others to discover and collaborate."
+            : status === "needs_update"
+              ? "Review and adjust your project to ensure it complies with policies before publishing."
+              : "Our team will review your project over the next few days and will get back to you if there are any changes to be made."}
         </p>
 
         <div className="flex items-center justify-center gap-x-1 mt-6">
           <p className="text-sm leading-[16.94px] text-gray-500">
             You can check your project status anytime in
           </p>
-          <Button variant="link">My Projects</Button>
+          <Button
+            variant="link"
+            onClick={() => {
+              window.location.href = myProjectsHref
+            }}
+          >
+            My Projects
+          </Button>
         </div>
 
-        <p className="text-sm leading-[30px] font-semibold text-center text-gray-800 mt-6">
-          Thanks for submitting, we’ll be in touch soon!
-        </p>
+        {status === "in_review" ? (
+          <p className="text-sm leading-[30px] font-semibold text-center text-gray-800 mt-6">
+            Thanks for submitting, we’ll be in touch soon!
+          </p>
+        ) : null}
 
         <div className="flex justify-center gap-x-3 items-center mt-8">
-          <Button visual="gray" variant="outlined">
+          <Button
+            visual="gray"
+            variant="outlined"
+            onClick={() => {
+              window.location.href = "/"
+            }}
+          >
             <Home03 className="size-[15px]" />
             Take me home
           </Button>
 
-          <Button>View in Dashboard</Button>
+          {status === "published" ? (
+            <Button
+              onClick={() => {
+                window.location.href = marketplaceHref
+              }}
+            >
+              View in Marketplace
+            </Button>
+          ) : status === "needs_update" ? (
+            <Button
+              onClick={() => {
+                window.location.href = "/community-guidelines"
+              }}
+            >
+              Read community guidelines Here
+            </Button>
+          ) : null}
         </div>
+
+        {status === "needs_update" ? (
+          <div className="mt-3">
+            <Button>Update Project</Button>
+          </div>
+        ) : null}
+
+        {status === "in_review" ? (
+          <p className="text-sm leading-[16.94px] text-center text-gray-500 mt-3">
+            Review Project Message: Your Project has been submitted for a
+            review!
+          </p>
+        ) : null}
+
+        {status === "published" ? (
+          <p className="text-sm leading-[16.94px] text-center text-gray-500 mt-3">
+            Success Message: Your Project has been successfully published.
+          </p>
+        ) : null}
+        {status === "needs_update" ? (
+          <p className="text-sm leading-[16.94px] text-center text-gray-500 mt-3">
+            Update Project is required before publishing.
+          </p>
+        ) : null}
       </div>
     </div>
   )
@@ -277,9 +366,23 @@ const meta = {
 } as const
 
 const DURATION_TYPE = ["days", "weeks", "hours"] as const
+const EXPERIENCE_LEVELS = [
+  "Student",
+  "Junior",
+  "Medior",
+  "Senior",
+  "Guru",
+] as const
+type ExperienceLevel = (typeof EXPERIENCE_LEVELS)[number]
 
 const taskFormSchema = z.object({
   task: z.string().min(1, "Please enter at least 1 character(s)"),
+  role: z.string().min(1, "Please enter/select at least 1 role(s)"),
+  location: z.string().min(1, "Please enter/select at least 1 location(s)"),
+  experience: z.enum(EXPERIENCE_LEVELS, {
+    required_error: "Please enter/select at least 1 experience level",
+    invalid_type_error: "Please enter/select at least 1 experience level",
+  }),
   duration: z.object({
     value: z.coerce.number({
       invalid_type_error: "Please enter a valid number",
@@ -294,9 +397,6 @@ const taskFormSchema = z.object({
 const rowSchema = taskFormSchema.merge(
   z.object({
     id: z.string().min(1, "Please enter at least 1 character(s)"),
-    role: z.string().min(1, "Please enter at least 1 character(s)"),
-    location: z.string().min(1, "Please enter at least 1 character(s)"),
-    experience: z.string().min(1, "Please enter at least 1 character(s)"),
   })
 )
 
@@ -341,7 +441,8 @@ const Sidebar = () => {
   const mediaValues = useWatch({ control: mediaMethods.control })
   const { error: mediaError } = mediaFormSchema.safeParse(mediaValues)
   const mediaFlattenError = mediaError?.flatten()
-  const { projectScopeMethods } = useProjectScopeContext()
+  const { projectScopeMethods, setTaskSearchDialogOpen } =
+    useProjectScopeContext()
   const [phases] = projectScopeMethods
   // Show status icons only after the user has started filling Project Scope
   const hasStartedScope =
@@ -450,9 +551,19 @@ const Sidebar = () => {
                           className="py-1.5 flex items-center justify-between pl-[25px] pr-3"
                           key={i}
                         >
-                          <span className="text-sm leading-6 text-gray-500">
-                            {field.label}
-                          </span>
+                          {field.label === "Task Name" ? (
+                            <button
+                              type="button"
+                              className="text-sm leading-6 text-gray-500 hover:text-dark-blue-400 focus-visible:outline-none"
+                              onClick={() => setTaskSearchDialogOpen(true)}
+                            >
+                              {field.label}
+                            </button>
+                          ) : (
+                            <span className="text-sm leading-6 text-gray-500">
+                              {field.label}
+                            </span>
+                          )}
 
                           {hasStartedScope ? (
                             (field.label === "Task Name" &&
@@ -547,9 +658,10 @@ const BottomBar = ({
 
   const { isValid } = stepsState[currentStep]
   const { user } = useAuth()
+  const { toast } = useToast()
   const projectInfoMethods = useProjectInfoContext()
   const mediaMethods = useMediaContext()
-  const { setIsProjectSubmitted, projectScopeMethods } =
+  const { projectScopeMethods, setIsProjectSubmitted, setSubmissionOutcome } =
     useProjectScopeContext()
   const [phases] = projectScopeMethods
 
@@ -557,45 +669,147 @@ const BottomBar = ({
     const projectInfo = projectInfoMethods.getValues()
     const media = mediaMethods.getValues()
 
-    const phasesPayload = phases
-      .filter((p) => p.phaseName && p.rows)
-      .map((p, pIdx) => ({
-        name: p.phaseName ?? "",
-        stage: `Stage ${pIdx + 1}`,
-        startDay: 1,
-        endDay: 1,
-        tasks: (p.rows ?? []).map((r) => ({
-          taskName: r.task,
-          role: r.role ?? "",
-          location: r.location ? [r.location] : [],
-          experience: r.experience ?? "",
-          duration: r.duration.value,
-        })),
-      }))
+    const categories = Array.from(
+      new Set(
+        (projectInfo.category ?? [])
+          .map((value) => value?.category?.trim())
+          .filter((value): value is string => Boolean(value))
+      )
+    )
+    const subCategories = Array.from(
+      new Set(
+        (projectInfo.category ?? [])
+          .flatMap((value) => value?.subCategories ?? [])
+          .map((value) => value?.trim())
+          .filter((value): value is string => Boolean(value))
+      )
+    )
 
     const payload: CreateProjectType = {
       title: projectInfo.title,
-      shortDescription: projectInfo.shortDescription,
-      longDescription: projectInfo.fullDescription,
-      categoriesWithSubcategories:
-        projectInfo.category?.map((cat: any) => ({
-          category: cat.category,
-          subcategories: cat.subCategories,
-        })) ?? [],
+      categories,
+      subCategories,
       industries: projectInfo.industry,
       tags: projectInfo.tags,
       skills: projectInfo.skills,
-      phases: phasesPayload.length ? phasesPayload : undefined,
-      media: media.featuredVideo
-        ? { videoUrl: media.featuredVideo }
-        : undefined,
+      shortDescription: projectInfo.shortDescription,
+      fullDescription: projectInfo.fullDescription,
       userId: user?.id ?? "",
     }
 
     try {
-      await ProjectAPI.CreateProject(payload)
+      const createProjectResponse = await ProjectAPI.CreateProject(payload)
+      const projectId =
+        createProjectResponse?.data?.projectId ??
+        createProjectResponse?.data?.id
+      const rawStatus = String(createProjectResponse?.data?.status ?? "")
+        .trim()
+        .toLowerCase()
+      const normalizedStatus: SubmissionStatus = rawStatus.includes("publish")
+        ? "published"
+        : rawStatus.includes("need") ||
+            rawStatus.includes("reject") ||
+            rawStatus.includes("update")
+          ? "needs_update"
+          : "in_review"
+
+      // Upload media files only when a project id is available and files were selected.
+      if (projectId) {
+        const featuredFile = media.featuredImages?.[0]?.meta
+        const additionalFiles =
+          media.additionalImages
+            ?.flat()
+            ?.map((item) => item?.meta)
+            ?.filter(Boolean) ?? []
+
+        const videoUrl = media.featuredVideo?.trim()
+
+        if (featuredFile || additionalFiles.length || videoUrl) {
+          const formData = new FormData()
+          formData.append("projectId", String(projectId))
+          if (featuredFile) {
+            formData.append("featuredImage", featuredFile)
+          }
+          additionalFiles.forEach((file) => {
+            formData.append("additionalImages", file)
+          })
+          if (videoUrl) {
+            formData.append("videoUrl", videoUrl)
+          }
+          await ProjectAPI.UploadMedia(formData)
+        }
+
+        const publishPhases = (phases ?? [])
+          .map((phase, phaseIndex) => {
+            const phaseName = phase?.phaseName?.trim()
+            const rows = (phase?.rows ?? [])
+              .map((row) => {
+                const taskName = row?.task?.trim()
+                const role = row?.role?.trim()
+                const locationValue = row?.location?.trim()
+                const experienceLevel = row?.experience?.trim()
+                const durationValue = row?.duration?.value
+                const durationType = row?.duration?.type
+
+                if (
+                  !taskName ||
+                  !role ||
+                  !locationValue ||
+                  !experienceLevel ||
+                  durationValue === undefined ||
+                  !durationType
+                ) {
+                  return null
+                }
+
+                return {
+                  taskName,
+                  role,
+                  location: [locationValue],
+                  experience: [experienceLevel],
+                  experienceLevel,
+                  duration: `${durationValue} ${durationType}`,
+                  phaseId: "temporary-required-string",
+                }
+              })
+              .filter((row): row is NonNullable<typeof row> => Boolean(row))
+
+            if (!phaseName || rows.length === 0) {
+              return null
+            }
+
+            return {
+              name: phaseName,
+              stageName: `Stage ${phaseIndex + 1}`,
+              startDay: 1,
+              endDay: 8,
+              order: phaseIndex + 1,
+              projectId: String(projectId),
+              tasks: rows,
+            }
+          })
+          .filter((phase): phase is NonNullable<typeof phase> => Boolean(phase))
+
+        for (const phasePayload of publishPhases) {
+          await ProjectAPI.CreatePhase(phasePayload)
+        }
+      }
+
+      setSubmissionOutcome({
+        status: normalizedStatus,
+        projectId: projectId ? String(projectId) : undefined,
+        projectSlug: createProjectResponse?.data?.slug,
+      })
       setIsProjectSubmitted(true)
-    } catch {}
+    } catch (error: any) {
+      toast({
+        title:
+          error?.response?.data?.message ||
+          error?.message ||
+          "Unable to submit project",
+        variant: "destructive",
+      })
+    }
   }
 
   return (
@@ -629,7 +843,6 @@ const BottomBar = ({
             <Button
               disabled={!isValid}
               onClick={() => {
-                setIsProjectSubmitted(true)
                 handleSubmit()
               }}
             >
@@ -714,7 +927,7 @@ const ProjectInfoTip = ({
 const projectInfoSchema = z.object({
   title: z
     .string()
-    .min(1, "Please enter at least 1 character(s)")
+    .min(10, "Please enter at least 10 character(s)")
     .max(120, "Please do not enter more than 120 character(s)"),
   category: z
     .array(
@@ -723,15 +936,15 @@ const projectInfoSchema = z.object({
           .string({
             required_error: "Please enter/select a category",
           })
-          .min(1, "Please enter/select a category"),
+          .min(1, "Please select at least 1 character(s)"),
         subCategories: z
           .array(z.string(), {
             required_error: "Please enter/select at least 1 sub-category(s)",
           })
-          .min(1, "Please enter/select at least 1 sub-category(s)"),
+          .min(1, "Please enter/select at least 1 category(s)"),
       })
     )
-    .min(1, "Please enter/select a category"),
+    .length(3, "Please enter/select all the categories and sub-categories"),
   industry: z
     .array(z.string(), {
       required_error: "Please enter/select at least 1 industry(s)",
@@ -740,11 +953,11 @@ const projectInfoSchema = z.object({
     .max(5, "Please do not enter more than 5 industry(s)"),
   shortDescription: z
     .string()
-    .min(1, "Please enter at least 1 character(s)")
+    .min(50, "Please enter at least 50 character(s)")
     .max(300, "Please do not enter more than 300 character(s)"),
   fullDescription: z
     .string()
-    .min(1, "Please enter at least 1 character(s)")
+    .min(100, "Please enter at least 100 character(s)")
     .max(2_000, "Please do not enter more than 2,000 character(s)"),
   tags: z
     .array(z.string(), {
@@ -762,7 +975,7 @@ const projectInfoSchema = z.object({
 
 type ProjectInfoFormValues = z.infer<typeof projectInfoSchema>
 
-const techDesignCategories = [
+const FALLBACK_CATEGORY_OPTIONS = [
   "Web Development",
   "Mobile Development",
   "UI/UX Design",
@@ -777,8 +990,8 @@ const techDesignCategories = [
   "Cybersecurity",
 ]
 
-const subCategoryOptions = options.value
-const industryOptions = [
+const FALLBACK_SUBCATEGORY_OPTIONS = options.value
+const FALLBACK_INDUSTRY_OPTIONS = [
   "Technology",
   "Healthcare",
   "Finance",
@@ -790,7 +1003,7 @@ const industryOptions = [
   "Energy",
   "Transportation",
 ]
-const tagOptions = [
+const FALLBACK_TAG_OPTIONS = [
   "Web App",
   "Mobile App",
   "AI",
@@ -802,7 +1015,7 @@ const tagOptions = [
   "E-commerce",
   "Automation",
 ]
-const skills = [
+const FALLBACK_SKILL_OPTIONS = [
   "Node.js",
   "JavaScript",
   "Wireframing",
@@ -814,6 +1027,19 @@ const skills = [
   "UX Research",
   "API Integration",
 ]
+
+const normalizeAutocompleteLabel = (
+  item: AutocompleteCategorySuggestion | AutocompleteTypeSuggestion
+) => {
+  if ("value" in item && typeof item.value === "string") return item.value
+  if ("label" in item && typeof item.label === "string") return item.label
+  return ""
+}
+
+const getUniqueOptions = (values: string[]) =>
+  Array.from(
+    new Set(values.map((value) => value.trim()).filter((value) => value.length))
+  )
 type ProjectInfoProps = {
   setProgress?: (val: number) => void
 }
@@ -829,7 +1055,6 @@ const ProjectInfo = ({
     formState: { isValid, errors },
     setValue,
     trigger,
-    getValues,
   } = methods
 
   const [suggested, setSuggested] = useState([
@@ -840,6 +1065,25 @@ const ProjectInfo = ({
 
   const [showSuggestions] = useState(true)
   const [activeCategoryIndex, setActiveCategoryIndex] = useState(0)
+  const [categoryOptions, setCategoryOptions] = useState<string[]>(
+    FALLBACK_CATEGORY_OPTIONS
+  )
+  const [subCategoryOptions, setSubCategoryOptions] = useState<string[]>(
+    (FALLBACK_SUBCATEGORY_OPTIONS as string[]) ?? []
+  )
+  const [industryOptions, setIndustryOptions] = useState<string[]>(
+    FALLBACK_INDUSTRY_OPTIONS
+  )
+  const [tagOptions, setTagOptions] = useState<string[]>(FALLBACK_TAG_OPTIONS)
+  const [skills, setSkills] = useState<string[]>(FALLBACK_SKILL_OPTIONS)
+  const categoryRequestRef = useRef(0)
+  const typeRequestRef = useRef(0)
+  const categoryDebounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  )
+  const typeDebounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  )
 
   useIsomorphicLayoutEffect(() => {
     toggleValidation(isValid)
@@ -858,6 +1102,92 @@ const ProjectInfo = ({
   const progressValue = parseInt(
     `${((totalFields - totalFieldErrors) / totalFields) * 33}`
   )
+
+  const fetchCategoriesAutocomplete = useCallback((query: string) => {
+    const trimmedQuery = query.trim()
+    if (!trimmedQuery) return
+    if (categoryDebounceTimerRef.current) {
+      clearTimeout(categoryDebounceTimerRef.current)
+    }
+
+    categoryDebounceTimerRef.current = setTimeout(async () => {
+      const currentRequestId = ++categoryRequestRef.current
+      try {
+        const response = await AutocompleteAPI.getCategories(trimmedQuery)
+        if (currentRequestId !== categoryRequestRef.current) return
+
+        const values: AutocompleteCategorySuggestion[] = Array.isArray(
+          response?.data
+        )
+          ? response.data
+          : []
+        const categories = getUniqueOptions(
+          values
+            .filter((item) => item.type === "category")
+            .map((item) => normalizeAutocompleteLabel(item))
+        )
+        const subCategories = getUniqueOptions(
+          values
+            .filter((item) => item.type === "subcategory")
+            .map((item) => normalizeAutocompleteLabel(item))
+        )
+
+        if (getIsNotEmpty(categories)) {
+          setCategoryOptions(categories)
+          setIndustryOptions(categories)
+        }
+        if (getIsNotEmpty(subCategories)) {
+          setSubCategoryOptions(subCategories)
+        }
+      } catch (error) {
+        // Keep fallback options when autocomplete is unavailable.
+      }
+    }, 250)
+  }, [])
+
+  const fetchTypeAutocomplete = useCallback(
+    (type: string, query: string, onSuccess: (options: string[]) => void) => {
+      const trimmedQuery = query.trim()
+      if (!trimmedQuery) return
+      if (typeDebounceTimerRef.current) {
+        clearTimeout(typeDebounceTimerRef.current)
+      }
+
+      typeDebounceTimerRef.current = setTimeout(async () => {
+        const currentRequestId = ++typeRequestRef.current
+        try {
+          const response = await AutocompleteAPI.getByType(type, trimmedQuery)
+          if (currentRequestId !== typeRequestRef.current) return
+
+          const values: AutocompleteTypeSuggestion[] = Array.isArray(
+            response?.data
+          )
+            ? response.data
+            : []
+          const normalizedOptions = getUniqueOptions(
+            values.map((item) => normalizeAutocompleteLabel(item))
+          )
+          if (getIsNotEmpty(normalizedOptions)) {
+            onSuccess(normalizedOptions)
+          }
+        } catch (error) {
+          // Keep fallback options when endpoint is not ready.
+        }
+      }, 250)
+    },
+    []
+  )
+
+  useEffect(() => {
+    return () => {
+      if (categoryDebounceTimerRef.current) {
+        clearTimeout(categoryDebounceTimerRef.current)
+      }
+      if (typeDebounceTimerRef.current) {
+        clearTimeout(typeDebounceTimerRef.current)
+      }
+    }
+  }, [])
   // NEW: Report progress to parent whenever it changes
   useEffect(() => {
     setProgress?.(progressValue) //calls the prop passed from PublishProject
@@ -1017,7 +1347,7 @@ const ProjectInfo = ({
                             )}
                           </ListboxButton>
                           <ListboxOptions>
-                            {techDesignCategories.map((category) => (
+                            {categoryOptions.map((category) => (
                               <ListboxOption key={category} value={category}>
                                 {category}
                               </ListboxOption>
@@ -1065,7 +1395,11 @@ const ProjectInfo = ({
                                 <TagsInputInput
                                   placeholder="Add Sub-Category(s)"
                                   options={subCategoryOptions}
+                                  allowCreateOption
                                   className="flex-1 min-w-[100px] "
+                                  onInputValueChange={(value) => {
+                                    fetchCategoriesAutocomplete(value)
+                                  }}
                                   onFocus={() => setActiveCategoryIndex(0)}
                                 />
                                 <SearchMd className="size-4 shrink-0 absolute inset-y-0 right-3 my-auto text-gray-400" />
@@ -1116,7 +1450,7 @@ const ProjectInfo = ({
                             )}
                           </ListboxButton>
                           <ListboxOptions>
-                            {techDesignCategories.map((category) => (
+                            {categoryOptions.map((category) => (
                               <ListboxOption key={category} value={category}>
                                 {category}
                               </ListboxOption>
@@ -1168,7 +1502,11 @@ const ProjectInfo = ({
                                 <TagsInputInput
                                   options={subCategoryOptions}
                                   placeholder="Add Sub-Category(s)"
+                                  allowCreateOption
                                   className="flex-1 min-w-[100px]"
+                                  onInputValueChange={(value) => {
+                                    fetchCategoriesAutocomplete(value)
+                                  }}
                                   onFocus={() => setActiveCategoryIndex(1)}
                                 />
 
@@ -1220,7 +1558,7 @@ const ProjectInfo = ({
                             )}
                           </ListboxButton>
                           <ListboxOptions>
-                            {techDesignCategories.map((category) => (
+                            {categoryOptions.map((category) => (
                               <ListboxOption key={category} value={category}>
                                 {category}
                               </ListboxOption>
@@ -1272,7 +1610,11 @@ const ProjectInfo = ({
                                 <TagsInputInput
                                   options={subCategoryOptions}
                                   placeholder="Add Sub-Category(s)"
+                                  allowCreateOption
                                   className="flex-1 min-w-[100px]"
+                                  onInputValueChange={(value) => {
+                                    fetchCategoriesAutocomplete(value)
+                                  }}
                                   onFocus={() => setActiveCategoryIndex(2)}
                                 />
 
@@ -1307,54 +1649,50 @@ const ProjectInfo = ({
                 </span>
 
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2 max-w-full">
-                  {suggestedForActiveCategory.map(({ category, subCategory }) => (
-                    <Badge
-                      size="md"
-                      className="pr-2 focus-visible:outline-none text-primary-500 bg-primary-50"
-                      visual="primary"
-                      asChild
-                      key={category}
-                    >
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const categories = getValues("category") || []
-
-                          // pick the first empty among 0,1,2 so we don’t overwrite
-                          const indexToUpdate =
-                            [0, 1, 2].find(
-                              (i) => !categories?.[i]?.category?.trim?.()
-                            ) ?? 0
-
-                          // write values and mark as user-driven so Sidebar shows the checkmark
-                          setValue(
-                            `category.${indexToUpdate}.category`,
-                            category,
-                            {
-                              shouldDirty: true,
-                              shouldValidate: true,
-                            }
-                          )
-                          setValue(
-                            `category.${indexToUpdate}.subCategories`,
-                            [subCategory],
-                            {
-                              shouldDirty: true,
-                              shouldValidate: true,
-                            }
-                          )
-
-                          // validate that slot
-                          trigger(`category.${indexToUpdate}`)
-
-                          // keep suggestions visible for subsequent category slots
-                        }}
+                  {suggestedForActiveCategory.map(
+                    ({ category, subCategory }) => (
+                      <Badge
+                        size="md"
+                        className="pr-2 focus-visible:outline-none text-primary-500 bg-primary-50"
+                        visual="primary"
+                        asChild
+                        key={category}
                       >
-                        {category} / {subCategory}
-                        <Plus2 className="size-3 opacity-50 hover:opacity-100" />
-                      </button>
-                    </Badge>
-                  ))}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const indexToUpdate = activeCategoryIndex
+
+                            // write values and mark as user-driven so Sidebar shows the checkmark
+                            setValue(
+                              `category.${indexToUpdate}.category`,
+                              category,
+                              {
+                                shouldDirty: true,
+                                shouldValidate: true,
+                              }
+                            )
+                            setValue(
+                              `category.${indexToUpdate}.subCategories`,
+                              [subCategory],
+                              {
+                                shouldDirty: true,
+                                shouldValidate: true,
+                              }
+                            )
+
+                            // validate that slot
+                            trigger(`category.${indexToUpdate}`)
+
+                            // keep suggestions visible for subsequent category slots
+                          }}
+                        >
+                          {category} / {subCategory}
+                          <Plus2 className="size-3 opacity-50 hover:opacity-100" />
+                        </button>
+                      </Badge>
+                    )
+                  )}
                 </div>
               </div>
             )}
@@ -1422,6 +1760,10 @@ const ProjectInfo = ({
                             <TagsInputInput
                               options={industryOptions}
                               placeholder="Add Industries"
+                              allowCreateOption
+                              onInputValueChange={(value) => {
+                                fetchCategoriesAutocomplete(value)
+                              }}
                             />
 
                             <SearchMd className="size-4 shrink-0 absolute inset-y-0 right-3 my-auto text-gray-400" />
@@ -1591,6 +1933,14 @@ const ProjectInfo = ({
                             <TagsInputInput
                               options={tagOptions}
                               placeholder="Add Tags"
+                              allowCreateOption
+                              onInputValueChange={(value) => {
+                                fetchTypeAutocomplete(
+                                  "skills",
+                                  value,
+                                  setTagOptions
+                                )
+                              }}
                             />
 
                             <SearchMd className="size-4 shrink-0 absolute inset-y-0 right-3 my-auto text-gray-400" />
@@ -1676,6 +2026,14 @@ const ProjectInfo = ({
                             <TagsInputInput
                               options={skills}
                               placeholder="Add Skills"
+                              allowCreateOption
+                              onInputValueChange={(value) => {
+                                fetchTypeAutocomplete(
+                                  "skills",
+                                  value,
+                                  setSkills
+                                )
+                              }}
                             />
 
                             <SearchMd className="size-4 shrink-0 absolute inset-y-0 right-3 my-auto text-gray-400" />
@@ -2153,8 +2511,13 @@ const Media = ({ setProgress }: { setProgress?: (val: number) => void }) => {
                         value={value}
                         onValueChange={(value) => {
                           onChange(
-                            value?.map((item) => ({ ...item, progress: 100 }))
+                            value?.map((item) => ({ ...item, progress: 50 }))
                           )
+                          window.setTimeout(() => {
+                            onChange(
+                              value?.map((item) => ({ ...item, progress: 100 }))
+                            )
+                          }, ONE_SECOND * 2)
                           isSubmitted ? trigger("additionalImages") : noop
                         }}
                         onError={(message) =>
@@ -2318,6 +2681,32 @@ const ProjectScopeTip = ({
         </ul>
       </div>
 
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button className="mt-3 px-0" variant="link" type="button">
+            <PlayCircle className="size-5" /> Show me how
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-[560px]">
+          <DialogHeader>
+            <DialogTitle>Project Scope Tip Video</DialogTitle>
+          </DialogHeader>
+          {PROJECT_SCOPE_TIP_VIDEO_URL ? (
+            <ReactPlayer
+              controls
+              width="100%"
+              height={300}
+              url={PROJECT_SCOPE_TIP_VIDEO_URL}
+            />
+          ) : (
+            <p className="text-sm text-gray-500">
+              Tip video URL is not configured yet. Add
+              `NEXT_PUBLIC_PROJECT_SCOPE_TIP_VIDEO_URL` in `.env`.
+            </p>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <div className="mt-3 p-4 rounded-lg border-gray-300 bg-gray-25">
         <div className="flex items-center gap-x-3">
           <Check className="size-5 shrink-0 text-success-500" />{" "}
@@ -2374,11 +2763,13 @@ const PhaseNameDialog = ({
   onAddPhaseName,
   open,
   defaultName,
+  placeholder = "Enter Phase Name",
 }: {
   open?: boolean
   onOpenChange?: (open: boolean) => void
   onAddPhaseName: (phaseName: string) => void
   defaultName?: string
+  placeholder?: string
 }) => {
   const [isOpen, toggleIsOpen] = useControllableState({
     defaultValue: false,
@@ -2429,7 +2820,7 @@ const PhaseNameDialog = ({
               <Input
                 id="phase-name"
                 className="text-gray-900"
-                placeholder="Enter your phase name"
+                placeholder={placeholder}
                 {...register("name")}
                 isInvalid={hookFormHasError({ errors, name: "name" })}
               />
@@ -2480,11 +2871,14 @@ const TaskDialog = ({
   } = useForm<TaskFormValues>({
     resolver: zodResolver(taskFormSchema),
     defaultValues: {
+      task: "",
+      role: "",
+      location: "",
+      experience: undefined,
       duration: {
-        type: "hours",
-        value: 40,
+        type: "days",
+        value: 1,
       },
-      task: "Affinity Mapping",
     },
   })
   const onSubmit: SubmitHandler<TaskFormValues> = (values) => {
@@ -2517,6 +2911,73 @@ const TaskDialog = ({
           </div>
 
           <div className="space-y-1.5 mt-3">
+            <Label htmlFor="role-name" className="text-gray-700" size="sm">
+              Role
+            </Label>
+            <Controller
+              control={control}
+              name="role"
+              render={({ field: { value, onChange } }) => (
+                <OwnCombobox
+                  value={value}
+                  onValueChange={onChange}
+                  placeholder="Select role"
+                  options={ROLES}
+                />
+              )}
+            />
+            <HookFormErrorMessage
+              errors={errors}
+              name="role"
+              render={({ message }) => <ErrorMessage>{message}</ErrorMessage>}
+            />
+          </div>
+
+          <div className="space-y-1.5 mt-3">
+            <Label htmlFor="location" className="text-gray-700" size="sm">
+              Location
+            </Label>
+            <Controller
+              control={control}
+              name="location"
+              render={({ field: { value, onChange } }) => (
+                <CountriesCombobox
+                  placeholder="Select country"
+                  value={value}
+                  onValueChange={onChange}
+                />
+              )}
+            />
+            <HookFormErrorMessage
+              errors={errors}
+              name="location"
+              render={({ message }) => <ErrorMessage>{message}</ErrorMessage>}
+            />
+          </div>
+
+          <div className="space-y-1.5 mt-3">
+            <Label htmlFor="experience" className="text-gray-700" size="sm">
+              Experience
+            </Label>
+            <Controller
+              control={control}
+              name="experience"
+              render={({ field: { value, onChange } }) => (
+                <Dropdown
+                  value={value}
+                  onValueChange={onChange}
+                  placeholder="Select experience"
+                />
+              )}
+            />
+            <HookFormErrorMessage
+              errors={errors}
+              name="experience"
+              render={({ message }) => <ErrorMessage>{message}</ErrorMessage>}
+            />
+          </div>
+
+          <div className="space-y-1.5 mt-3">
             <Label htmlFor="duration" className="text-gray-700" size="sm">
               Duration
             </Label>
@@ -2524,7 +2985,7 @@ const TaskDialog = ({
               <Input
                 id="duration"
                 className="text-gray-900"
-                defaultValue="40"
+                defaultValue="1"
                 {...register("duration.value")}
                 isInvalid={hookFormHasError({ errors, name: "duration.value" })}
               />
@@ -2537,7 +2998,7 @@ const TaskDialog = ({
                     <ListboxOptions>
                       {DURATION_TYPE.map((format) => (
                         <ListboxOption key={format} value={format}>
-                          {format}
+                          {format.charAt(0).toUpperCase() + format.slice(1)}
                         </ListboxOption>
                       ))}
                     </ListboxOptions>
@@ -2637,7 +3098,7 @@ const DurationDialog = ({
                     <ListboxOptions>
                       {DURATION_TYPE.map((format) => (
                         <ListboxOption key={format} value={format}>
-                          {format}
+                          {format.charAt(0).toUpperCase() + format.slice(1)}
                         </ListboxOption>
                       ))}
                     </ListboxOptions>
@@ -2711,16 +3172,107 @@ const SaveExitDialog = ({
   )
 }
 
+const TaskSearchDialog = ({
+  open,
+  onOpenChange,
+  phases,
+}: {
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+  phases: Phase[]
+}) => {
+  const [isOpen, setIsOpen] = useControllableState({
+    defaultValue: false,
+    value: open,
+    onChange: onOpenChange,
+  })
+  const [query, setQuery] = useState("")
+
+  const searchableItems = useMemo(
+    () =>
+      phases.flatMap((phase, phaseIndex) => {
+        const phaseLabel = `Phase ${phaseIndex + 1}: ${phase.phaseName || "Untitled"}`
+        const rows = Array.isArray(phase.rows) ? phase.rows : []
+        const tasks = rows.map((row, rowIndex) => ({
+          label: `Task ${rowIndex + 1}: ${row.task}`,
+        }))
+        return [{ label: phaseLabel }, ...tasks]
+      }),
+    [phases]
+  )
+
+  const filteredItems = useMemo(() => {
+    if (!query.trim()) return searchableItems
+    const normalized = query.trim().toLowerCase()
+    return searchableItems.filter((item) =>
+      item.label.toLowerCase().includes(normalized)
+    )
+  }, [query, searchableItems])
+
+  useEffect(() => {
+    if (!isOpen) {
+      setQuery("")
+    }
+  }, [isOpen])
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogContent className="px-5 w-full py-10 md:px-10 bg-transparent shadow-none rounded-none">
+        <div className="max-w-[420px] bg-white p-6 rounded-xl shadow-[0px_8px_8px_-4px_rgba(16,24,40,.03)_0px_20px_24px_-4px_rgba(16,24,40,.08)]">
+          <DialogTitle>Task Name</DialogTitle>
+          <DialogDescription>
+            Find a phase or task from your project scope.
+          </DialogDescription>
+
+          <div className="mt-3">
+            <Input
+              type="text"
+              placeholder="Find a phase or task"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+            />
+          </div>
+
+          <div className="mt-4 max-h-[240px] overflow-auto rounded-md border border-gray-200">
+            {filteredItems.length ? (
+              filteredItems.map((item, index) => (
+                <div
+                  key={`${item.label}-${index}`}
+                  className="px-3 py-2 text-sm text-gray-700 border-b border-gray-100 last:border-b-0"
+                >
+                  {item.label}
+                </div>
+              ))
+            ) : (
+              <div className="px-3 py-4 text-sm text-gray-500">
+                No phase or task found.
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="mt-6">
+            <DialogClose asChild>
+              <Button variant="outlined" visual="gray">
+                Close
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
 const Dropdown = ({
   onValueChange,
   value,
   placeholder,
 }: {
-  onValueChange?: (value: string) => void
-  value?: string
+  onValueChange?: (value: ExperienceLevel | undefined) => void
+  value?: ExperienceLevel
   placeholder?: string
 }) => {
-  const [state, setState] = useControllableState({
+  const [state, setState] = useControllableState<ExperienceLevel | undefined>({
     onChange: onValueChange,
     value,
   })
@@ -2734,7 +3286,10 @@ const Dropdown = ({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="start" className="min-w-max">
-        <DropdownMenuRadioGroup value={value} onValueChange={setState}>
+        <DropdownMenuRadioGroup
+          value={value}
+          onValueChange={(nextValue) => setState(nextValue as ExperienceLevel)}
+        >
           <DropdownMenuRadioItem
             className="gap-x-2"
             hideIndicator={false}
@@ -2754,7 +3309,7 @@ const Dropdown = ({
           <DropdownMenuRadioItem
             className="gap-x-2"
             hideIndicator={false}
-            value="Mediator"
+            value="Medior"
           >
             <Network2 />
             Medior (3 - 5 years)
@@ -2800,7 +3355,7 @@ const DeletePhaseDialog = ({
     <Dialog open={isOpen} onOpenChange={toggleIsOpen}>
       <DialogContent className="px-5 w-full py-10 md:px-10 bg-transparent shadow-none rounded-none flex items-center justify-center min-h-screen">
         <div className="max-w-[371px] bg-white p-6 rounded-xl shadow-[0px_8px_8px_-4px_rgba(16,24,40,.03)_0px_20px_24px_-4px_rgba(16,24,40,.08)]">
-          <DialogTitle>Delete this phase?</DialogTitle>
+          <DialogTitle>Delete this phase</DialogTitle>
           <DialogDescription>
             This phase will be deleted permanently. You will not be able to
             recover it.
@@ -2831,6 +3386,7 @@ const DeletePhaseDialog = ({
 const MoreDropdown = (props: {
   openDeletePhaseDialog: () => void
   openPhaseDialog: () => void
+  onChangeDuration: () => void
   onInsertBelow: () => void
   onInsertAbove: () => void
   onDuplicatePhase: () => void
@@ -2839,6 +3395,7 @@ const MoreDropdown = (props: {
   const {
     openDeletePhaseDialog,
     openPhaseDialog,
+    onChangeDuration,
     onInsertAbove,
     onInsertBelow,
     onDuplicatePhase,
@@ -2867,16 +3424,18 @@ const MoreDropdown = (props: {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {arrayNavigator?.canMoveLeft && (
-          <DropdownMenuItem onSelect={arrayNavigator?.moveToLeft}>
-            <ArrowUp className="h-4 w-4" /> Move up
-          </DropdownMenuItem>
-        )}
-        {arrayNavigator?.canMoveRight && (
-          <DropdownMenuItem onSelect={arrayNavigator?.moveToRight}>
-            <ArrowDown className="h-4 w-4" /> Move down
-          </DropdownMenuItem>
-        )}
+        <DropdownMenuItem
+          disabled={!arrayNavigator?.canMoveLeft}
+          onSelect={arrayNavigator?.moveToLeft}
+        >
+          <ArrowUp className="h-4 w-4" /> Move Up
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          disabled={!arrayNavigator?.canMoveRight}
+          onSelect={arrayNavigator?.moveToRight}
+        >
+          <ArrowDown className="h-4 w-4" /> Move Down
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onDuplicatePhase}>
           <Copy className="h-4 w-4" /> Duplicate Phase
@@ -2891,6 +3450,9 @@ const MoreDropdown = (props: {
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={openPhaseDialog}>
           <Type className="h-4 w-4" /> Rename Phase
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={onChangeDuration}>
+          <Clock className="h-4 w-4" /> Change Duration
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem visual="destructive" onSelect={openDeletePhaseDialog}>
@@ -3055,7 +3617,7 @@ const columns = [
   columnHelper.accessor("experience", {
     cell: ({ getValue, row: { index }, column: { id }, table }) => {
       // eslint-disable-next-line
-      const [value, setValue] = useUncontrolledState({
+      const [value, setValue] = useUncontrolledState<ExperienceLevel>({
         defaultValue: getValue(),
         onChange: (value) => table.options.meta?.updateData(index, id, value),
       })
@@ -3064,7 +3626,10 @@ const columns = [
           <Dropdown
             placeholder="Experience"
             value={value}
-            onValueChange={setValue}
+            onValueChange={(nextValue) => {
+              if (!nextValue) return
+              setValue(nextValue)
+            }}
           />
         </TableCell>
       )
@@ -3366,7 +3931,11 @@ const ProjectScope = ({
     defaultPhaseNameDialogState
   )
   const [accordionState, setAccordionState] = useState(["item-0"])
-  const { projectScopeMethods } = useProjectScopeContext()
+  const {
+    projectScopeMethods,
+    isTaskSearchDialogOpen,
+    setTaskSearchDialogOpen,
+  } = useProjectScopeContext()
   const { toggleValidation } = useStepContext()
 
   const [projectScopeState, setProjectScopeState] = projectScopeMethods
@@ -3676,6 +4245,25 @@ const ProjectScope = ({
     })
   }, [])
 
+  const handleOpenPhaseDurationDialog = useCallback(
+    (phaseIndex: number) => {
+      const rows = phases[phaseIndex]?.rows ?? []
+      if (!rows.length) {
+        toast({
+          title: "Please add at least 1 task before changing duration",
+          variant: "destructive",
+        })
+        return
+      }
+      setDurationDialogState({
+        editingPhaseIndex: phaseIndex,
+        editingPhaseRowIndex: 0,
+        open: true,
+      })
+    },
+    [phases, toast]
+  )
+
   const onDuplicatePhase = useCallback(
     (idx: number) => {
       setPhases((prev) => {
@@ -3736,7 +4324,7 @@ const ProjectScope = ({
 
   const currentPhaseName =
     typeof phaseDialogState.editingPhaseIndex === "number"
-      ? phases[phaseDialogState.editingPhaseIndex]?.phaseName ?? ""
+      ? (phases[phaseDialogState.editingPhaseIndex]?.phaseName ?? "")
       : ""
 
   return (
@@ -3803,7 +4391,7 @@ const ProjectScope = ({
                     visual="gray"
                     onClick={expandAll}
                   >
-                    <ChevronsDown className="size-[15px]" /> Expand all
+                    <ChevronsDown className="size-[15px]" /> Expand All
                   </Button>
                   <Button
                     className="rounded-l-none md:rounded-r-[5px] rounded-r-none"
@@ -3853,7 +4441,18 @@ const ProjectScope = ({
 
                               <span className="text-base md:text-[18px] font-semibold leading-7 text-gray-900">
                                 Phase {numberToWord(index)}{" "}
-                                <span className="font-light">{phaseName}</span>
+                                <button
+                                  type="button"
+                                  className="font-light hover:underline focus-visible:outline-none"
+                                  onClick={() =>
+                                    dispatch({
+                                      type: "EDIT",
+                                      payload: index,
+                                    })
+                                  }
+                                >
+                                  {phaseName}
+                                </button>
                               </span>
                             </div>
 
@@ -3875,6 +4474,9 @@ const ProjectScope = ({
                               onSwapPhases={(to) => handleSwapPhases(index, to)}
                               openPhaseDialog={() =>
                                 dispatch({ type: "EDIT", payload: index })
+                              }
+                              onChangeDuration={() =>
+                                handleOpenPhaseDurationDialog(index)
                               }
                               openDeletePhaseDialog={() =>
                                 handleOpenDeletePhaseDialog(index)
@@ -3914,18 +4516,12 @@ const ProjectScope = ({
                     </AccordionItem>
                   ) : (
                     <AccordionItem value={`item-${index}`} asChild>
-                      <div className="rounded-lg border border-gray-100 shadow-xs">
-                        <div className="mb-3 flex items-center gap-x-4 px-3 pt-3">
-                          <div className="flex flex-auto justify-between items-center">
+                      <div className="rounded-lg border border-gray-200 shadow-sm">
+                        <div className="mb-3 flex items-start gap-x-4 px-3 pt-3">
+                          <div className="flex flex-auto gap-y-2 md:flex-row md:justify-between md:items-center flex-col">
                             <div className="inline-flex items-center gap-x-3.5">
-                              <AccordionTrigger asChild>
-                                <IconButton
-                                  className="size-8"
-                                  variant="ghost"
-                                  visual="gray"
-                                >
-                                  <ChevronDown className="size-5 shrink-0 text-gray-500 group-data-[state=open]/item:-rotate-180 transition duration-300" />
-                                </IconButton>
+                              <AccordionTrigger className="focus-visible:outline-none size-8 inline-flex items-center justify-center">
+                                <ChevronDown className="size-5 shrink-0 text-gray-500 group-data-[state=open]/item:-rotate-180 transition duration-300" />
                               </AccordionTrigger>
 
                               <div className="inline-flex md:flex-row gap-x-1.5 flex-col md:items-center gap-y-3 md:gap-x-5">
@@ -3933,11 +4529,21 @@ const ProjectScope = ({
                                   Phase {numberToWord(index)}
                                 </span>{" "}
                                 {phaseName ? (
-                                  <span className="text-lg leading-8 font-semibold text-gray-900">
+                                  <button
+                                    type="button"
+                                    className="text-lg leading-8 font-semibold text-gray-900 hover:underline focus-visible:outline-none"
+                                    onClick={() =>
+                                      dispatch({
+                                        type: "EDIT",
+                                        payload: index,
+                                      })
+                                    }
+                                  >
                                     {phaseName}
-                                  </span>
+                                  </button>
                                 ) : (
                                   <button
+                                    type="button"
                                     className="focus-visible:outline-none inline-flex items-center gap-x-2"
                                     onClick={() =>
                                       dispatch({
@@ -3954,7 +4560,7 @@ const ProjectScope = ({
                                 )}
                                 <div className="inline-block md:hidden">
                                   <span className="text-xs leading-[14.52px] md:text-[13px] md:leading-[15.73px] text-dark-blue-400 font-semibold">
-                                    Day {index + 1}
+                                    Day 1 - Day 8
                                   </span>
                                 </div>
                               </div>
@@ -3962,7 +4568,13 @@ const ProjectScope = ({
 
                             <div className="hidden md:inline-flex items-center gap-x-2 md:pl-0 pl-10">
                               <span className="text-xs leading-[14.52px] md:text-[13px] md:leading-[15.73px] text-dark-blue-400 font-semibold">
-                                Day {index + 1}
+                                Day 1
+                              </span>
+                              <span className="text-xs leading-[14.52px] md:text-[13px] md:leading-[15.73px] text-dark-blue-400 font-semibold">
+                                -
+                              </span>
+                              <span className="text-xs leading-[14.52px] md:text-[13px] md:leading-[15.73px] text-dark-blue-400 font-semibold">
+                                Day 8
                               </span>
                             </div>
                           </div>
@@ -3972,6 +4584,9 @@ const ProjectScope = ({
                               onSwapPhases={(to) => handleSwapPhases(index, to)}
                               openPhaseDialog={() =>
                                 dispatch({ type: "EDIT", payload: index })
+                              }
+                              onChangeDuration={() =>
+                                handleOpenPhaseDurationDialog(index)
                               }
                               openDeletePhaseDialog={() =>
                                 handleOpenDeletePhaseDialog(index)
@@ -4039,6 +4654,11 @@ const ProjectScope = ({
               open={phaseDialogState.open}
               onAddPhaseName={onAddPhaseName}
               defaultName={currentPhaseName}
+              placeholder={
+                phaseDialogState.action === "EDIT"
+                  ? "Edit Phase name"
+                  : "Enter Phase Name"
+              }
             />
 
             <TaskDialog
@@ -4078,6 +4698,11 @@ const ProjectScope = ({
                 }
               }}
             />
+            <TaskSearchDialog
+              open={isTaskSearchDialogOpen}
+              onOpenChange={setTaskSearchDialogOpen}
+              phases={phases}
+            />
           </div>
 
           <div className="pl-[17.45px] xs:max-[1024px]:hidden shrink-0">
@@ -4113,6 +4738,12 @@ const [ProjectScopeProvider, useProjectScopeContext] = createContext<{
   projectScopeMethods: [Phase[], React.Dispatch<React.SetStateAction<Phase[]>>]
   isProjectSubmitted: boolean
   setIsProjectSubmitted: React.Dispatch<React.SetStateAction<boolean>>
+  submissionOutcome: SubmissionOutcome | null
+  setSubmissionOutcome: React.Dispatch<
+    React.SetStateAction<SubmissionOutcome | null>
+  >
+  isTaskSearchDialogOpen: boolean
+  setTaskSearchDialogOpen: React.Dispatch<React.SetStateAction<boolean>>
 }>({
   displayName: "MediaProvider",
   errorMessage: `useMediaContext returned is 'undefined'. Seems you forgot to wrap the components in "<MediaPopover />"`,
@@ -4164,9 +4795,28 @@ function PublishProject({
   })
   const projectScopeMethods = useState<Phase[]>([{}])
   const [isProjectSubmitted, setIsProjectSubmitted] = useState(false)
+  const [submissionOutcome, setSubmissionOutcome] =
+    useState<SubmissionOutcome | null>(null)
+  const [isTaskSearchDialogOpen, setTaskSearchDialogOpen] = useState(false)
   const projectScopeValue = useMemo(
-    () => ({ projectScopeMethods, isProjectSubmitted, setIsProjectSubmitted }),
-    [projectScopeMethods, isProjectSubmitted, setIsProjectSubmitted]
+    () => ({
+      projectScopeMethods,
+      isProjectSubmitted,
+      setIsProjectSubmitted,
+      submissionOutcome,
+      setSubmissionOutcome,
+      isTaskSearchDialogOpen,
+      setTaskSearchDialogOpen,
+    }),
+    [
+      projectScopeMethods,
+      isProjectSubmitted,
+      setIsProjectSubmitted,
+      submissionOutcome,
+      setSubmissionOutcome,
+      isTaskSearchDialogOpen,
+      setTaskSearchDialogOpen,
+    ]
   )
   //  Validate the current step when Next is clicked
   const validateCurrentStep = React.useCallback(async () => {
@@ -4199,7 +4849,7 @@ function PublishProject({
           Publish to Marketplace
         </h1>
       </div>
-      <Empty />
+      <Empty outcome={submissionOutcome ?? undefined} />
     </div>
   ) : (
     <StepperProvider value={stepperValue}>
