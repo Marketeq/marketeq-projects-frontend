@@ -70,18 +70,31 @@ export default function SignIn() {
     setIsLoading(true)
 
     AuthAPI.LoginWithEmail({ email, password })
-      .then((response) => {
+      .then(async (response) => {
         if (response?.status === 200 && response?.data?.access_token) {
           Cookies.set("access_token", response?.data?.access_token)
 
-          // fetch user after token is saved
-          UserAPI.me().then((meRes) => {
-            if (meRes?.status === 200 && meRes?.data?.user) {
-              setUser(meRes.data.user)
-              router.push("/")
-              reset()
+          let nextUser = response?.data?.user
+          if (!nextUser) {
+            try {
+              const meResponse = await UserAPI.me()
+              if (meResponse?.status === 200) {
+                nextUser =
+                  meResponse?.data?.user ??
+                  meResponse?.data?.data?.user ??
+                  meResponse?.data
+              }
+            } catch {
+              // noop: auth context will refresh user on load
             }
-          })
+          }
+
+          if (nextUser && typeof nextUser === "object") {
+            setUser(nextUser)
+          }
+
+          router.push("/")
+          reset()
         }
       })
       .catch((error) => {
