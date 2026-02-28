@@ -43,8 +43,8 @@ const meta: Meta = {
 
 export default meta
 
-//getting token
-const jwtToken = localStorage.getItem("token")
+const getJwtToken = () =>
+  typeof window !== "undefined" ? localStorage.getItem("token") : null
 
 const formatConversationDate = (isoDateStr: string) => {
   const date = parseISO(isoDateStr)
@@ -66,12 +66,13 @@ const formatConversationDate = (isoDateStr: string) => {
 }
 
 const handlePinMessage = async (messageId: string) => {
+  const jwtToken = getJwtToken()
   try {
     await apiFetch<{ message: string }>(
       `/api/messaging/messages/${messageId}/pin`,
       {
         method: "POST",
-        headers: { Authorization: `Bearer ${jwtToken}` },
+        headers: jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {},
       }
     )
   } catch (err) {
@@ -139,6 +140,7 @@ export const Bubble = ({
   }, [isSaved])
 
   const handlePinMessage = async () => {
+    const jwtToken = getJwtToken()
     try {
       // Optimistic UI
       setIsPinned((prev) => !prev)
@@ -147,7 +149,7 @@ export const Bubble = ({
         `/api/messaging/messages/${message.id}/pin`,
         {
           method: "POST",
-          headers: { Authorization: `Bearer ${jwtToken}` },
+          headers: jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {},
         }
       )
     } catch (err) {
@@ -157,12 +159,13 @@ export const Bubble = ({
   }
 
   const handleDeleteMessage = async () => {
+    const jwtToken = getJwtToken()
     try {
       setIsDeleted(true) // Optimistic UI
       setDeletedAt(Date.now())
       await apiFetch(`/api/messaging/messages/${message.id}/delete`, {
         method: "PATCH",
-        headers: { Authorization: `Bearer ${jwtToken}` },
+        headers: jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {},
       })
     } catch (err) {
       console.error("Failed to delete message:", err)
@@ -171,11 +174,12 @@ export const Bubble = ({
   }
 
   const handleRestoreMessage = async () => {
+    const jwtToken = getJwtToken()
     try {
       setIsDeleted(false) // Optimistic UI
       await apiFetch(`/api/messaging/messages/${message.id}/undo-delete`, {
         method: "PATCH",
-        headers: { Authorization: `Bearer ${jwtToken}` },
+        headers: jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {},
       })
     } catch (err) {
       console.error("Failed to restore message:", err)
@@ -301,6 +305,7 @@ export const YourBubble = ({
   }, [message.isPinned])
 
   const handlePinMessage = async () => {
+    const jwtToken = getJwtToken()
     try {
       // Optimistic UI
       setIsPinned((prev) => !prev)
@@ -309,7 +314,7 @@ export const YourBubble = ({
         `/api/messaging/messages/${message.id}/pin`,
         {
           method: "POST",
-          headers: { Authorization: `Bearer ${jwtToken}` },
+          headers: jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {},
         }
       )
     } catch (err) {

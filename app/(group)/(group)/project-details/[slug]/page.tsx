@@ -1,11 +1,11 @@
 "use client"
 
 import * as React from "react"
+import { useEffect, useState } from "react"
+import { useParams, useRouter } from "next/navigation"
+import { extractIdFromSlug } from "@/src/lib/urlHelpers"
 import { cn, noop, toPxIfNumber } from "@/utils/functions"
 import { useControllableState, useMakeFixedBehaveSticky } from "@/utils/hooks"
-import { useEffect, useState } from "react"
-import { useRouter, useParams } from "next/navigation"
-import { extractIdFromSlug } from "../../../../../src/lib/urlHelpers"
 import {
   AlertCircle,
   ArrowLeft,
@@ -458,25 +458,31 @@ export default function ProjectDetails() {
     async function fetchProject() {
       try {
         const slug = params.slug as string
-        const projectId = slug.split('-').pop() // Extract ID from slug
+        const projectId = slug.split("-").pop() // Extract ID from slug
 
         // Fetch from category page
-        const res = await fetch(`http://localhost:3002/api/category-pages/creative`)
+        const res = await fetch(
+          `http://localhost:3002/api/category-pages/creative`
+        )
         const data = await res.json()
 
         // Find project in blocks
-        const projectsBlock = data.blocks?.find((b: any) => b.entity === 'projects')
-        const foundProject = projectsBlock?.items?.find((p: any) => p.id === parseInt(projectId || '0'))
+        const projectsBlock = data.blocks?.find(
+          (b: any) => b.entity === "projects"
+        )
+        const foundProject = projectsBlock?.items?.find(
+          (p: any) => p.id === parseInt(projectId || "0")
+        )
 
         if (!foundProject) {
-          router.push('/404')
+          router.push("/404")
           return
         }
 
         setProject(foundProject)
       } catch (err) {
         console.error(err)
-        router.push('/404')
+        router.push("/404")
       } finally {
         setLoading(false)
       }
@@ -562,7 +568,10 @@ export default function ProjectDetails() {
                         <Star className="shrink-0 size-4 text-primary-500" />
                       </div>
                       <span className="text-sm leading-none font-semibold text-dark-blue-400">
-                        {project.rating || '4.9'} <span className="font-medium">({project.reviewCount || 14} ratings)</span>
+                        {project.rating || "4.9"}{" "}
+                        <span className="font-medium">
+                          ({project.reviewCount || 14} ratings)
+                        </span>
                       </span>
                     </div>
 

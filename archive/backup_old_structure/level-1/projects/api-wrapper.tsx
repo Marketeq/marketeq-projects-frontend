@@ -36,7 +36,7 @@ import {
 } from "@/components/ui";
 
 import { useState, useEffect } from 'react';
-import { getCategoryPage, type BlockItem } from '../../../../../src/lib/api/category-pages';
+import { getCategoryPage, type BlockItem } from '@/src/lib/api/category-pages';
 
 export default function Projects() {
   // State management

@@ -63,8 +63,6 @@ interface ChatProps {
   pinned?: boolean
   onPinnedChange?: (value: boolean) => void
 }
-const jwtToken = localStorage.getItem("access_token")
-
 export const [ChatsContextProvider, useChatsContext] = createContext<{
   pinnedChats: number
   onChatPinned: (pinned: boolean) => void
@@ -97,7 +95,8 @@ export const UserDetail = ({
     useChatsContext()
 
   //jwt token
-  const jwtToken = localStorage.getItem("token")
+  const jwtToken =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null
 
   const [isPinned, setIsPinned] = useControllableState({
     defaultValue: false,
@@ -111,9 +110,7 @@ export const UserDetail = ({
           `/api/messaging/conversations/${conversation.id}/pin`,
           {
             method: "POST",
-            headers: {
-              Authorization: `Bearer ${jwtToken}`,
-            },
+            headers: jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {},
           }
         )
       } catch (err) {

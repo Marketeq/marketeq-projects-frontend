@@ -100,7 +100,8 @@ const LeftSidebar = ({
   setSelectedConversation,
   messagesByConversation,
 }: LeftSidebarProps) => {
-  const token = localStorage.getItem("token")
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null
   const { pinnedChats, toggleShowPinnedIcon, showPinnedIcon, checkedChats } =
     useChatsContext()
 

@@ -35,20 +35,18 @@ export function NumberInput({
   groupClassName?: string
   className?: string
 }) {
-  const [state, send] = useMachine(
-    numberInput.machine({ id: React.useId(), min, max }),
-    {
-      context: {
-        value: toString(value),
-        onValueChange: (details) => {
-          const { valueAsNumber } = details
-          onValueChange?.(valueAsNumber)
-        },
-      },
-    }
-  )
+  const service = useMachine(numberInput.machine, {
+    id: React.useId(),
+    min,
+    max,
+    value: toString(value),
+    onValueChange: (details) => {
+      const { valueAsNumber } = details
+      onValueChange?.(valueAsNumber)
+    },
+  })
 
-  const api = numberInput.connect(state, send, normalizeProps)
+  const api = numberInput.connect(service, normalizeProps)
 
   return (
     <>

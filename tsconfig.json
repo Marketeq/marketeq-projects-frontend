@@ -32,5 +32,14 @@
     ".next/types/**/*.ts",
     ".storybook/**/*.{ts,tsx}"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "archive",
+    "stories",
+    ".storybook",
+    "**/*.stories.tsx",
+    "**/*.stories.ts",
+    "playwright.config.ts",
+    "tests"
+  ]
 }

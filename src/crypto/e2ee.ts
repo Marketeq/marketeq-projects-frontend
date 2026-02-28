@@ -98,9 +98,11 @@ export async function encryptAES(
   const iv = crypto.getRandomValues(new Uint8Array(12))
   const encoded = new TextEncoder().encode(plainText)
 
+  const keyMaterial = Uint8Array.from(keyBytes).buffer
+
   const cryptoKey = await crypto.subtle.importKey(
     "raw",
-    keyBytes,
+    keyMaterial,
     { name: "AES-GCM" },
     false,
     ["encrypt"]
@@ -130,9 +132,11 @@ export async function decryptAES(
   const iv = combined.slice(0, 12)
   const ctAndTag = combined.slice(12)
 
+  const keyMaterial = Uint8Array.from(keyBytes).buffer
+
   const cryptoKey = await crypto.subtle.importKey(
     "raw",
-    keyBytes,
+    keyMaterial,
     { name: "AES-GCM" },
     false,
     ["decrypt"]
@@ -170,12 +174,13 @@ export async function encryptWithPublicKey(
   const publicKey = await importPublicKey(pem)
 
   // Encrypt using RSA-OAEP with SHA-256
+  const keyMaterial = Uint8Array.from(aesKey).buffer
   const encrypted = await window.crypto.subtle.encrypt(
     {
       name: "RSA-OAEP",
     },
     publicKey,
-    aesKey
+    keyMaterial
   )
 
   // Return base64 encoded ciphertext
