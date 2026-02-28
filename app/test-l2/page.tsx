@@ -5,10 +5,14 @@ import { useCategoryPageL2 } from "../../src/features/category-pages/hook"
 export default function TestL2Page() {
   // IMPORTANT: Check actual slugs in your Strapi admin first!
   // These might be "Creative" and "UI Design" with capitals/spaces
-  const { data, isLoading, error } = useCategoryPageL2("creative", "ui-design", { 
-    kind: "projects", 
-    limit: 10 
-  })
+  const { data, isLoading, error } = useCategoryPageL2(
+    "creative",
+    "ui-design",
+    {
+      kind: "projects",
+      limit: 10,
+    }
+  )
 
   if (isLoading) {
     return <div className="p-8 text-xl">Loading L2 category...</div>
@@ -24,9 +28,13 @@ export default function TestL2Page() {
         <div className="mt-4 p-4 bg-yellow-50 rounded border border-yellow-200">
           <p className="font-semibold mb-2">Possible reasons:</p>
           <ul className="list-disc pl-6 text-sm">
-            <li>Check Strapi: Does "UI Design" category exist?</li>
-            <li>Is the slug exactly "ui-design" (lowercase with hyphen)?</li>
-            <li>Is "Creative" the parent of "UI Design"?</li>
+            <li>Check Strapi: Does &quot;UI Design&quot; category exist?</li>
+            <li>
+              Is the slug exactly &quot;ui-design&quot; (lowercase with hyphen)?
+            </li>
+            <li>
+              Is &quot;Creative&quot; the parent of &quot;UI Design&quot;?
+            </li>
             <li>Backend running on http://localhost:3002?</li>
           </ul>
         </div>
@@ -43,7 +51,7 @@ export default function TestL2Page() {
           L2 Integration Working!
         </h1>
         <p className="text-green-700 mt-2">
-          Path: {data.breadcrumbs.map(b => b.name).join(" → ")}
+          Path: {data.breadcrumbs.map((b) => b.name).join(" → ")}
         </p>
         <p className="text-sm text-green-600 mt-1">
           GET /api/category-pages/creative/ui-design
@@ -80,8 +88,11 @@ export default function TestL2Page() {
         <div className="mb-6">
           <h3 className="text-xl font-semibold mb-2">Children (L3)</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            {data.children.map(child => (
-              <div key={child.uuid} className="p-3 bg-green-50 rounded border border-green-200">
+            {data.children.map((child) => (
+              <div
+                key={child.uuid}
+                className="p-3 bg-green-50 rounded border border-green-200"
+              >
                 {child.name}
               </div>
             ))}
@@ -90,9 +101,13 @@ export default function TestL2Page() {
       )}
 
       <div className="mb-6">
-        <h3 className="text-xl font-semibold mb-2">Content Blocks ({data.blocks.length})</h3>
-        {data.blocks.length === 0 && <p className="text-gray-500 italic">No blocks yet</p>}
-        {data.blocks.map(block => (
+        <h3 className="text-xl font-semibold mb-2">
+          Content Blocks ({data.blocks.length})
+        </h3>
+        {data.blocks.length === 0 && (
+          <p className="text-gray-500 italic">No blocks yet</p>
+        )}
+        {data.blocks.map((block) => (
           <div key={block.key} className="mb-4 p-4 border rounded bg-gray-50">
             <div className="font-semibold text-lg">{block.title}</div>
             <div className="text-sm text-gray-600">

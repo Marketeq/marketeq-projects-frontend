@@ -35,20 +35,18 @@ export function PercentageInput({
   groupClassName?: string
   className?: string
 }) {
-  const [state, send] = useMachine(
-    percentageInput.machine({ id: React.useId(), min, max }),
-    {
-      context: {
-        value: toString(value),
-        onValueChange: (details) => {
-          const { valueAsNumber } = details
-          onValueChange?.(valueAsNumber)
-        },
-      },
-    }
-  )
+  const service = useMachine(percentageInput.machine, {
+    id: React.useId(),
+    min,
+    max,
+    value: toString(value),
+    onValueChange: (details) => {
+      const { valueAsNumber } = details
+      onValueChange?.(valueAsNumber)
+    },
+  })
 
-  const api = percentageInput.connect(state, send, normalizeProps)
+  const api = percentageInput.connect(service, normalizeProps)
 
   return (
     <>

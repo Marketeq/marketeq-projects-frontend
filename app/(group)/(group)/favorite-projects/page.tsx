@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
+import { type Favorite, getProjectFavorites } from "@/src/lib/api/favorites"
 import { getFirstItem } from "@/utils/functions"
 import {
   Copy,
@@ -32,14 +33,13 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui"
-import { getProjectFavorites, type Favorite } from "../../../../src/lib/api/favorites"
 
 const GRID_LAYOUT = "GRID"
 const LIST_LAYOUT = "LIST"
 
 interface CardProps {
-  favorite: Favorite;
-  itemCount: number;
+  favorite: Favorite
+  itemCount: number
 }
 
 const Card = ({ favorite, itemCount }: CardProps) => {
@@ -292,7 +292,7 @@ export default function FavoriteProjects() {
         const projectFavs = await getProjectFavorites()
         setFavorites(projectFavs)
       } catch (error) {
-        console.error('Failed to load favorites:', error)
+        console.error("Failed to load favorites:", error)
       } finally {
         setIsLoading(false)
       }
@@ -399,9 +399,14 @@ export default function FavoriteProjects() {
         <TabsContent value="All">
           {isLoading ? (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-3 gap-y-3.5 lg:gap-6 pt-3.5 lg:pt-6">
-              {Array(8).fill(0).map((_, i) => (
-                <div key={i} className="bg-white border rounded-lg h-[300px] animate-pulse" />
-              ))}
+              {Array(8)
+                .fill(0)
+                .map((_, i) => (
+                  <div
+                    key={i}
+                    className="bg-white border rounded-lg h-[300px] animate-pulse"
+                  />
+                ))}
             </div>
           ) : favorites.length === 0 ? (
             <div className="text-center py-20">
@@ -413,13 +418,21 @@ export default function FavoriteProjects() {
           ) : getFirstItem(value) === GRID_LAYOUT ? (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-3 gap-y-3.5 lg:gap-6 pt-3.5 lg:pt-6">
               {favorites.map((fav) => (
-                <Card key={fav.id} favorite={fav} itemCount={favorites.length} />
+                <Card
+                  key={fav.id}
+                  favorite={fav}
+                  itemCount={favorites.length}
+                />
               ))}
             </div>
           ) : (
             <div className="grid gap-y-3 pt-3.5 lg:pt-6">
               {favorites.map((fav) => (
-                <ListCard key={fav.id} favorite={fav} itemCount={favorites.length} />
+                <ListCard
+                  key={fav.id}
+                  favorite={fav}
+                  itemCount={favorites.length}
+                />
               ))}
             </div>
           )}
@@ -429,17 +442,33 @@ export default function FavoriteProjects() {
           {getFirstItem(value) === GRID_LAYOUT ? (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-3 gap-y-3.5 lg:gap-6 pt-3.5 lg:pt-6">
               {favorites
-                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                .sort(
+                  (a, b) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime()
+                )
                 .map((fav) => (
-                  <Card key={fav.id} favorite={fav} itemCount={favorites.length} />
+                  <Card
+                    key={fav.id}
+                    favorite={fav}
+                    itemCount={favorites.length}
+                  />
                 ))}
             </div>
           ) : (
             <div className="grid gap-y-3 pt-3.5 lg:pt-6">
               {favorites
-                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                .sort(
+                  (a, b) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime()
+                )
                 .map((fav) => (
-                  <ListCard key={fav.id} favorite={fav} itemCount={favorites.length} />
+                  <ListCard
+                    key={fav.id}
+                    favorite={fav}
+                    itemCount={favorites.length}
+                  />
                 ))}
             </div>
           )}

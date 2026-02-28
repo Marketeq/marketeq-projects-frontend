@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useAuth } from "@/contexts/auth"
 import { cn } from "@/utils/functions"
 import { ChevronLeft, ChevronRight } from "@blend-metrics/icons"

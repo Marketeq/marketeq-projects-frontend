@@ -51,9 +51,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui"
 import { useState, useEffect } from 'react';
-import { getCategoryPage, type BlockItem } from '../../../../../src/lib/api/category-pages';
-import { addFavorite, removeFavorite, findFavoriteByItemId } from '../../../../../src/lib/api/favorites';
-import { buildProjectUrl } from "../../../../../src/lib/urlHelpers";
+import { getCategoryPage, type BlockItem } from '@/src/lib/api/category-pages';
+import { addFavorite, removeFavorite, findFavoriteByItemId } from '@/src/lib/api/favorites';
+import { buildProjectUrl } from "@/src/lib/urlHelpers";
 // Interface for project items
 interface ProjectItem extends BlockItem {
   featured?: boolean;

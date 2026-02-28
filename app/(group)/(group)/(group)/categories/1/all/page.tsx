@@ -1,3 +1,5 @@
+"use client"
+
 import { fromLength } from "@/utils/functions"
 import {
   ArrowRight,
@@ -16,7 +18,6 @@ import {
 } from "@blend-metrics/icons"
 import { AdobeBrand } from "@blend-metrics/icons/brands"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs"
-import { Meta } from "@storybook/react"
 import { SwiperSlide } from "swiper/react"
 import { Money } from "@/components/money"
 import NextImage from "@/components/next-image"

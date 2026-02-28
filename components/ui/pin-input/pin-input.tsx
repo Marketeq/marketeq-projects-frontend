@@ -23,7 +23,8 @@ const pinInputVariants = cva(
 )
 
 interface FourDigitPinInputProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof pinInputVariants> {
   placeholder?: string
   pinInputClassName?: string
@@ -38,8 +39,8 @@ const FourDigitPinInput = React.forwardRef<
     ref
   ) => {
     const id = React.useId()
-    const [state, send] = useMachine(pinInput.machine({ id, placeholder }))
-    const api = pinInput.connect(state, send, normalizeProps)
+    const service = useMachine(pinInput.machine, { id, placeholder })
+    const api = pinInput.connect(service, normalizeProps)
     const _pinInputClassName = cn(
       pinInputVariants({ size, className: pinInputClassName })
     )
@@ -75,7 +76,8 @@ const FourDigitPinInput = React.forwardRef<
 FourDigitPinInput.displayName = "FourDigitPinInput"
 
 interface SixDigitPinInputProps
-  extends React.HTMLAttributes<HTMLElement>,
+  extends
+    React.HTMLAttributes<HTMLElement>,
     VariantProps<typeof pinInputVariants> {
   placeholder?: string
   pinInputClassName?: string
@@ -90,8 +92,8 @@ const SixDigitPinInput = React.forwardRef<
     ref
   ) => {
     const id = React.useId()
-    const [state, send] = useMachine(pinInput.machine({ id, placeholder }))
-    const api = pinInput.connect(state, send, normalizeProps)
+    const service = useMachine(pinInput.machine, { id, placeholder })
+    const api = pinInput.connect(service, normalizeProps)
     const _pinInputClassName = pinInputVariants({
       size,
       className: pinInputClassName,

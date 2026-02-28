@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs"
 import { Money } from "@/components/money"
 import NextImage from "@/components/next-image"
 import NextLink from "@/components/next-link"
-import { buildProjectUrl } from "../../../../../src/lib/urlHelpers"
+import { buildProjectUrl } from "@/src/lib/urlHelpers"
 import {
   Avatar,
   AvatarFallback,
@@ -37,8 +37,8 @@ import {
 } from "@/components/ui";
 
 import { useState, useEffect } from 'react';
-import { getCategoryPage, type BlockItem } from '../../../../../src/lib/api/category-pages';
-import { addFavorite, removeFavorite, findFavoriteByItemId } from '../../../../../src/lib/api/favorites';
+import { getCategoryPage, type BlockItem } from '@/src/lib/api/category-pages';
+import { addFavorite, removeFavorite, findFavoriteByItemId } from '@/src/lib/api/favorites';
 
 // Interface for project items
 interface ProjectItem extends BlockItem {
