@@ -539,5 +539,5 @@ export function strToArray(value: string) {
 }
 
 export function fromLength(length: number) {
-  return Array(length).keys().toArray()
+  return Array.from({ length }, (_, index) => index)
 }
