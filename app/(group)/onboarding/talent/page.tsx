@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation"
 import { USERNAME_SUGGESTIONS_LIST } from "@/constants/username-suggestions"
 import { useAuth } from "@/contexts/auth"
 import AuthenticatedRoute from "@/hoc/AuthenticatedRoute"
+import industriesMock from "@/public/mock/industries.json"
+import jobTitlesMock from "@/public/mock/job_titles.json"
+import languagesMock from "@/public/mock/languages.json"
 import { AuthAPI } from "@/service/http/auth"
 import { TalentAPI } from "@/service/http/talent"
 import { UserAPI } from "@/service/http/user"
@@ -664,11 +667,168 @@ const CreateYourUsername = ({
 }
 
 const shareYourGoalsFormSchema = z.object({
-  location: z.string().min(1, "Please enter at least 1 character(s)"),
-  languages: z.string().min(1, "Please enter at least 1 character(s)"),
+  location: z.array(z.string()).min(1, "Please enter at least 1 location"),
+  languages: z.array(z.string()).min(1, "Please enter at least 1 language"),
 })
 
 type ShareYourGoalsFormValues = z.infer<typeof shareYourGoalsFormSchema>
+const parseMultiSelectString = (value?: string) =>
+  (value ?? "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean)
+const LOCATION_FALLBACK_OPTIONS = [
+  "Birmingham, Alabama, United States",
+  "Huntsville, Alabama, United States",
+  "Mobile, Alabama, United States",
+  "Anchorage, Alaska, United States",
+  "Fairbanks, Alaska, United States",
+  "Juneau, Alaska, United States",
+  "Phoenix, Arizona, United States",
+  "Tucson, Arizona, United States",
+  "Scottsdale, Arizona, United States",
+  "Little Rock, Arkansas, United States",
+  "Fayetteville, Arkansas, United States",
+  "Fort Smith, Arkansas, United States",
+  "Los Angeles, California, United States",
+  "San Francisco, California, United States",
+  "San Diego, California, United States",
+  "Denver, Colorado, United States",
+  "Colorado Springs, Colorado, United States",
+  "Boulder, Colorado, United States",
+  "Stamford, Connecticut, United States",
+  "Hartford, Connecticut, United States",
+  "New Haven, Connecticut, United States",
+  "Wilmington, Delaware, United States",
+  "Dover, Delaware, United States",
+  "Newark, Delaware, United States",
+  "Miami, Florida, United States",
+  "Orlando, Florida, United States",
+  "Tampa, Florida, United States",
+  "Atlanta, Georgia, United States",
+  "Savannah, Georgia, United States",
+  "Augusta, Georgia, United States",
+  "Honolulu, Hawaii, United States",
+  "Hilo, Hawaii, United States",
+  "Kailua, Hawaii, United States",
+  "Boise, Idaho, United States",
+  "Idaho Falls, Idaho, United States",
+  "Coeur d'Alene, Idaho, United States",
+  "Chicago, Illinois, United States",
+  "Aurora, Illinois, United States",
+  "Naperville, Illinois, United States",
+  "Indianapolis, Indiana, United States",
+  "Fort Wayne, Indiana, United States",
+  "Bloomington, Indiana, United States",
+  "Des Moines, Iowa, United States",
+  "Cedar Rapids, Iowa, United States",
+  "Iowa City, Iowa, United States",
+  "Wichita, Kansas, United States",
+  "Overland Park, Kansas, United States",
+  "Kansas City, Kansas, United States",
+  "Louisville, Kentucky, United States",
+  "Lexington, Kentucky, United States",
+  "Bowling Green, Kentucky, United States",
+  "New Orleans, Louisiana, United States",
+  "Baton Rouge, Louisiana, United States",
+  "Shreveport, Louisiana, United States",
+  "Portland, Maine, United States",
+  "Bangor, Maine, United States",
+  "Augusta, Maine, United States",
+  "Baltimore, Maryland, United States",
+  "Bethesda, Maryland, United States",
+  "Annapolis, Maryland, United States",
+  "Boston, Massachusetts, United States",
+  "Cambridge, Massachusetts, United States",
+  "Worcester, Massachusetts, United States",
+  "Detroit, Michigan, United States",
+  "Grand Rapids, Michigan, United States",
+  "Ann Arbor, Michigan, United States",
+  "Minneapolis, Minnesota, United States",
+  "St. Paul, Minnesota, United States",
+  "Rochester, Minnesota, United States",
+  "Jackson, Mississippi, United States",
+  "Gulfport, Mississippi, United States",
+  "Hattiesburg, Mississippi, United States",
+  "St. Louis, Missouri, United States",
+  "Kansas City, Missouri, United States",
+  "Springfield, Missouri, United States",
+  "Billings, Montana, United States",
+  "Missoula, Montana, United States",
+  "Bozeman, Montana, United States",
+  "Omaha, Nebraska, United States",
+  "Lincoln, Nebraska, United States",
+  "Bellevue, Nebraska, United States",
+  "Las Vegas, Nevada, United States",
+  "Reno, Nevada, United States",
+  "Henderson, Nevada, United States",
+  "Manchester, New Hampshire, United States",
+  "Nashua, New Hampshire, United States",
+  "Concord, New Hampshire, United States",
+  "Newark, New Jersey, United States",
+  "Jersey City, New Jersey, United States",
+  "Princeton, New Jersey, United States",
+  "Albuquerque, New Mexico, United States",
+  "Santa Fe, New Mexico, United States",
+  "Las Cruces, New Mexico, United States",
+  "New York City, New York, United States",
+  "Buffalo, New York, United States",
+  "Rochester, New York, United States",
+  "Charlotte, North Carolina, United States",
+  "Raleigh, North Carolina, United States",
+  "Durham, North Carolina, United States",
+  "Fargo, North Dakota, United States",
+  "Bismarck, North Dakota, United States",
+  "Grand Forks, North Dakota, United States",
+  "Columbus, Ohio, United States",
+  "Cleveland, Ohio, United States",
+  "Cincinnati, Ohio, United States",
+  "Oklahoma City, Oklahoma, United States",
+  "Tulsa, Oklahoma, United States",
+  "Norman, Oklahoma, United States",
+  "Portland, Oregon, United States",
+  "Eugene, Oregon, United States",
+  "Salem, Oregon, United States",
+  "Philadelphia, Pennsylvania, United States",
+  "Pittsburgh, Pennsylvania, United States",
+  "Allentown, Pennsylvania, United States",
+  "Providence, Rhode Island, United States",
+  "Warwick, Rhode Island, United States",
+  "Newport, Rhode Island, United States",
+  "Charleston, South Carolina, United States",
+  "Columbia, South Carolina, United States",
+  "Greenville, South Carolina, United States",
+  "Sioux Falls, South Dakota, United States",
+  "Rapid City, South Dakota, United States",
+  "Pierre, South Dakota, United States",
+  "Nashville, Tennessee, United States",
+  "Memphis, Tennessee, United States",
+  "Knoxville, Tennessee, United States",
+  "Houston, Texas, United States",
+  "Dallas, Texas, United States",
+  "Austin, Texas, United States",
+  "Salt Lake City, Utah, United States",
+  "Provo, Utah, United States",
+  "Ogden, Utah, United States",
+  "Burlington, Vermont, United States",
+  "Montpelier, Vermont, United States",
+  "Rutland, Vermont, United States",
+  "Virginia Beach, Virginia, United States",
+  "Richmond, Virginia, United States",
+  "Arlington, Virginia, United States",
+  "Seattle, Washington, United States",
+  "Bellevue, Washington, United States",
+  "Spokane, Washington, United States",
+  "Charleston, West Virginia, United States",
+  "Morgantown, West Virginia, United States",
+  "Huntington, West Virginia, United States",
+  "Milwaukee, Wisconsin, United States",
+  "Madison, Wisconsin, United States",
+  "Green Bay, Wisconsin, United States",
+  "Cheyenne, Wyoming, United States",
+  "Casper, Wyoming, United States",
+  "Jackson, Wyoming, United States",
+]
 
 const ShareYourLocation = ({
   sidebar,
@@ -680,17 +840,103 @@ const ShareYourLocation = ({
   setStepData: React.Dispatch<React.SetStateAction<CreateTalentType | null>>
 }) => {
   const {
-    register,
+    control,
     formState: { errors, isValid },
     handleSubmit,
     getValues,
   } = useForm<ShareYourGoalsFormValues>({
     resolver: zodResolver(shareYourGoalsFormSchema),
     defaultValues: {
-      location: stepData?.location || "",
-      languages: stepData?.language || "",
+      location: parseMultiSelectString(stepData?.location),
+      languages: parseMultiSelectString(stepData?.language),
     },
   })
+  const [locationQuery, setLocationQuery] = useState("")
+  const [languagesQuery, setLanguagesQuery] = useState("")
+  const [isLocationOpen, setIsLocationOpen] = useState(false)
+  const [isLanguagesOpen, setIsLanguagesOpen] = useState(false)
+  const [suppressLanguageFocusOpen, setSuppressLanguageFocusOpen] =
+    useState(false)
+  const [selectedLocations, setSelectedLocations] = useState<string[]>(
+    parseMultiSelectString(stepData?.location)
+  )
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>(
+    parseMultiSelectString(stepData?.language)
+  )
+
+  const languageFallbackOptions = useMemo(
+    () => languagesMock.map((item) => item.label),
+    []
+  )
+  const filteredLocations = useMemo(() => {
+    const query = locationQuery.trim().toLowerCase()
+    if (!query) return LOCATION_FALLBACK_OPTIONS
+    return LOCATION_FALLBACK_OPTIONS.filter((item) =>
+      item.toLowerCase().includes(query)
+    )
+  }, [locationQuery])
+  const filteredLanguages = useMemo(() => {
+    const query = languagesQuery.trim().toLowerCase()
+    if (!query) return languageFallbackOptions
+    return languageFallbackOptions.filter((item) =>
+      item.toLowerCase().includes(query)
+    )
+  }, [languageFallbackOptions, languagesQuery])
+
+  const addLocationValue = (
+    nextValue: string,
+    onChange: (values: string[]) => void
+  ) => {
+    const value = nextValue.trim()
+    if (!value) return
+    setSelectedLocations((prev) => {
+      if (prev.includes(value)) return prev
+      const next = [...prev, value]
+      onChange(next)
+      return next
+    })
+    setLocationQuery("")
+    setIsLocationOpen(false)
+  }
+
+  const removeLocationValue = (
+    target: string,
+    onChange: (values: string[]) => void
+  ) => {
+    setSelectedLocations((prev) => {
+      const next = prev.filter((item) => item !== target)
+      onChange(next)
+      return next
+    })
+  }
+
+  const addLanguageValue = (
+    nextValue: string,
+    onChange: (values: string[]) => void
+  ) => {
+    const value = nextValue.trim()
+    if (!value) return
+    setSelectedLanguages((prev) => {
+      if (prev.includes(value)) return prev
+      const next = [...prev, value]
+      onChange(next)
+      return next
+    })
+    setLanguagesQuery("")
+    setIsLanguagesOpen(false)
+    setSuppressLanguageFocusOpen(true)
+  }
+
+  const removeLanguageValue = (
+    target: string,
+    onChange: (values: string[]) => void
+  ) => {
+    setSelectedLanguages((prev) => {
+      const next = prev.filter((item) => item !== target)
+      onChange(next)
+      return next
+    })
+  }
   const { toggleValidation } = useStepContext()
   const { nextStep, prevStep, setStep } = useStepperContext()
 
@@ -702,8 +948,8 @@ const ShareYourLocation = ({
   }) => {
     setStepData({
       ...stepData,
-      location,
-      language: languages,
+      location: location.join(", "),
+      language: languages.join(", "),
     })
     nextStep()
   }
@@ -721,8 +967,8 @@ const ShareYourLocation = ({
   const back = () => {
     setStepData({
       ...stepData,
-      location: getValues("location"),
-      language: getValues("languages"),
+      location: getValues("location").join(", "),
+      language: getValues("languages").join(", "),
     })
     prevStep()
   }
@@ -762,16 +1008,109 @@ const ShareYourLocation = ({
               <div className="flex flex-col gap-y-1.5">
                 <Label
                   className="text-dark-blue-400"
-                  htmlFor="username"
+                  htmlFor="location"
                   size="sm"
                 >
                   What’s your location?
                 </Label>
-                <Input
-                  id="username"
-                  placeholder="Enter your city or town"
-                  {...register("location")}
-                  isInvalid={hookFormHasError({ errors, name: "location" })}
+                <Controller
+                  control={control}
+                  name="location"
+                  render={({ field: { onChange } }) => (
+                    <div className="space-y-3">
+                      <Combobox
+                        className="w-full"
+                        value={selectedLocations}
+                        onChange={(values) => {
+                          const next = values as string[]
+                          setSelectedLocations(next)
+                          onChange(next)
+                          setLocationQuery("")
+                          setIsLocationOpen(false)
+                        }}
+                        multiple
+                      >
+                        <ComboboxTrigger>
+                          <ComboboxInput
+                            id="location"
+                            size="lg"
+                            className="pl-3.5"
+                            placeholder="Enter your city or town"
+                            value={locationQuery}
+                            onFocus={() => setIsLocationOpen(false)}
+                            onBlur={() =>
+                              setTimeout(() => setIsLocationOpen(false), 150)
+                            }
+                            onChange={(event) => {
+                              const nextValue = event.target.value
+                              setLocationQuery(nextValue)
+                              setIsLocationOpen(nextValue.trim().length > 0)
+                            }}
+                            onKeyDown={(event) => {
+                              if (event.key === HOT_KEYS.ENTER) {
+                                event.preventDefault()
+                                const input = event.currentTarget
+                                const activeDescendant = input.getAttribute(
+                                  "aria-activedescendant"
+                                )
+                                if (activeDescendant) {
+                                  const activeElement =
+                                    document.getElementById(activeDescendant)
+                                  const activeLabel =
+                                    activeElement?.textContent?.trim()
+                                  if (activeLabel) {
+                                    addLocationValue(activeLabel, onChange)
+                                    return
+                                  }
+                                }
+                                addLocationValue(locationQuery, onChange)
+                              }
+                            }}
+                            invalid={hookFormHasError({
+                              errors,
+                              name: "location",
+                            })}
+                          />
+                        </ComboboxTrigger>
+                        <ScaleOutIn show={isLocationOpen}>
+                          <ComboboxOptions>
+                            <ScrollArea viewportClassName="max-h-[304px]">
+                              {filteredLocations.map((item) => (
+                                <ComboboxOption
+                                  key={item}
+                                  value={item}
+                                  onClick={() =>
+                                    addLocationValue(item, onChange)
+                                  }
+                                >
+                                  {item}
+                                </ComboboxOption>
+                              ))}
+                            </ScrollArea>
+                          </ComboboxOptions>
+                        </ScaleOutIn>
+                      </Combobox>
+
+                      {getIsNotEmpty(selectedLocations) && (
+                        <div className="flex flex-wrap gap-3">
+                          {selectedLocations.map((item) => (
+                            <Badge visual="primary" key={item}>
+                              {item}
+                              <button
+                                className="focus-visible:outline-none"
+                                onClick={() =>
+                                  removeLocationValue(item, onChange)
+                                }
+                                type="button"
+                              >
+                                <X2 className="h-3 w-3" />
+                              </button>
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 />
                 <HookFormErrorMessage
                   errors={errors}
@@ -789,11 +1128,115 @@ const ShareYourLocation = ({
                 >
                   What languages do you speak?
                 </Label>
-                <Input
-                  id="speaking-language"
-                  placeholder="Enter your languages"
-                  {...register("languages")}
-                  isInvalid={hookFormHasError({ errors, name: "languages" })}
+                <Controller
+                  control={control}
+                  name="languages"
+                  render={({ field: { onChange } }) => (
+                    <div className="space-y-3">
+                      <Combobox
+                        className="w-full"
+                        value={selectedLanguages}
+                        onChange={(values) => {
+                          const next = values as string[]
+                          setSelectedLanguages(next)
+                          onChange(next)
+                          setLanguagesQuery("")
+                          setIsLanguagesOpen(false)
+                          setSuppressLanguageFocusOpen(true)
+                        }}
+                        multiple
+                      >
+                        <ComboboxTrigger>
+                          <ComboboxInput
+                            id="speaking-language"
+                            size="lg"
+                            className="pl-3.5"
+                            placeholder="Enter your languages"
+                            value={languagesQuery}
+                            onFocus={() => {
+                              if (suppressLanguageFocusOpen) {
+                                setSuppressLanguageFocusOpen(false)
+                                return
+                              }
+                              setIsLanguagesOpen(true)
+                            }}
+                            onBlur={() =>
+                              setTimeout(() => setIsLanguagesOpen(false), 150)
+                            }
+                            onChange={(event) => {
+                              setLanguagesQuery(event.target.value)
+                              setIsLanguagesOpen(true)
+                            }}
+                            onKeyDown={(event) => {
+                              if (event.key === HOT_KEYS.ENTER) {
+                                const hasSuggestions =
+                                  isLanguagesOpen &&
+                                  languagesQuery.trim().length > 0 &&
+                                  filteredLanguages.length > 0
+
+                                if (hasSuggestions) {
+                                  event.preventDefault()
+                                  const activeOption = document.querySelector(
+                                    '[role="option"][data-headlessui-state~="active"]'
+                                  ) as HTMLElement | null
+                                  const activeLabel =
+                                    activeOption?.textContent?.trim() ?? ""
+
+                                  if (activeLabel) {
+                                    addLanguageValue(activeLabel, onChange)
+                                    return
+                                  }
+                                }
+
+                                event.preventDefault()
+                                addLanguageValue(languagesQuery, onChange)
+                              }
+                            }}
+                            invalid={hookFormHasError({
+                              errors,
+                              name: "languages",
+                            })}
+                          />
+                        </ComboboxTrigger>
+                        <ScaleOutIn show={isLanguagesOpen}>
+                          <ComboboxOptions>
+                            <ScrollArea viewportClassName="max-h-[304px]">
+                              {filteredLanguages.map((item) => (
+                                <ComboboxOption
+                                  key={item}
+                                  value={item}
+                                  onClick={() =>
+                                    addLanguageValue(item, onChange)
+                                  }
+                                >
+                                  {item}
+                                </ComboboxOption>
+                              ))}
+                            </ScrollArea>
+                          </ComboboxOptions>
+                        </ScaleOutIn>
+                      </Combobox>
+
+                      {getIsNotEmpty(selectedLanguages) && (
+                        <div className="flex flex-wrap gap-3">
+                          {selectedLanguages.map((item) => (
+                            <Badge visual="primary" key={item}>
+                              {item}
+                              <button
+                                className="focus-visible:outline-none"
+                                onClick={() =>
+                                  removeLanguageValue(item, onChange)
+                                }
+                                type="button"
+                              >
+                                <X2 className="h-3 w-3" />
+                              </button>
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 />
                 <HookFormErrorMessage
                   errors={errors}
@@ -867,6 +1310,78 @@ const skills = [
   "UI/UX Design",
   "Version Control",
   "Web Security",
+]
+
+const projectPreferenceOptions = [
+  "Web Application",
+  "Mobile Application",
+  "Dashboard Development",
+  "SaaS Platform",
+  "E-commerce Platform",
+  "Automation Tool",
+  "Cloud Migration",
+  "Legacy Modernization",
+  "Data Platform",
+  "AI Product",
+  "Blockchain Platform",
+  "Smart Contracts",
+  "JavaScript",
+  "TypeScript",
+  "Python",
+  "Java",
+  "C#",
+  "C++",
+  "C",
+  "Go",
+  "Rust",
+  "Ruby",
+  "PHP",
+  "Kotlin",
+  "Swift",
+  "Dart",
+  "Scala",
+  "R",
+  "MATLAB",
+  "SQL",
+  "Bash",
+  "PowerShell",
+  "React",
+  "Next.js",
+  "Vue.js",
+  "Nuxt.js",
+  "Angular",
+  "Svelte",
+  "Node.js",
+  "NestJS",
+  "Express.js",
+  "Django",
+  "FastAPI",
+  "Spring Boot",
+  "Ruby on Rails",
+  ".NET",
+  "Flutter",
+  "React Native",
+  "PyTorch",
+  "TensorFlow",
+  "AWS",
+  "Azure",
+  "GCP",
+  "Docker",
+  "Kubernetes",
+  "Terraform",
+  "CI/CD",
+  "Git",
+  "GitHub",
+  "GitLab",
+  "Postman",
+  "Figma",
+  "Jira",
+  "Notion",
+  "Webpack",
+  "Vite",
+  "Jest",
+  "Cypress",
+  "Playwright",
 ]
 
 const TopSkills = ({
@@ -999,7 +1514,7 @@ const TopSkills = ({
 const showcaseYourTalentFormSchema = z.object({
   recentJobTitle: z.string().min(1, "Please enter at least 1 character(s)"),
   industriesWorkedWith: z
-    .string()
+    .array(z.string())
     .min(1, "Please enter at least 1 character(s)"),
   yourTopSkills: z.array(z.string()).min(1, "Please enter at least 1 skill(s)"),
   studying: z.boolean(),
@@ -1017,20 +1532,74 @@ const ShowcaseYourTalent = ({
   setStepData: React.Dispatch<React.SetStateAction<CreateTalentType | null>>
 }) => {
   const {
-    register,
     formState: { errors, isValid },
     handleSubmit,
     control,
     getValues,
+    setValue,
   } = useForm<ShowcaseYourTalentFormValues>({
     resolver: zodResolver(showcaseYourTalentFormSchema),
     defaultValues: {
-      industriesWorkedWith: stepData?.industriesWorkedIn || "",
+      industriesWorkedWith: parseMultiSelectString(
+        stepData?.industriesWorkedIn
+      ),
       yourTopSkills: stepData?.lookingToWorkWith || [],
       recentJobTitle: stepData?.recentJobTitle || "",
       studying: stepData?.isStudent || false,
     },
   })
+  const [jobTitleQuery, setJobTitleQuery] = useState("")
+  const [industriesQuery, setIndustriesQuery] = useState("")
+  const [isJobTitleOpen, setIsJobTitleOpen] = useState(false)
+  const [isIndustriesOpen, setIsIndustriesOpen] = useState(false)
+  const [selectedIndustries, setSelectedIndustries] = useState<string[]>(
+    parseMultiSelectString(stepData?.industriesWorkedIn)
+  )
+
+  const jobTitleOptions = useMemo(
+    () => jobTitlesMock.map((item) => item.label),
+    []
+  )
+  const industriesOptions = useMemo(
+    () => industriesMock.map((item) => item.label),
+    []
+  )
+  const filteredJobTitles = useMemo(() => {
+    const query = jobTitleQuery.trim().toLowerCase()
+    if (!query) return jobTitleOptions
+    return jobTitleOptions.filter((item) => item.toLowerCase().includes(query))
+  }, [jobTitleOptions, jobTitleQuery])
+  const filteredIndustries = useMemo(() => {
+    const query = industriesQuery.trim().toLowerCase()
+    const searchableIndustries = industriesOptions.filter(
+      (item) => !selectedIndustries.includes(item)
+    )
+    if (!query) return searchableIndustries
+    return searchableIndustries.filter((item) =>
+      item.toLowerCase().includes(query)
+    )
+  }, [industriesOptions, industriesQuery, selectedIndustries])
+
+  const addIndustryValue = (nextValue: string) => {
+    const value = nextValue.trim()
+    if (!value) return
+    setSelectedIndustries((prev) => {
+      if (prev.includes(value)) return prev
+      const next = [...prev, value]
+      setValue("industriesWorkedWith", next, { shouldValidate: true })
+      return next
+    })
+    setIndustriesQuery("")
+    setIsIndustriesOpen(false)
+  }
+
+  const removeIndustryValue = (target: string) => {
+    setSelectedIndustries((prev) => {
+      const next = prev.filter((item) => item !== target)
+      setValue("industriesWorkedWith", next, { shouldValidate: true })
+      return next
+    })
+  }
   const { toggleValidation } = useStepContext()
   const { nextStep, prevStep, setStep } = useStepperContext()
 
@@ -1046,7 +1615,7 @@ const ShowcaseYourTalent = ({
       ...stepData,
       recentJobTitle,
       isStudent: studying,
-      industriesWorkedIn: industriesWorkedWith,
+      industriesWorkedIn: industriesWorkedWith.join(", "),
       lookingToWorkWith: yourTopSkills,
     })
     nextStep()
@@ -1067,7 +1636,7 @@ const ShowcaseYourTalent = ({
       ...stepData,
       recentJobTitle: getValues("recentJobTitle"),
       isStudent: getValues("studying"),
-      industriesWorkedIn: getValues("industriesWorkedWith"),
+      industriesWorkedIn: getValues("industriesWorkedWith").join(", "),
       lookingToWorkWith: getValues("yourTopSkills"),
     })
     prevStep()
@@ -1113,14 +1682,69 @@ const ShowcaseYourTalent = ({
                 >
                   What’s your most recent job title?
                 </Label>
-                <Input
-                  id="recent-job-title"
-                  placeholder="e.g., Software Developer"
-                  {...register("recentJobTitle")}
-                  isInvalid={hookFormHasError({
-                    errors,
-                    name: "recentJobTitle",
-                  })}
+                <Controller
+                  control={control}
+                  name="recentJobTitle"
+                  render={({ field: { value, onChange } }) => (
+                    <Combobox
+                      className="w-full"
+                      value={value}
+                      onChange={(nextValue) => {
+                        onChange(nextValue)
+                        setJobTitleQuery("")
+                        setIsJobTitleOpen(false)
+                      }}
+                    >
+                      <ComboboxTrigger>
+                        <ComboboxInput
+                          id="recent-job-title"
+                          size="lg"
+                          className="pl-3.5"
+                          placeholder="e.g., Software Developer"
+                          value={jobTitleQuery || value || ""}
+                          onFocus={() => setIsJobTitleOpen(true)}
+                          onBlur={() =>
+                            setTimeout(() => setIsJobTitleOpen(false), 150)
+                          }
+                          onChange={(event) => {
+                            setJobTitleQuery(event.target.value)
+                            onChange(event.target.value)
+                            setIsJobTitleOpen(true)
+                          }}
+                          onKeyDown={(event) => {
+                            if (event.key !== HOT_KEYS.ENTER) return
+                            event.preventDefault()
+                            const activeOption = document.querySelector(
+                              '[role="option"][data-headlessui-state~="active"]'
+                            ) as HTMLElement | null
+                            const activeLabel =
+                              activeOption?.textContent?.trim() ?? ""
+                            const finalValue =
+                              activeLabel || jobTitleQuery.trim()
+                            if (!finalValue) return
+                            onChange(finalValue)
+                            setJobTitleQuery("")
+                            setIsJobTitleOpen(false)
+                          }}
+                          invalid={hookFormHasError({
+                            errors,
+                            name: "recentJobTitle",
+                          })}
+                        />
+                      </ComboboxTrigger>
+                      <ScaleOutIn show={isJobTitleOpen}>
+                        <ComboboxOptions>
+                          <ScrollArea viewportClassName="max-h-[304px]">
+                            {filteredJobTitles.map((item) => (
+                              <ComboboxOption key={item} value={item}>
+                                {item}
+                              </ComboboxOption>
+                            ))}
+                          </ScrollArea>
+                        </ComboboxOptions>
+                      </ScaleOutIn>
+                    </Combobox>
+                  )}
                 />
                 <HookFormErrorMessage
                   errors={errors}
@@ -1138,15 +1762,100 @@ const ShowcaseYourTalent = ({
                 >
                   Which industries have you worked in?
                 </Label>
-                <Input
-                  id="industries"
-                  placeholder="e.g., Banking"
-                  {...register("industriesWorkedWith")}
-                  isInvalid={hookFormHasError({
-                    errors,
-                    name: "industriesWorkedWith",
-                  })}
+                <Controller
+                  control={control}
+                  name="industriesWorkedWith"
+                  render={({ field: { onChange } }) => (
+                    <Combobox
+                      className="w-full"
+                      value={selectedIndustries}
+                      multiple
+                      onChange={(nextValues) => {
+                        const normalizedValues = (
+                          nextValues as string[]
+                        ).filter(Boolean)
+                        setSelectedIndustries(normalizedValues)
+                        onChange(normalizedValues)
+                        setIndustriesQuery("")
+                        setIsIndustriesOpen(false)
+                      }}
+                    >
+                      <ComboboxTrigger>
+                        <ComboboxInput
+                          id="industries"
+                          size="lg"
+                          className="pl-3.5"
+                          placeholder="e.g., Banking"
+                          value={industriesQuery}
+                          onFocus={() => setIsIndustriesOpen(true)}
+                          onClick={() => setIsIndustriesOpen(true)}
+                          onBlur={() =>
+                            setTimeout(() => setIsIndustriesOpen(false), 150)
+                          }
+                          onChange={(event) => {
+                            setIndustriesQuery(event.target.value)
+                            setIsIndustriesOpen(true)
+                          }}
+                          onKeyDown={(event) => {
+                            if (event.key === HOT_KEYS.ENTER) {
+                              const hasSuggestions =
+                                isIndustriesOpen &&
+                                filteredIndustries.length > 0
+
+                              if (hasSuggestions) {
+                                event.preventDefault()
+                                const activeOption = document.querySelector(
+                                  '[role="option"][data-headlessui-state~="active"]'
+                                ) as HTMLElement | null
+                                const activeLabel =
+                                  activeOption?.textContent?.trim() ?? ""
+
+                                if (activeLabel) {
+                                  addIndustryValue(activeLabel)
+                                  return
+                                }
+                              }
+
+                              event.preventDefault()
+                              addIndustryValue(industriesQuery)
+                            }
+                          }}
+                          invalid={hookFormHasError({
+                            errors,
+                            name: "industriesWorkedWith",
+                          })}
+                        />
+                      </ComboboxTrigger>
+                      <ScaleOutIn show={isIndustriesOpen}>
+                        <ComboboxOptions>
+                          <ScrollArea viewportClassName="max-h-[304px]">
+                            {filteredIndustries.map((item) => (
+                              <ComboboxOption key={item} value={item}>
+                                {item}
+                              </ComboboxOption>
+                            ))}
+                          </ScrollArea>
+                        </ComboboxOptions>
+                      </ScaleOutIn>
+                    </Combobox>
+                  )}
                 />
+                {selectedIndustries.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedIndustries.map((item) => (
+                      <Badge visual="primary" key={item}>
+                        {item}
+                        <button
+                          className="focus-visible:outline-none"
+                          onClick={() => removeIndustryValue(item)}
+                          type="button"
+                        >
+                          <X2 className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
                 <HookFormErrorMessage
                   errors={errors}
                   name="industriesWorkedWith"
@@ -1245,33 +1954,30 @@ const ProjectPreferences = ({
   value?: string[]
 }) => {
   const [inputValue, setInputValue] = useState("")
+  const [isProjectPreferencesOpen, setIsProjectPreferencesOpen] =
+    useState(false)
   const [values, setValues] = useControllableState<string[]>({
     defaultValue: [],
     onChange: onValueChange,
     value: valueProp,
   })
-  const [selected, setSelected] = useState<string[]>([])
 
   const resetInputValue = () => setInputValue("")
 
-  const addValue = () => {
-    if (!inputValue) return
+  const addValue = (nextValue: string) => {
+    const value = nextValue.trim()
+    if (!value) return
 
     setValues((prev) => {
-      return prev.includes(inputValue) ? prev : [...prev, inputValue]
+      return prev.includes(value) ? prev : [...prev, value]
     })
     resetInputValue()
+    setIsProjectPreferencesOpen(false)
   }
 
   const removeValue = (index: number) => {
-    const tag = values[index]
-
     setValues((prev) => {
       const nextState = prev.filter((_, i) => i !== index)
-      return nextState
-    })
-    setSelected((prev) => {
-      const nextState = prev.filter((value) => value !== tag)
       return nextState
     })
   }
@@ -1281,37 +1987,47 @@ const ProjectPreferences = ({
       target: { value },
     } = event
     setInputValue(value)
+    setIsProjectPreferencesOpen(true)
   }
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    const { key } = event
-    if (key === HOT_KEYS.ENTER) addValue()
+    if (event.key !== HOT_KEYS.ENTER) return
+
+    const hasSuggestions = isProjectPreferencesOpen && filteredRoles.length > 0
+
+    if (hasSuggestions) {
+      event.preventDefault()
+      const activeOption = document.querySelector(
+        '[role="option"][data-headlessui-state~="active"]'
+      ) as HTMLElement | null
+      const activeLabel = activeOption?.textContent?.trim() ?? ""
+
+      if (activeLabel) {
+        addValue(activeLabel)
+        return
+      }
+    }
+
+    event.preventDefault()
+    addValue(inputValue)
   }
 
-  const filteredRoles = skills.filter((skill) =>
-    skill.toLowerCase().includes(inputValue.toLowerCase())
-  )
-
-  useIsomorphicLayoutEffect(() => {
-    setValues((prevValues) => {
-      const filteredSelected = selected.filter(
-        (value) => !prevValues.includes(value)
-      )
-
-      if (filteredSelected.length > 0) {
-        return [...prevValues, ...filteredSelected]
-      }
-
-      return prevValues
-    })
-  }, [selected])
+  const filteredRoles = projectPreferenceOptions.filter((skill) => {
+    if (values.includes(skill)) return false
+    return skill.toLowerCase().includes(inputValue.toLowerCase())
+  })
 
   return (
     <div className="space-y-3">
       <Combobox
         className="w-full"
-        value={selected}
-        onChange={setSelected}
+        value={values}
+        onChange={(nextValues) => {
+          const normalizedValues = (nextValues as string[]).filter(Boolean)
+          setValues(normalizedValues)
+          resetInputValue()
+          setIsProjectPreferencesOpen(false)
+        }}
         multiple
       >
         <ComboboxTrigger className="flex flex-col gap-y-1.5">
@@ -1325,11 +2041,16 @@ const ProjectPreferences = ({
             onChange={onChange}
             onKeyDown={onKeyDown}
             value={inputValue}
+            onFocus={() => setIsProjectPreferencesOpen(true)}
+            onClick={() => setIsProjectPreferencesOpen(true)}
+            onBlur={() =>
+              setTimeout(() => setIsProjectPreferencesOpen(false), 150)
+            }
             invalid={invalid}
           />
         </ComboboxTrigger>
 
-        <ScaleOutIn afterLeave={() => setInputValue("")}>
+        <ScaleOutIn show={isProjectPreferencesOpen}>
           <ComboboxOptions>
             <ScrollArea viewportClassName="max-h-[304px]">
               {filteredRoles.map((role, index) => (
