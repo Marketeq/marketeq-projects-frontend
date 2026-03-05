@@ -1,21 +1,21 @@
 ﻿//RUNNER FILE FOR CUCUMBER TESTS
 module.exports = {
-  // ── default has NO paths — only shared config ──────────────────────────
+  // ── default shared config ──────────────────────────────────────────────
   default: {
     requireModule: ["ts-node/register"],
-    require: ["tests/stepDefinitions/**/*.steps.ts", "tests/stepDefinitions/hooks.ts"],
+    require: ["e2e-cucumber/common/common.steps.ts", "e2e-cucumber/hooks/hooks.ts"],
     formatOptions: { snippetInterface: "async-await" },
     publishQuiet: true,
     parallel: 1,
   },
 
-  // ── email signup with password ─────────────────────────────────────────
-  emailsignup: {
+  // ── 02 talent onboarding / signup email set password ──────────────────
+  talentOnboarding: {
     requireModule: ["ts-node/register"],
     require: [
-      "e2e-cucumber/stepDefinitions/common.steps.ts",
+      "e2e-cucumber/common/common.steps.ts",
       "e2e-cucumber/stepDefinitions/02-signup-email-setpassword.steps.ts",
-      "e2e-cucumber/stepDefinitions/hooks.ts"
+      "e2e-cucumber/hooks/hooks.ts"
     ],
     paths: ["e2e-cucumber/features/02-signup-email-setpassword.feature"],
     format: [
@@ -27,13 +27,13 @@ module.exports = {
     publishQuiet: true,
   },
 
-  // ── google signup ─────────────────────────────────────────────────────
-  googlesignup: {
+  // ── 04 google signup/signin ───────────────────────────────────────────
+  googleSignupSignin: {
     requireModule: ["ts-node/register"],
     require: [
-      "e2e-cucumber/stepDefinitions/common.steps.ts",
+      "e2e-cucumber/common/common.steps.ts",
       "e2e-cucumber/stepDefinitions/04-google-signup-signin.steps.ts",
-      "e2e-cucumber/stepDefinitions/hooks.ts"
+      "e2e-cucumber/hooks/hooks.ts"
     ],
     paths: ["e2e-cucumber/features/04-google-signup-signin.feature"],
     format: [
@@ -45,15 +45,33 @@ module.exports = {
     publishQuiet: true,
   },
 
-  // ── publish project ────────────────────────────────────────────────────
-  publishproject: {
+  // ── 05 sign-in data-driven ────────────────────────────────────────────
+  datadrivenSignin: {
     requireModule: ["ts-node/register"],
     require: [
-      "e2e-cucumber/stepDefinitions/common.steps.ts",
-      "e2e-cucumber/stepDefinitions/publish-project.steps.ts",
-      "e2e-cucumber/stepDefinitions/hooks.ts"
+      "e2e-cucumber/common/common.steps.ts",
+      "e2e-cucumber/stepDefinitions/05-signin-datadriven-test.steps.ts",
+      "e2e-cucumber/hooks/hooks.ts"
     ],
-    paths: ["e2e-cucumber/features/publish-project.feature"],
+    paths: ["e2e-cucumber/features/05-signin-datadriven-test.feature"],
+    format: [
+      "progress",
+      "html:reports/signin-datadriven-test.html",
+      "json:reports/signin-datadriven-test.json",
+    ],
+    formatOptions: { snippetInterface: "async-await" },
+    publishQuiet: true,
+  },
+
+  // ── 07 publish project ────────────────────────────────────────────────
+  publishProject: {
+    requireModule: ["ts-node/register"],
+    require: [
+      "e2e-cucumber/common/common.steps.ts",
+      "e2e-cucumber/stepDefinitions/publish-project.steps.ts",
+      "e2e-cucumber/hooks/hooks.ts"
+    ],
+    paths: ["e2e-cucumber/features/07-publish-project.feature"],
     format: [
       "progress",
       "html:reports/publish-project.html",
@@ -63,33 +81,27 @@ module.exports = {
     publishQuiet: true,
   },
 
-  // ── login user pwd (e2e-cucumber) ─────────────────────────────────────
-  loginuserpwd: {
-    requireModule: ["ts-node/register"],
-    require: [
-      "e2e-cucumber/stepDefinitions/common.steps.ts",
-      "e2e-cucumber/stepDefinitions/02-signup-email-setpassword.steps.ts",
-      "e2e-cucumber/stepDefinitions/hooks.ts"
-    ],
-    paths: ["e2e-cucumber/features/03-login-user-pwd.feature"],
-    format: [
-      "progress",
-      "html:reports/login-user-pwd.html",
-      "json:reports/login-user-pwd.json",
-    ],
-    formatOptions: { snippetInterface: "async-await" },
-    publishQuiet: true,
-  },
-
-  // ── all features ───────────────────────────────────────────────────────
+  // ── run only requested features: 02, 04, 05, 07 ──────────────────────
   all: {
     requireModule: ["ts-node/register"],
-    require: ["tests/stepDefinitions/**/*.steps.ts", "tests/stepDefinitions/hooks.ts"],
-    paths: ["tests/features/**/*.feature"],
+    require: [
+      "e2e-cucumber/common/common.steps.ts",
+      "e2e-cucumber/stepDefinitions/02-signup-email-setpassword.steps.ts",
+      "e2e-cucumber/stepDefinitions/04-google-signup-signin.steps.ts",
+      "e2e-cucumber/stepDefinitions/05-signin-datadriven-test.steps.ts",
+      "e2e-cucumber/stepDefinitions/publish-project.steps.ts",
+      "e2e-cucumber/hooks/hooks.ts"
+    ],
+    paths: [
+      "e2e-cucumber/features/02-signup-email-setpassword.feature",
+      "e2e-cucumber/features/04-google-signup-signin.feature",
+      "e2e-cucumber/features/05-signin-datadriven-test.feature",
+      "e2e-cucumber/features/07-publish-project.feature"
+    ],
     format: [
       "progress",
-      "html:reports/all-features.html",
-      "json:reports/all-features.json",
+      "html:reports/selected-features.html",
+      "json:reports/selected-features.json",
     ],
     formatOptions: { snippetInterface: "async-await" },
     publishQuiet: true,
