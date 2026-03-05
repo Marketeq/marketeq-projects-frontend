@@ -1,9 +1,9 @@
-﻿# ?? Cucumber BDD Testing Framework
+﻿#  Cucumber BDD Testing Framework
 
-## ?? Overview
+##  Overview
 This directory contains end-to-end Cucumber/BDD tests using Playwright for browser automation. Tests are written in Gherkin syntax to bridge the gap between business requirements and technical implementation.
 
-## ?? Installation & Setup
+##  Installation & Setup
 
 ### Install Playwright
 ```bash
@@ -68,7 +68,7 @@ Feature: Publish Project
     Then I should see the "Project Info" heading
 ```
 
-## 🎮 Running Tests
+## Running Tests
 
 ### Using npm Scripts (Recommended)
 Package.json:
@@ -117,7 +117,7 @@ Then run:
 ```bash
 npx cucumber-js --tags @signup
 ```
-## 📝 Available Test Profiles
+## Available Test Profiles
 Test profiles are configured in cucumber.js.
 
 ### talentOnboarding
@@ -199,7 +199,7 @@ Runs all configured test features.
 
 Report: `reports/all-features.html`
 
-## ?? Cucumber Configuration
+##  Cucumber Configuration
 Test profiles are defined in cucumber.js at project root. Each profile specifies:
 
 - requireModule: TypeScript loader (`ts-node/register`)
@@ -226,14 +226,14 @@ publishProject: {
 }
 ```
 
-## ?? Test Reports
+##  Test Reports
 After test execution, reports are generated in the reports/ directory:
 
 - HTML Reports: Interactive visual reports (`reports/publish-project.html`)
 - JSON Reports: Machine-readable format for CI/CD integration
 - Screenshots: Captured at each step and on failure (`reports/screenshots/`)
 
-## ?? Playwright Integration
+##  Playwright Integration
 Tests use Playwright for browser automation:
 
 - Browser: Chromium (headless by default)
@@ -241,7 +241,7 @@ Tests use Playwright for browser automation:
 - Page Actions: Click, fill, select, upload, navigation
 - Assertions: Visibility checks, text content verification
 
-## ?? Writing New Tests
+##  Writing New Tests
 ### 1. Create Feature File
 ```gherkin
 Feature: New Feature Name
@@ -290,7 +290,7 @@ newtest: {
 }
 ```
 
-## ? Best Practices
+##  Best Practices
 ### Feature Files
 - Keep scenarios focused and independent
 - Use descriptive scenario names
@@ -314,7 +314,7 @@ newtest: {
 - Use console.log() for debugging output
 - Check generated HTML reports
 
-## ?? Troubleshooting
+##  Troubleshooting
 Tests failing to find elements:
 
 - Increase timeout values
@@ -333,7 +333,7 @@ Module not found errors:
 - Check tsconfig.json includes test files
 - Run npm install to ensure dependencies
 
-## ?? CI/CD Integration
+##  CI/CD Integration
 JSON reports can be consumed by CI/CD pipelines:
 
 ```bash
@@ -344,7 +344,7 @@ cucumber-js --profile publishproject --format json:reports/results.json
 cat reports/results.json | jq '.[] | select(.elements[].steps[].result.status == "failed")'
 ```
 
-## ?? Environment Configuration
+##  Environment Configuration
 Required environment variables in .env file:
 
 ```env
@@ -365,7 +365,7 @@ GOOGLE_TEST_EMAIL=your-test-email@gmail.com
 GOOGLE_TEST_PASSWORD=your-password
 ```
 
-## ?? Resources
+##  Resources
 - Cucumber Documentation
 - Playwright Documentation
 - Gherkin Reference
