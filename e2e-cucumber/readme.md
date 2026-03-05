@@ -1,10 +1,9 @@
-# 🥒 Cucumber BDD Testing Framework
+﻿#  Cucumber BDD Testing Framework
 
-## 📋 Overview
-
+##  Overview
 This directory contains end-to-end Cucumber/BDD tests using Playwright for browser automation. Tests are written in Gherkin syntax to bridge the gap between business requirements and technical implementation.
 
-## 📦 Installation & Setup
+##  Installation & Setup
 
 ### Install Playwright
 ```bash
@@ -28,34 +27,32 @@ rm -rf .next
 npm run dev
 ```
 
-### 🏗️ Project Structure
+## Project Structure
+```text
+marketeq-projects-frontend/
+|-- cucumber.js                  # Cucumber profiles/configuration
+`-- e2e-cucumber/
+    |-- features/                # Gherkin feature files
+    |-- stepDefinitions/         # Cucumber step definitions
+    |-- hooks/                   # Before/After hooks
+    |-- common/                  # Shared steps/helpers
+    |-- pages/                   # Page Object Model classes
+    |-- fixtures/                # Test assets
+    `-- readme.md
 ```
-e2e-cucumber/
-├── features/              # Gherkin feature files (.feature)
-│   ├── publish-project.feature
-│   └── google-signup.feature
-├── stepDefinitions/       # Step implementation files (.steps.ts)
-│   ├── publish-project.steps.ts
-│   ├── google-signup.steps.ts
-│   ├── common.steps.ts
-│   └── hooks.ts          # Before/After hooks for test lifecycle
-├── fixtures/             # Test data files (images, JSON, etc.)
-│   └── avatar.jpg
-└── readme.md
-```
-
-### 🎯 Gherkin Syntax
-
+## Gherkin Syntax
 Feature files use Gherkin keywords:
-- **Feature:** High-level description of the functionality
-- **Background:** Steps that run before each scenario
-- **Scenario:** Individual test case
-- **Given:** Initial context/preconditions
-- **When:** Action/event that triggers behavior
-- **Then:** Expected outcome/assertion
-- **And:** Additional steps (same level as previous keyword)
+
+- Feature: High-level description of the functionality
+- Background: Steps that run before each scenario
+- Scenario: Individual test case
+- Given: Initial context/preconditions
+- When: Action/event that triggers behavior
+- Then: Expected outcome/assertion
+- And: Additional steps (same level as previous keyword)
 
 Example:
+
 ```gherkin
 @publishproject
 Feature: Publish Project
@@ -71,84 +68,43 @@ Feature: Publish Project
     Then I should see the "Project Info" heading
 ```
 
-## 🎮 Running Tests
+## Running Tests
 
 ### Using npm Scripts (Recommended)
 Package.json:
-    "test:signup":      "cucumber-js --profile signup",
-    "test:dashboard":   "cucumber-js --profile dashboard",
-    "test:setpassword": "cucumber-js --profile setpassword",
-    "test:login":       "cucumber-js --profile login",
-    "test:publishproject": "cucumber-js --profile publishproject",
-    "test:signupwork":  "cucumber-js --profile signupwork",
-    "test:loginuserpwd": "cucumber-js --profile loginuserpwd",
-    "test:all":         "cucumber-js --profile all"
+
+- `"test:datadrivenSignin": "cucumber-js --profile datadrivenSignin"`
 
 ```bash
-# Publish project workflow test
-npm run test:publishproject
-
-# Google signup test
-npm run test:googlesignup
-
-# Signup test
-npm run test:signup
-
-# Login test
-npm run test:login
-
-# Dashboard/avatar onboarding test
-npm run test:dashboard
-
-# Set password test
-npm run test:setpassword
-
-# Run ALL tests
-npm run test:all
+npm run test:datadrivenSignin
 ```
 
 ### Using Cucumber CLI Directly
 
 ```bash
-# Run all features
-npx cucumber-js
-
-# Run specific feature file
-npx cucumber-js e2e-cucumber/features/publish-project.feature
-
-# Run with specific profile
-npx cucumber-js --profile publishproject
-npx cucumber-js --profile emailsignup
-npx cucumber-js --profile emailsignup 2>&1 | tail -100
-cmd  :  $env:HEADLESS='false'; npx cucumber-js --profile emailsignup
-bash :  HEADLESS='false'; npx cucumber-js --profile emailsignup
-
-HEADLESS='false'; npx cucumber-js --profile dashboard
-
-$env:HEADLESS='false'; npx cucumber-js --profile signupwork
-
-$env:HEADLESS='false'; npx cucumber-js --profile googlesignup
-
-# Run with tags
-npx cucumber-js --tags @signup
+# Run specific active profile
+npx cucumber-js --profile talentOnboarding
+npx cucumber-js --profile googleSignupSignin
+npx cucumber-js --profile datadrivenSignin
+npx cucumber-js --profile publishProject
 
 # Dry run (validate without executing)
-npx cucumber-js -p publishproject --dry-run
+npx cucumber-js --profile datadrivenSignin --dry-run
 ```
 
 ### Advanced Run Options
 
 ```bash
-# Run multiple features
-npx cucumber-js tests/features/talent-onboarding-avatrar.feature tests/features/signup-work.feature --require-module ts-node/register --require tests/stepDefinitions/hooks.ts --require tests/stepDefinitions/talent-onboarding-avatar.steps.ts --require tests/stepDefinitions/sign-up-work.steps.ts --format progress-bar
+# Run all selected profiles from cucumber.js
+npx cucumber-js --profile all
 
-# Run with environment variables
-$env:HEADLESS="false"; $env:GOOGLE_TEST_EMAIL="your-test-email@gmail.com"; $env:GOOGLE_TEST_PASSWORD="your-password"; npx cucumber-js -p googlesignup
+# Run in headed mode (PowerShell)
+$env:HEADLESS='false'; npx cucumber-js --profile datadrivenSignin
 ```
 
 ### Running by Tags
-
 Add tags to your feature file:
+
 ```gherkin
 @signup
 Scenario: Successfully completing the 5-step talent onboarding
@@ -157,87 +113,111 @@ Scenario: Successfully completing the 5-step talent onboarding
 ```
 
 Then run:
+
 ```bash
 npx cucumber-js --tags @signup
 ```
+## Available Test Profiles
+Test profiles are configured in cucumber.js.
 
-## 📝 Available Test Profiles
+### talentOnboarding
+**Command:** `npx cucumber-js --profile talentOnboarding`
+**Report:** `reports/signup-email-setpassword.html`
 
-Test profiles are configured in `cucumber.js` and defined in `package.json` scripts.
+### googleSignupSignin
+**Command:** `npx cucumber-js --profile googleSignupSignin`
+**Report:** `reports/google-signup.html`
+
+### datadrivenSignin
+**Command:** `npm run test:datadrivenSignin`
+**Report:** `reports/signin-datadriven-test.html`
+
+### publishProject
+**Command:** `npx cucumber-js --profile publishProject`
+**Report:** `reports/publish-project.html`
+
+### all
+**Command:** `npx cucumber-js --profile all`
+**Report:** `reports/selected-features.html`
+Test profiles are configured in cucumber.js and defined in package.json scripts.
 
 ### Publish Project Test
 **Command:** `npm run test:publishproject`
 
 Tests the complete project publishing workflow:
+
 - User signup with email verification
-- Multi-step form (Project Info → Media → Project Scope)
+- Multi-step form (Project Info ? Media ? Project Scope)
 - Form validation and field requirements
 - Phase and task creation
 - Project submission
 
-**Headed mode (visible browser):**
+Headed mode (visible browser):
+
 ```bash
 $env:HEADLESS='false'; npm run test:publishproject
 ```
 
-**Report:** `reports/publish-project.html`
+Report: `reports/publish-project.html`
 
 ### Google Signup Test
 **Command:** `npm run test:googlesignup`
 
 Tests Google OAuth signup flow with password setup.
 
-**Report:** `reports/google-signup.html`
+Report: `reports/google-signup.html`
 
 ### Signup Test
 **Command:** `npm run test:signup`
 
-**Report:** `reports/signup-work.html`
+Report: `reports/signup-work.html`
 
 ### Login Test
 **Command:** `npm run test:login`
 
-**Report:** `reports/login.html`
+Report: `reports/login.html`
 
 ### Dashboard/Avatar Onboarding Test
 **Command:** `npm run test:dashboard`
 
-**Report:** `reports/talent-onboarding-avatar.html`
+Report: `reports/talent-onboarding-avatar.html`
 
 ### Set Password Test
 **Command:** `npm run test:setpassword`
 
-**Report:** `reports/setpassword.html`
+Report: `reports/setpassword.html`
 
 ### Email Signup with Password
 **Command:** `npm run test:emailsignup`
 
-**Report:** `reports/signup-email-setpassword.html`
+Report: `reports/signup-email-setpassword.html`
 
 ### All Tests
 **Command:** `npm run test:all`
 
 Runs all configured test features.
 
-**Report:** `reports/all-features.html`
+Report: `reports/all-features.html`
 
-### 🔧 Cucumber Configuration
-Test profiles are defined in `cucumber.js` at project root. Each profile specifies:
-- **requireModule:** TypeScript loader (`ts-node/register`)
-- **require:** Step definitions and hooks to load
-- **paths:** Feature files to execute
-- **format:** Report output formats (progress, HTML, JSON)
+##  Cucumber Configuration
+Test profiles are defined in cucumber.js at project root. Each profile specifies:
+
+- requireModule: TypeScript loader (`ts-node/register`)
+- require: Step definitions and hooks to load
+- paths: Feature files to execute
+- format: Report output formats (progress, HTML, JSON)
 
 Example profile:
+
 ```javascript
-publishproject: {
+publishProject: {
   requireModule: ["ts-node/register"],
   require: [
-    "e2e-cucumber/stepDefinitions/common.steps.ts",
+    "e2e-cucumber/common/common.steps.ts",
     "e2e-cucumber/stepDefinitions/publish-project.steps.ts",
-    "e2e-cucumber/stepDefinitions/hooks.ts"
+    "e2e-cucumber/hooks/hooks.ts"
   ],
-  paths: ["e2e-cucumber/features/publish-project.feature"],
+  paths: ["e2e-cucumber/features/07-publish-project.feature"],
   format: [
     "progress",
     "html:reports/publish-project.html",
@@ -246,22 +226,23 @@ publishproject: {
 }
 ```
 
-### 📊 Test Reports
-After test execution, reports are generated in the `reports/` directory:
-- **HTML Reports:** Interactive visual reports (`reports/publish-project.html`)
-- **JSON Reports:** Machine-readable format for CI/CD integration
-- **Screenshots:** Captured at each step and on failure (`reports/screenshots/`)
+##  Test Reports
+After test execution, reports are generated in the reports/ directory:
 
-### 🎭 Playwright Integration
+- HTML Reports: Interactive visual reports (`reports/publish-project.html`)
+- JSON Reports: Machine-readable format for CI/CD integration
+- Screenshots: Captured at each step and on failure (`reports/screenshots/`)
+
+##  Playwright Integration
 Tests use Playwright for browser automation:
-- **Browser:** Chromium (headless by default)
-- **Anti-detection:** Custom user agent and args to avoid bot detection
-- **Page Actions:** Click, fill, select, upload, navigation
-- **Assertions:** Visibility checks, text content verification
 
-### 🧪 Writing New Tests
+- Browser: Chromium (headless by default)
+- Anti-detection: Custom user agent and args to avoid bot detection
+- Page Actions: Click, fill, select, upload, navigation
+- Assertions: Visibility checks, text content verification
 
-#### 1. Create Feature File
+##  Writing New Tests
+### 1. Create Feature File
 ```gherkin
 Feature: New Feature Name
   Description of what this feature does
@@ -275,7 +256,7 @@ Feature: New Feature Name
     Then expected result occurs
 ```
 
-#### 2. Implement Step Definitions
+### 2. Implement Step Definitions
 ```typescript
 import { Given, When, Then } from '@cucumber/cucumber';
 
@@ -292,7 +273,7 @@ Then('expected result occurs', async function (this: any) {
 });
 ```
 
-#### 3. Add Profile to cucumber.js
+### 3. Add Profile to cucumber.js
 ```javascript
 newtest: {
   requireModule: ["ts-node/register"],
@@ -302,58 +283,59 @@ newtest: {
 }
 ```
 
-#### 4. Add npm Script to package.json
+### 4. Add npm Script to package.json
 ```json
 "scripts": {
   "test:newtest": "cucumber-js --profile newtest"
 }
 ```
 
-### ✅ Best Practices
+##  Best Practices
+### Feature Files
+- Keep scenarios focused and independent
+- Use descriptive scenario names
+- Follow Given-When-Then structure
+- Avoid technical implementation details in Gherkin
 
-1. **Feature Files**
-   - Keep scenarios focused and independent
-   - Use descriptive scenario names
-   - Follow Given-When-Then structure
-   - Avoid technical implementation details in Gherkin
+### Step Definitions
+- Reuse common steps across features
+- Use common.steps.ts for shared functionality
+- Add proper waits and timeouts
+- Use descriptive selectors (role, text > XPath)
 
-2. **Step Definitions**
-   - Reuse common steps across features
-   - Use `common.steps.ts` for shared functionality
-   - Add proper waits and timeouts
-   - Use descriptive selectors (role, text > XPath)
+### Test Data
+- Store fixtures in fixtures/ directory
+- Use unique identifiers (timestamps) for test data
+- Avoid hardcoding sensitive data
 
-3. **Test Data**
-   - Store fixtures in `fixtures/` directory
-   - Use unique identifiers (timestamps) for test data
-   - Avoid hardcoding sensitive data
+### Debugging
+- Run in headed mode: `$env:HEADLESS='false'`
+- Add screenshots at key points
+- Use console.log() for debugging output
+- Check generated HTML reports
 
-4. **Debugging**
-   - Run in headed mode: `$env:HEADLESS='false'`
-   - Add screenshots at key points
-   - Use `console.log()` for debugging output
-   - Check generated HTML reports
+##  Troubleshooting
+Tests failing to find elements:
 
-### 🔍 Troubleshooting
-
-**Tests failing to find elements:**
 - Increase timeout values
 - Verify selectors in browser DevTools
 - Check if page has fully loaded
-- Use `page.waitForLoadState('domcontentloaded')`
+- Use page.waitForLoadState('domcontentloaded')
 
-**Browser not closing:**
-- Ensure `After` hook in `hooks.ts` is executing
+Browser not closing:
+
+- Ensure After hook in hooks.ts is executing
 - Check for uncaught errors in tests
 
-**Module not found errors:**
-- Verify paths in `cucumber.js` match folder structure
-- Check `tsconfig.json` includes test files
-- Run `npm install` to ensure dependencies
+Module not found errors:
 
-### 🚀 CI/CD Integration
+- Verify paths in cucumber.js match folder structure
+- Check tsconfig.json includes test files
+- Run npm install to ensure dependencies
 
+##  CI/CD Integration
 JSON reports can be consumed by CI/CD pipelines:
+
 ```bash
 # Generate JSON report only
 cucumber-js --profile publishproject --format json:reports/results.json
@@ -362,9 +344,8 @@ cucumber-js --profile publishproject --format json:reports/results.json
 cat reports/results.json | jq '.[] | select(.elements[].steps[].result.status == "failed")'
 ```
 
-## ⚙️ Environment Configuration
-
-Required environment variables in `.env` file:
+##  Environment Configuration
+Required environment variables in .env file:
 
 ```env
 NEXT_PUBLIC_ENV=development
@@ -374,6 +355,7 @@ NEXT_PUBLIC_USER_URL=http://localhost:3003
 ```
 
 Optional test-specific variables:
+
 ```bash
 # Run tests in visible browser mode
 HEADLESS=false
@@ -383,9 +365,10 @@ GOOGLE_TEST_EMAIL=your-test-email@gmail.com
 GOOGLE_TEST_PASSWORD=your-password
 ```
 
-## 📚 Resources
-- [Cucumber Documentation](https://cucumber.io/docs/cucumber/)
-- [Playwright Documentation](https://playwright.dev/)
-- [Gherkin Reference](https://cucumber.io/docs/gherkin/reference/)
-- [BDD Best Practices](https://cucumber.io/docs/bdd/)
+##  Resources
+- Cucumber Documentation
+- Playwright Documentation
+- Gherkin Reference
+- BDD Best Practices
+
 
