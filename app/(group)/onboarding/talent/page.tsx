@@ -1,14 +1,18 @@
 "use client"
 
-import React, { useMemo, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { USERNAME_SUGGESTIONS_LIST } from "@/constants/username-suggestions"
 import { useAuth } from "@/contexts/auth"
-import AuthenticatedRoute from "@/hoc/AuthenticatedRoute"
 import industriesMock from "@/public/mock/industries.json"
 import jobTitlesMock from "@/public/mock/job_titles.json"
 import languagesMock from "@/public/mock/languages.json"
 import { AuthAPI } from "@/service/http/auth"
+import {
+  AutocompleteAPI,
+  type AutocompleteCategorySuggestion,
+  type AutocompleteTypeSuggestion,
+} from "@/service/http/autocomplete"
 import { TalentAPI } from "@/service/http/talent"
 import { UserAPI } from "@/service/http/user"
 import { DAY_PERIODS, HOT_KEYS, TIMES } from "@/utils/constants"
@@ -69,6 +73,7 @@ import {
   AlertIcon,
   Badge,
   Button,
+  Card,
   Checkbox,
   CircularProgress,
   Combobox,
@@ -79,6 +84,7 @@ import {
   ComboboxOptions,
   ComboboxTrigger,
   ErrorMessage,
+  GoogleMap,
   IconButton,
   ImageEditor,
   Input,
@@ -677,6 +683,84 @@ const parseMultiSelectString = (value?: string) =>
     .split(",")
     .map((item) => item.trim())
     .filter(Boolean)
+
+const normalizeAutocompleteLabel = (
+  item: AutocompleteCategorySuggestion | AutocompleteTypeSuggestion
+) => {
+  if ("value" in item && typeof item.value === "string") return item.value
+  if ("label" in item && typeof item.label === "string") return item.label
+  return ""
+}
+
+const getUniqueOptions = (values: string[]) =>
+  Array.from(
+    new Set(values.map((value) => value.trim()).filter((value) => value.length))
+  )
+
+const submitAutocompleteValue = async (type: string, label: string) => {
+  const trimmedLabel = label.trim()
+  if (!trimmedLabel) return
+
+  try {
+    await AutocompleteAPI.submit({ type, label: trimmedLabel })
+  } catch {
+    // Endpoint can be unavailable while backend rollout is in progress.
+  }
+}
+
+const LOCATIONIQ_API_KEY =
+  process.env.NEXT_PUBLIC_LOCATIONIQ_API_KEY ||
+  "pk.8d6cd3795ace5efa9a0a3469b55d08cb"
+
+const reverseGeocodeLocation = async (
+  latitude: number,
+  longitude: number
+): Promise<string | null> => {
+  try {
+    const response = await fetch(
+      `https://api.locationiq.com/v1/reverse?key=${LOCATIONIQ_API_KEY}&lat=${latitude}&lon=${longitude}&format=json`
+    )
+    if (!response.ok) return null
+
+    const data = await response.json()
+    const address = data?.address ?? {}
+    const city =
+      address.city || address.town || address.village || address.hamlet
+    const state = address.state || address.region
+    const country = address.country
+    const parts = [city, state, country].filter(Boolean)
+
+    if (parts.length === 0) return null
+
+    return parts.join(", ")
+  } catch {
+    return null
+  }
+}
+
+const geocodeLocation = async (
+  location: string
+): Promise<{ latitude: number; longitude: number } | null> => {
+  try {
+    const response = await fetch(
+      `https://api.locationiq.com/v1/search?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(
+        location
+      )}&format=json&limit=1`
+    )
+    if (!response.ok) return null
+
+    const data = await response.json()
+    const first = Array.isArray(data) ? data[0] : null
+    const latitude = Number(first?.lat)
+    const longitude = Number(first?.lon)
+
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null
+
+    return { latitude, longitude }
+  } catch {
+    return null
+  }
+}
 const LOCATION_FALLBACK_OPTIONS = [
   "Birmingham, Alabama, United States",
   "Huntsville, Alabama, United States",
@@ -839,76 +923,56 @@ const ShareYourLocation = ({
   stepData: CreateTalentType | null
   setStepData: React.Dispatch<React.SetStateAction<CreateTalentType | null>>
 }) => {
+  const initialDetectedLocation =
+    stepData?.location?.trim() || LOCATION_FALLBACK_OPTIONS[0]
+  const [detectedLocation, setDetectedLocation] = useState(
+    initialDetectedLocation
+  )
+  const [detectedCoordinates, setDetectedCoordinates] = useState<{
+    latitude: number
+    longitude: number
+  } | null>(null)
+  const [isDetectingLocation, setIsDetectingLocation] = useState(false)
+  const [locationDetectError, setLocationDetectError] = useState<string | null>(
+    null
+  )
+
   const {
     control,
     formState: { errors, isValid },
     handleSubmit,
     getValues,
+    setValue,
   } = useForm<ShareYourGoalsFormValues>({
     resolver: zodResolver(shareYourGoalsFormSchema),
     defaultValues: {
-      location: parseMultiSelectString(stepData?.location),
+      location: [initialDetectedLocation],
       languages: parseMultiSelectString(stepData?.language),
     },
   })
-  const [locationQuery, setLocationQuery] = useState("")
   const [languagesQuery, setLanguagesQuery] = useState("")
-  const [isLocationOpen, setIsLocationOpen] = useState(false)
   const [isLanguagesOpen, setIsLanguagesOpen] = useState(false)
+  const [isHomeCountry, setIsHomeCountry] = useState(true)
   const [suppressLanguageFocusOpen, setSuppressLanguageFocusOpen] =
     useState(false)
-  const [selectedLocations, setSelectedLocations] = useState<string[]>(
-    parseMultiSelectString(stepData?.location)
-  )
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(
     parseMultiSelectString(stepData?.language)
   )
-
-  const languageFallbackOptions = useMemo(
-    () => languagesMock.map((item) => item.label),
-    []
+  const [languageOptions, setLanguageOptions] = useState<string[]>(
+    getUniqueOptions(languagesMock.map((item) => item.label))
   )
-  const filteredLocations = useMemo(() => {
-    const query = locationQuery.trim().toLowerCase()
-    if (!query) return LOCATION_FALLBACK_OPTIONS
-    return LOCATION_FALLBACK_OPTIONS.filter((item) =>
-      item.toLowerCase().includes(query)
-    )
-  }, [locationQuery])
+  const languagesRequestRef = useRef(0)
+  const languagesDebounceTimerRef = useRef<ReturnType<
+    typeof setTimeout
+  > | null>(null)
+
   const filteredLanguages = useMemo(() => {
     const query = languagesQuery.trim().toLowerCase()
-    if (!query) return languageFallbackOptions
-    return languageFallbackOptions.filter((item) =>
+    if (!query) return languageOptions
+    return languageOptions.filter((item) =>
       item.toLowerCase().includes(query)
     )
-  }, [languageFallbackOptions, languagesQuery])
-
-  const addLocationValue = (
-    nextValue: string,
-    onChange: (values: string[]) => void
-  ) => {
-    const value = nextValue.trim()
-    if (!value) return
-    setSelectedLocations((prev) => {
-      if (prev.includes(value)) return prev
-      const next = [...prev, value]
-      onChange(next)
-      return next
-    })
-    setLocationQuery("")
-    setIsLocationOpen(false)
-  }
-
-  const removeLocationValue = (
-    target: string,
-    onChange: (values: string[]) => void
-  ) => {
-    setSelectedLocations((prev) => {
-      const next = prev.filter((item) => item !== target)
-      onChange(next)
-      return next
-    })
-  }
+  }, [languageOptions, languagesQuery])
 
   const addLanguageValue = (
     nextValue: string,
@@ -916,12 +980,14 @@ const ShareYourLocation = ({
   ) => {
     const value = nextValue.trim()
     if (!value) return
+    setLanguageOptions((prev) => getUniqueOptions([...prev, value]))
     setSelectedLanguages((prev) => {
       if (prev.includes(value)) return prev
       const next = [...prev, value]
       onChange(next)
       return next
     })
+    void submitAutocompleteValue("languages", value)
     setLanguagesQuery("")
     setIsLanguagesOpen(false)
     setSuppressLanguageFocusOpen(true)
@@ -939,6 +1005,121 @@ const ShareYourLocation = ({
   }
   const { toggleValidation } = useStepContext()
   const { nextStep, prevStep, setStep } = useStepperContext()
+
+  useEffect(() => {
+    setValue("location", [detectedLocation], { shouldValidate: true })
+  }, [detectedLocation, setValue])
+
+  useEffect(() => {
+    if (detectedCoordinates) return
+
+    let isCancelled = false
+
+    ;(async () => {
+      const resolvedCoordinates = await geocodeLocation(detectedLocation)
+      if (isCancelled || !resolvedCoordinates) return
+      setDetectedCoordinates(resolvedCoordinates)
+    })()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [detectedCoordinates, detectedLocation])
+
+  useEffect(() => {
+    const trimmedQuery = languagesQuery.trim()
+    if (!trimmedQuery) return
+
+    if (languagesDebounceTimerRef.current) {
+      clearTimeout(languagesDebounceTimerRef.current)
+    }
+
+    languagesDebounceTimerRef.current = setTimeout(async () => {
+      const currentRequestId = ++languagesRequestRef.current
+      try {
+        const response = await AutocompleteAPI.getByType("languages", trimmedQuery)
+        if (currentRequestId !== languagesRequestRef.current) return
+
+        const values: AutocompleteTypeSuggestion[] = Array.isArray(
+          response?.data
+        )
+          ? response.data
+          : []
+        const normalizedOptions = getUniqueOptions(
+          values.map((item) => normalizeAutocompleteLabel(item))
+        )
+        if (!getIsNotEmpty(normalizedOptions)) return
+        setLanguageOptions((prev) =>
+          getUniqueOptions([...prev, ...normalizedOptions])
+        )
+      } catch {
+        // Keep current/fallback options when endpoint is unavailable.
+      }
+    }, 250)
+  }, [languagesQuery])
+
+  useEffect(() => {
+    return () => {
+      if (languagesDebounceTimerRef.current) {
+        clearTimeout(languagesDebounceTimerRef.current)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (stepData?.location?.trim()) return
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setLocationDetectError(
+        "Location detection is unavailable in this browser."
+      )
+      return
+    }
+
+    let isCancelled = false
+    setIsDetectingLocation(true)
+    setLocationDetectError(null)
+
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords }) => {
+        setDetectedCoordinates({
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+        })
+
+        const resolvedLocation = await reverseGeocodeLocation(
+          coords.latitude,
+          coords.longitude
+        )
+        if (isCancelled) return
+
+        if (resolvedLocation) {
+          setDetectedLocation(resolvedLocation)
+        } else {
+          setLocationDetectError(
+            "Could not detect exact location. Using default location."
+          )
+        }
+
+        setIsDetectingLocation(false)
+      },
+      () => {
+        if (isCancelled) return
+        setLocationDetectError(
+          "Location permission denied. Using default location."
+        )
+        setIsDetectingLocation(false)
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000,
+      }
+    )
+
+    return () => {
+      isCancelled = true
+    }
+  }, [stepData?.location])
 
   useIsomorphicLayoutEffect(() => toggleValidation(isValid), [isValid])
 
@@ -1005,121 +1186,64 @@ const ShareYourLocation = ({
 
           <div className="mt-10 lg:mt-[50px]">
             <div className="space-y-6">
-              <div className="flex flex-col gap-y-1.5">
-                <Label
-                  className="text-dark-blue-400"
-                  htmlFor="location"
-                  size="sm"
-                >
-                  What’s your location?
-                </Label>
-                <Controller
-                  control={control}
-                  name="location"
-                  render={({ field: { onChange } }) => (
-                    <div className="space-y-3">
-                      <Combobox
-                        className="w-full"
-                        value={selectedLocations}
-                        onChange={(values) => {
-                          const next = values as string[]
-                          setSelectedLocations(next)
-                          onChange(next)
-                          setLocationQuery("")
-                          setIsLocationOpen(false)
-                        }}
-                        multiple
-                      >
-                        <ComboboxTrigger>
-                          <ComboboxInput
-                            id="location"
-                            size="lg"
-                            className="pl-3.5"
-                            placeholder="Enter your city or town"
-                            value={locationQuery}
-                            onFocus={() => setIsLocationOpen(false)}
-                            onBlur={() =>
-                              setTimeout(() => setIsLocationOpen(false), 150)
-                            }
-                            onChange={(event) => {
-                              const nextValue = event.target.value
-                              setLocationQuery(nextValue)
-                              setIsLocationOpen(nextValue.trim().length > 0)
-                            }}
-                            onKeyDown={(event) => {
-                              if (event.key === HOT_KEYS.ENTER) {
-                                event.preventDefault()
-                                const input = event.currentTarget
-                                const activeDescendant = input.getAttribute(
-                                  "aria-activedescendant"
-                                )
-                                if (activeDescendant) {
-                                  const activeElement =
-                                    document.getElementById(activeDescendant)
-                                  const activeLabel =
-                                    activeElement?.textContent?.trim()
-                                  if (activeLabel) {
-                                    addLocationValue(activeLabel, onChange)
-                                    return
-                                  }
-                                }
-                                addLocationValue(locationQuery, onChange)
-                              }
-                            }}
-                            invalid={hookFormHasError({
-                              errors,
-                              name: "location",
-                            })}
-                          />
-                        </ComboboxTrigger>
-                        <ScaleOutIn show={isLocationOpen}>
-                          <ComboboxOptions>
-                            <ScrollArea viewportClassName="max-h-[304px]">
-                              {filteredLocations.map((item) => (
-                                <ComboboxOption
-                                  key={item}
-                                  value={item}
-                                  onClick={() =>
-                                    addLocationValue(item, onChange)
-                                  }
-                                >
-                                  {item}
-                                </ComboboxOption>
-                              ))}
-                            </ScrollArea>
-                          </ComboboxOptions>
-                        </ScaleOutIn>
-                      </Combobox>
-
-                      {getIsNotEmpty(selectedLocations) && (
-                        <div className="flex flex-wrap gap-3">
-                          {selectedLocations.map((item) => (
-                            <Badge visual="primary" key={item}>
-                              {item}
-                              <button
-                                className="focus-visible:outline-none"
-                                onClick={() =>
-                                  removeLocationValue(item, onChange)
-                                }
-                                type="button"
-                              >
-                                <X2 className="h-3 w-3" />
-                              </button>
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                />
-                <HookFormErrorMessage
-                  errors={errors}
-                  name="location"
-                  render={({ message }) => (
-                    <ErrorMessage size="sm">{message}</ErrorMessage>
-                  )}
-                />
-              </div>
+              <Controller
+                control={control}
+                name="location"
+                render={({ field }) => (
+                  <input
+                    type="hidden"
+                    value={field.value?.[0] ?? ""}
+                    readOnly
+                  />
+                )}
+              />
+              <Card className="block border-gray-200 p-4 md:p-5 shadow-none hover:border-gray-200 hover:ring-0">
+                <p className="text-xs md:text-sm text-dark-blue-400">
+                  We detected your current location as{" "}
+                  <span className="font-semibold">{detectedLocation}</span>
+                </p>
+                {isDetectingLocation && (
+                  <p className="mt-1 text-xs text-gray-600">
+                    Detecting your precise location...
+                  </p>
+                )}
+                {locationDetectError && (
+                  <p className="mt-1 text-xs text-gray-600">
+                    {locationDetectError}
+                  </p>
+                )}
+                <div className="mt-3 overflow-hidden rounded-lg border border-gray-200">
+                  <GoogleMap
+                    title="Detected location map"
+                    location={detectedLocation}
+                    latitude={detectedCoordinates?.latitude}
+                    longitude={detectedCoordinates?.longitude}
+                  />
+                </div>
+                <p className="mt-4 text-center text-sm font-semibold text-dark-blue-400">
+                  Is this your home country?
+                </p>
+                <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={isHomeCountry ? "filled" : "outlined"}
+                    visual={isHomeCountry ? "primary" : "gray"}
+                    onClick={() => setIsHomeCountry(true)}
+                  >
+                    Yes, this is my home country
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={!isHomeCountry ? "filled" : "outlined"}
+                    visual={!isHomeCountry ? "primary" : "gray"}
+                    onClick={() => setIsHomeCountry(false)}
+                  >
+                    No, I&apos;m currently traveling
+                  </Button>
+                </div>
+              </Card>
               <div className="flex flex-col gap-y-1.5">
                 <Label
                   className="text-dark-blue-400"
@@ -1555,15 +1679,21 @@ const ShowcaseYourTalent = ({
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>(
     parseMultiSelectString(stepData?.industriesWorkedIn)
   )
+  const [jobTitleOptions, setJobTitleOptions] = useState<string[]>(
+    getUniqueOptions(jobTitlesMock.map((item) => item.label))
+  )
+  const [industriesOptions, setIndustriesOptions] = useState<string[]>(
+    getUniqueOptions(industriesMock.map((item) => item.label))
+  )
+  const jobTitleRequestRef = useRef(0)
+  const industriesRequestRef = useRef(0)
+  const jobTitleDebounceTimerRef = useRef<ReturnType<
+    typeof setTimeout
+  > | null>(null)
+  const industriesDebounceTimerRef = useRef<ReturnType<
+    typeof setTimeout
+  > | null>(null)
 
-  const jobTitleOptions = useMemo(
-    () => jobTitlesMock.map((item) => item.label),
-    []
-  )
-  const industriesOptions = useMemo(
-    () => industriesMock.map((item) => item.label),
-    []
-  )
   const filteredJobTitles = useMemo(() => {
     const query = jobTitleQuery.trim().toLowerCase()
     if (!query) return jobTitleOptions
@@ -1583,12 +1713,14 @@ const ShowcaseYourTalent = ({
   const addIndustryValue = (nextValue: string) => {
     const value = nextValue.trim()
     if (!value) return
+    setIndustriesOptions((prev) => getUniqueOptions([...prev, value]))
     setSelectedIndustries((prev) => {
       if (prev.includes(value)) return prev
       const next = [...prev, value]
       setValue("industriesWorkedWith", next, { shouldValidate: true })
       return next
     })
+    void submitAutocompleteValue("industries", value)
     setIndustriesQuery("")
     setIsIndustriesOpen(false)
   }
@@ -1600,6 +1732,87 @@ const ShowcaseYourTalent = ({
       return next
     })
   }
+
+  useEffect(() => {
+    const trimmedQuery = jobTitleQuery.trim()
+    if (!trimmedQuery) return
+
+    if (jobTitleDebounceTimerRef.current) {
+      clearTimeout(jobTitleDebounceTimerRef.current)
+    }
+
+    jobTitleDebounceTimerRef.current = setTimeout(async () => {
+      const currentRequestId = ++jobTitleRequestRef.current
+      try {
+        const response = await AutocompleteAPI.getByType(
+          "job_titles",
+          trimmedQuery
+        )
+        if (currentRequestId !== jobTitleRequestRef.current) return
+
+        const values: AutocompleteTypeSuggestion[] = Array.isArray(
+          response?.data
+        )
+          ? response.data
+          : []
+        const normalizedOptions = getUniqueOptions(
+          values.map((item) => normalizeAutocompleteLabel(item))
+        )
+        if (!getIsNotEmpty(normalizedOptions)) return
+        setJobTitleOptions((prev) =>
+          getUniqueOptions([...prev, ...normalizedOptions])
+        )
+      } catch {
+        // Keep current/fallback options when endpoint is unavailable.
+      }
+    }, 250)
+  }, [jobTitleQuery])
+
+  useEffect(() => {
+    const trimmedQuery = industriesQuery.trim()
+    if (!trimmedQuery) return
+
+    if (industriesDebounceTimerRef.current) {
+      clearTimeout(industriesDebounceTimerRef.current)
+    }
+
+    industriesDebounceTimerRef.current = setTimeout(async () => {
+      const currentRequestId = ++industriesRequestRef.current
+      try {
+        const response = await AutocompleteAPI.getByType(
+          "industries",
+          trimmedQuery
+        )
+        if (currentRequestId !== industriesRequestRef.current) return
+
+        const values: AutocompleteTypeSuggestion[] = Array.isArray(
+          response?.data
+        )
+          ? response.data
+          : []
+        const normalizedOptions = getUniqueOptions(
+          values.map((item) => normalizeAutocompleteLabel(item))
+        )
+        if (!getIsNotEmpty(normalizedOptions)) return
+        setIndustriesOptions((prev) =>
+          getUniqueOptions([...prev, ...normalizedOptions])
+        )
+      } catch {
+        // Keep current/fallback options when endpoint is unavailable.
+      }
+    }, 250)
+  }, [industriesQuery])
+
+  useEffect(() => {
+    return () => {
+      if (jobTitleDebounceTimerRef.current) {
+        clearTimeout(jobTitleDebounceTimerRef.current)
+      }
+      if (industriesDebounceTimerRef.current) {
+        clearTimeout(industriesDebounceTimerRef.current)
+      }
+    }
+  }, [])
   const { toggleValidation } = useStepContext()
   const { nextStep, prevStep, setStep } = useStepperContext()
 
@@ -1723,6 +1936,10 @@ const ShowcaseYourTalent = ({
                               activeLabel || jobTitleQuery.trim()
                             if (!finalValue) return
                             onChange(finalValue)
+                            setJobTitleOptions((prev) =>
+                              getUniqueOptions([...prev, finalValue])
+                            )
+                            void submitAutocompleteValue("job_titles", finalValue)
                             setJobTitleQuery("")
                             setIsJobTitleOpen(false)
                           }}
@@ -1736,7 +1953,15 @@ const ShowcaseYourTalent = ({
                         <ComboboxOptions>
                           <ScrollArea viewportClassName="max-h-[304px]">
                             {filteredJobTitles.map((item) => (
-                              <ComboboxOption key={item} value={item}>
+                              <ComboboxOption
+                                key={item}
+                                value={item}
+                                onClick={() => {
+                                  onChange(item)
+                                  setJobTitleQuery("")
+                                  setIsJobTitleOpen(false)
+                                }}
+                              >
                                 {item}
                               </ComboboxOption>
                             ))}
@@ -1830,7 +2055,11 @@ const ShowcaseYourTalent = ({
                         <ComboboxOptions>
                           <ScrollArea viewportClassName="max-h-[304px]">
                             {filteredIndustries.map((item) => (
-                              <ComboboxOption key={item} value={item}>
+                              <ComboboxOption
+                                key={item}
+                                value={item}
+                                onClick={() => addIndustryValue(item)}
+                              >
                                 {item}
                               </ComboboxOption>
                             ))}
@@ -2180,6 +2409,13 @@ const CustomAvailabilityTimeSelector = ({
     }>
   ) => void
 }) => {
+  const defaultSlot = {
+    startTime: "09:00",
+    startTimeDayPeriod: "AM",
+    endTime: "05:00",
+    endTimeDayPeriod: "PM",
+  }
+
   const [state, setState] = useControllableState<
     Array<{
       startTime: string
@@ -2188,30 +2424,15 @@ const CustomAvailabilityTimeSelector = ({
       endTimeDayPeriod: string
     }>
   >({
-    defaultValue: [
-      {
-        startTime: "09:00",
-        startTimeDayPeriod: "AM",
-        endTime: "05:00",
-        endTimeDayPeriod: "AM",
-      },
-    ],
+    defaultValue: [defaultSlot],
     value,
     onChange: onValueChange,
   })
 
-  const [isOn, toggleIsOn] = useToggle(disabled != null ? !disabled : true)
+  const isOn = disabled != null ? !disabled : true
 
   const add = () => {
-    setState((prev) => [
-      ...prev,
-      {
-        startTime: "09:00",
-        startTimeDayPeriod: "AM",
-        endTime: "05:00",
-        endTimeDayPeriod: "AM",
-      },
-    ])
+    setState((prev) => [...prev, defaultSlot])
   }
 
   const remove = (index: number) => {
@@ -2228,10 +2449,7 @@ const CustomAvailabilityTimeSelector = ({
       <div className="inline-flex items-center gap-x-3 pt-2.5">
         <Switch
           checked={isOn}
-          onCheckedChange={(checked) => {
-            toggleIsOn(checked)
-            onToggle(checked, state)
-          }}
+          onCheckedChange={(checked) => onToggle(checked, state)}
           size="sm"
           id={label}
         />
@@ -2421,6 +2639,23 @@ const days: { id: number; lable: DAYS; disabled: boolean }[] = [
   { id: 7, lable: DAYS.SATURDAY, disabled: true },
 ]
 
+const DEFAULT_CUSTOM_WORKING_DAYS = [
+  DAYS.MONDAY,
+  DAYS.TUESDAY,
+  DAYS.WEDNESDAY,
+  DAYS.THURSDAY,
+  DAYS.FRIDAY,
+]
+
+const DEFAULT_CUSTOM_TIME_SLOT = [
+  {
+    startTime: "09:00",
+    startTimeDayPeriod: "AM",
+    endTime: "05:00",
+    endTimeDayPeriod: "PM",
+  },
+]
+
 const SetYourPreferences = ({
   sidebar,
   stepData,
@@ -2457,8 +2692,31 @@ const SetYourPreferences = ({
     control,
     name: "yourAvailability",
   })
+  const customAvailability = useWatch({
+    control,
+    name: "customAvailability",
+  })
+  const hasInitializedCustomDefault = React.useRef(false)
 
   useIsomorphicLayoutEffect(() => toggleValidation(isValid), [isValid])
+
+  useEffect(() => {
+    if (availability !== "Custom") return
+    if (hasInitializedCustomDefault.current) return
+    if ((customAvailability?.length || 0) > 0) {
+      hasInitializedCustomDefault.current = true
+      return
+    }
+
+    setValue(
+      "customAvailability",
+      DEFAULT_CUSTOM_WORKING_DAYS.map((day) => ({
+        day,
+        times: DEFAULT_CUSTOM_TIME_SLOT,
+      }))
+    )
+    hasInitializedCustomDefault.current = true
+  }, [availability, customAvailability, setValue])
 
   const onSubmit: SubmitHandler<SetYourPreferencesFormValues> = ({
     projects,
@@ -2671,21 +2929,24 @@ const SetYourPreferences = ({
               {availability === "Custom" && (
                 <div className="flex flex-col">
                   {days?.map(({ id, lable, disabled }) => {
-                    // const value = getValues("customAvailability")?.find(
-                    //   ({ day }) => day === lable
-                    // )?.times as Array<{
-                    //   startTime: string
-                    //   startTimeDayPeriod: string
-                    //   endTime: string
-                    //   endTimeDayPeriod: string
-                    // }>
+                    const dayValue = customAvailability?.find(
+                      ({ day }) => day === lable
+                    )?.times as
+                      | Array<{
+                          startTime: string
+                          startTimeDayPeriod: string
+                          endTime: string
+                          endTimeDayPeriod: string
+                        }>
+                      | undefined
+                    const isDayEnabled = !!dayValue?.length
 
                     return (
                       <CustomAvailabilityTimeSelector
                         key={id}
                         label={lable}
-                        disabled={disabled}
-                        // value={value?.length ? value : undefined}
+                        disabled={!isDayEnabled && disabled}
+                        value={dayValue?.length ? dayValue : undefined}
                         onValueChange={(value) => {
                           handleCustomAvailabity(lable, value)
                         }}
@@ -3094,46 +3355,44 @@ export default function TalentOnboardingRoot() {
   const [stepData, setStepData] = React.useState<CreateTalentType | null>(null)
 
   return (
-    <AuthenticatedRoute>
-      <TalentOnboarding
-        introduceYourself={
-          <IntroduceYourself
-            sidebar={<Sidebar />}
-            stepData={stepData}
-            setStepData={setStepData}
-          />
-        }
-        createYourUsername={
-          <CreateYourUsername
-            sidebar={<Sidebar />}
-            stepData={stepData}
-            setStepData={setStepData}
-          />
-        }
-        shareYourLocation={
-          <ShareYourLocation
-            sidebar={<Sidebar />}
-            stepData={stepData}
-            setStepData={setStepData}
-          />
-        }
-        showcaseYourTalent={
-          <ShowcaseYourTalent
-            sidebar={<Sidebar />}
-            stepData={stepData}
-            setStepData={setStepData}
-          />
-        }
-        setYourPreferences={
-          <SetYourPreferences
-            sidebar={<Sidebar />}
-            stepData={stepData}
-            setStepData={setStepData}
-            setTalentUser={setTalentUser}
-          />
-        }
-        doNext={<DoNext talentUser={talentUser} sidebar={<DoNextSidebar />} />}
-      />
-    </AuthenticatedRoute>
+    <TalentOnboarding
+      introduceYourself={
+        <IntroduceYourself
+          sidebar={<Sidebar />}
+          stepData={stepData}
+          setStepData={setStepData}
+        />
+      }
+      createYourUsername={
+        <CreateYourUsername
+          sidebar={<Sidebar />}
+          stepData={stepData}
+          setStepData={setStepData}
+        />
+      }
+      shareYourLocation={
+        <ShareYourLocation
+          sidebar={<Sidebar />}
+          stepData={stepData}
+          setStepData={setStepData}
+        />
+      }
+      showcaseYourTalent={
+        <ShowcaseYourTalent
+          sidebar={<Sidebar />}
+          stepData={stepData}
+          setStepData={setStepData}
+        />
+      }
+      setYourPreferences={
+        <SetYourPreferences
+          sidebar={<Sidebar />}
+          stepData={stepData}
+          setStepData={setStepData}
+          setTalentUser={setTalentUser}
+        />
+      }
+      doNext={<DoNext talentUser={talentUser} sidebar={<DoNextSidebar />} />}
+    />
   )
 }
