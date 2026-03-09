@@ -570,6 +570,7 @@ const ONBOARDING = "/onboarding"
 
 export const TopMostHeader = () => {
   const pathname = usePathname()
+  const router = useRouter()
 
   const { logoutHandler, user } = useAuth()
 
@@ -686,34 +687,34 @@ export const TopMostHeader = () => {
                   <Button className="w-full">My Account</Button>
                 </div>
               </DropdownMenuLabel>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/my-projects')}>
                 <Monitor className="size-4" />
                 My Projects
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/my-campaigns')}>
                 <BarChart2 className="size-4" />
                 My Campaigns
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/my-team')}>
                 <Users className="size-4" />
                 My Team
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/my-favorites')}>
                 <Star className="size-4" />
                 My Favorites
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/billing')}>
                 <CoinStack className="size-4" />
                 Billing
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/settings')}>
                 <Settings className="size-4" />
                 Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <div className="grid grid-cols-2 gap-x-[9px]">
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push('/help-center')}>
                   <LifeBuoy className="size-4" />
                   Help Center
                 </DropdownMenuItem>

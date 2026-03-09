@@ -13,9 +13,6 @@ import {
 } from "@blend-metrics/icons"
 import { Combobox } from "@headlessui/react"
 import { Slot } from "@radix-ui/react-slot"
-import { normalizeProps, useMachine } from "@zag-js/react"
-import * as tagsInput from "@zag-js/tags-input"
-import { flushSync } from "react-dom"
 import { useToggle } from "react-use"
 import { z } from "zod"
 import { create } from "zustand"
@@ -27,6 +24,8 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
+  DialogTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -41,7 +40,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
   inputVariants,
+  toast,
 } from "./ui"
+import { InvitationsAPI } from "@/service/http/invitations"
+import { useAuth } from "@/contexts/auth"
+import Cookies from "js-cookie"
 
 interface Invitee {
   avatar?: string
@@ -66,6 +69,20 @@ const options = [
 
 const isEmail = (value: string) => z.string().email().safeParse(value).success
 
+function getJwtPayload(): Record<string, any> | null {
+  try {
+    const token = Cookies.get("access_token")
+    if (!token) return null
+    const parts = token.split(".")
+    if (parts.length !== 3) return null
+    const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/")
+    const decoded = atob(base64)
+    return JSON.parse(decoded)
+  } catch {
+    return null
+  }
+}
+
 export const useInviteWindowStore = create(
   combine({ open: false }, (set) => ({
     toggle: (open?: boolean) =>
@@ -88,61 +105,34 @@ export const InviteWindowTrigger = React.forwardRef<
 InviteWindowTrigger.displayName = "InviteWindowTrigger"
 
 export const InviteWindow = () => {
-  return null
-  /* const [selected, setSelected] = React.useState<Invitees>()
+  const [selected, setSelected] = React.useState<Invitees>([])
   const [inputValue, setInputValue] = React.useState("")
+  const [selectedRole, setSelectedRole] = React.useState<'admin' | 'editor' | 'viewer'>('viewer')
   const { open, toggle: toggleInviteWindow } = useInviteWindowStore()
-
-  const value = React.useMemo(
-    () => selected?.map((value) => value.email),
-    [selected]
-  )
-  const [state, send] = useMachine(
-    tagsInput.machine({
-      id: React.useId(),
-
-      validate: (details) => {
-        const exists = details.value.includes(details.inputValue)
-        return exists ? false : isEmail(details.inputValue)
-      },
-    }),
-    {
-      context: {
-        value,
-        onValueChange: (details) => {
-          const endItem = details.value[details.value.length - 1]
-          flushSync(() =>
-            setSelected((prev) =>
-              prev ? [...prev, { email: endItem }] : [{ email: endItem }]
-            )
-          )
-        },
-        inputValue,
-      },
-    }
-  )
+  const { user } = useAuth()
   const id = React.useId()
   const [isOpen, toggle] = useToggle(false)
   const [message, setMessage] = useState("")
 
   const getIsValid = () => {
-    return value?.includes(inputValue) ? false : isEmail(inputValue)
+    return isEmail(inputValue) && !selected.find(s => s.email === inputValue)
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter" && getIsValid()) {
-      setInputValue("")
+      event.preventDefault()
+      handleAddTag()
     }
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
-    flushSync(() => setInputValue(value))
+    setInputValue(value)
   }
 
   const handleAddTag = () => {
     if (getIsValid()) {
-      api.addValue(inputValue)
+      setSelected(prev => [...prev, { email: inputValue }])
       setInputValue("")
     }
   }
@@ -157,14 +147,73 @@ export const InviteWindow = () => {
     setSelected(filtered)
   }
 
-  const api = tagsInput.connect(state, send, normalizeProps)
+  const handleSendInvites = async () => {
+    // Auto-add valid email from input if present
+    let finalInvitees = [...selected]
+    if (inputValue && getIsValid()) {
+      finalInvitees = [...selected, { email: inputValue }]
+      setSelected(finalInvitees)
+      setInputValue("")
+    }
+
+    if (!finalInvitees || finalInvitees.length === 0) {
+      toast({
+        title: "No invitees",
+        description: "Please add at least one valid email address",
+        variant: "destructive",
+      })
+      return
+    }
+
+    try {
+      // Use user's ID as teamId (temporary until team management is implemented)
+      const payload = getJwtPayload()
+      const resolvedUserId =
+        user?.id || (user as any)?.sub || payload?.sub || payload?.id
+
+      if (!resolvedUserId) {
+        toast({
+          title: "Authentication required",
+          description: "Please log in to send invitations",
+          variant: "destructive",
+        })
+        return
+      }
+      
+      await InvitationsAPI.createInvitations({
+        teamId: resolvedUserId,
+        role: selectedRole,
+        emails: finalInvitees.map(s => s.email),
+        note: message || undefined,
+      })
+      
+      toast({
+        title: "Invitations sent!",
+        description: `Successfully sent ${finalInvitees.length} invitation(s)`,
+      })
+      
+      // Reset form
+      setSelected([])
+      setMessage("")
+      setSelectedRole('viewer')
+      setInputValue("")
+      toggleInviteWindow()
+    } catch (error: any) {
+      console.error('Failed to send invitations:', error)
+      toast({
+        title: "Failed to send invitations",
+        description: error?.response?.data?.message || "Please try again",
+        variant: "destructive",
+      })
+    }
+  }
 
   const filteredOptions =
     inputValue === ""
       ? options
       : options.filter((option) => {
           return option.username
-            .toLowerCase()
+            ?.toLowerCase()
             .includes(inputValue.toLowerCase())
         })
 
@@ -173,6 +222,10 @@ export const InviteWindow = () => {
   return (
     <Dialog open={open} onOpenChange={toggleInviteWindow}>
       <DialogContent className="max-w-[690px] p-0">
+        <DialogTitle className="sr-only">Invite Your Team</DialogTitle>
+        <DialogDescription className="sr-only">
+          Send invitation emails to team members
+        </DialogDescription>
         <div className="max-w-[690px] bg-white p-6 rounded-xl shadow-lg">
           <div className="flex justify-between items-center">
             <h2 className="text-lg leading-7 font-semibold text-gray-800">
@@ -212,7 +265,6 @@ export const InviteWindow = () => {
                 {...props}
               >
                 <div
-                  {...api.getRootProps()}
                   className={cn(
                     inputVariants({
                       className:
@@ -221,20 +273,14 @@ export const InviteWindow = () => {
                   )}
                   tabIndex={0}
                 >
-                  {api.value.map((value, index) => (
+                  {selected.map((item, index) => (
                     <Badge
-                      {...api.getItemProps({ index, value })}
                       key={index}
                       visual="primary"
                     >
-                      {value}
+                      {item.email}
                       <button
-                        {...api.getItemDeleteTriggerProps({ index, value })}
-                        onClick={callAll(
-                          api.getItemDeleteTriggerProps({ index, value })
-                            .onClick,
-                          () => handleRemove(value)
-                        )}
+                        onClick={() => handleRemove(item.email)}
                         className="focus-visible:outline-none flex-none"
                       >
                         <X2 className="h-3 w-3" />
@@ -242,19 +288,12 @@ export const InviteWindow = () => {
                     </Badge>
                   ))}
                   <Combobox.Input
-                    {...api.getInputProps()}
                     className="text-base min-w-[132px] flex-auto text-gray-700 p-0 focus:ring-0 border-none placeholder:text-gray-500"
                     placeholder="Add emails or find contacts"
                     id={id}
                     value={inputValue}
-                    onKeyDown={callAll(
-                      api.getInputProps().onKeyDown,
-                      handleKeyDown
-                    )}
-                    onChange={callAll(
-                      api.getInputProps().onChange,
-                      handleChange
-                    )}
+                    onKeyDown={handleKeyDown}
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -347,21 +386,28 @@ export const InviteWindow = () => {
 
                     <DropdownMenu>
                       <DropdownMenuTrigger className="inline-flex items-center gap-x-1 text-sm font-medium text-gray-900">
-                        Viewer
+                        {selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)}
                         <ChevronDown className="text-gray-500 h-5 w-5 flex-none" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuRadioGroup>
-                          <DropdownMenuRadioCheckItem value="Viewer">
+                        <DropdownMenuRadioGroup 
+                          value={selectedRole}
+                          onValueChange={(value) => setSelectedRole(value as 'admin' | 'editor' | 'viewer')}
+                        >
+                          <DropdownMenuRadioCheckItem value="viewer">
                             Viewer
                           </DropdownMenuRadioCheckItem>
-                          <DropdownMenuRadioCheckItem value="Editor">
+                          <DropdownMenuRadioCheckItem value="editor">
                             Editor
+                          </DropdownMenuRadioCheckItem>
+                          <DropdownMenuRadioCheckItem value="admin">
+                            Admin
                           </DropdownMenuRadioCheckItem>
                         </DropdownMenuRadioGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>Resend Invite</DropdownMenuItem>
-                        <DropdownMenuItem>Remove</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleRemove(email)}>
+                          Remove
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
@@ -381,12 +427,11 @@ export const InviteWindow = () => {
                   Cancel
                 </Button>
               </DialogClose>
-              <Button>Send Invite</Button>
+              <Button onClick={handleSendInvites}>Send Invite</Button>
             </div>
           </div>
         </div>
       </DialogContent>
     </Dialog>
   )
-    */
 }
