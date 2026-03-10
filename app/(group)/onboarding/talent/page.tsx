@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { USERNAME_SUGGESTIONS_LIST } from "@/constants/username-suggestions"
 import { useAuth } from "@/contexts/auth"
+import AuthenticatedRoute from "@/hoc/AuthenticatedRoute"
 import industriesMock from "@/public/mock/industries.json"
 import jobTitlesMock from "@/public/mock/job_titles.json"
 import languagesMock from "@/public/mock/languages.json"
@@ -969,9 +970,7 @@ const ShareYourLocation = ({
   const filteredLanguages = useMemo(() => {
     const query = languagesQuery.trim().toLowerCase()
     if (!query) return languageOptions
-    return languageOptions.filter((item) =>
-      item.toLowerCase().includes(query)
-    )
+    return languageOptions.filter((item) => item.toLowerCase().includes(query))
   }, [languageOptions, languagesQuery])
 
   const addLanguageValue = (
@@ -1037,7 +1036,10 @@ const ShareYourLocation = ({
     languagesDebounceTimerRef.current = setTimeout(async () => {
       const currentRequestId = ++languagesRequestRef.current
       try {
-        const response = await AutocompleteAPI.getByType("languages", trimmedQuery)
+        const response = await AutocompleteAPI.getByType(
+          "languages",
+          trimmedQuery
+        )
         if (currentRequestId !== languagesRequestRef.current) return
 
         const values: AutocompleteTypeSuggestion[] = Array.isArray(
@@ -1687,9 +1689,9 @@ const ShowcaseYourTalent = ({
   )
   const jobTitleRequestRef = useRef(0)
   const industriesRequestRef = useRef(0)
-  const jobTitleDebounceTimerRef = useRef<ReturnType<
-    typeof setTimeout
-  > | null>(null)
+  const jobTitleDebounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  )
   const industriesDebounceTimerRef = useRef<ReturnType<
     typeof setTimeout
   > | null>(null)
@@ -1939,7 +1941,10 @@ const ShowcaseYourTalent = ({
                             setJobTitleOptions((prev) =>
                               getUniqueOptions([...prev, finalValue])
                             )
-                            void submitAutocompleteValue("job_titles", finalValue)
+                            void submitAutocompleteValue(
+                              "job_titles",
+                              finalValue
+                            )
                             setJobTitleQuery("")
                             setIsJobTitleOpen(false)
                           }}
@@ -3355,44 +3360,46 @@ export default function TalentOnboardingRoot() {
   const [stepData, setStepData] = React.useState<CreateTalentType | null>(null)
 
   return (
-    <TalentOnboarding
-      introduceYourself={
-        <IntroduceYourself
-          sidebar={<Sidebar />}
-          stepData={stepData}
-          setStepData={setStepData}
-        />
-      }
-      createYourUsername={
-        <CreateYourUsername
-          sidebar={<Sidebar />}
-          stepData={stepData}
-          setStepData={setStepData}
-        />
-      }
-      shareYourLocation={
-        <ShareYourLocation
-          sidebar={<Sidebar />}
-          stepData={stepData}
-          setStepData={setStepData}
-        />
-      }
-      showcaseYourTalent={
-        <ShowcaseYourTalent
-          sidebar={<Sidebar />}
-          stepData={stepData}
-          setStepData={setStepData}
-        />
-      }
-      setYourPreferences={
-        <SetYourPreferences
-          sidebar={<Sidebar />}
-          stepData={stepData}
-          setStepData={setStepData}
-          setTalentUser={setTalentUser}
-        />
-      }
-      doNext={<DoNext talentUser={talentUser} sidebar={<DoNextSidebar />} />}
-    />
+    <AuthenticatedRoute>
+      <TalentOnboarding
+        introduceYourself={
+          <IntroduceYourself
+            sidebar={<Sidebar />}
+            stepData={stepData}
+            setStepData={setStepData}
+          />
+        }
+        createYourUsername={
+          <CreateYourUsername
+            sidebar={<Sidebar />}
+            stepData={stepData}
+            setStepData={setStepData}
+          />
+        }
+        shareYourLocation={
+          <ShareYourLocation
+            sidebar={<Sidebar />}
+            stepData={stepData}
+            setStepData={setStepData}
+          />
+        }
+        showcaseYourTalent={
+          <ShowcaseYourTalent
+            sidebar={<Sidebar />}
+            stepData={stepData}
+            setStepData={setStepData}
+          />
+        }
+        setYourPreferences={
+          <SetYourPreferences
+            sidebar={<Sidebar />}
+            stepData={stepData}
+            setStepData={setStepData}
+            setTalentUser={setTalentUser}
+          />
+        }
+        doNext={<DoNext talentUser={talentUser} sidebar={<DoNextSidebar />} />}
+      />
+    </AuthenticatedRoute>
   )
 }
