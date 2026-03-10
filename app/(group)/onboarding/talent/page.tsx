@@ -697,14 +697,21 @@ const getUniqueOptions = (values: string[]) =>
     new Set(values.map((value) => value.trim()).filter((value) => value.length))
   )
 
+const hasCaseInsensitiveExactMatch = (values: string[], candidate: string) => {
+  const normalizedCandidate = candidate.trim().toLowerCase()
+  if (!normalizedCandidate) return false
+  return values.some((value) => value.trim().toLowerCase() === normalizedCandidate)
+}
+
 const submitAutocompleteValue = async (type: string, label: string) => {
   const trimmedLabel = label.trim()
-  if (!trimmedLabel) return
+  if (!trimmedLabel) return false
 
   try {
     await AutocompleteAPI.submit({ type, label: trimmedLabel })
+    return true
   } catch {
-    // Endpoint can be unavailable while backend rollout is in progress.
+    return false
   }
 }
 
@@ -943,6 +950,8 @@ const ShareYourLocation = ({
     handleSubmit,
     getValues,
     setValue,
+    clearErrors,
+    setError,
   } = useForm<ShareYourGoalsFormValues>({
     resolver: zodResolver(shareYourGoalsFormSchema),
     defaultValues: {
@@ -965,7 +974,6 @@ const ShareYourLocation = ({
   const languagesDebounceTimerRef = useRef<ReturnType<
     typeof setTimeout
   > | null>(null)
-
   const filteredLanguages = useMemo(() => {
     const query = languagesQuery.trim().toLowerCase()
     if (!query) return languageOptions
@@ -974,12 +982,29 @@ const ShareYourLocation = ({
     )
   }, [languageOptions, languagesQuery])
 
-  const addLanguageValue = (
+  const addLanguageValue = async (
     nextValue: string,
     onChange: (values: string[]) => void
   ) => {
     const value = nextValue.trim()
     if (!value) return
+
+    const isKnownSuggestion = hasCaseInsensitiveExactMatch(languageOptions, value)
+    if (!isKnownSuggestion) {
+      const accepted = await submitAutocompleteValue("languages", value)
+      if (!accepted) {
+        setError("languages", {
+          type: "manual",
+          message:
+            "This value is not a valid language suggestion for this field.",
+        })
+        setLanguagesQuery("")
+        setIsLanguagesOpen(false)
+        return
+      }
+    }
+
+    clearErrors("languages")
     setLanguageOptions((prev) => getUniqueOptions([...prev, value]))
     setSelectedLanguages((prev) => {
       if (prev.includes(value)) return prev
@@ -987,7 +1012,6 @@ const ShareYourLocation = ({
       onChange(next)
       return next
     })
-    void submitAutocompleteValue("languages", value)
     setLanguagesQuery("")
     setIsLanguagesOpen(false)
     setSuppressLanguageFocusOpen(true)
@@ -1025,7 +1049,6 @@ const ShareYourLocation = ({
       isCancelled = true
     }
   }, [detectedCoordinates, detectedLocation])
-
   useEffect(() => {
     const trimmedQuery = languagesQuery.trim()
     if (!trimmedQuery) return
@@ -1120,7 +1143,6 @@ const ShareYourLocation = ({
       isCancelled = true
     }
   }, [stepData?.location])
-
   useIsomorphicLayoutEffect(() => toggleValidation(isValid), [isValid])
 
   const onSubmit: SubmitHandler<ShareYourGoalsFormValues> = ({
@@ -1307,13 +1329,13 @@ const ShareYourLocation = ({
                                     activeOption?.textContent?.trim() ?? ""
 
                                   if (activeLabel) {
-                                    addLanguageValue(activeLabel, onChange)
+                                    void addLanguageValue(activeLabel, onChange)
                                     return
                                   }
                                 }
 
                                 event.preventDefault()
-                                addLanguageValue(languagesQuery, onChange)
+                                void addLanguageValue(languagesQuery, onChange)
                               }
                             }}
                             invalid={hookFormHasError({
@@ -1330,7 +1352,7 @@ const ShareYourLocation = ({
                                   key={item}
                                   value={item}
                                   onClick={() =>
-                                    addLanguageValue(item, onChange)
+                                    void addLanguageValue(item, onChange)
                                   }
                                 >
                                   {item}
@@ -1661,6 +1683,8 @@ const ShowcaseYourTalent = ({
     control,
     getValues,
     setValue,
+    clearErrors,
+    setError,
   } = useForm<ShowcaseYourTalentFormValues>({
     resolver: zodResolver(showcaseYourTalentFormSchema),
     defaultValues: {
@@ -1710,9 +1734,26 @@ const ShowcaseYourTalent = ({
     )
   }, [industriesOptions, industriesQuery, selectedIndustries])
 
-  const addIndustryValue = (nextValue: string) => {
+  const addIndustryValue = async (nextValue: string) => {
     const value = nextValue.trim()
     if (!value) return
+
+    const isKnownSuggestion = hasCaseInsensitiveExactMatch(industriesOptions, value)
+    if (!isKnownSuggestion) {
+      const accepted = await submitAutocompleteValue("industries", value)
+      if (!accepted) {
+        setError("industriesWorkedWith", {
+          type: "manual",
+          message:
+            "This value is not a valid industry suggestion for this field.",
+        })
+        setIndustriesQuery("")
+        setIsIndustriesOpen(false)
+        return
+      }
+    }
+
+    clearErrors("industriesWorkedWith")
     setIndustriesOptions((prev) => getUniqueOptions([...prev, value]))
     setSelectedIndustries((prev) => {
       if (prev.includes(value)) return prev
@@ -1720,7 +1761,6 @@ const ShowcaseYourTalent = ({
       setValue("industriesWorkedWith", next, { shouldValidate: true })
       return next
     })
-    void submitAutocompleteValue("industries", value)
     setIndustriesQuery("")
     setIsIndustriesOpen(false)
   }
@@ -1935,13 +1975,43 @@ const ShowcaseYourTalent = ({
                             const finalValue =
                               activeLabel || jobTitleQuery.trim()
                             if (!finalValue) return
-                            onChange(finalValue)
-                            setJobTitleOptions((prev) =>
-                              getUniqueOptions([...prev, finalValue])
-                            )
-                            void submitAutocompleteValue("job_titles", finalValue)
-                            setJobTitleQuery("")
-                            setIsJobTitleOpen(false)
+                            const isKnownSuggestion =
+                              hasCaseInsensitiveExactMatch(
+                                jobTitleOptions,
+                                finalValue
+                              )
+                            const applyValue = () => {
+                              onChange(finalValue)
+                              setJobTitleOptions((prev) =>
+                                getUniqueOptions([...prev, finalValue])
+                              )
+                              clearErrors("recentJobTitle")
+                              setJobTitleQuery("")
+                              setIsJobTitleOpen(false)
+                            }
+
+                            if (isKnownSuggestion) {
+                              applyValue()
+                              return
+                            }
+
+                            void (async () => {
+                              const accepted = await submitAutocompleteValue(
+                                "job_titles",
+                                finalValue
+                              )
+                              if (!accepted) {
+                                setError("recentJobTitle", {
+                                  type: "manual",
+                                  message:
+                                    "This value is not a valid job title suggestion for this field.",
+                                })
+                                setJobTitleQuery("")
+                                setIsJobTitleOpen(false)
+                                return
+                              }
+                              applyValue()
+                            })()
                           }}
                           invalid={hookFormHasError({
                             errors,
@@ -1958,6 +2028,7 @@ const ShowcaseYourTalent = ({
                                 value={item}
                                 onClick={() => {
                                   onChange(item)
+                                  clearErrors("recentJobTitle")
                                   setJobTitleQuery("")
                                   setIsJobTitleOpen(false)
                                 }}
@@ -2036,13 +2107,13 @@ const ShowcaseYourTalent = ({
                                   activeOption?.textContent?.trim() ?? ""
 
                                 if (activeLabel) {
-                                  addIndustryValue(activeLabel)
+                                  void addIndustryValue(activeLabel)
                                   return
                                 }
                               }
 
                               event.preventDefault()
-                              addIndustryValue(industriesQuery)
+                              void addIndustryValue(industriesQuery)
                             }
                           }}
                           invalid={hookFormHasError({
@@ -2058,7 +2129,7 @@ const ShowcaseYourTalent = ({
                               <ComboboxOption
                                 key={item}
                                 value={item}
-                                onClick={() => addIndustryValue(item)}
+                                onClick={() => void addIndustryValue(item)}
                               >
                                 {item}
                               </ComboboxOption>
