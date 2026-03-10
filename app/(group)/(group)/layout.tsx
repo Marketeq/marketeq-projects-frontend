@@ -492,7 +492,13 @@ export default function MarketPlaceLayout({
                 You currently have
               </span>
 
-              <Sidebar />
+              <NextLink
+                href="/my-team"
+                className="gap-x-0.5 text-[11px] leading-6 lg:text-[13px] lg:leading-6 text-dark-blue-400 inline-flex items-center hover:underline"
+              >
+                10 team members
+                <ChevronRight className="size-3 lg:size-3.5" />
+              </NextLink>
             </div>
 
             <div className="flex items-center gap-x-6 lg:gap-x-[54.17px] lg:ml-[26.5px]">
