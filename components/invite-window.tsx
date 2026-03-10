@@ -50,6 +50,8 @@ interface Invitee {
   avatar?: string
   username?: string
   email: string
+  role: 'admin' | 'editor' | 'viewer'
+  invalid?: boolean  // true if email failed validation
 }
 
 type Invitees = Invitee[]
@@ -68,6 +70,11 @@ const options = [
 ]
 
 const isEmail = (value: string) => z.string().email().safeParse(value).success
+
+// Parse multiple emails from a string separated by commas, spaces, or semicolons
+const parseEmails = (input: string): string[] => {
+  return input.split(/[\s,;]+/).map(e => e.trim()).filter(Boolean)
+}
 
 function getJwtPayload(): Record<string, any> | null {
   try {
@@ -107,95 +114,169 @@ InviteWindowTrigger.displayName = "InviteWindowTrigger"
 export const InviteWindow = () => {
   const [selected, setSelected] = React.useState<Invitees>([])
   const [inputValue, setInputValue] = React.useState("")
-  const [selectedRole, setSelectedRole] = React.useState<'admin' | 'editor' | 'viewer'>('viewer')
+  const [defaultRole, setDefaultRole] = React.useState<'admin' | 'editor' | 'viewer'>('viewer')
   const { open, toggle: toggleInviteWindow } = useInviteWindowStore()
   const { user } = useAuth()
   const id = React.useId()
   const [isOpen, toggle] = useToggle(false)
   const [message, setMessage] = useState("")
+  const [copySuccess, setCopySuccess] = useState(false)
 
+  // ─── Email validation ───────────────────────────────────────────────────────
   const getIsValid = () => {
     return isEmail(inputValue) && !selected.find(s => s.email === inputValue)
   }
 
+  // ─── Add single or multiple emails from input ───────────────────────────────
+  const addEmailsFromInput = (input: string) => {
+    const emails = parseEmails(input)
+    if (emails.length === 0) return
+
+    const newInvitees: Invitee[] = []
+    for (const email of emails) {
+      // Skip duplicates already in selected
+      if (selected.find(s => s.email === email)) continue
+      newInvitees.push({
+        email,
+        role: defaultRole,
+        invalid: !isEmail(email),
+      })
+    }
+
+    if (newInvitees.length > 0) {
+      setSelected(prev => [...prev, ...newInvitees])
+    }
+    setInputValue("")
+  }
+
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter" && getIsValid()) {
+    // Add on Enter
+    if (event.key === "Enter") {
       event.preventDefault()
-      handleAddTag()
+      addEmailsFromInput(inputValue)
+      return
+    }
+    // Add on comma or semicolon typed
+    if (event.key === "," || event.key === ";") {
+      event.preventDefault()
+      addEmailsFromInput(inputValue)
+      return
+    }
+    // Add on Space if current input looks like a complete email
+    if (event.key === " " && isEmail(inputValue.trim())) {
+      event.preventDefault()
+      addEmailsFromInput(inputValue.trim())
+      return
     }
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
+    // Handle paste with multiple emails (contains comma/semicolon/space between emails)
+    const hasMultiple = /[\s,;]/.test(value) && parseEmails(value).length > 1
+    if (hasMultiple) {
+      addEmailsFromInput(value)
+      return
+    }
     setInputValue(value)
   }
 
   const handleAddTag = () => {
-    if (getIsValid()) {
-      setSelected(prev => [...prev, { email: inputValue }])
-      setInputValue("")
-    }
+    addEmailsFromInput(inputValue)
   }
 
   const onMessageChanged = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const value = event.target.value
-    setMessage(value)
+    setMessage(event.target.value)
   }
 
   const handleRemove = (email: string) => {
-    const filtered = selected?.filter((value) => value.email !== email)
-    setSelected(filtered)
+    setSelected(prev => prev.filter((value) => value.email !== email))
   }
 
+  const handleRoleChange = (email: string, role: 'admin' | 'editor' | 'viewer') => {
+    setSelected(prev => prev.map(inv => inv.email === email ? { ...inv, role } : inv))
+  }
+
+  // ─── Copy invite link ───────────────────────────────────────────────────────
+  const handleCopyLink = async () => {
+    try {
+      const payload = getJwtPayload()
+      const teamId = user?.id || (user as any)?.sub || payload?.sub || payload?.id
+      // Build a generic invite link using the current user's team (userId as teamId)
+      const inviteLink = `${window.location.origin}/invite/accept?teamId=${teamId}`
+      await navigator.clipboard.writeText(inviteLink)
+      setCopySuccess(true)
+      setTimeout(() => setCopySuccess(false), 2000)
+      toast({ title: "Link copied!", description: "Invite link copied to clipboard" })
+    } catch {
+      toast({ title: "Failed to copy", description: "Please copy the link manually", variant: "destructive" })
+    }
+  }
+
+  // ─── Send invites ───────────────────────────────────────────────────────────
   const handleSendInvites = async () => {
     // Auto-add valid email from input if present
     let finalInvitees = [...selected]
-    if (inputValue && getIsValid()) {
-      finalInvitees = [...selected, { email: inputValue }]
+    if (inputValue.trim()) {
+      const emails = parseEmails(inputValue)
+      const newOnes = emails
+        .filter(e => !finalInvitees.find(s => s.email === e))
+        .map(e => ({ email: e, role: defaultRole, invalid: !isEmail(e) }))
+      finalInvitees = [...finalInvitees, ...newOnes]
       setSelected(finalInvitees)
       setInputValue("")
     }
 
-    if (!finalInvitees || finalInvitees.length === 0) {
+    if (finalInvitees.length === 0) {
+      toast({ title: "No invitees", description: "Please add at least one email address", variant: "destructive" })
+      return
+    }
+
+    // Block send if any invalid emails
+    const invalidOnes = finalInvitees.filter(i => i.invalid)
+    if (invalidOnes.length > 0) {
       toast({
-        title: "No invitees",
-        description: "Please add at least one valid email address",
+        title: "Invalid emails",
+        description: `Please fix or remove: ${invalidOnes.map(i => i.email).join(", ")}`,
         variant: "destructive",
       })
       return
     }
 
     try {
-      // Use user's ID as teamId (temporary until team management is implemented)
       const payload = getJwtPayload()
-      const resolvedUserId =
-        user?.id || (user as any)?.sub || payload?.sub || payload?.id
+      const teamId = user?.id || (user as any)?.sub || payload?.sub || payload?.id
 
-      if (!resolvedUserId) {
-        toast({
-          title: "Authentication required",
-          description: "Please log in to send invitations",
-          variant: "destructive",
-        })
+      if (!teamId) {
+        toast({ title: "Authentication required", description: "Please log in to send invitations", variant: "destructive" })
         return
       }
-      
-      await InvitationsAPI.createInvitations({
-        teamId: resolvedUserId,
-        role: selectedRole,
-        emails: finalInvitees.map(s => s.email),
-        note: message || undefined,
-      })
-      
-      toast({
-        title: "Invitations sent!",
-        description: `Successfully sent ${finalInvitees.length} invitation(s)`,
-      })
-      
+
+      // Group by role and send — or send all at once with per-invitee roles
+      // Since the API accepts one role per batch, send separate requests per role group
+      const byRole = finalInvitees.reduce((acc, inv) => {
+        if (!acc[inv.role]) acc[inv.role] = []
+        acc[inv.role].push(inv.email)
+        return acc
+      }, {} as Record<string, string[]>)
+
+      await Promise.all(
+        Object.entries(byRole).map(([role, emails]) =>
+          InvitationsAPI.createInvitations({
+            teamId: teamId,
+            role: role as 'admin' | 'editor' | 'viewer',
+            emails,
+            note: message || undefined,
+          })
+        )
+      )
+
+      toast({ title: "Invitations sent!", description: `Successfully sent ${finalInvitees.length} invitation(s)` })
+
       // Reset form
       setSelected([])
       setMessage("")
-      setSelectedRole('viewer')
+      setDefaultRole('viewer')
       setInputValue("")
       toggleInviteWindow()
     } catch (error: any) {
@@ -211,13 +292,14 @@ export const InviteWindow = () => {
   const filteredOptions =
     inputValue === ""
       ? options
-      : options.filter((option) => {
-          return option.username
-            ?.toLowerCase()
-            .includes(inputValue.toLowerCase())
-        })
+      : options.filter((option) =>
+          option.username?.toLowerCase().includes(inputValue.toLowerCase())
+        )
 
   const props = { multiple: true } as unknown as { multiple: false }
+
+  const validSelected = selected.filter(i => !i.invalid)
+  const invalidSelected = selected.filter(i => i.invalid)
 
   return (
     <Dialog open={open} onOpenChange={toggleInviteWindow}>
@@ -231,7 +313,6 @@ export const InviteWindow = () => {
             <h2 className="text-lg leading-7 font-semibold text-gray-800">
               Invite Your Team
             </h2>
-
             <div className="inline-flex items-center gap-x-4">
               <TooltipProvider>
                 <Tooltip>
@@ -256,7 +337,10 @@ export const InviteWindow = () => {
             <Label className="text-gray-700" size="md" htmlFor={id}>
               Invite by email
             </Label>
-            <div className="flex items center gap-x-3">
+            <p className="text-xs text-gray-500">
+              Type one or multiple emails separated by comma, space, or semicolon
+            </p>
+            <div className="flex items-center gap-x-3">
               <Combobox
                 className="flex-auto relative"
                 as="div"
@@ -276,9 +360,13 @@ export const InviteWindow = () => {
                   {selected.map((item, index) => (
                     <Badge
                       key={index}
-                      visual="primary"
+                      visual={item.invalid ? "error" : "primary"}
+                      className={item.invalid ? "border-red-300 bg-red-50 text-red-700" : ""}
                     >
                       {item.email}
+                      {item.invalid && (
+                        <span className="text-red-500 text-[10px] ml-1">invalid</span>
+                      )}
                       <button
                         onClick={() => handleRemove(item.email)}
                         className="focus-visible:outline-none flex-none"
@@ -302,7 +390,7 @@ export const InviteWindow = () => {
                     <Combobox.Option
                       key={option.email}
                       className="flex cursor-pointer items-center gap-x-3 py-2.5 h-16 px-3.5"
-                      value={option}
+                      value={{ ...option, role: defaultRole }}
                     >
                       <div className="h-10 flex-none relative rounded-full overflow-hidden w-10">
                         <NextImage
@@ -325,15 +413,17 @@ export const InviteWindow = () => {
                   ))}
                 </Combobox.Options>
               </Combobox>
-              <Button
-                variant="light"
-                size="lg"
-                type="button"
-                onClick={handleAddTag}
-              >
+              <Button variant="light" size="lg" type="button" onClick={handleAddTag}>
                 Add
               </Button>
             </div>
+
+            {/* Invalid email warning */}
+            {invalidSelected.length > 0 && (
+              <p className="text-xs text-red-600 mt-1">
+                {invalidSelected.length} invalid email{invalidSelected.length > 1 ? "s" : ""} — fix or remove before sending
+              </p>
+            )}
           </div>
 
           <button
@@ -341,11 +431,7 @@ export const InviteWindow = () => {
             onClick={toggle}
           >
             Add a Message{" "}
-            {isOpen ? (
-              <Minus className="h-6 w-6 flex-none" />
-            ) : (
-              <Plus className="h-6 w-6 flex-none" />
-            )}
+            {isOpen ? <Minus className="h-6 w-6 flex-none" /> : <Plus className="h-6 w-6 flex-none" />}
           </button>
 
           {isOpen && (
@@ -360,49 +446,44 @@ export const InviteWindow = () => {
           {selected && isNotEmpty(selected) && (
             <div className="mt-6 space-y-3">
               <span className="text-base leading-5 font-medium text-gray-700">
-                Invites
+                Invites ({validSelected.length} valid{invalidSelected.length > 0 ? `, ${invalidSelected.length} invalid` : ""})
               </span>
-              {selected.map(({ email, avatar, username }) => (
+              {selected.map(({ email, avatar, username, role, invalid }) => (
                 <div className="space-y-3 mt-3" key={email}>
                   <div className="flex justify-between items-center">
                     <div className="inline-flex items-center gap-x-3">
                       {avatar ? (
                         <div className="h-8 w-8 rounded-full overflow-hidden relative">
-                          <NextImage
-                            className="object-cover"
-                            src={avatar}
-                            alt="Man"
-                            sizes="100vh"
-                            fill
-                          />
+                          <NextImage className="object-cover" src={avatar} alt="Man" sizes="100vh" fill />
                         </div>
                       ) : (
-                        <div className="h-8 w-8 rounded-full overflow-hidden border border-gray-300 border-dashed bg-gray-50 relative" />
+                        <div className={cn(
+                          "h-8 w-8 rounded-full overflow-hidden border border-dashed bg-gray-50 relative",
+                          invalid ? "border-red-300" : "border-gray-300"
+                        )} />
                       )}
-                      <span className="font-medium text-sm leading-5 text-gray-800">
+                      <span className={cn(
+                        "font-medium text-sm leading-5",
+                        invalid ? "text-red-600" : "text-gray-800"
+                      )}>
                         {username ? username : email}
+                        {invalid && <span className="ml-1 text-xs text-red-400">(invalid)</span>}
                       </span>
                     </div>
 
                     <DropdownMenu>
                       <DropdownMenuTrigger className="inline-flex items-center gap-x-1 text-sm font-medium text-gray-900">
-                        {selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)}
+                        {role.charAt(0).toUpperCase() + role.slice(1)}
                         <ChevronDown className="text-gray-500 h-5 w-5 flex-none" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuRadioGroup 
-                          value={selectedRole}
-                          onValueChange={(value) => setSelectedRole(value as 'admin' | 'editor' | 'viewer')}
+                        <DropdownMenuRadioGroup
+                          value={role}
+                          onValueChange={(value) => handleRoleChange(email, value as 'admin' | 'editor' | 'viewer')}
                         >
-                          <DropdownMenuRadioCheckItem value="viewer">
-                            Viewer
-                          </DropdownMenuRadioCheckItem>
-                          <DropdownMenuRadioCheckItem value="editor">
-                            Editor
-                          </DropdownMenuRadioCheckItem>
-                          <DropdownMenuRadioCheckItem value="admin">
-                            Admin
-                          </DropdownMenuRadioCheckItem>
+                          <DropdownMenuRadioCheckItem value="viewer">Viewer</DropdownMenuRadioCheckItem>
+                          <DropdownMenuRadioCheckItem value="editor">Editor</DropdownMenuRadioCheckItem>
+                          <DropdownMenuRadioCheckItem value="admin">Admin</DropdownMenuRadioCheckItem>
                         </DropdownMenuRadioGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => handleRemove(email)}>
@@ -417,15 +498,16 @@ export const InviteWindow = () => {
           )}
 
           <div className="flex mt-8 justify-between">
-            <button className="inline-flex gap-x-2 focus-visible:outline-none text-primary-500 font-semibold items-center">
+            <button
+              className="inline-flex gap-x-2 focus-visible:outline-none text-primary-500 font-semibold items-center"
+              onClick={handleCopyLink}
+            >
               <Link01 className="h-[15px] w-[15px]" />
-              Copy Link
+              {copySuccess ? "Copied!" : "Copy Link"}
             </button>
             <div className="inline-flex items-center gap-x-3">
               <DialogClose asChild>
-                <Button visual="gray" variant="outlined">
-                  Cancel
-                </Button>
+                <Button visual="gray" variant="outlined">Cancel</Button>
               </DialogClose>
               <Button onClick={handleSendInvites}>Send Invite</Button>
             </div>

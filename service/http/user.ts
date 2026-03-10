@@ -6,6 +6,9 @@ export const UserAPI = {
   me: () => {
     return AxiosRequest.get(`${USER_BASE}/user/me`)
   },
+  getById: (id: string) => {
+    return AxiosRequest.get(`${USER_BASE}/users/${id}`)
+  },
   handleSkip: (data: { role: string }) =>
     AxiosRequest.patch(`${USER_BASE}/user/onboarding-dismissed`, data),
 }
