@@ -2,7 +2,7 @@ import { Before, After, BeforeStep, AfterStep } from '@cucumber/cucumber';
 import { chromium } from '@playwright/test';
 import path from 'path';
 import fs from 'fs';
-import { configureFileLogging, createLogger } from '../common/logger.ts';
+import { configureFileLogging, createLogger } from '../common/logger';
 
 const logger = createLogger('CucumberHooks');
 const stepTimers = new Map<string, number>();
