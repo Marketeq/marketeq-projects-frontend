@@ -68,7 +68,7 @@ module.exports = {
     requireModule: ["ts-node/register"],
     require: [
       "e2e-cucumber/common/common.steps.ts",
-      "e2e-cucumber/stepDefinitions/publish-project.steps.ts",
+      "e2e-cucumber/stepDefinitions/07-publish-project.steps.ts",
       "e2e-cucumber/hooks/hooks.ts"
     ],
     paths: ["e2e-cucumber/features/07-publish-project.feature"],
@@ -89,7 +89,7 @@ module.exports = {
       "e2e-cucumber/stepDefinitions/02-signup-email-setpassword.steps.ts",
       "e2e-cucumber/stepDefinitions/04-google-signup-signin.steps.ts",
       "e2e-cucumber/stepDefinitions/05-signin-datadriven-test.steps.ts",
-      "e2e-cucumber/stepDefinitions/publish-project.steps.ts",
+      "e2e-cucumber/stepDefinitions/07-publish-project.steps.ts",
       "e2e-cucumber/hooks/hooks.ts"
     ],
     paths: [

@@ -1,6 +1,6 @@
 import { Given, When, Then, setDefaultTimeout } from '@cucumber/cucumber';
 import { request as pwRequest } from '@playwright/test';
-import SignInPage from '../pages/05-signInPage.ts';
+import SignInPage from '../pages/05-signInPage';
 
 setDefaultTimeout(60_000);
 
