@@ -24,8 +24,10 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogFooter,
   DialogDescription,
   DialogTitle,
+  DialogHeader,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -115,6 +117,18 @@ export const InviteWindow = () => {
   const [selected, setSelected] = React.useState<Invitees>([])
   const [inputValue, setInputValue] = React.useState("")
   const [defaultRole, setDefaultRole] = React.useState<'admin' | 'editor' | 'viewer'>('viewer')
+  const [settingsOpen, setSettingsOpen] = React.useState(false)
+  const [settings, setSettings] = React.useState({
+    userTracking: false,
+    embedCode: true,
+    guestSharing: false,
+    access: "anyone",
+    linkExpires: false,
+    expiryDate: "",
+    expiryTime: "",
+    linkPassword: "",
+    notifications: false,
+  })
   const { open, toggle: toggleInviteWindow } = useInviteWindowStore()
   const { user } = useAuth()
   const id = React.useId()
@@ -198,22 +212,51 @@ export const InviteWindow = () => {
   }
 
   // ─── Copy invite link ───────────────────────────────────────────────────────
+  // Updated: Prompt for email, create invitation, copy tokenized link
   const handleCopyLink = async () => {
     try {
-      const payload = getJwtPayload()
-      const teamId = user?.id || (user as any)?.sub || payload?.sub || payload?.id
-      // Build a generic invite link using the current user's team (userId as teamId)
-      const inviteLink = `${window.location.origin}/invite/accept?teamId=${teamId}`
-      await navigator.clipboard.writeText(inviteLink)
-      setCopySuccess(true)
-      setTimeout(() => setCopySuccess(false), 2000)
-      toast({ title: "Link copied!", description: "Invite link copied to clipboard" })
-    } catch {
-      toast({ title: "Failed to copy", description: "Please copy the link manually", variant: "destructive" })
+      const email = window.prompt("Enter the email address to invite:");
+      if (!email || !isEmail(email)) {
+        toast({ title: "Invalid email", description: "Please enter a valid email address.", variant: "destructive" });
+        return;
+      }
+      const payload = getJwtPayload();
+      const teamId = user?.id || (user as any)?.sub || payload?.sub || payload?.id;
+      if (!teamId) {
+        toast({ title: "Authentication required", description: "Please log in to copy invite link", variant: "destructive" });
+        return;
+      }
+      // Validate teamId before creating invitation
+      try {
+        await (await import("@/service/http/teams")).TeamsAPI.getTeam(teamId);
+      } catch (err) {
+        toast({ title: "Invalid team", description: "The team does not exist. Please check your team and try again.", variant: "destructive" });
+        return;
+      }
+      // Create invitation for this email
+      const res = await InvitationsAPI.createInvitations({
+        teamId,
+        role: defaultRole,
+        emails: [email],
+      });
+      // Find the invitation for this email
+      const invite = Array.isArray(res?.data) ? res.data.find((i: any) => i.email === email) : null;
+      if (!invite || !invite.id || !invite.token) {
+        toast({ title: "Failed to create invitation", description: "No invitation token returned.", variant: "destructive" });
+        return;
+      }
+      const inviteLink = `${window.location.origin}/invite/accept?token=${invite.token}`;
+      await navigator.clipboard.writeText(inviteLink);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+      toast({ title: "Link copied!", description: `Invite link for ${email} copied to clipboard` });
+    } catch (err: any) {
+      toast({ title: "Failed to copy", description: err?.response?.data?.message || err?.message || "Please copy the link manually", variant: "destructive" });
     }
   }
 
   // ─── Send invites ───────────────────────────────────────────────────────────
+  // Enhanced: show specific error messages and refresh invites after sending
   const handleSendInvites = async () => {
     // Auto-add valid email from input if present
     let finalInvitees = [...selected]
@@ -261,14 +304,37 @@ export const InviteWindow = () => {
       }, {} as Record<string, string[]>)
 
       await Promise.all(
-        Object.entries(byRole).map(([role, emails]) =>
-          InvitationsAPI.createInvitations({
-            teamId: teamId,
-            role: role as 'admin' | 'editor' | 'viewer',
-            emails,
-            note: message || undefined,
-          })
-        )
+        Object.entries(byRole).map(async ([role, emails]) => {
+          try {
+            await InvitationsAPI.createInvitations({
+              teamId: teamId,
+              role: role as 'admin' | 'editor' | 'viewer',
+              emails,
+              note: message || undefined,
+            })
+          } catch (error: any) {
+            // Try to parse common error cases
+            const apiMsg = error?.response?.data?.message || "Unknown error"
+            let userMsg = apiMsg
+            if (/already invited/i.test(apiMsg)) {
+              userMsg = "One or more emails have already been invited. Check pending invitations."
+            } else if (/already a member/i.test(apiMsg)) {
+              userMsg = "One or more emails are already team members."
+            } else if (/invalid email/i.test(apiMsg)) {
+              userMsg = "One or more emails are invalid."
+            } else if (/not found/i.test(apiMsg)) {
+              userMsg = "User not found for one or more emails."
+            } else if (/limit/i.test(apiMsg)) {
+              userMsg = "You have reached the invitation limit."
+            }
+            toast({
+              title: "Failed to send some invitations",
+              description: userMsg,
+              variant: "destructive",
+            })
+            throw error // rethrow to prevent success toast
+          }
+        })
       )
 
       toast({ title: "Invitations sent!", description: `Successfully sent ${finalInvitees.length} invitation(s)` })
@@ -279,13 +345,22 @@ export const InviteWindow = () => {
       setDefaultRole('viewer')
       setInputValue("")
       toggleInviteWindow()
+
+      // Refresh pending invites in parent (if available)
+      if (typeof window !== 'undefined') {
+        // Dispatch a custom event to notify parent to refresh invites
+        window.dispatchEvent(new CustomEvent('refresh-pending-invites'))
+      }
     } catch (error: any) {
-      console.error('Failed to send invitations:', error)
-      toast({
-        title: "Failed to send invitations",
-        description: error?.response?.data?.message || "Please try again",
-        variant: "destructive",
-      })
+      // If not already handled above
+      if (!error?.response?.data?.message) {
+        toast({
+          title: "Failed to send invitations",
+          description: "Please try again",
+          variant: "destructive",
+        })
+      }
+      // else: already shown specific error
     }
   }
 
@@ -302,6 +377,7 @@ export const InviteWindow = () => {
   const invalidSelected = selected.filter(i => i.invalid)
 
   return (
+    <>
     <Dialog open={open} onOpenChange={toggleInviteWindow}>
       <DialogContent className="max-w-[690px] p-0">
         <DialogTitle className="sr-only">Invite Your Team</DialogTitle>
@@ -324,7 +400,7 @@ export const InviteWindow = () => {
               </TooltipProvider>
               <TooltipProvider>
                 <Tooltip>
-                  <TooltipTrigger className="text-gray-500 hover:text-gray-900">
+                  <TooltipTrigger className="text-gray-500 hover:text-gray-900" onClick={() => setSettingsOpen(true)}>
                     <Settings className="h-6 w-6" />
                   </TooltipTrigger>
                   <TooltipContent side="bottom">Settings</TooltipContent>
@@ -515,5 +591,107 @@ export const InviteWindow = () => {
         </div>
       </DialogContent>
     </Dialog>
+    <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
+      <DialogContent className="max-w-[720px] max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-lg font-semibold text-gray-900">Manage Invite Settings</DialogTitle>
+          <DialogDescription className="text-sm text-gray-500">
+            Control how invite links are shared and protected.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-6 mt-4">
+          <section className="space-y-3">
+            <h3 className="text-sm font-semibold text-gray-800">General Invites</h3>
+            <label className="flex items-start gap-3 text-sm text-gray-700">
+              <input type="checkbox" className="mt-1" checked={settings.userTracking} onChange={(e) => setSettings(s => ({ ...s, userTracking: e.target.checked }))} />
+              <div>
+                <span className="font-medium">Enable User Tracking</span>
+                <p className="text-xs text-gray-500">Track views, edits or usage of the shared content.</p>
+              </div>
+            </label>
+            <label className="flex items-start gap-3 text-sm text-gray-700">
+              <input type="checkbox" className="mt-1" checked={settings.embedCode} onChange={(e) => setSettings(s => ({ ...s, embedCode: e.target.checked }))} />
+              <div className="flex items-center gap-3 flex-wrap">
+                <div>
+                  <span className="font-medium">Enable Embed Code</span>
+                  <p className="text-xs text-gray-500">Copy the embed code to share content in apps or sites.</p>
+                </div>
+                <Button variant="outlined" size="sm" visual="gray">Copy Embed Code</Button>
+              </div>
+            </label>
+            <label className="flex items-start gap-3 text-sm text-gray-700">
+              <input type="checkbox" className="mt-1" checked={settings.guestSharing} onChange={(e) => setSettings(s => ({ ...s, guestSharing: e.target.checked }))} />
+              <div>
+                <span className="font-medium">Guest Sharing</span>
+                <p className="text-xs text-gray-500">Allow guests to request access.</p>
+              </div>
+            </label>
+          </section>
+
+          <section className="space-y-3">
+            <h3 className="text-sm font-semibold text-gray-800">Link Settings</h3>
+            <div className="space-y-2">
+              <Label className="text-sm text-gray-700">Who Has Access</Label>
+              <select
+                className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
+                value={settings.access}
+                onChange={(e) => setSettings(s => ({ ...s, access: e.target.value }))}
+              >
+                <option value="anyone">Anyone with a link</option>
+                <option value="team">Team members only</option>
+                <option value="invited">Invited people only</option>
+              </select>
+            </div>
+
+            <label className="flex items-start gap-3 text-sm text-gray-700">
+              <input type="checkbox" className="mt-1" checked={settings.linkExpires} onChange={(e) => setSettings(s => ({ ...s, linkExpires: e.target.checked }))} />
+              <div className="flex flex-col gap-2 w-full">
+                <span className="font-medium">Allow Link Expiration After</span>
+                <div className="flex gap-2 flex-wrap">
+                  <input
+                    type="date"
+                    className="border border-gray-300 rounded px-2 py-1 text-sm"
+                    value={settings.expiryDate}
+                    onChange={(e) => setSettings(s => ({ ...s, expiryDate: e.target.value }))}
+                  />
+                  <input
+                    type="time"
+                    className="border border-gray-300 rounded px-2 py-1 text-sm"
+                    value={settings.expiryTime}
+                    onChange={(e) => setSettings(s => ({ ...s, expiryTime: e.target.value }))}
+                  />
+                </div>
+              </div>
+            </label>
+
+            <div className="space-y-2">
+              <Label className="text-sm text-gray-700">Enable Link Password</Label>
+              <input
+                type="password"
+                className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
+                value={settings.linkPassword}
+                onChange={(e) => setSettings(s => ({ ...s, linkPassword: e.target.value }))}
+                placeholder="Enter password"
+              />
+            </div>
+
+            <label className="flex items-start gap-3 text-sm text-gray-700">
+              <input type="checkbox" className="mt-1" checked={settings.notifications} onChange={(e) => setSettings(s => ({ ...s, notifications: e.target.checked }))} />
+              <div>
+                <span className="font-medium">Allow Notification Alerts</span>
+                <p className="text-xs text-gray-500">Notify when recipients open or use the link.</p>
+              </div>
+            </label>
+          </section>
+        </div>
+
+        <DialogFooter className="mt-6">
+          <Button visual="gray" variant="outlined" onClick={() => setSettingsOpen(false)}>Close</Button>
+          <Button onClick={() => setSettingsOpen(false)}>Save</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   )
 }

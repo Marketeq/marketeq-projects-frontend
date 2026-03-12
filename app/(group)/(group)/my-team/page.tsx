@@ -1,8 +1,11 @@
-"use client"
+"use client";
 
 import { useEffect, useMemo, useState } from "react"
+import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth"
 import { InviteWindow, InviteWindowTrigger } from "@/components/invite-window"
+import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog"
+import CreateTeamForm from "@/components/create-team-form"
 import { getFirstItem } from "@/utils/functions"
 import {
   Edit03,
@@ -33,7 +36,11 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui"
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui"
+import { TalentProfileCard } from "@/components/talent-profile-card"
+
+type MemberWithOrigin = TeamMember & { origin?: "internal" | "network" }
 
 const GRID_LAYOUT = "GRID"
 const LIST_LAYOUT = "LIST"
@@ -49,7 +56,7 @@ type ApiInvitation = {
   createdByUserId: string
 }
 
-const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function toDisplayName(member: TeamMember): string {
   const fullName = [member.firstName, member.lastName].filter(Boolean).join(" ").trim()
@@ -64,110 +71,279 @@ function toDisplayName(member: TeamMember): string {
 }
 
 // ─── Member Card (Grid) ───────────────────────────────────────────────────────
-const MemberCard = ({ member }: { member: TeamMember }) => {
-  const displayName = toDisplayName(member)
-  const avatarUrl = member.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.userId}`
-  const fallback = displayName.slice(0, 2).toUpperCase()
+const MemberCard = ({
+  member,
+  variant = "full",
+  onRefresh,
+  teamNames = {},
+}: {
+  member: TeamMember
+  variant?: "full" | "compact"
+  onRefresh: () => void
+  teamNames?: Record<string, string>
+}) => {
+  const router = useRouter()
+  // Map member fields to TalentProfileCard props
+  const user = {
+    name: [member.firstName, member.lastName].filter(Boolean).join(" ") || member.username || member.email,
+    username: member.username,
+    avatarUrl: member.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.userId}`,
+    title: member.role,
+    // yearsOfExperience: not present on TeamMember
+    // location, localTime, minRate, maxRate, rating, projects, skills, badge: not present on TeamMember by default
+    // These fields will be undefined unless you extend TeamMember or fetch more user data
+  }
+  const handleDelete = async () => {
+    if (!member.teamId || !member.userId) return
+    try {
+      await TeamsAPI.removeTeamMember(member.teamId, member.userId)
+      onRefresh()
+    } catch (err) {
+      console.error("Failed to delete member", err)
+    }
+  }
+
+  const handleEdit = () => {
+    if (member.username) router.push(`/talent/${member.username}?edit=1`)
+  }
+
+  const handleDuplicate = () => {
+    console.info("Duplicate requested for", member.userId)
+  }
+
+  const handleRunTest = () => {
+    console.info("Run Test requested for", member.userId)
+  }
+
+  // Get the team name for this member
+  const teamName = teamNames[member.teamId] || member.teamId || "Unknown Team"
 
   return (
-    <article className="relative grid rounded-[6px] lg:rounded-[8px] p-5 lg:py-[35px] lg:px-[30px] bg-white border border-gray-200 shadow-[0px_2px_5px_0px_theme(colors.black/.04)]">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <IconButton className="absolute h-6 w-auto top-2.5 px-1.5 right-2.5 text-gray-400" visual="gray" variant="ghost">
-            <MoreHorizontal className="size-5" />
-          </IconButton>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-[165px]">
-          <DropdownMenuItem><Edit03 className="h-4 w-4" /> Edit</DropdownMenuItem>
-          <DropdownMenuItem><Copy className="h-4 w-4" /> Duplicate</DropdownMenuItem>
-          <DropdownMenuItem><Zap className="h-4 w-4" /> Run Test</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem visual="destructive"><Trash2 className="h-4 w-4" /> Delete</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <div className="flex items-center justify-center">
-        <Avatar className="size-[62px] lg:size-[116px]" size="2xl">
-          <AvatarImage src={avatarUrl} alt={displayName} />
-          <AvatarFallback>{fallback}</AvatarFallback>
-        </Avatar>
-      </div>
-      <h1 className="text-[13px] leading-[15.73px] lg:text-base text-center lg:leading-[19.36px] font-bold text-[#122A4B] mt-3 lg:mt-[17px]">
-        {displayName}
-      </h1>
-      <p className="text-[11px] leading-[13.31px] lg:text-sm text-center font-light lg:leading-[16.94px] text-[#585C65] mt-1 capitalize">
-        {member.role}
-      </p>
-      {member.email && (
-        <div className="flex items-center justify-center mt-3 lg:mt-[17px]">
-          <Button className="xs:max-lg:text-[10px] xs:max-lg:leading-4 truncate max-w-full" variant="link" visual="primary">
-            {member.email}
-          </Button>
-        </div>
+    <div className="relative flex flex-col items-center justify-center">
+      {member.username ? (
+        <>
+          <TalentProfileCard
+            username={member.username}
+            variant={variant}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+            onDuplicate={handleDuplicate}
+            onRunTest={handleRunTest}
+          />
+          <div className="text-xs text-gray-500 mt-1">{teamName}</div>
+        </>
+      ) : (
+        <div className="text-xs text-gray-400">No public profile available</div>
       )}
-    </article>
+    </div>
   )
 }
 
 // ─── Member Card (List) ───────────────────────────────────────────────────────
-const MemberCardLandscape = ({ member }: { member: TeamMember }) => {
+const MemberCardLandscapeInternal = ({ member, onDelete }: { member: TeamMember; onDelete?: () => void }) => {
   const displayName = toDisplayName(member)
   const avatarUrl = member.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.userId}`
   const fallback = displayName.slice(0, 2).toUpperCase()
+  const title = member.role || "Role"
+  const status = "Active"
+  const companyLogo = (member as any)?.companyLogoUrl
 
   return (
-    <div className="flex xs:max-lg:flex-col xs:max-lg:p-3 rounded-[8px] bg-white shadow-[0px_2px_5px_0px_theme(colors.black/.04)] border border-gray-200">
-      <div className="lg:contents flex items-center justify-between">
-        <div className="lg:flex-auto flex items-center gap-x-3 md:pl-3 md:py-3 lg:pl-5 lg:py-5">
-          <Avatar className="xs:max-lg:size-[50px]" size="md">
-            <AvatarImage src={avatarUrl} alt={displayName} />
-            <AvatarFallback>{fallback}</AvatarFallback>
-          </Avatar>
-          <div className="space-y-0.5">
-            <span className="block text-[13px] leading-[15.73px] lg:text-base font-bold lg:leading-[21.79px] text-dark-blue-400">
-              {displayName}
-            </span>
-            {member.email && (
-              <span className="text-[11px] leading-[13.31px] lg:text-sm lg:leading-[19.07px] font-light text-[#585C65]">
-                {member.email}
-              </span>
-            )}
-          </div>
+    <div className="bg-white border border-gray-200 rounded-lg shadow-[0px_2px_5px_0px_theme(colors.black/.04)] p-4">
+      <div className="flex items-center gap-4 flex-wrap md:flex-nowrap">
+        <Avatar size="md">
+          <AvatarImage src={avatarUrl} alt={displayName} />
+          <AvatarFallback>{fallback}</AvatarFallback>
+        </Avatar>
+        <div className="flex flex-col">
+          <span className="font-semibold text-sm text-dark-blue-400">{displayName}</span>
+          <span className="text-xs text-gray-600">{title}</span>
         </div>
-        <div className="flex-auto text-sm font-light flex items-center gap-x-2 text-dark-blue-400 lg:pl-5 lg:py-5 xs:max-lg:hidden">
-          Role <span className="font-bold capitalize">{member.role}</span>
+        <div className="flex-1 flex items-center justify-center">
+          {companyLogo && <img src={companyLogo} alt="Company" className="h-8 object-contain" />}
         </div>
-        <div className="flex lg:flex-auto justify-end items-center lg:pr-5 lg:py-5">
-          <IconButton className="text-gray-400 xs:max-lg:size-[30.45px]" visual="gray" variant="ghost">
-            <MoreHorizontal className="size-[18.32px] lg:size-5" />
+        <div className="flex items-center gap-6 text-xs md:text-sm text-gray-700 flex-wrap">
+          <span>
+            Role <span className="font-semibold text-gray-800 capitalize">{title}</span>
+          </span>
+          <span>
+            Status <span className="font-semibold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">{status}</span>
+          </span>
+        </div>
+        <div className="flex items-center gap-3 text-gray-400 ml-auto">
+          <IconButton aria-label="Message" variant="ghost" visual="gray">
+            <Zap className="size-4" />
           </IconButton>
-        </div>
-      </div>
-      <div className="flex items-center lg:hidden mt-2">
-        <div className="text-[10px] font-light flex items-center gap-x-1.5 text-dark-blue-400">
-          Role <span className="font-bold capitalize">{member.role}</span>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <IconButton aria-label="Actions" variant="ghost" visual="gray">
+                <MoreHorizontal className="size-5" />
+              </IconButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-[160px]">
+              <DropdownMenuItem>
+                <Edit03 className="mr-2 size-4" /> Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Copy className="mr-2 size-4" /> Duplicate
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Zap className="mr-2 size-4" /> Run Test
+              </DropdownMenuItem>
+              <DropdownMenuItem className="text-red-600" onSelect={(e) => { e.preventDefault(); onDelete?.(); }}><Trash2 className="mr-2 size-4" /> Delete</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </div>
   )
 }
 
-// ─── Members Display ──────────────────────────────────────────────────────────
-const MembersDisplay = ({ members, layout, loading }: { members: TeamMember[]; layout: string; loading: boolean }) => {
+const MemberCardLandscapeNetwork = ({ member, onDelete }: { member: TeamMember; onDelete?: () => void }) => {
+  const displayName = toDisplayName(member)
+  const avatarUrl = member.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.userId}`
+  const fallback = displayName.slice(0, 2).toUpperCase()
+  const title = member.role || "Role"
+  const status = "Unassigned"
+  const rating = (member as any)?.client_success_rating ?? "5.0"
+  const reviews = 24
+  const availability = (member as any)?.availability || "40 hrs / wk"
+  const rateDisplay = (member as any)?.rate_min ? `$${(member as any).rate_min}/hr` : "$55/hr"
+  const skills: string[] =
+    (member as any)?.skills ||
+    ["Wireframing", "Sketch App", "Axure RP", "UX Pin", "Visual Design", "Figma", "More..."]
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-lg shadow-[0px_2px_5px_0px_theme(colors.black/.04)] p-4">
+      <div className="flex items-center gap-4 flex-wrap md:flex-nowrap">
+        <Avatar size="md">
+          <AvatarImage src={avatarUrl} alt={displayName} />
+          <AvatarFallback>{fallback}</AvatarFallback>
+        </Avatar>
+        <div className="flex flex-col">
+          <span className="font-semibold text-sm text-dark-blue-400">{displayName}</span>
+          <span className="text-xs text-gray-600">{title}</span>
+        </div>
+        <div className="flex-1 flex items-center gap-6 text-xs md:text-sm text-gray-700 flex-wrap">
+          <span className="flex items-center gap-2">
+            <span className="bg-primary-100 text-primary-600 px-2 py-0.5 rounded-sm font-semibold">{rating}</span>
+            <span className="text-gray-500">{reviews} reviews</span>
+          </span>
+          <span>
+            Availability <span className="font-semibold text-gray-800">{availability}</span>
+          </span>
+          <span>
+            Status <span className="font-semibold text-gray-800">{status}</span>
+          </span>
+        </div>
+        <div className="flex items-center gap-3 text-gray-400 ml-auto">
+          <IconButton aria-label="Message" variant="ghost" visual="gray">
+            <Zap className="size-4" />
+          </IconButton>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <IconButton aria-label="Actions" variant="ghost" visual="gray">
+                <MoreHorizontal className="size-5" />
+              </IconButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-[160px]">
+              <DropdownMenuItem>
+                <Edit03 className="mr-2 size-4" /> Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Copy className="mr-2 size-4" /> Duplicate
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Zap className="mr-2 size-4" /> Run Test
+              </DropdownMenuItem>
+              <DropdownMenuItem className="text-red-600" onSelect={(e) => { e.preventDefault(); onDelete?.(); }}><Trash2 className="mr-2 size-4" /> Delete</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+      <div className="mt-3 flex items-center gap-3 text-sm text-primary-700 font-semibold">
+        <span>{rateDisplay}</span>
+        <div className="flex flex-wrap gap-2 text-gray-500 font-normal">
+          {skills.slice(0, 10).map((s, idx) => (
+            <span key={s + idx} className="text-xs">
+              {s}
+            </span>
+          ))}
+          {skills.length > 10 && <span className="text-xs text-primary-600">More...</span>}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// --- Members Display ----------------------------------------------------------
+const MembersDisplay = ({
+  members,
+  layout,
+  loading,
+  variant = "full",
+  view = "network", // default fallback
+  onRefresh,
+  teamNames,
+}: {
+  members: MemberWithOrigin[]
+  layout: string
+  loading: boolean
+  variant?: "full" | "compact"
+  view?: "network" | "internal"
+  onRefresh: () => void
+  teamNames: Record<string, string>
+}) => {
   if (loading) return <p className="text-sm text-gray-500 mt-6">Loading...</p>
   if (members.length === 0) return <p className="text-sm text-gray-500 mt-6">No team members found.</p>
-  return layout === GRID_LAYOUT ? (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
-      {members.map((m) => <MemberCard key={m.userId} member={m} />)}
-    </div>
-  ) : (
+
+  if (layout === GRID_LAYOUT) {
+    return (
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
+        {members.map((m) => {
+          const memberView = (m as MemberWithOrigin).origin ?? view
+          const chosenVariant = memberView === "internal" ? "compact" : variant
+          // const teamName = teamNames[m.teamId] || m.teamId || "Unknown Team"
+          // <div className="text-xs text-gray-500 mb-1">{teamName}</div>
+          return <div key={m.userId}><MemberCard member={m} variant={chosenVariant} onRefresh={onRefresh} teamNames={teamNames} /></div>
+        })}
+      </div>
+    )
+  }
+
+  return (
     <div className="grid gap-y-3">
-      {members.map((m) => <MemberCardLandscape key={m.userId} member={m} />)}
+      {members.map((m) => {
+        const memberView = (m as MemberWithOrigin).origin ?? view
+        // const teamName = teamNames[m.teamId] || m.teamId || "Unknown Team"
+        // <div className="text-xs text-gray-500 mb-1">{teamName}</div>
+        return memberView === "internal" ? (
+          <div key={m.userId}>{/* <div className="text-xs text-gray-500 mb-1">{teamName}</div> */}<MemberCardLandscapeInternal member={m} onDelete={async () => {
+            if (!m.teamId || !m.userId) return
+            try {
+              await TeamsAPI.removeTeamMember(m.teamId, m.userId)
+              onRefresh()
+            } catch (err) {
+              console.error("Failed to delete member", err)
+            }
+          }} /></div>
+        ) : (
+          <div key={m.userId}>{/* <div className="text-xs text-gray-500 mb-1">{teamName}</div> */}<MemberCardLandscapeNetwork member={m} onDelete={async () => {
+            if (!m.teamId || !m.userId) return
+            try {
+              await TeamsAPI.removeTeamMember(m.teamId, m.userId)
+              onRefresh()
+            } catch (err) {
+              console.error("Failed to delete member", err)
+            }
+          }} /></div>
+        )
+      })}
     </div>
   )
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// --- Helpers ──────────────────────────────────────────────────────────────────
 const Dropdown = () => (
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
@@ -196,6 +372,25 @@ const InviteWindowButton = () => (
   </InviteWindowTrigger>
 )
 
+// Helper to fetch team details by IDs
+async function fetchTeamNames(teamIds: string[]): Promise<Record<string, string>> {
+  const map: Record<string, string> = {}
+  await Promise.all(teamIds.map(async (id) => {
+    try {
+      const res = await TeamsAPI.getTeam(id)
+      const data = res?.data
+      if (data && (data.name || data.teamName)) {
+        map[id] = data.name || data.teamName || id
+      } else {
+        map[id] = id
+      }
+    } catch {
+      map[id] = id
+    }
+  }))
+  return map
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function MyTeam() {
   const { user } = useAuth()
@@ -204,6 +399,7 @@ export default function MyTeam() {
   const [ownMembers, setOwnMembers] = useState<TeamMember[]>([])
   const [networkMembers, setNetworkMembers] = useState<TeamMember[]>([])
   const [allMembers, setAllMembers] = useState<TeamMember[]>([])
+  const [teamNames, setTeamNames] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
@@ -285,10 +481,13 @@ export default function MyTeam() {
       ))
 
       // 4. Fetch members
-      const [own, network] = await Promise.all([
+      const [ownRaw, networkRaw] = await Promise.all([
         fetchMembersForTeams(ownTeamIds),
         fetchMembersForTeams(joinedTeamIds),
       ])
+
+      const own = ownRaw.map((m) => ({ ...m, origin: "internal" as const }))
+      const network = networkRaw.map((m) => ({ ...m, origin: "network" as const }))
 
       setOwnMembers(own)
       setNetworkMembers(network)
@@ -299,6 +498,17 @@ export default function MyTeam() {
         if (m?.userId && !combinedMap[m.userId]) combinedMap[m.userId] = m
       }
       setAllMembers(Object.values(combinedMap))
+
+      // Collect all unique teamIds from members
+      const allTeamIds = Array.from(new Set([
+        ...ownRaw.map((m) => m.teamId),
+        ...networkRaw.map((m) => m.teamId),
+      ].filter(Boolean)))
+
+      // Fetch team names
+      const teamNameMap = await fetchTeamNames(allTeamIds)
+      console.log('DEBUG: teamNameMap', teamNameMap)
+      setTeamNames(teamNameMap)
 
     } catch (err: any) {
       setError(err?.response?.data?.message || err?.message || "Failed to load team data")
@@ -389,27 +599,39 @@ export default function MyTeam() {
               </ToggleGroupRoot>
             </div>
             <InviteWindowButton />
+            {/*
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outlined" visual="primary" size="md">
+                  <Plus className="size-[11.64px] lg:size-[15px]" /> Create Team
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <CreateTeamForm onTeamCreated={() => setRefreshKey((k) => k + 1)} />
+              </DialogContent>
+            </Dialog>
+            */}
           </div>
         </div>
 
         {/* Show All = own + network */}
         <TabsContent value="Show All">
           <div className="pt-3.5 lg:pt-6">
-            <MembersDisplay members={allMembers} layout={layout} loading={loading} />
+            <MembersDisplay members={allMembers} layout={layout} loading={loading} variant="full" view="network" onRefresh={() => setRefreshKey((k) => k + 1)} teamNames={teamNames} />
           </div>
         </TabsContent>
 
         {/* Internal Team = own affiliated teams + legacy userId-as-teamId */}
         <TabsContent value="Internal Team">
           <div className="pt-3.5 lg:pt-6">
-            <MembersDisplay members={ownMembers} layout={layout} loading={loading} />
+            <MembersDisplay members={ownMembers} layout={layout} loading={loading} variant="compact" view="internal" onRefresh={() => setRefreshKey((k) => k + 1)} teamNames={teamNames} />
           </div>
         </TabsContent>
 
         {/* Talent Network = teams joined via invitation */}
         <TabsContent value="Talent Network">
           <div className="pt-3.5 lg:pt-6">
-            <MembersDisplay members={networkMembers} layout={layout} loading={loading} />
+            <MembersDisplay members={networkMembers} layout={layout} loading={loading} variant="full" view="network" onRefresh={() => setRefreshKey((k) => k + 1)} teamNames={teamNames} />
           </div>
         </TabsContent>
       </Tabs>
@@ -418,3 +640,10 @@ export default function MyTeam() {
     </div>
   )
 }
+
+
+
+
+
+
+
