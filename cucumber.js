@@ -1,109 +1,101 @@
-﻿//RUNNER FILE FOR CUCUMBER TESTS
+﻿process.env.TS_NODE_PROJECT = "tests/tsconfig.json"
+
+const sharedConfig = {
+  requireModule: ["tsconfig-paths/register", "ts-node/register"],
+  require: [
+    "tests/common/**/*.ts",
+    "tests/helpers/**/*.ts",
+    "tests/hooks/**/*.ts",
+    "tests/pages/commonPage.ts",
+    "tests/steps/common.steps.ts",
+  ],
+  formatOptions: { snippetInterface: "async-await" },
+  publishQuiet: true,
+  failFast: false,
+  retry: 0,
+  timeout: 60000,
+}
+
 module.exports = {
-  // ── default shared config ──────────────────────────────────────────────
+  // runs @smoke tests only: npx cucumber-js
   default: {
-    requireModule: ["ts-node/register"],
-    require: ["e2e-cucumber/common/common.steps.ts", "e2e-cucumber/hooks/hooks.ts"],
-    formatOptions: { snippetInterface: "async-await" },
-    publishQuiet: true,
-    parallel: 1,
-  },
-
-  // ── 02 talent onboarding / signup email set password ──────────────────
-  talentOnboarding: {
-    requireModule: ["ts-node/register"],
+    ...sharedConfig,
     require: [
-      "e2e-cucumber/common/common.steps.ts",
-      "e2e-cucumber/stepDefinitions/02-signup-email-setpassword.steps.ts",
-      "e2e-cucumber/hooks/hooks.ts"
+      ...sharedConfig.require,
+      "tests/pages/**/*.ts",
+      "tests/steps/**/*.ts",
     ],
-    paths: ["e2e-cucumber/features/02-signup-email-setpassword.feature"],
-    format: [
-      "progress",
-      "html:reports/signup-email-setpassword.html",
-      "json:reports/signup-email-setpassword.json",
-    ],
-    formatOptions: { snippetInterface: "async-await" },
-    publishQuiet: true,
+    paths: ["tests/features/**/*.feature"],
+    tags: "@smoke and not @ignore",
+    format: ["progress", "html:tests/reports/default.html"],
   },
 
-  // ── 04 google signup/signin ───────────────────────────────────────────
-  googleSignupSignin: {
-    requireModule: ["ts-node/register"],
-    require: [
-      "e2e-cucumber/common/common.steps.ts",
-      "e2e-cucumber/stepDefinitions/04-google-signup-signin.steps.ts",
-      "e2e-cucumber/hooks/hooks.ts"
-    ],
-    paths: ["e2e-cucumber/features/04-google-signup-signin.feature"],
-    format: [
-      "progress",
-      "html:reports/google-signup.html",
-      "json:reports/google-signup.json",
-    ],
-    formatOptions: { snippetInterface: "async-await" },
-    publishQuiet: true,
-  },
-
-  // ── 05 sign-in data-driven ────────────────────────────────────────────
-  datadrivenSignin: {
-    requireModule: ["ts-node/register"],
-    require: [
-      "e2e-cucumber/common/common.steps.ts",
-      "e2e-cucumber/stepDefinitions/05-signin-datadriven-test.steps.ts",
-      "e2e-cucumber/hooks/hooks.ts"
-    ],
-    paths: ["e2e-cucumber/features/05-signin-datadriven-test.feature"],
-    format: [
-      "progress",
-      "html:reports/signin-datadriven-test.html",
-      "json:reports/signin-datadriven-test.json",
-    ],
-    formatOptions: { snippetInterface: "async-await" },
-    publishQuiet: true,
-  },
-
-  // ── 07 publish project ────────────────────────────────────────────────
-  publishProject: {
-    requireModule: ["ts-node/register"],
-    require: [
-      "e2e-cucumber/common/common.steps.ts",
-      "e2e-cucumber/stepDefinitions/07-publish-project.steps.ts",
-      "e2e-cucumber/hooks/hooks.ts"
-    ],
-    paths: ["e2e-cucumber/features/07-publish-project.feature"],
-    format: [
-      "progress",
-      "html:reports/publish-project.html",
-      "json:reports/publish-project.json",
-    ],
-    formatOptions: { snippetInterface: "async-await" },
-    publishQuiet: true,
-  },
-
-  // ── run only requested features: 02, 04, 05, 07 ──────────────────────
+  // runs all tests: npx cucumber-js --profile all
   all: {
-    requireModule: ["ts-node/register"],
+    ...sharedConfig,
     require: [
-      "e2e-cucumber/common/common.steps.ts",
-      "e2e-cucumber/stepDefinitions/02-signup-email-setpassword.steps.ts",
-      "e2e-cucumber/stepDefinitions/04-google-signup-signin.steps.ts",
-      "e2e-cucumber/stepDefinitions/05-signin-datadriven-test.steps.ts",
-      "e2e-cucumber/stepDefinitions/07-publish-project.steps.ts",
-      "e2e-cucumber/hooks/hooks.ts"
+      ...sharedConfig.require,
+      "tests/pages/**/*.ts",
+      "tests/steps/**/*.ts",
     ],
-    paths: [
-      "e2e-cucumber/features/02-signup-email-setpassword.feature",
-      "e2e-cucumber/features/04-google-signup-signin.feature",
-      "e2e-cucumber/features/05-signin-datadriven-test.feature",
-      "e2e-cucumber/features/07-publish-project.feature"
-    ],
+    paths: ["tests/features/**/*.feature"],
+    tags: "not @ignore",
+    parallel: 2,
     format: [
       "progress",
-      "html:reports/selected-features.html",
-      "json:reports/selected-features.json",
+      "html:tests/reports/all.html",
+      "json:tests/reports/all.json",
     ],
-    formatOptions: { snippetInterface: "async-await" },
-    publishQuiet: true,
   },
-};
+
+  // runs authentication tests: npx cucumber-js --profile authentication
+  authentication: {
+    ...sharedConfig,
+    require: [
+      ...sharedConfig.require,
+      "tests/pages/authentication/*.ts",
+      "tests/steps/authentication/*.ts",
+    ],
+    paths: ["tests/features/authentication/*.feature"],
+    tags: "not @ignore",
+    format: [
+      "progress",
+      "html:tests/reports/authentication.html",
+      "json:tests/reports/authentication.json",
+    ],
+  },
+
+  // runs complete-my-profile tests: npx cucumber-js --profile completeProfile
+  completeProfile: {
+    ...sharedConfig,
+    require: [
+      ...sharedConfig.require,
+      "tests/pages/complete-my-profile/*.ts",
+      "tests/steps/complete-my-profile/*.ts",
+    ],
+    paths: ["tests/features/complete-my-profile/*.feature"],
+    tags: "not @ignore",
+    format: [
+      "progress",
+      "html:tests/reports/complete-profile.html",
+      "json:tests/reports/complete-profile.json",
+    ],
+  },
+
+  // runs publishProject tests: npx cucumber-js --profile publishProject
+  publishProject: {
+    ...sharedConfig,
+    require: [
+      ...sharedConfig.require,
+      "tests/pages/publish-project/*.ts",
+      "tests/steps/publish-project/*.ts",
+    ],
+    paths: ["tests/features/publish-project/*.feature"],
+    tags: "not @ignore",
+    format: [
+      "progress",
+      "html:tests/reports/publish-project.html",
+      "json:tests/reports/publish-project.json",
+    ],
+  },
+}
