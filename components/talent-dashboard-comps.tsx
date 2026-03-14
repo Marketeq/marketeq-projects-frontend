@@ -184,6 +184,7 @@ export const LeftSidebar = () => {
           <NextLink
             className="flex w-full items-center font-semibold text-sm leading-6 text-dark-blue-400 gap-x-3 rounded-[5px] h-10 flex-none hover:bg-gray-100 px-3"
             href="#"
+            data-testid="create-project-button"
           >
             <Plus className="size-[18px] text-dark-blue-400/50 hover:text-dark-blue-400" />
             Create a Project
@@ -947,6 +948,7 @@ export const Welcome = ({ onToggle }: { onToggle: () => void }) => {
           className="bg-white text-dark-blue-400 md:hidden"
           variant="outlined"
           visual="gray"
+          data-testid="create-project-button"
         >
           <Plus className="size-[15px]" />
           Create a Project
@@ -1278,7 +1280,10 @@ export const RecentProjects = () => {
   )
 }
 
+import { useRouter } from "next/navigation"
+
 export const CreateYourOwnProject = () => {
+  const router = useRouter();
   return (
     <div className="bg-white shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)] border rounded-lg border-gray-200 p-5 flex flex-col-reverse md:grid md:grid-cols-2 gap-5 min-[1024px]:gap-x-[100px]">
       <div>
@@ -1307,6 +1312,8 @@ export const CreateYourOwnProject = () => {
               size="sm"
               variant="outlined"
               visual="gray"
+              onClick={() => router.push("/publish-project")}
+              data-testid="create-project-button"
             >
               <Plus className="size-[15px]" /> Create a Project
             </Button>

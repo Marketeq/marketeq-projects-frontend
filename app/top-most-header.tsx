@@ -590,8 +590,19 @@ export const TopMostHeader = () => {
           <Logo3 className="h-[14.25px] w-[97px] lg:w-[128px] lg:h-[18.81px]" />
         </NextLink>
 
-        <div className="flex flex-auto gap-x-3 xs:max-lg:ml-3 xs:max-md:hidden">
+        <div className="flex flex-auto gap-x-3 xs:max-lg:ml-3 xs:max-md:hidden items-center">
           <SearchBar />
+
+          {/* My Dashboard Button */}
+          <Button
+            className="ml-2"
+            variant="outlined"
+            visual="gray"
+            size="md"
+            onClick={() => router.push("/talent-dashboard")}
+          >
+            My Dashboard
+          </Button>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

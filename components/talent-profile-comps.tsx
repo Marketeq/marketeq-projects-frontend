@@ -600,16 +600,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
               className="text-[13px] leading-6 opacity-60 hover:opacity-100"
               variant="link"
               visual="gray"
+              asChild
             >
-              My Favorites
-            </Button>
-            <span className="inline-block h-4 w-px shrink-0 bg-gray-300" />
-            <Button
-              className="text-[13px] leading-6 opacity-60 hover:opacity-100"
-              variant="link"
-              visual="gray"
-            >
-              My Dashboard
+              <NextLink href="/talent-dashboard" passHref>
+                My Dashboard
+              </NextLink>
             </Button>
           </div>
         </div>
