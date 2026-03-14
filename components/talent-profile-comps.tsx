@@ -602,7 +602,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               visual="gray"
               asChild
             >
-              <NextLink href="/talent-dashboard" passHref>
+              <NextLink href="/talent-dashboard">
                 My Dashboard
               </NextLink>
             </Button>
