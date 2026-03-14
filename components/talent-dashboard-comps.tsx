@@ -1,4 +1,33 @@
+
 "use client"
+// Table component for RecentProjects
+const Table = () => {
+  return (
+    <table className="table-auto border-collapse w-full">
+      <thead>
+        <tr>
+          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
+            Project Name
+          </th>
+          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
+            Team
+          </th>
+          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
+            Status
+          </th>
+          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
+            Next Milestone
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {data.projects.map((project, index) => (
+          <TableRow {...project} key={index} />
+        ))}
+      </tbody>
+    </table>
+  );
+}
 
 import * as React from "react"
 import { SVGProps } from "react"
@@ -183,7 +212,7 @@ export const LeftSidebar = () => {
           </NextLink>
           <NextLink
             className="flex w-full items-center font-semibold text-sm leading-6 text-dark-blue-400 gap-x-3 rounded-[5px] h-10 flex-none hover:bg-gray-100 px-3"
-            href="#"
+            href="/publish-project"
             data-testid="create-project-button"
           >
             <Plus className="size-[18px] text-dark-blue-400/50 hover:text-dark-blue-400" />
@@ -915,7 +944,8 @@ export const StarsBFill = ({
 }
 
 export const Welcome = ({ onToggle }: { onToggle: () => void }) => {
-  const { user } = useAuth()
+  const { user } = useAuth();
+  const router = useRouter();
   return (
     <>
       <div className="md:contents flex flex-col gap-y-5">
@@ -937,6 +967,7 @@ export const Welcome = ({ onToggle }: { onToggle: () => void }) => {
               className="bg-white text-dark-blue-400 xs:max-md:hidden"
               variant="outlined"
               visual="gray"
+              onClick={() => router.push("/publish-project")}
             >
               <Plus className="size-[15px]" />
               Create a Project
@@ -949,6 +980,7 @@ export const Welcome = ({ onToggle }: { onToggle: () => void }) => {
           variant="outlined"
           visual="gray"
           data-testid="create-project-button"
+          onClick={() => router.push("/publish-project")}
         >
           <Plus className="size-[15px]" />
           Create a Project
@@ -1200,34 +1232,6 @@ export const TableRow = ({
   )
 }
 
-export const Table = () => {
-  return (
-    <table className="table-auto border-collapse w-full">
-      <thead>
-        <tr>
-          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
-            Project Name
-          </th>
-          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
-            Team
-          </th>
-          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
-            Status
-          </th>
-          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
-            Next Milestone
-          </th>
-        </tr>
-      </thead>
-
-      <tbody>
-        {data.projects.map((project, index) => (
-          <TableRow {...project} key={index} />
-        ))}
-      </tbody>
-    </table>
-  )
-}
 
 export const RecentProjects = () => {
   return (
@@ -1903,18 +1907,21 @@ export const TakeCareersToNextLevel = () => {
 }
 
 export const Footer = () => {
+  const router = useRouter();
   return (
     <div className="px-5 xs:max-md:pt-5 md:px-6 pb-5 flex flex-col md:flex-row items-center gap-5 md:justify-between">
       <div className="flex md:flex-row flex-col items-center gap-5 md:gap-x-[57px]">
         <NextLink className="focus-visible:outline-none" href="/">
           <Logo3 className="shrink-0 w-[120px] h-[17.63px]" />
         </NextLink>
-        <span className="text-[13px] leading-[15.73px] font-light text-dark-blue-400">
-          © 2011 - 2025 Marketeq Digital Inc. All Rights Reserved.
-        </span>
-      </div>
-
-      <div className="flex items-center gap-x-[16.6px]">
+        <button
+          className="flex w-full items-center font-semibold text-sm leading-6 text-dark-blue-400 gap-x-3 rounded-[5px] h-10 flex-none hover:bg-gray-100 px-3"
+          data-testid="create-project-button"
+          onClick={() => router.push("/publish-project")}
+        >
+          <Plus className="size-[18px] text-dark-blue-400/50 hover:text-dark-blue-400" />
+          Create a Project
+        </button>
         <IconButton
           className="size-[30px] rounded-full"
           variant="outlined"
@@ -1945,5 +1952,6 @@ export const Footer = () => {
         </IconButton>
       </div>
     </div>
-  )
+  );
 }
+
