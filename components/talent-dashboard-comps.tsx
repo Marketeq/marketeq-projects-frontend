@@ -1,68 +1,13 @@
-"use client";
-// Add Table component after TableRow and Project interface if not present
-interface TableProps {
-  projects?: Project[];
-}
-
-export const Table = ({ projects = [] }: TableProps) => {
-  // Optionally, you can import mock data and use it here
-  return (
-    <table className="min-w-full divide-y divide-gray-200">
-      <thead>
-        <tr>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Project Name</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Next Milestone</th>
-        </tr>
-      </thead>
-      <tbody className="bg-white divide-y divide-gray-200">
-        {projects.map((project, idx) => (
-          <TableRow key={idx} {...project} />
-        ))}
-      </tbody>
-    </table>
-  );
-};
-// Table component for RecentProjects
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarGroup,
-  AvatarImage,
-  Badge,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-  Button,
-  CircularProgress,
-  Checkbox,
-  Progress,
-  ScrollArea,
-  IconButton,
-} from "@/components/ui"
-// Table component is defined after all imports below
-import {
-  EditableArea,
-  EditableInput,
-  EditableLabel,
-  EditablePreview,
-  EditableRoot,
-} from "@/components/ui/editable"
-
+"use client"
 
 import * as React from "react"
 import { SVGProps } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/auth"
 import data from "@/public/mock/projects.json"
 import { ONE_SECOND } from "@/utils/constants"
 import { cn, getId, getIsEmpty, getIsNotEmpty } from "@/utils/functions"
 import { useEditable } from "@ark-ui/react"
-import { EditableRootProvider } from "@/components/ui/editable"
 import {
   AlertCircle,
   ArrowRight,
@@ -101,9 +46,65 @@ import { Facebook, Linkedin, Logo, Logo3, XIcon } from "@/components/icons"
 import { GridVertical6 } from "@/components/icons/grid-vertical-6"
 import NextImage from "@/components/next-image"
 import NextLink from "@/components/next-link"
+import SecuritySettingsStepper from "@/components/security-settings"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarImage,
+  Badge,
+  Button,
+  Checkbox,
+  CircularProgress,
+  EditableRootProvider,
+  IconButton,
+  Progress,
+  ScrollArea,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui"
+import {
+  EditableArea,
+  EditableInput,
+  EditableLabel,
+  EditablePreview,
+  EditableRoot,
+} from "@/components/ui"
 
-import { useAuth } from "@/contexts/auth"
-
+// Table component for RecentProjects
+const Table = () => {
+  return (
+    <table className="table-auto border-collapse w-full">
+      <thead>
+        <tr>
+          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
+            Project Name
+          </th>
+          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
+            Team
+          </th>
+          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
+            Status
+          </th>
+          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
+            Next Milestone
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {data.projects.map((project, index) => (
+          <TableRow {...project} key={index} />
+        ))}
+      </tbody>
+    </table>
+  )
+}
 
 export const MoneyDollarCircleFill = ({
   className,
@@ -274,6 +275,8 @@ export const LeftSidebar = () => {
 }
 
 export const RightDrawer = ({ className }: { className?: string }) => {
+  const router = useRouter()
+  const { user } = useAuth()
   return (
     <div
       className={cn(
@@ -284,7 +287,7 @@ export const RightDrawer = ({ className }: { className?: string }) => {
       <div className="divide-y divide-[#122A4B]/[.15]">
         <div className="p-5">
           <h1 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
-            @chrisdesign221
+            @{user?.username}
           </h1>
           <Button
             className="underline text-dark-blue-400 hover:text-primary-500"
@@ -320,7 +323,7 @@ export const RightDrawer = ({ className }: { className?: string }) => {
               visual="gray"
               size="md"
               variant="link"
-              onClick={() => window.location.href = '/complete-profile'}
+              onClick={() => router.push("/complete-profile")}
             >
               Complete Your Profile
             </Button>
@@ -416,6 +419,8 @@ export const RightDrawer = ({ className }: { className?: string }) => {
 }
 
 export const RightSidebar = ({ className }: { className?: string }) => {
+  const router = useRouter()
+  const { user } = useAuth()
   return (
     <div
       className={cn("w-[322px] shrink-0 min-[1440px]:block hidden", className)}
@@ -423,7 +428,7 @@ export const RightSidebar = ({ className }: { className?: string }) => {
       <div className="divide-y bg-white border rounded-lg border-gray-200 shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)] divide-[#122A4B]/[.15]">
         <div className="p-5">
           <h1 className="text-base leading-[19.36px] font-bold text-dark-blue-400">
-            @chrisdesign221
+            @{user?.username}
           </h1>
           <Button
             className="underline text-dark-blue-400 hover:text-primary-500"
@@ -459,7 +464,7 @@ export const RightSidebar = ({ className }: { className?: string }) => {
               visual="gray"
               size="md"
               variant="link"
-              onClick={() => window.location.href = '/complete-profile'}
+              onClick={() => router.push("/complete-profile")}
             >
               Complete Your Profile
             </Button>
@@ -945,8 +950,8 @@ export const StarsBFill = ({
 }
 
 export const Welcome = ({ onToggle }: { onToggle: () => void }) => {
-  const { user } = useAuth();
-  const router = useRouter();
+  const { user } = useAuth()
+  const router = useRouter()
   return (
     <>
       <div className="md:contents flex flex-col gap-y-5">
@@ -1233,8 +1238,8 @@ export const TableRow = ({
   )
 }
 
-
 export const RecentProjects = () => {
+  const router = useRouter()
   return (
     <div className="border bg-white border-gray-200 rounded-lg shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
       <div className="flex justify-between items-start pt-5 px-6">
@@ -1246,6 +1251,7 @@ export const RecentProjects = () => {
           className="text-dark-blue-400 xs:max-md:hidden"
           variant="link"
           visual="gray"
+          onClick={() => router.push("/my-projects")}
         >
           View All Projects <ArrowRight className="size-3.5" />
         </Button>
@@ -1285,10 +1291,8 @@ export const RecentProjects = () => {
   )
 }
 
-import { useRouter } from "next/navigation"
-
 export const CreateYourOwnProject = () => {
-  const router = useRouter();
+  const router = useRouter()
   return (
     <div className="bg-white shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)] border rounded-lg border-gray-200 p-5 flex flex-col-reverse md:grid md:grid-cols-2 gap-5 min-[1024px]:gap-x-[100px]">
       <div>
@@ -1908,7 +1912,7 @@ export const TakeCareersToNextLevel = () => {
 }
 
 export const Footer = () => {
-  const router = useRouter();
+  const router = useRouter()
   return (
     <div className="px-5 xs:max-md:pt-5 md:px-6 pb-5 flex flex-col md:flex-row items-center gap-5 md:justify-between">
       <div className="flex md:flex-row flex-col items-center gap-5 md:gap-x-[57px]">
@@ -1953,6 +1957,5 @@ export const Footer = () => {
         </IconButton>
       </div>
     </div>
-  );
+  )
 }
-

@@ -1,6 +1,7 @@
 "use client"
 
 import React, { Fragment, SVGProps, useEffect, useRef, useState } from "react"
+import { useAuth } from "@/contexts/auth"
 import { cn, hookFormHasError, noop } from "@/utils/functions"
 import {
   useCallbackRef,
@@ -138,12 +139,13 @@ const ThinkCheck = (props: SVGProps<SVGSVGElement>) => (
 
 const RightSidebar = () => {
   const [isOpen, setIsOpen] = useState(false)
+  const { user } = useAuth()
   return (
     <div className="shrink-0 w-[322px]">
       <div className="bg-white border border-gray-200 rounded-lg shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
         <div className="p-5 border-b border-gray-200">
           <h2 className="text-base font-bold text-dark-blue-400 leading-none">
-            @chrisdesign221
+            @{user?.username}
           </h2>
           <Button
             className="text-dark-blue-400 underline text-[11px] leading-6"
@@ -1972,8 +1974,8 @@ const WorkExperienceDialog = ({
                       {workExperiences?.map((workExperience, index) => (
                         <WorkExperienceCard
                           onRemove={() =>
-                            setWorkExperiences(
-                              (prev) => prev?.filter((_, i) => i !== index)
+                            setWorkExperiences((prev) =>
+                              prev?.filter((_, i) => i !== index)
                             )
                           }
                           onEdit={() => {
@@ -2753,8 +2755,8 @@ const EducationDialog = ({
                     {educationQualifications?.map((qualification, index) => (
                       <EducationCard
                         onRemove={() =>
-                          setEducationQualifications(
-                            (prev) => prev?.filter((_, i) => i !== index)
+                          setEducationQualifications((prev) =>
+                            prev?.filter((_, i) => i !== index)
                           )
                         }
                         onEdit={() => {
