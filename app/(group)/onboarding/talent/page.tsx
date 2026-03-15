@@ -8,6 +8,7 @@ import AuthenticatedRoute from "@/hoc/AuthenticatedRoute"
 import industriesMock from "@/public/mock/industries.json"
 import jobTitlesMock from "@/public/mock/job_titles.json"
 import languagesMock from "@/public/mock/languages.json"
+import skillSuggestions from "@/public/mock/skills.json"
 import { AuthAPI } from "@/service/http/auth"
 import {
   AutocompleteAPI,
@@ -1410,7 +1411,15 @@ const ShareYourLocation = ({
   )
 }
 
-const skills = [
+const FALLBACK_TOP_SKILLS = Array.from(
+  new Set(
+    (Array.isArray(skillSuggestions) ? skillSuggestions : [])
+      .map((item) => item?.label?.trim())
+      .filter((item): item is string => Boolean(item))
+  )
+)
+
+const PROJECT_PREFERENCE_OPTIONS = [
   "JavaScript",
   "TypeScript",
   "React",
@@ -1437,7 +1446,6 @@ const skills = [
   "Version Control",
   "Web Security",
 ]
-
 const projectPreferenceOptions = [
   "Web Application",
   "Mobile Application",
@@ -1526,6 +1534,11 @@ const TopSkills = ({
     onChange: onValueChange,
   })
   const [selected, setSelected] = useState<string[]>([])
+  const [open, setOpen] = useState(false)
+  const [skillOptions, setSkillOptions] =
+    useState<string[]>(FALLBACK_TOP_SKILLS)
+  const requestIdRef = useRef(0)
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const resetInputValue = () => setInputValue("")
 
@@ -1560,12 +1573,67 @@ const TopSkills = ({
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     const { key } = event
-    if (key === HOT_KEYS.ENTER) addValue()
+    if (key === HOT_KEYS.ENTER) {
+      addValue()
+      setOpen(false)
+    }
   }
 
-  const filteredRoles = skills.filter((skill) =>
-    skill.toLowerCase().includes(inputValue.toLowerCase())
-  )
+  useEffect(() => {
+    const query = inputValue.trim()
+    if (!query) {
+      setSkillOptions(FALLBACK_TOP_SKILLS)
+      return
+    }
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current)
+    }
+
+    debounceTimerRef.current = setTimeout(async () => {
+      const currentRequestId = ++requestIdRef.current
+      try {
+        const response = await AutocompleteAPI.getByType("skills", query)
+        if (currentRequestId !== requestIdRef.current) return
+
+        const apiValues: AutocompleteTypeSuggestion[] = Array.isArray(
+          response?.data
+        )
+          ? response.data
+          : []
+
+        const normalizedApiValues = Array.from(
+          new Set(apiValues.map((item) => normalizeAutocompleteLabel(item)))
+        ).filter((item) => item.length > 0)
+
+        if (getIsNotEmpty(normalizedApiValues)) {
+          setSkillOptions(normalizedApiValues)
+          return
+        }
+      } catch {
+        // keep fallback options when autocomplete API is unavailable
+      }
+
+      const fallbackMatches = FALLBACK_TOP_SKILLS.filter((skill) =>
+        skill.toLowerCase().includes(query.toLowerCase())
+      )
+      setSkillOptions(fallbackMatches)
+    }, 250)
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
+    }
+  }, [inputValue])
+
+  const filteredRoles = inputValue.trim()
+    ? skillOptions
+        .filter((skill) =>
+          skill.toLowerCase().includes(inputValue.trim().toLowerCase())
+        )
+        .slice(0, 40)
+    : []
 
   useIsomorphicLayoutEffect(() => {
     setValues((prevValues) => {
@@ -1586,25 +1654,31 @@ const TopSkills = ({
       <Combobox
         className="w-full"
         value={selected}
-        onChange={setSelected}
+        onChange={(nextSelected) => {
+          setSelected(nextSelected)
+          setOpen(false)
+          setInputValue("")
+        }}
         multiple
       >
         <ComboboxTrigger className="flex flex-col gap-y-1.5">
           <ComboboxLabel size="sm" className="text-dark-blue-400">
-            Who are you looking to work with?
+            What are your top skills?
           </ComboboxLabel>
           <ComboboxInput
             size="lg"
             className="pl-3.5"
-            placeholder="Enter job titles related to your project"
+            placeholder="e.g., react.js, css"
             onChange={onChange}
             onKeyDown={onKeyDown}
+            onFocus={() => setOpen(true)}
+            onBlur={() => setTimeout(() => setOpen(false), 150)}
             value={inputValue}
             invalid={invalid}
           />
         </ComboboxTrigger>
 
-        <ScaleOutIn afterLeave={() => setInputValue("")}>
+        <ScaleOutIn show={open && getIsNotEmpty(filteredRoles)}>
           <ComboboxOptions>
             <ScrollArea viewportClassName="max-h-[304px]">
               {filteredRoles.map((role, index) => (
@@ -1618,12 +1692,17 @@ const TopSkills = ({
       </Combobox>
 
       {getIsNotEmpty(values) && (
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-4">
           {values.map((item, index) => (
-            <Badge visual="primary" key={index}>
+            <Badge
+              visual="primary"
+              size="md"
+              className="rounded-[16px] bg-primary-100 text-primary-500 px-2.5 pr-2 font-medium text-sm leading-5"
+              key={index}
+            >
               {item}
               <button
-                className="focus-visible:outline-none"
+                className="inline-flex size-3 shrink-0 items-center justify-center text-primary-300 hover:text-primary-500 focus-visible:outline-none"
                 onClick={() => removeValue(index)}
                 type="button"
               >

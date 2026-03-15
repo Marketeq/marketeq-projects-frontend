@@ -594,15 +594,6 @@ export const TopMostHeader = () => {
           <SearchBar />
 
           {/* My Dashboard Button */}
-          <Button
-            className="ml-2"
-            variant="outlined"
-            visual="gray"
-            size="md"
-            onClick={() => router.push("/talent-dashboard")}
-          >
-            My Dashboard
-          </Button>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -711,7 +702,7 @@ export const TopMostHeader = () => {
                 <Users className="size-4" />
                 My Team
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/my-favorites')}>
+              <DropdownMenuItem onClick={() => window.location.href = 'http://localhost:3000/my-favorites'}>
                 <Star className="size-4" />
                 My Favorites
               </DropdownMenuItem>
