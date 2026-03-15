@@ -35,7 +35,7 @@ import {
   Talent,
 } from "@/components/icons"
 import { InviteWindowTrigger } from "@/components/invite-window"
-import NextLink from "@/components/next-link"
+import { useRouter } from "next/navigation"
 import { ThreeHorizontalLines } from "@/components/three-horizontal-lines"
 import {
   Avatar,
@@ -596,16 +596,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-x-[18px] ml-auto xs:max-lg:hidden">
-            <Button
-              className="text-[13px] leading-6 opacity-60 hover:opacity-100"
-              variant="link"
-              visual="gray"
-              asChild
-            >
-              <NextLink href="/talent-dashboard">
-                My Dashboard
-              </NextLink>
-            </Button>
+            <MyDashboardButton />
+          // Button that navigates to /talent-dashboard using router.push
+          const MyDashboardButton = () => {
+          const router = useRouter();
+          
+              return (
+                <button
+                  data-testid="my-dashboard-button"
+                  className="inline-flex items-center shrink-0 justify-center whitespace-nowrap gap-x-2 rounded-[5px] font-semibold transition duration-300 focus-visible:outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 hover:underline text-gray-500 focus:text-gray-600 p-0 h-auto text-[13px] leading-6 opacity-60 hover:opacity-100"
+                  onClick={() => router.push("/talent-dashboard")}
+                  type="button"
+                >
+                  My Dashboard
+                </button>
+              );
+            };
           </div>
         </div>
       </div>
