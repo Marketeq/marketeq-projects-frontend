@@ -13,6 +13,7 @@ import {
 import React from "react"
 // import ReactPlayer from "react-player"
 import dynamic from "next/dynamic"
+import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth"
 import options from "@/public/mock/options.json"
 import {
@@ -21,6 +22,7 @@ import {
   type AutocompleteTypeSuggestion,
 } from "@/service/http/autocomplete"
 import { ProjectAPI } from "@/service/http/project"
+import { buildProjectUrl } from "@/src/lib/urlHelpers"
 import { HTTPS, ONE_SECOND } from "@/utils/constants"
 import {
   cn,
@@ -228,11 +230,11 @@ type SubmissionOutcome = {
 
 const Empty = ({ outcome }: { outcome?: SubmissionOutcome }) => {
   const status = outcome?.status ?? "in_review"
-  const marketplaceHref = outcome?.projectSlug
-    ? `/project/${outcome.projectSlug}`
-    : "/marketplace"
-  const myProjectsHref = "/my-projects"
-
+  const marketplaceHref =
+    outcome?.projectSlug && outcome?.projectId
+      ? buildProjectUrl([], outcome.projectSlug, outcome.projectId)
+      : "/marketplace"
+  const router = useRouter()
   return (
     <div className="grid flex-auto place-items-center">
       <div className="flex flex-col max-w-[440px] items-center justify-between">
@@ -269,7 +271,7 @@ const Empty = ({ outcome }: { outcome?: SubmissionOutcome }) => {
           <Button
             variant="link"
             onClick={() => {
-              window.location.href = myProjectsHref
+              router.push("/my-projects")
             }}
           >
             My Projects
