@@ -1,33 +1,60 @@
+"use client";
+// Add Table component after TableRow and Project interface if not present
+interface TableProps {
+  projects?: Project[];
+}
 
-"use client"
-// Table component for RecentProjects
-const Table = () => {
+export const Table = ({ projects = [] }: TableProps) => {
+  // Optionally, you can import mock data and use it here
   return (
-    <table className="table-auto border-collapse w-full">
+    <table className="min-w-full divide-y divide-gray-200">
       <thead>
         <tr>
-          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
-            Project Name
-          </th>
-          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
-            Team
-          </th>
-          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
-            Status
-          </th>
-          <th className="text-xs leading-[18px] font-medium text-dark-blue-400 whitespace-nowrap py-3 px-6 text-left border-b border-gray-200">
-            Next Milestone
-          </th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Project Name</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Next Milestone</th>
         </tr>
       </thead>
-      <tbody>
-        {data.projects.map((project, index) => (
-          <TableRow {...project} key={index} />
+      <tbody className="bg-white divide-y divide-gray-200">
+        {projects.map((project, idx) => (
+          <TableRow key={idx} {...project} />
         ))}
       </tbody>
     </table>
   );
-}
+};
+// Table component for RecentProjects
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarImage,
+  Badge,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+  Button,
+  CircularProgress,
+  Checkbox,
+  Progress,
+  ScrollArea,
+  IconButton,
+} from "@/components/ui"
+// Table component is defined after all imports below
+import {
+  EditableArea,
+  EditableInput,
+  EditableLabel,
+  EditablePreview,
+  EditableRoot,
+} from "@/components/ui/editable"
+
 
 import * as React from "react"
 import { SVGProps } from "react"
@@ -35,6 +62,7 @@ import data from "@/public/mock/projects.json"
 import { ONE_SECOND } from "@/utils/constants"
 import { cn, getId, getIsEmpty, getIsNotEmpty } from "@/utils/functions"
 import { useEditable } from "@ark-ui/react"
+import { EditableRootProvider } from "@/components/ui/editable"
 import {
   AlertCircle,
   ArrowRight,
@@ -73,36 +101,7 @@ import { Facebook, Linkedin, Logo, Logo3, XIcon } from "@/components/icons"
 import { GridVertical6 } from "@/components/icons/grid-vertical-6"
 import NextImage from "@/components/next-image"
 import NextLink from "@/components/next-link"
-import SecuritySettingsStepper from "@/components/security-settings"
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarGroup,
-  AvatarImage,
-  Badge,
-  Button,
-  Checkbox,
-  CircularProgress,
-  EditableRootProvider,
-  IconButton,
-  Progress,
-  ScrollArea,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui"
-import {
-  EditableArea,
-  EditableInput,
-  EditableLabel,
-  EditablePreview,
-  EditableRoot,
-} from "@/components/ui"
+
 import { useAuth } from "@/contexts/auth"
 
 
@@ -321,6 +320,7 @@ export const RightDrawer = ({ className }: { className?: string }) => {
               visual="gray"
               size="md"
               variant="link"
+              onClick={() => window.location.href = '/complete-profile'}
             >
               Complete Your Profile
             </Button>
@@ -459,6 +459,7 @@ export const RightSidebar = ({ className }: { className?: string }) => {
               visual="gray"
               size="md"
               variant="link"
+              onClick={() => window.location.href = '/complete-profile'}
             >
               Complete Your Profile
             </Button>

@@ -586,14 +586,16 @@ export default function MarketPlaceLayout({
                 className="text-[13px] leading-6 opacity-60 hover:opacity-100"
                 variant="link"
                 visual="gray"
+                onClick={() => window.location.href = '/my-favorites'}
               >
                 My Favorites
               </Button>
               <span className="inline-block h-4 w-px shrink-0 bg-gray-300" />
               <Button
-                className="text-[13px] leading-6 opacity-60 hover:opacity-100"
+                className="inline-flex items-center shrink-0 justify-center whitespace-nowrap gap-x-2 rounded-[5px] font-semibold transition duration-300 focus-visible:outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 hover:underline text-gray-500 focus:text-gray-600 p-0 h-auto text-[13px] leading-6 opacity-60 hover:opacity-100"
                 variant="link"
                 visual="gray"
+                onClick={() => window.location.href = '/talent-dashboard'}
               >
                 My Dashboard
               </Button>
