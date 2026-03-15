@@ -1,4 +1,4 @@
-@requiresUser @requiresAuth
+@smoke
 Feature: Publish Project Workflow
   As a registered user
   I want to create and publish a project
@@ -9,7 +9,14 @@ Feature: Publish Project Workflow
     And featured image fixture is available for project publishing
 
   Scenario Outline: Sign in with valid email and password and Complete publish project workflow to submission
-    Given I navigate to the "Publish Project" page
+    Given I am on the sign-in page
+    When I enter email as "<email>"
+    And I enter password as "<password>"
+    And I click the sign-in button
+    Then I am successfully signed in and navigated to the talent dashboard page
+    When I click the "Create a Project" button in Create Your Own Projects 
+    And I am successfully navigated to "Publish Project" page
+    Then I should see the "Project Info" heading
     
     # Step 1: Project Info
     When I fill the project title as "Playwright test project title"
@@ -49,6 +56,8 @@ Feature: Publish Project Workflow
     When I click the "Submit Project" button on publish form
     Then I should see the success message "Your Project Has Been Submitted for a Review!"
     And I should see the message "review your project over the next few days"
+    When I click "Go to Home" button
+    Then I should be navigated to marketeq digital home page
 
   Examples:
       | scenario            | email                 | password |
