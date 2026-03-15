@@ -275,6 +275,7 @@ export const LeftSidebar = () => {
 }
 
 export const RightDrawer = ({ className }: { className?: string }) => {
+  const router = useRouter();
   return (
     <div
       className={cn(
@@ -321,6 +322,7 @@ export const RightDrawer = ({ className }: { className?: string }) => {
               visual="gray"
               size="md"
               variant="link"
+              onClick={() => router.push("/complete-profile")}
             >
               Complete Your Profile
             </Button>
@@ -416,6 +418,7 @@ export const RightDrawer = ({ className }: { className?: string }) => {
 }
 
 export const RightSidebar = ({ className }: { className?: string }) => {
+  const router = useRouter()
   return (
     <div
       className={cn("w-[322px] shrink-0 min-[1440px]:block hidden", className)}
@@ -459,6 +462,7 @@ export const RightSidebar = ({ className }: { className?: string }) => {
               visual="gray"
               size="md"
               variant="link"
+              onClick={() => router.push("/complete-profile")}
             >
               Complete Your Profile
             </Button>
@@ -1234,6 +1238,7 @@ export const TableRow = ({
 
 
 export const RecentProjects = () => {
+  const router = useRouter();
   return (
     <div className="border bg-white border-gray-200 rounded-lg shadow-[0px_2px_5px_0px_rgba(0,0,0,.04)]">
       <div className="flex justify-between items-start pt-5 px-6">
@@ -1245,6 +1250,7 @@ export const RecentProjects = () => {
           className="text-dark-blue-400 xs:max-md:hidden"
           variant="link"
           visual="gray"
+          onClick={() => router.push('/my-projects')}
         >
           View All Projects <ArrowRight className="size-3.5" />
         </Button>
